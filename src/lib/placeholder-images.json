@@ -1,22 +1,28 @@
 {
   "placeholderImages": [
     {
-      "id": "hero-sales",
-      "description": "Professional sales environment with growth charts",
-      "imageUrl": "https://picsum.photos/seed/flowpro-hero/1200/800",
-      "imageHint": "sales success"
+      "id": "hero-ai",
+      "description": "Futuristic AI background with neon lines",
+      "imageUrl": "https://picsum.photos/seed/ai-hero/1200/800",
+      "imageHint": "futuristic technology"
     },
     {
-      "id": "mentor-avatar",
-      "description": "Professional AI Sales Mentor",
-      "imageUrl": "https://picsum.photos/seed/mentor/200/200",
-      "imageHint": "professional consultant"
+      "id": "feature-access",
+      "description": "Abstract laptop with neon glow",
+      "imageUrl": "https://picsum.photos/seed/access/400/600",
+      "imageHint": "neon laptop"
     },
     {
-      "id": "quiz-bg",
-      "description": "Abstract purple geometric pattern",
-      "imageUrl": "https://picsum.photos/seed/quiz-flow/800/600",
-      "imageHint": "abstract purple"
+      "id": "feature-config",
+      "description": "Tech interface background",
+      "imageUrl": "https://picsum.photos/seed/config/400/600",
+      "imageHint": "tech interface"
+    },
+    {
+      "id": "feature-gold",
+      "description": "Abstract golden data visualization",
+      "imageUrl": "https://picsum.photos/seed/gold/400/600",
+      "imageHint": "abstract gold"
     }
   ]
 }
