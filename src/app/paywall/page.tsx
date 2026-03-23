@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -10,17 +9,15 @@ import {
   Star, 
   ShieldCheck, 
   CheckCircle2, 
-  ArrowRight, 
   Clock, 
   ShieldAlert, 
-  HelpCircle,
   CreditCard,
   Infinity
 } from 'lucide-react';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Accordion,
   AccordionContent,
@@ -29,18 +26,15 @@ import {
 } from "@/components/ui/accordion";
 
 export default function PaywallPage() {
-  const { user, isUserLoading } = useUser();
+  const { user } = useUser();
   const db = useFirestore();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-
-  const ADMIN_EMAIL = "thethegalo@gmail.com";
 
   const handleSubscription = async (plan: string) => {
     if (!user || !db) return;
     setIsLoading(true);
     try {
-      // Simular ativação de assinatura no Firestore
       const subRef = doc(db, 'users', user.uid, 'subscriptions', 'active');
       await setDoc(subRef, {
         userId: user.uid,
@@ -57,30 +51,27 @@ export default function PaywallPage() {
 
   const faqs = [
     { q: "Preciso ter experiência prévia?", a: "Absolutamente não. O FlowPro foi desenhado especificamente para quem está começando do zero absoluto." },
-    { q: "Preciso investir dinheiro em anúncios?", a: "Não. Ensinamos estratégias de tráfego orgânico (gratuito) para que você faça sua primeira venda sem gastar um centavo em anúncios." },
-    { q: "Em quanto tempo vejo resultados?", a: "Seguindo o passo a passo, nosso objetivo é que você realize sua primeira venda em até 72 horas." },
-    { q: "Como funciona o suporte?", a: "Você terá acesso ao nosso Mentor IA 24h por dia para tirar qualquer dúvida técnica ou estratégica." },
-    { q: "Posso cancelar quando quiser?", a: "Sim, no plano mensal você pode cancelar a qualquer momento sem letras miúdas." }
+    { q: "Preciso investir dinheiro em anúncios?", a: "Não. Ensinamos estratégias de tráfego orgânico para que você faça sua primeira venda sem gastar em anúncios." },
+    { q: "Em quanto tempo vejo resultados?", a: "Seguindo o passo a passo, nosso objetivo é que você realize sua primeira venda em até 7 dias." },
+    { q: "Como funciona o suporte?", a: "Você terá acesso ao nosso Mentor IA 24h por dia para tirar qualquer dúvida técnica ou estratégica." }
   ];
 
   return (
     <div className="min-h-screen bg-[#050508] text-white">
-      {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="container max-w-5xl mx-auto space-y-12">
           <div className="text-center space-y-6">
-            <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-[0.3em] text-[10px]">Acesso Alpha Liberado</Badge>
+            <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-[0.3em] text-[10px]">Acesso Flow Liberado</Badge>
             <h1 className="text-4xl md:text-7xl font-black italic uppercase tracking-tighter leading-none">
               SEU PLANO ESTÁ PRONTO. <br /><span className="text-primary shimmer-text">ATIVE O FLUXO.</span>
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-medium">
-              Você já viu o potencial. Agora, receba as ferramentas, os scripts e o mentor para transformar esse potencial em dinheiro no bolso.
+              Você já viu o potencial. Agora, receba as ferramentas, os scripts e o mentor para transformar esse potencial em dinheiro.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
-            {/* Plano Mensal */}
-            <Card className="glass-card p-8 flex flex-col justify-between border-white/5 relative overflow-hidden group">
+            <Card className="glass-card p-8 flex flex-col justify-between border-white/5 relative overflow-hidden rounded-[2rem]">
               <div className="space-y-6 relative z-10">
                 <div className="space-y-1">
                   <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
@@ -89,7 +80,7 @@ export default function PaywallPage() {
                   <p className="text-4xl font-black italic">R$ 147<span className="text-sm font-normal opacity-50">/mês</span></p>
                 </div>
                 <ul className="space-y-4">
-                  {['Passo a passo diário', 'Scripts Alpha', 'Mentor IA Ilimitado', 'Cancelamento a qualquer momento'].map((f, i) => (
+                  {['Jornada de 7 Dias', 'Scripts Flow', 'Mentor IA Ilimitado', 'Cancelamento livre'].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white/70">
                       <CheckCircle2 className="h-4 w-4 text-primary" /> {f}
                     </li>
@@ -106,15 +97,14 @@ export default function PaywallPage() {
               </Button>
             </Card>
 
-            {/* Plano Vitalício (OFERTA ELITE) */}
-            <div className="relative p-[2px] rounded-[var(--radius)] overflow-hidden scale-105 shadow-[0_0_50px_rgba(139,92,246,0.2)]">
+            <div className="relative p-[2px] rounded-[2rem] overflow-hidden scale-105 shadow-[0_0_50px_rgba(139,92,246,0.2)]">
               <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-marquee bg-[length:200%_200%]"></div>
-              <Card className="relative bg-[#050508] p-8 flex flex-col justify-between h-full border-none rounded-[calc(var(--radius)-2px)]">
+              <Card className="relative bg-[#050508] p-8 flex flex-col justify-between h-full border-none rounded-[calc(2rem-2px)]">
                 <div className="absolute top-4 right-4 bg-primary text-white text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">MELHOR VALOR</div>
                 <div className="space-y-6">
                   <div className="space-y-1">
                     <h3 className="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                      <Infinity className="h-4 w-4" /> Alpha Founder Elite
+                      <Infinity className="h-4 w-4" /> Flow Founder Elite
                     </h3>
                     <div className="flex items-baseline gap-2">
                       <span className="text-muted-foreground line-through text-lg decoration-primary/50">R$ 497</span>
@@ -125,7 +115,7 @@ export default function PaywallPage() {
                     </p>
                   </div>
                   <ul className="space-y-4">
-                    {['Acesso Vitalício (Sem Mensalidades)', 'Estratégia Personalizada', 'Scripts VIP V2', 'Mentoria Alpha 24/7', 'Garantia de 7 Dias'].map((f, i) => (
+                    {['Acesso Vitalício', 'Estratégia Personalizada', 'Ferramenta de Leads', 'Mentor IA 24/7', 'Garantia de 7 Dias'].map((f, i) => (
                       <li key={i} className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-white">
                         <Star className="h-4 w-4 text-primary fill-primary" /> {f}
                       </li>
@@ -153,14 +143,10 @@ export default function PaywallPage() {
                 <ShieldAlert className="h-5 w-5 text-primary" /> Pagamento 100% Seguro
               </div>
             </div>
-            <p className="text-center text-xs text-muted-foreground max-w-md italic">
-              "7 dias de garantia incondicional. Se você não gostar do plano ou sentir que não é para você, devolvemos seu dinheiro sem perguntas."
-            </p>
           </div>
         </div>
       </section>
 
-      {/* FAQ Section */}
       <section className="py-20 bg-white/[0.02] border-y border-white/5">
         <div className="container max-w-3xl mx-auto px-4">
           <h2 className="text-3xl font-black italic uppercase tracking-tighter mb-12 text-center">Dúvidas Frequentes</h2>
@@ -176,17 +162,6 @@ export default function PaywallPage() {
               </AccordionItem>
             ))}
           </Accordion>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="py-32 px-4 text-center">
-        <div className="container max-w-4xl mx-auto space-y-8">
-          <h3 className="text-4xl font-black italic uppercase tracking-tighter">Sua jornada Alpha começa agora.</h3>
-          <p className="text-muted-foreground font-medium">Pare de tentar e comece a executar o que realmente funciona.</p>
-          <Button asChild size="lg" className="h-20 px-12 bg-white text-black hover:bg-primary hover:text-white rounded-3xl font-black uppercase tracking-widest transition-all hover:scale-110">
-            <Link href="#pricing">ATIVAR MEU FLUXO AGORA</Link>
-          </Button>
         </div>
       </section>
     </div>

@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -11,24 +10,23 @@ import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { 
   CheckCircle2, 
-  Circle, 
   Flame, 
   MessageSquare, 
   BookOpen, 
-  TrendingUp,
   ChevronRight,
   Zap,
   Lock,
   Loader2,
   DollarSign,
   Target,
-  ShieldCheck,
-  LayoutDashboard,
-  Settings,
-  LogOut
+  LogOut,
+  Search,
+  UserCheck,
+  Trophy,
+  ArrowUpRight
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, doc, getDoc } from 'firebase/firestore';
+import { collection, query, orderBy } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { useAuth } from '@/firebase';
 
@@ -55,11 +53,15 @@ export default function Dashboard() {
   }, [db, user]);
   const { data: progressData, isLoading: isProgressLoading } = useCollection(progressQuery);
 
-  // Define static missions
+  // Define static missions (7 Days)
   const missions = [
-    { id: 'dia1', title: 'DIA 1: A Oferta de Ouro', desc: 'Defina o que vender e seu primeiro script.', order: 1 },
-    { id: 'dia2', title: 'DIA 2: Atração Alpha', desc: 'Onde encontrar clientes prontos para pagar.', order: 2 },
-    { id: 'dia3', title: 'DIA 3: Fechamento Brutal', desc: 'Quebra de objeções e conversão em dinheiro.', order: 3 },
+    { id: 'dia1', title: 'DIA 1: Criar Oferta', desc: 'Defina o que vender e seu primeiro script.', order: 1 },
+    { id: 'dia2', title: 'DIA 2: Ajustar Perfil', desc: 'Prepare suas redes para converter visitas em vendas.', order: 2 },
+    { id: 'dia3', title: 'DIA 3: Encontrar Leads', desc: 'Identifique os clientes ideais com nossa ferramenta.', order: 3 },
+    { id: 'dia4', title: 'DIA 4: Fazer Abordagem', desc: 'Inicie conversas estratégicas e gere interesse.', order: 4 },
+    { id: 'dia5', title: 'DIA 5: Conversar & Nutrir', desc: 'Tire dúvidas e mostre o valor da sua solução.', order: 5 },
+    { id: 'dia6', title: 'DIA 6: Fechar Venda', desc: 'Quebre as objeções finais e receba o pagamento.', order: 6 },
+    { id: 'dia7', title: 'DIA 7: Escalar Fluxo', desc: 'Automatize processos e multiplique seus ganhos.', order: 7 },
   ];
 
   const completedMissionIds = useMemo(() => {
@@ -76,12 +78,10 @@ export default function Dashboard() {
         return;
       }
       
-      // Admin bypasses paywall
       const isAdmin = user.email === ADMIN_EMAIL;
       const isPaid = subData && subData.length > 0;
 
       if (!isAdmin && !isPaid) {
-        // Check if they finished quiz first, if not send to quiz
         router.push('/quiz');
       }
     }
@@ -116,7 +116,7 @@ export default function Dashboard() {
           <div className="flex items-center gap-2 md:gap-4">
             {user?.email === ADMIN_EMAIL && (
               <Button asChild variant="outline" size="sm" className="hidden md:flex bg-primary/10 border-primary/20 text-primary hover:bg-primary/20 text-[10px] font-black uppercase tracking-widest h-8">
-                <Link href="/admin">ALPHA COMMAND</Link>
+                <Link href="/admin">FLOW COMMAND</Link>
               </Button>
             )}
             <Badge variant="secondary" className="bg-primary/10 text-primary gap-1 px-3 py-1 text-[10px] font-black uppercase hidden sm:flex">
@@ -130,45 +130,84 @@ export default function Dashboard() {
       </header>
 
       <main className="flex-1 p-4 md:p-8 space-y-8 container mx-auto max-w-4xl">
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-black italic uppercase tracking-tighter">Olá, {user?.displayName || (user?.email === ADMIN_EMAIL ? 'Admin Master' : 'Guerreiro Alpha')}</h1>
-            {user?.email === ADMIN_EMAIL && (
-              <Badge className="bg-primary text-white text-[8px] font-black px-2 py-0.5 uppercase tracking-widest">ADMIN</Badge>
-            )}
+        {/* Welcome & Stats */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+          <div className="space-y-2">
+            <h1 className="text-4xl font-black italic uppercase tracking-tighter leading-none">
+              Olá, {user?.displayName || (user?.email === ADMIN_EMAIL ? 'Admin Master' : 'Guerreiro Flow')}
+            </h1>
+            <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-widest flex items-center gap-2">
+              <Target className="h-3 w-3 text-primary" /> Objetivo: Primeira Venda em 7 Dias
+            </p>
           </div>
-          <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-widest flex items-center gap-2">
-            <Target className="h-3 w-3 text-primary" /> Objetivo: Sua primeira venda em 72h
-          </p>
+          <div className="flex gap-4 w-full md:w-auto">
+            <div className="flex-1 md:flex-none glass-card px-6 py-3 rounded-2xl flex flex-col items-center justify-center min-w-[120px]">
+              <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Status</span>
+              <span className="text-sm font-black italic text-primary uppercase">Em Execução</span>
+            </div>
+            <div className="flex-1 md:flex-none glass-card px-6 py-3 rounded-2xl flex flex-col items-center justify-center min-w-[120px]">
+              <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Ganhos Flow</span>
+              <span className="text-sm font-black italic flex items-center gap-1">
+                <DollarSign className="h-3 w-3" /> {completedMissionIds.length * 450}
+              </span>
+            </div>
+          </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card className="glass-card border-white/10">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-[10px] font-black uppercase tracking-widest opacity-70">Seu Progresso de Execução</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-black italic uppercase">{completedMissionIds.length} / {missions.length} MISSÕES</div>
-              <Progress value={progressPercentage} className="h-2 mt-4 bg-white/5" />
-            </CardContent>
-          </Card>
-          <Card className="bg-primary/10 border-primary/20">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-[10px] font-black uppercase tracking-widest text-primary">Potencial de Ganhos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-black italic flex items-center gap-1">
-                <DollarSign className="h-5 w-5" /> R$ {completedMissionIds.length * 300 + 300},00
+        {/* Progress Card */}
+        <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden">
+          <CardContent className="p-8 space-y-6">
+            <div className="flex justify-between items-end">
+              <div className="space-y-1">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Nível de Execução</p>
+                <h3 className="text-2xl font-black italic uppercase tracking-tight">{Math.round(progressPercentage)}% Concluído</h3>
               </div>
-              <p className="text-[10px] font-bold uppercase tracking-widest opacity-50 mt-1">Estimativa baseada em esforço</p>
-            </CardContent>
-          </Card>
+              <Trophy className="h-8 w-8 text-primary opacity-20" />
+            </div>
+            <Progress value={progressPercentage} className="h-3 bg-white/5" />
+            <div className="flex justify-between text-[10px] font-black uppercase opacity-50 tracking-widest">
+              <span>Dia 1: Início</span>
+              <span>Dia 7: Escala</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Button asChild variant="outline" className="h-24 glass-card border-white/10 flex flex-col gap-2 rounded-2xl hover:bg-primary/10 hover:border-primary/40 group">
+            <Link href="/leads">
+              <Search className="h-6 w-6 text-primary group-hover:scale-110 transition-transform" />
+              <span className="text-[9px] font-black uppercase tracking-widest">Captar Leads</span>
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="h-24 glass-card border-white/10 flex flex-col gap-2 rounded-2xl hover:bg-accent/10 hover:border-accent/40 group">
+            <Link href="/mentor">
+              <MessageSquare className="h-6 w-6 text-accent group-hover:scale-110 transition-transform" />
+              <span className="text-[9px] font-black uppercase tracking-widest">IA Mentor</span>
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="h-24 glass-card border-white/10 flex flex-col gap-2 rounded-2xl hover:bg-purple-500/10 hover:border-purple-500/40 group">
+            <Link href="/resources">
+              <BookOpen className="h-6 w-6 text-purple-400 group-hover:scale-110 transition-transform" />
+              <span className="text-[9px] font-black uppercase tracking-widest">Scripts</span>
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="h-24 glass-card border-white/10 flex flex-col gap-2 rounded-2xl hover:bg-green-500/10 hover:border-green-500/40 group">
+            <Link href="/dashboard">
+              <UserCheck className="h-6 w-6 text-green-400 group-hover:scale-110 transition-transform" />
+              <span className="text-[9px] font-black uppercase tracking-widest">Perfil</span>
+            </Link>
+          </Button>
         </div>
 
-        <div className="space-y-4">
-          <h2 className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-2">
-            <Zap className="h-5 w-5 text-primary" /> Jornada de Vendas
-          </h2>
+        {/* 7-Day Journey */}
+        <div className="space-y-6 pt-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2">
+              <Zap className="h-6 w-6 text-primary" /> Jornada de 7 Dias
+            </h2>
+            <Badge variant="outline" className="text-[8px] font-black uppercase border-white/10 px-3">Status: Ativo</Badge>
+          </div>
           
           <div className="grid gap-4">
             {missions.map((mission, index) => {
@@ -180,71 +219,56 @@ export default function Dashboard() {
               return (
                 <div 
                   key={mission.id} 
-                  className={`relative overflow-hidden p-6 rounded-2xl border transition-all ${
+                  className={`group relative overflow-hidden p-6 rounded-[1.5rem] border transition-all duration-500 ${
                     isLocked 
-                    ? 'bg-white/[0.01] border-white/5 opacity-30 grayscale' 
+                    ? 'bg-white/[0.01] border-white/5 opacity-40 grayscale pointer-events-none' 
                     : isCurrent 
-                    ? 'bg-primary/5 border-primary/40 shadow-[0_0_30px_rgba(139,92,246,0.1)]' 
-                    : 'bg-white/[0.03] border-accent/20'
+                    ? 'bg-primary/5 border-primary/30 shadow-[0_0_40px_rgba(139,92,246,0.1)] hover:border-primary' 
+                    : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.05]'
                   }`}
                 >
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                      <div className={`h-12 w-12 rounded-full flex items-center justify-center shrink-0 ${
-                        isCompleted ? 'bg-green-500/20 text-green-500' : isLocked ? 'bg-white/5 text-muted-foreground' : 'bg-primary text-white shadow-lg shadow-primary/30'
+                  <div className="flex items-center justify-between gap-4 relative z-10">
+                    <div className="flex items-center gap-5">
+                      <div className={`h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ${
+                        isCompleted ? 'bg-green-500/10 text-green-500 border border-green-500/20' : isLocked ? 'bg-white/5 text-muted-foreground' : 'bg-primary text-white shadow-xl shadow-primary/40'
                       }`}>
-                        {isCompleted ? <CheckCircle2 className="h-6 w-6" /> : isLocked ? <Lock className="h-5 w-5" /> : <Zap className="h-6 w-6" />}
+                        {isCompleted ? <CheckCircle2 className="h-7 w-7" /> : isLocked ? <Lock className="h-6 w-6" /> : <span className="font-black italic text-xl leading-none">{index + 1}</span>}
                       </div>
-                      <div>
-                        <h4 className={`font-black italic uppercase tracking-tight text-lg ${isCompleted ? 'text-muted-foreground' : ''}`}>
+                      <div className="space-y-1">
+                        <h4 className={`font-black italic uppercase tracking-tight text-xl ${isCompleted ? 'text-muted-foreground' : 'text-white'}`}>
                           {mission.title}
                         </h4>
-                        <p className="text-sm text-muted-foreground line-clamp-1">{mission.desc}</p>
+                        <p className="text-sm text-muted-foreground line-clamp-1 opacity-70 group-hover:opacity-100 transition-opacity">{mission.desc}</p>
                       </div>
                     </div>
                     
                     {(!isLocked || isAdmin) && (
-                      <Button asChild variant={isCurrent ? "default" : "outline"} className="rounded-xl font-black uppercase text-[10px] tracking-widest h-10 px-6">
+                      <Button asChild variant={isCurrent ? "default" : "ghost"} className="rounded-xl font-black uppercase text-[10px] tracking-widest h-12 px-8">
                         <Link href={`/missions/${mission.id}`}>
-                          {isCompleted ? 'REVISAR' : 'COMEÇAR'} <ChevronRight className="ml-1 h-4 w-4" />
+                          {isCompleted ? 'REVISAR' : 'EXECUTAR'} <ArrowUpRight className="ml-2 h-4 w-4" />
                         </Link>
                       </Button>
                     )}
                   </div>
+                  {isCurrent && (
+                    <div className="absolute top-0 right-0 p-3 opacity-10">
+                      <Zap className="h-12 w-12 text-primary" />
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 pt-4">
-          <Button asChild variant="outline" className="h-28 glass-card border-white/10 flex flex-col gap-2 rounded-2xl hover:bg-primary/10 hover:border-primary/40 group">
-            <Link href="/mentor">
-              <MessageSquare className="h-8 w-8 text-primary group-hover:scale-110 transition-transform" />
-              <div className="text-center">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] block">IA Mentor</span>
-                <span className="text-[8px] opacity-50 uppercase">Tire dúvidas</span>
-              </div>
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="h-28 glass-card border-white/10 flex flex-col gap-2 rounded-2xl hover:bg-accent/10 hover:border-accent/40 group">
-            <Link href="/resources">
-              <BookOpen className="h-8 w-8 text-accent group-hover:scale-110 transition-transform" />
-              <div className="text-center">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] block">Scripts</span>
-                <span className="text-[8px] opacity-50 uppercase">Copiar/Colar</span>
-              </div>
-            </Link>
-          </Button>
-        </div>
-
-        {user?.email === ADMIN_EMAIL && (
-          <div className="md:hidden pt-4">
-            <Button asChild className="w-full bg-primary/20 text-primary border border-primary/30 font-black uppercase tracking-widest h-12 rounded-2xl">
-              <Link href="/admin">PAINEL ALPHA COMMAND</Link>
-            </Button>
+        <div className="pt-10 pb-20 text-center space-y-4">
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">FlowPro Neural Engine • v2.0</p>
+          <div className="flex justify-center gap-4 opacity-30">
+            <div className="h-1 w-12 bg-white/20 rounded-full"></div>
+            <div className="h-1 w-12 bg-white/20 rounded-full"></div>
+            <div className="h-1 w-12 bg-white/20 rounded-full"></div>
           </div>
-        )}
+        </div>
       </main>
     </div>
   );

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -7,11 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Zap, Github, Mail, Loader2 } from 'lucide-react';
+import { Zap, Loader2 } from 'lucide-react';
 import { useAuth } from '@/firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
-import Link from 'next/link';
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -33,11 +31,7 @@ export default function AuthPage() {
       }
       router.push('/quiz');
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Authentication Error",
-        description: error.message,
-      });
+      toast({ variant: "destructive", title: "Erro na Autenticação", description: error.message });
     } finally {
       setIsLoading(false);
     }
@@ -49,11 +43,7 @@ export default function AuthPage() {
       await signInAnonymously(auth);
       router.push('/quiz');
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Guest Error",
-        description: error.message,
-      });
+      toast({ variant: "destructive", title: "Erro no Acesso Convidado", description: error.message });
     } finally {
       setIsLoading(false);
     }
@@ -65,19 +55,19 @@ export default function AuthPage() {
         <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[140px]"></div>
       </div>
 
-      <Card className="w-full max-w-md glass-card border-white/10 relative z-10">
-        <CardHeader className="space-y-1 text-center">
+      <Card className="w-full max-w-md glass-card border-white/10 relative z-10 rounded-[2rem]">
+        <CardHeader className="space-y-1 text-center p-8">
           <div className="flex justify-center mb-4">
             <Zap className="h-10 w-10 text-primary animate-pulse" />
           </div>
           <CardTitle className="text-2xl font-black italic uppercase tracking-tighter">
-            {isLogin ? 'Bem-vindo ao FlowPro' : 'Criar sua conta Alpha'}
+            {isLogin ? 'Bem-vindo ao FlowPro' : 'Criar sua conta Flow'}
           </CardTitle>
           <CardDescription className="text-muted-foreground uppercase text-[10px] font-bold tracking-[0.2em]">
             O seu futuro nas vendas começa agora
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 px-8 pb-8">
           <form onSubmit={handleAuth} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest opacity-70">Email</Label>
@@ -85,7 +75,7 @@ export default function AuthPage() {
                 id="email" 
                 type="email" 
                 placeholder="nome@exemplo.com" 
-                className="bg-white/5 border-white/10 rounded-xl"
+                className="bg-white/5 border-white/10 rounded-xl h-12"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -96,28 +86,28 @@ export default function AuthPage() {
               <Input 
                 id="password" 
                 type="password" 
-                className="bg-white/5 border-white/10 rounded-xl"
+                className="bg-white/5 border-white/10 rounded-xl h-12"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
-            <Button className="w-full bg-primary hover:bg-primary/90 h-12 font-black uppercase tracking-widest rounded-xl" disabled={isLoading}>
+            <Button className="w-full bg-primary hover:bg-primary/90 h-14 font-black uppercase tracking-widest rounded-xl" disabled={isLoading}>
               {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : isLogin ? 'ENTRAR' : 'CADASTRAR'}
             </Button>
           </form>
 
-          <div className="relative">
+          <div className="relative py-2">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-white/10" />
             </div>
-            <div className="relative flex justify-center text-xs uppercase font-black tracking-widest">
+            <div className="relative flex justify-center text-[8px] uppercase font-black tracking-widest">
               <span className="bg-[#050508] px-2 text-muted-foreground">Ou continue com</span>
             </div>
           </div>
 
-          <Button variant="outline" className="w-full border-white/10 hover:bg-white/5 h-12 font-black uppercase tracking-widest rounded-xl" onClick={handleAnonymous} disabled={isLoading}>
-            MODO CONVIDADO (GUEST)
+          <Button variant="outline" className="w-full border-white/10 hover:bg-white/5 h-14 font-black uppercase tracking-widest rounded-xl" onClick={handleAnonymous} disabled={isLoading}>
+            MODO CONVIDADO
           </Button>
 
           <div className="text-center mt-4">

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -13,10 +12,14 @@ import {
   Check, 
   CheckCircle2, 
   Target, 
-  TrendingUp,
   Zap,
   Loader2,
-  DollarSign
+  DollarSign,
+  Users,
+  Layout,
+  MessageSquare,
+  TrendingUp,
+  Settings
 } from 'lucide-react';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -24,49 +27,109 @@ import { useToast } from '@/hooks/use-toast';
 
 const MISSION_CONTENT = {
   'dia1': {
-    title: 'DIA 1: A Oferta de Ouro',
-    desc: 'O primeiro passo é definir um produto de alta demanda e seu script de ataque.',
+    title: 'DIA 1: Criar Oferta Flow',
+    desc: 'O primeiro passo é definir um produto de alta demanda e seu roteiro de ataque.',
     stats: [
-      { label: 'O Que Vender', value: 'SaaS / Gestão para Negócios Locais', icon: <Target className="h-4 w-4" /> },
-      { label: 'Valor Médio', value: 'R$ 497,00', icon: <DollarSign className="h-4 w-4" /> },
+      { label: 'O Que Vender', value: 'SaaS / Gestão Local', icon: <Target className="h-4 w-4" /> },
+      { label: 'Valor Sugerido', value: 'R$ 497,00', icon: <DollarSign className="h-4 w-4" /> },
     ],
     instructions: [
-      'Escolha um comércio que não tenha automação de mensagens.',
-      'Identifique o dono pelo Instagram ou Google Maps.',
-      'Prepare seu script Alpha de contato inicial.'
+      'Escolha um nicho local que você conheça bem.',
+      'Defina o benefício principal (ex: recuperar vendas perdidas).',
+      'Escreva sua promessa irresistível.'
     ],
-    script: "Olá [Nome], vi seu trabalho no [Comércio]. Percebi que vocês estão perdendo vendas por falta de automação rápida. Fiz um protótipo de como vocês podem recuperar 30% das vendas perdidas. Teria 2 min para eu te mostrar como funciona?",
-    cta: 'Envie para 15 leads hoje'
+    script: "Olá! Notei que vocês estão com o atendimento um pouco lento hoje. Criei um fluxo Flow que recupera até 30% das vendas que vocês perdem por demora. Quer ver como funciona?",
+    cta: 'Defina sua oferta agora'
   },
   'dia2': {
-    title: 'DIA 2: Atração Alpha',
-    desc: 'Vamos encontrar clientes qualificados que já estão prontos para comprar.',
+    title: 'DIA 2: Ajustar Perfil Flow',
+    desc: 'Transforme seu Instagram em uma máquina de conversão.',
     stats: [
-      { label: 'Fonte', value: 'Instagram & Google Maps', icon: <Target className="h-4 w-4" /> },
-      { label: 'Meta Diária', value: '25 Contatos Qualificados', icon: <Zap className="h-4 w-4" /> },
+      { label: 'Foco', value: 'Autoridade & Bio', icon: <Layout className="h-4 w-4" /> },
+      { label: 'Meta', value: 'Perfil Profissional', icon: <TrendingUp className="h-4 w-4" /> },
     ],
     instructions: [
-      'Pesquise por "Restaurantes" ou "Clínicas" na sua cidade.',
-      'Abra o Instagram deles e veja se postam stories.',
-      'Se não postam há tempo, eles precisam da sua solução urgente.'
+      'Ajuste sua bio focada em resolver o problema do cliente.',
+      'Destaque seus melhores serviços nos fixados.',
+      'Use uma foto de perfil que transmita confiança.'
     ],
-    script: "Percebi que seu perfil está um pouco parado! Sabia que o Instagram entrega 3x mais para quem usa nossa estratégia Alpha? Posso te mandar os resultados de quem já aplicou?",
-    cta: 'Mapeie 25 potenciais clientes'
+    script: "Link na Bio: Especialista em Recuperação de Vendas para [Nicho]. Clique para automatizar seu negócio.",
+    cta: 'Atualize suas redes sociais'
   },
   'dia3': {
-    title: 'DIA 3: Fechamento Brutal',
-    desc: 'Hora de transformar conversa em dinheiro no bolso com técnicas Alpha.',
+    title: 'DIA 3: Encontrar Leads',
+    desc: 'Use nossa ferramenta de busca para achar clientes prontos para pagar.',
     stats: [
-      { label: 'Foco', value: 'Quebra de Objeções', icon: <Target className="h-4 w-4" /> },
-      { label: 'Meta Final', value: '1 Venda Concluída', icon: <DollarSign className="h-4 w-4" /> },
+      { label: 'Meta', value: '25 Leads Qualificados', icon: <Users className="h-4 w-4" /> },
+      { label: 'Ferramenta', value: 'Captador Flow', icon: <Zap className="h-4 w-4" /> },
     ],
     instructions: [
-      'Se disserem "está caro", foque no retorno sobre o investimento.',
-      'Ofereça um bônus de implementação rápida.',
-      'Use o script de fechamento abaixo para selar o acordo.'
+      'Acesse a ferramenta "Captar Leads" no dashboard.',
+      'Busque por negócios no seu nicho escolhido.',
+      'Mapeie 25 perfis que postam conteúdo regularmente.'
     ],
-    script: "Entendo o investimento. Mas se pensarmos que com apenas 1 novo cliente o sistema já se paga, faz sentido começarmos agora para você não perder mais vendas essa semana?",
+    script: "Use a IA Flow para gerar as mensagens de abordagem.",
+    cta: 'Acesse o Captador de Leads'
+  },
+  'dia4': {
+    title: 'DIA 4: Fazer Abordagem',
+    desc: 'É hora de enviar as primeiras mensagens e gerar interesse real.',
+    stats: [
+      { label: 'Ação', value: '15 Envios Diretos', icon: <MessageSquare className="h-4 w-4" /> },
+      { label: 'Meta', value: '5 Respostas', icon: <Zap className="h-4 w-4" /> },
+    ],
+    instructions: [
+      'Envie as mensagens geradas pela IA para os leads mapeados.',
+      'Personalize o início de cada mensagem com o nome do dono.',
+      'Não tente vender ainda, foque em marcar uma conversa.'
+    ],
+    script: "Oi [Nome]! Vi que você é dono da [Empresa]. Gostei muito do seu perfil! Posso te mandar uma sugestão rápida de automação que vi que vocês ainda não usam?",
+    cta: 'Envie para 15 leads hoje'
+  },
+  'dia5': {
+    title: 'DIA 5: Conversar & Nutrir',
+    desc: 'Tire as dúvidas dos interessados e mostre seu protótipo.',
+    stats: [
+      { label: 'Foco', value: 'Relacionamento', icon: <Users className="h-4 w-4" /> },
+      { label: 'Meta', value: '2 Reuniões/Chamadas', icon: <MessageSquare className="h-4 w-4" /> },
+    ],
+    instructions: [
+      'Responda rapidamente a todos que demonstraram interesse.',
+      'Use o Mentor IA para ajudar com dúvidas técnicas.',
+      'Envie um vídeo curto mostrando como sua solução funciona.'
+    ],
+    script: "Que bom que gostou! Gravei este vídeo de 1 min mostrando como o sistema Flow organiza seus leads automaticamente. O que achou?",
+    cta: 'Responda todos os interessados'
+  },
+  'dia6': {
+    title: 'DIA 6: Fechar Venda Flow',
+    desc: 'Hora de transformar as conversas em dinheiro no bolso.',
+    stats: [
+      { label: 'Ação', value: 'Fechamento Brutal', icon: <DollarSign className="h-4 w-4" /> },
+      { label: 'Meta', value: '1ª Venda Concluída', icon: <CheckCircle2 className="h-4 w-4" /> },
+    ],
+    instructions: [
+      'Quebre as objeções finais com os scripts da biblioteca.',
+      'Ofereça uma garantia de 7 dias para reduzir o risco.',
+      'Envie o link de pagamento ou dados para PIX.'
+    ],
+    script: "Entendo o receio, por isso ofereço 7 dias de garantia. Se não ver o fluxo de clientes aumentar, devolvo seu investimento. Vamos começar?",
     cta: 'Feche seu primeiro contrato'
+  },
+  'dia7': {
+    title: 'DIA 7: Escalar Fluxo',
+    desc: 'Prepare-se para repetir o processo e escalar seus ganhos.',
+    stats: [
+      { label: 'Foco', value: 'Escalabilidade', icon: <Settings className="h-4 w-4" /> },
+      { label: 'Meta', value: 'R$ 5.000/mês', icon: <TrendingUp className="h-4 w-4" /> },
+    ],
+    instructions: [
+      'Analise quais leads responderam melhor.',
+      'Configure automações simples para sua prospecção.',
+      'Aumente o volume de abordagens diárias.'
+    ],
+    script: "O processo Flow é cíclico. Quanto mais você repete, mais você ganha.",
+    cta: 'Escala ativada'
   }
 };
 
@@ -88,7 +151,7 @@ export default function MissionPage() {
     navigator.clipboard.writeText(content.script);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-    toast({ title: "Script Copiado!", description: "Personalize antes de enviar." });
+    toast({ title: "Script Copiado!", description: "Agora personalize e envie." });
   };
 
   const handleComplete = async () => {
@@ -104,7 +167,7 @@ export default function MissionPage() {
         lastActivityAt: serverTimestamp()
       }, { merge: true });
 
-      toast({ title: "Missão Concluída!", description: "Parabéns Alpha! Próximo nível liberado." });
+      toast({ title: "Missão Concluída!", description: "Parabéns Guerreiro Flow! Próximo nível liberado." });
       router.push('/dashboard');
     } catch (error: any) {
       toast({ variant: "destructive", title: "Erro", description: error.message });
@@ -112,7 +175,7 @@ export default function MissionPage() {
     }
   };
 
-  if (!content) return <div className="p-20 text-center">Missão não encontrada</div>;
+  if (!content) return <div className="p-20 text-center text-muted-foreground font-black uppercase tracking-widest">Missão não encontrada</div>;
 
   return (
     <div className="min-h-screen bg-[#050508] flex flex-col">
@@ -125,64 +188,68 @@ export default function MissionPage() {
 
       <main className="flex-1 container max-w-2xl mx-auto p-4 md:p-8 space-y-8">
         <div className="space-y-4">
-          <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-widest text-[10px]">EXECUÇÃO AGORA</Badge>
-          <h2 className="text-4xl font-black italic uppercase leading-none">{content.title}</h2>
-          <p className="text-muted-foreground">{content.desc}</p>
+          <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-widest text-[10px] px-4 py-1.5">EXECUÇÃO IMEDIATA</Badge>
+          <h2 className="text-4xl md:text-5xl font-black italic uppercase leading-none tracking-tighter">{content.title}</h2>
+          <p className="text-muted-foreground text-lg">{content.desc}</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           {content.stats.map((stat, i) => (
-            <Card key={i} className="glass-card border-white/10 p-4 flex items-center gap-4">
-              <div className="p-3 bg-primary/10 rounded-xl text-primary">{stat.icon}</div>
+            <Card key={i} className={`p-6 flex items-center gap-4 border-white/5 ${i === 1 ? 'bg-primary/5 border-primary/20' : 'bg-white/[0.03]'}`}>
+              <div className="p-3 bg-white/5 rounded-xl text-primary">{stat.icon}</div>
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest opacity-50">{stat.label}</p>
-                <p className="font-bold text-sm italic">{stat.value}</p>
+                <p className="font-black text-sm italic">{stat.value}</p>
               </div>
             </Card>
           ))}
         </div>
 
-        <Card className="glass-card border-white/10 overflow-hidden">
-          <CardHeader className="bg-white/5 border-b border-white/5">
-            <CardTitle className="text-sm font-black uppercase tracking-widest italic">Script Alpha Pronto</CardTitle>
-            <CardDescription>Copie e adapte para seu cliente</CardDescription>
+        <Card className="glass-card border-white/10 overflow-hidden rounded-[2rem]">
+          <CardHeader className="bg-white/5 border-b border-white/5 p-6">
+            <CardTitle className="text-sm font-black uppercase tracking-widest italic flex items-center gap-2">
+              <Zap className="h-4 w-4 text-primary" /> Script de Ataque
+            </CardTitle>
+            <CardDescription className="uppercase text-[9px] font-bold tracking-widest opacity-70">Copie e adapte para seu lead</CardDescription>
           </CardHeader>
-          <CardContent className="p-6 space-y-4">
-            <div className="bg-black/40 p-5 rounded-2xl border border-white/5 text-sm leading-relaxed italic text-muted-foreground">
-              {content.script}
+          <CardContent className="p-8 space-y-6">
+            <div className="bg-black/60 p-6 rounded-2xl border border-white/5 text-sm leading-relaxed italic text-white/80 font-medium">
+              "{content.script}"
             </div>
-            <Button onClick={handleCopy} className="w-full h-12 rounded-xl bg-white text-black font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all">
+            <Button onClick={handleCopy} className="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-xl shadow-white/5">
               {copied ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
               {copied ? 'COPIADO' : 'COPIAR SCRIPT'}
             </Button>
           </CardContent>
         </Card>
 
-        <div className="space-y-4">
-          <h3 className="text-lg font-black italic uppercase tracking-tighter">Plano de Ação</h3>
+        <div className="space-y-6">
+          <h3 className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-2">
+            <Layout className="h-5 w-5 text-primary" /> Plano de Ação
+          </h3>
           <ul className="space-y-4">
             {content.instructions.map((inst, i) => (
-              <li key={i} className="flex gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
-                <span className="text-primary font-black text-xl italic leading-none">{i + 1}</span>
-                <span className="text-sm text-muted-foreground leading-relaxed">{inst}</span>
+              <li key={i} className="flex gap-5 p-5 rounded-2xl bg-white/[0.02] border border-white/5 group hover:bg-white/[0.04] transition-colors">
+                <span className="text-primary font-black text-2xl italic leading-none opacity-50 group-hover:opacity-100 transition-opacity">{i + 1}</span>
+                <span className="text-sm text-muted-foreground leading-relaxed font-medium group-hover:text-white/80 transition-colors">{inst}</span>
               </li>
             ))}
           </ul>
         </div>
 
-        <div className="pt-8 pb-12">
+        <div className="pt-8 pb-20">
           <Button 
             onClick={handleComplete} 
             disabled={isSubmitting}
-            className="w-full h-20 rounded-3xl bg-primary text-xl font-black uppercase tracking-widest shadow-[0_10px_30px_rgba(139,92,246,0.3)] hover:scale-105 active:scale-95 transition-all"
+            className="w-full h-20 rounded-[2rem] bg-primary text-xl font-black uppercase tracking-widest shadow-[0_15px_40px_rgba(139,92,246,0.3)] hover:scale-105 active:scale-95 transition-all"
           >
             {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : (
-              <span className="flex items-center gap-2">
-                CONCLUIR MISSÃO <CheckCircle2 className="h-6 w-6" />
+              <span className="flex items-center gap-3">
+                CONCLUIR DIA <CheckCircle2 className="h-6 w-6" />
               </span>
             )}
           </Button>
-          <p className="text-[10px] text-center mt-4 text-muted-foreground uppercase font-bold tracking-[0.2em] animate-pulse">
+          <p className="text-[10px] text-center mt-6 text-muted-foreground uppercase font-bold tracking-[0.3em] animate-pulse">
             Próximo passo: {content.cta}
           </p>
         </div>

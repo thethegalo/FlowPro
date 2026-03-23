@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -8,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import { Zap, ArrowRight, Loader2, CheckCircle2, TrendingUp, Clock, Target, ShieldCheck, Smartphone, MousePointer2, TrendingDown } from 'lucide-react';
+import { Zap, ArrowRight, Loader2, CheckCircle2, TrendingUp, Clock, Target, ShieldCheck } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { doc, setDoc, serverTimestamp, collection, query } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
@@ -86,7 +85,6 @@ export default function QuizPage() {
 
   const ADMIN_EMAIL = "thethegalo@gmail.com";
 
-  // Check if already paid or admin
   const subQuery = useMemoFirebase(() => {
     if (!db || !user) return null;
     return query(collection(db, 'users', user.uid, 'subscriptions'));
@@ -105,9 +103,9 @@ export default function QuizPage() {
 
   const messages = [
     "Analisando seu perfil...",
-    "Montando sua estratégia personalizada...",
+    "Montando sua estratégia Flow...",
     "Calculando seu potencial de ganho...",
-    "Finalizando seu plano Alpha..."
+    "Finalizando seu plano personalizado..."
   ];
 
   useEffect(() => {
@@ -133,12 +131,6 @@ export default function QuizPage() {
     }
   };
 
-  const handleBack = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
   const calculateEarnings = () => {
     const hours = answers.hours || '1h';
     if (hours === '1h') return "R$ 300 a R$ 850";
@@ -158,7 +150,6 @@ export default function QuizPage() {
         completedAt: serverTimestamp()
       }, { merge: true });
 
-      // Mark user as onboarded
       const userRef = doc(db, 'users', user.uid);
       await setDoc(userRef, { isOnboarded: true }, { merge: true });
 
@@ -193,52 +184,52 @@ export default function QuizPage() {
         <div className="w-full max-w-2xl space-y-8 relative z-10">
           <div className="text-center space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
-              <ShieldCheck className="h-4 w-4" /> Perfil Alpha Validado
+              <ShieldCheck className="h-4 w-4" /> Perfil Flow Validado
             </div>
             <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-tight">
               SEU PLANO ESTÁ <span className="text-primary">PRONTO</span>
             </h1>
           </div>
 
-          <Card className="glass-card border-primary/30">
-            <CardHeader className="bg-primary/5 border-b border-white/5">
+          <Card className="glass-card border-primary/30 rounded-[2rem]">
+            <CardHeader className="bg-primary/5 border-b border-white/5 p-8">
               <CardTitle className="text-lg font-black italic uppercase flex items-center gap-2">
                 <Target className="h-5 w-5 text-primary" /> Estratégia Recomendada
               </CardTitle>
             </CardHeader>
             <CardContent className="p-8 space-y-8">
               <div className="space-y-2 text-center md:text-left">
-                <p className="text-muted-foreground uppercase text-[10px] font-black tracking-widest opacity-70">Caminho de Menor Resistência</p>
+                <p className="text-muted-foreground uppercase text-[10px] font-black tracking-widest opacity-70">Caminho Flow de Execução</p>
                 <p className="text-xl font-bold italic text-white">
                   {answers.type === 'Serviços Digitais' 
-                    ? "Venda de Micro-Serviços de IA via Abordagem Direta"
-                    : "Intermediação Estratégica de Produtos Alpha no Orgânico"
+                    ? "Micro-Serviços IA via Abordagem Direta"
+                    : "Intermediação Estratégica no Orgânico"
                   }
                 </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-5 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center md:items-start">
+                <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
                   <div className="flex items-center gap-2 mb-2 text-primary">
                     <Clock className="h-4 w-4" />
                     <span className="text-[10px] font-black uppercase tracking-widest">Comprometimento</span>
                   </div>
                   <p className="text-lg font-bold">{answers.hours} p/ dia</p>
                 </div>
-                <div className="p-5 rounded-2xl bg-primary/10 border border-primary/30 flex flex-col items-center md:items-start shadow-[0_0_30px_rgba(139,92,246,0.1)]">
+                <div className="p-5 rounded-2xl bg-primary/10 border border-primary/30 shadow-[0_0_30px_rgba(139,92,246,0.1)]">
                   <div className="flex items-center gap-2 mb-2 text-primary">
                     <TrendingUp className="h-4 w-4" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Meta de Ganhos</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Meta Mensal</span>
                   </div>
-                  <p className="text-2xl font-black italic text-white">{calculateEarnings()}<span className="text-xs font-normal opacity-70 ml-1">/mês</span></p>
+                  <p className="text-2xl font-black italic text-white">{calculateEarnings()}</p>
                 </div>
               </div>
 
               <div className="space-y-4 pt-4 border-t border-white/5">
                 {[
-                  { label: `Método de ${answers.appear === 'Quero aparecer' ? 'Autoridade' : 'Vendedor Oculto'} definido`, done: true },
-                  { label: "Roteiro de execução para 72 horas pronto", done: true },
-                  { label: `Configurado para uso em ${answers.device}`, done: true }
+                  { label: "Jornada de 7 Dias definida", done: true },
+                  { label: "Roteiro de abordagem pronto", done: true },
+                  { label: `Configurado para ${answers.device}`, done: true }
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-center gap-3 text-sm font-bold text-green-400">
                     <CheckCircle2 className="h-4 w-4 shrink-0" /> {item.label}
@@ -249,7 +240,7 @@ export default function QuizPage() {
               <Button 
                 onClick={saveResults}
                 disabled={isSubmitting}
-                className="w-full h-20 rounded-3xl bg-primary text-xl font-black uppercase tracking-widest shadow-[0_10px_40px_rgba(139,92,246,0.4)] hover:scale-105 transition-all group"
+                className="w-full h-20 rounded-[2rem] bg-primary text-xl font-black uppercase tracking-widest shadow-[0_10px_40px_rgba(139,92,246,0.4)] hover:scale-105 transition-all group"
               >
                 {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : (
                   <span className="flex items-center gap-2">
@@ -271,8 +262,8 @@ export default function QuizPage() {
     <div className="min-h-screen bg-[#050508] flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-xl space-y-8 relative z-10">
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-black italic uppercase tracking-tighter">Personalize sua Jornada</h1>
-          <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-[0.2em]">O algoritmo está definindo sua melhor rota</p>
+          <h1 className="text-3xl font-black italic uppercase tracking-tighter">Inicie seu Fluxo</h1>
+          <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-[0.2em]">O algoritmo Flow está definindo sua rota</p>
         </div>
 
         <div className="space-y-4">
@@ -283,12 +274,12 @@ export default function QuizPage() {
           <Progress value={progress} className="h-2 bg-white/5" />
         </div>
 
-        <Card className="glass-card border-white/10">
-          <CardHeader>
+        <Card className="glass-card border-white/10 rounded-[2rem]">
+          <CardHeader className="p-8">
             <CardTitle className="text-xl font-black italic uppercase tracking-tight">{currentStepData.title}</CardTitle>
             <CardDescription className="text-sm font-medium">{currentStepData.description}</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="px-8 pb-8 space-y-6">
             <RadioGroup 
               value={answers[currentStepData.id]}
               onValueChange={(val) => setAnswers({...answers, [currentStepData.id]: val})}
@@ -305,10 +296,10 @@ export default function QuizPage() {
               ))}
             </RadioGroup>
           </CardContent>
-          <div className="p-6 pt-0 flex gap-3">
+          <div className="px-8 pb-8 flex gap-3">
             <Button 
               variant="outline" 
-              onClick={handleBack} 
+              onClick={() => currentStep > 0 && setCurrentStep(currentStep - 1)} 
               disabled={currentStep === 0}
               className="flex-1 h-14 border-white/10 rounded-2xl font-black uppercase tracking-widest"
             >

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -10,16 +9,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { 
   Users, 
-  BarChart3, 
-  Target, 
   Loader2, 
   ArrowLeft, 
-  ShieldAlert, 
   CheckCircle2, 
   XCircle,
   TrendingUp,
   UserCheck,
-  CreditCard
+  CreditCard,
+  Settings
 } from 'lucide-react';
 import Link from 'next/link';
 import { collection, query, doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
@@ -70,10 +67,6 @@ export default function AdminPage() {
     }
   };
 
-  // Mock checking subscription status for all users in the table (client side simulation)
-  // In a real app, this would be handled better with subcollections or custom claims
-  const [paidStatusMap, setPaidStatusMap] = useState<Record<string, boolean>>({});
-
   if (isUserLoading || isUsersLoading) {
     return (
       <div className="min-h-screen bg-[#050508] flex items-center justify-center">
@@ -84,7 +77,7 @@ export default function AdminPage() {
 
   if (user?.email !== ADMIN_EMAIL) return null;
 
-  const totalPaid = usersData?.filter(u => u.isOnboarded).length || 0; // Simulation
+  const totalPaid = usersData?.filter(u => u.isOnboarded).length || 0;
   const conversionRate = usersData && usersData.length > 0 ? ((totalPaid / usersData.length) * 100).toFixed(1) : 0;
 
   return (
@@ -95,9 +88,9 @@ export default function AdminPage() {
             <Link href="/dashboard" className="text-muted-foreground hover:text-white transition-colors">
               <ArrowLeft className="h-5 w-5" />
             </Link>
-            <h1 className="text-3xl font-black italic uppercase tracking-tighter">Alpha Command</h1>
+            <h1 className="text-3xl font-black italic uppercase tracking-tighter">Flow Command</h1>
           </div>
-          <Badge className="bg-primary/20 text-primary uppercase tracking-widest px-4 py-1">ADMIN CONTROL</Badge>
+          <Badge className="bg-primary/20 text-primary uppercase tracking-widest px-4 py-1 border-primary/30">ADMIN CONTROL</Badge>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
@@ -114,7 +107,7 @@ export default function AdminPage() {
           <Card className="glass-card border-white/10">
             <CardHeader className="pb-2">
               <CardTitle className="text-[10px] font-black uppercase tracking-widest opacity-70 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" /> Taxa de Conversão
+                <TrendingUp className="h-4 w-4" /> Conversão
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -133,21 +126,20 @@ export default function AdminPage() {
           </Card>
         </div>
 
-        <Card className="glass-card border-white/10">
-          <CardHeader>
+        <Card className="glass-card border-white/10 overflow-hidden rounded-[2rem]">
+          <CardHeader className="bg-white/5 border-b border-white/5 p-6">
             <CardTitle className="text-sm font-black uppercase tracking-widest italic flex items-center gap-2">
-              <UserCheck className="h-4 w-4" /> Gestão de Usuários
+              <UserCheck className="h-4 w-4 text-primary" /> Gestão de Guerreiros Flow
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="rounded-md border border-white/5 overflow-hidden">
+          <CardContent className="p-0">
+            <div className="rounded-md overflow-hidden">
               <Table>
                 <TableHeader className="bg-white/5">
                   <TableRow className="border-white/5 hover:bg-transparent">
                     <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Usuário</TableHead>
                     <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Email</TableHead>
-                    <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Status Quiz</TableHead>
-                    <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Pagamento</TableHead>
+                    <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Progresso</TableHead>
                     <TableHead className="text-muted-foreground text-[10px] uppercase font-black text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -158,12 +150,7 @@ export default function AdminPage() {
                       <TableCell className="text-muted-foreground text-xs">{u.email}</TableCell>
                       <TableCell>
                         <Badge variant="outline" className={`text-[8px] uppercase font-black border-white/10 ${u.isOnboarded ? 'text-green-500 border-green-500/20' : ''}`}>
-                          {u.isOnboarded ? 'CONCLUÍDO' : 'PENDENTE'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={`text-[8px] uppercase font-black border-white/10 ${u.isOnboarded ? 'bg-primary/10 text-primary border-primary/20' : ''}`}>
-                          {u.isOnboarded ? 'PAGO' : 'NÃO PAGO'}
+                          {u.isOnboarded ? 'FLOW ATIVO' : 'PENDENTE'}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
