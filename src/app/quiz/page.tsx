@@ -5,15 +5,13 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import { Zap, ArrowRight, ArrowLeft, Loader2, CheckCircle2, TrendingUp, Clock, Target, ShieldCheck } from 'lucide-react';
-import { generateSalesActionPlan } from '@/ai/flows/generate-sales-action-plan';
-import { useToast } from '@/hooks/use-toast';
+import { Zap, ArrowRight, Loader2, CheckCircle2, TrendingUp, Clock, Target, ShieldCheck } from 'lucide-react';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
 
 const STEPS = [
   {
@@ -60,7 +58,7 @@ export default function QuizPage() {
   const [processingMessage, setProcessingMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const db = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
@@ -110,20 +108,22 @@ export default function QuizPage() {
   };
 
   const saveResults = async () => {
-    if (!user || !db) return;
+    if (!user || !db) {
+        router.push('/auth');
+        return;
+    }
     setIsSubmitting(true);
     try {
-      // Save data before going to paywall
       const quizRef = doc(db, 'users', user.uid, 'quizResponses', 'initial');
       await setDoc(quizRef, {
         userId: user.uid,
         responses: answers,
         completedAt: serverTimestamp()
-      });
+      }, { merge: true });
 
       router.push('/paywall');
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Erro", description: "Falha ao processar. Tente novamente." });
+      toast({ variant: "destructive", title: "Erro", description: "Falha ao salvar seu plano." });
       setIsSubmitting(false);
     }
   };
@@ -132,11 +132,11 @@ export default function QuizPage() {
     return (
       <div className="min-h-screen bg-[#050508] flex flex-col items-center justify-center p-4">
         <div className="space-y-8 text-center">
-          <div className="relative h-32 w-32 mx-auto">
+          <div className="relative h-24 w-24 mx-auto">
             <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
-            <Loader2 className="h-32 w-32 text-primary animate-spin relative z-10" />
+            <Loader2 className="h-24 w-24 text-primary animate-spin relative z-10" />
           </div>
-          <h2 className="text-2xl font-black italic uppercase tracking-tighter shimmer-text animate-pulse">
+          <h2 className="text-xl font-black italic uppercase tracking-tighter shimmer-text animate-pulse">
             {processingMessage}
           </h2>
         </div>
@@ -150,71 +150,67 @@ export default function QuizPage() {
         <div className="w-full max-w-2xl space-y-8 relative z-10">
           <div className="text-center space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
-              <ShieldCheck className="h-4 w-4" /> Perfil Analisado com Sucesso
+              <ShieldCheck className="h-4 w-4" /> Perfil Alpha Validado
             </div>
-            <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-none">
-              SEU PLANO <span className="text-primary">ALPHA</span> ESTÁ PRONTO
+            <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-tight">
+              SEU PLANO ESTÁ <span className="text-primary">PRONTO</span>
             </h1>
           </div>
 
-          <Card className="glass-card border-primary/30 overflow-hidden">
+          <Card className="glass-card border-primary/30">
             <CardHeader className="bg-primary/5 border-b border-white/5">
               <CardTitle className="text-lg font-black italic uppercase flex items-center gap-2">
                 <Target className="h-5 w-5 text-primary" /> Estratégia Recomendada
               </CardTitle>
             </CardHeader>
             <CardContent className="p-8 space-y-8">
-              <div className="space-y-2">
-                <p className="text-muted-foreground uppercase text-[10px] font-black tracking-widest opacity-70">Caminho Ideal</p>
-                <p className="text-xl font-bold">
+              <div className="space-y-2 text-center md:text-left">
+                <p className="text-muted-foreground uppercase text-[10px] font-black tracking-widest opacity-70">Melhor Caminho</p>
+                <p className="text-xl font-bold italic">
                   {answers.type === 'Serviços' 
-                    ? "Vender serviços digitais de alta demanda usando abordagem direta via WhatsApp e Instagram."
-                    : "Revenda estratégica de produtos físicos usando tráfego orgânico e scripts de conversão Alpha."
+                    ? "Venda de Serviços Digitais de Alta Demanda via Abordagem Direta"
+                    : "Revenda Estratégica de Produtos Alpha com Scripts de Conversão"
                   }
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-5 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center md:items-start">
                   <div className="flex items-center gap-2 mb-2 text-primary">
                     <Clock className="h-4 w-4" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Tempo Diário</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Tempo Disponível</span>
                   </div>
-                  <p className="text-lg font-bold">Aprox. {answers.hours} p/ dia</p>
+                  <p className="text-lg font-bold">{answers.hours} p/ dia</p>
                 </div>
-                <div className="p-4 rounded-2xl bg-primary/10 border border-primary/30 shadow-[0_0_20px_rgba(139,92,246,0.1)]">
+                <div className="p-5 rounded-2xl bg-primary/10 border border-primary/30 flex flex-col items-center md:items-start shadow-[0_0_30px_rgba(139,92,246,0.1)]">
                   <div className="flex items-center gap-2 mb-2 text-primary">
                     <TrendingUp className="h-4 w-4" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Meta de Ganhos</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Potencial de Lucro</span>
                   </div>
                   <p className="text-2xl font-black italic text-white">{calculateEarnings()}<span className="text-xs font-normal opacity-70 ml-1">/mês</span></p>
                 </div>
               </div>
 
-              <div className="space-y-4 pt-4">
-                <div className="flex items-center gap-3 text-sm font-bold text-green-400">
-                  <CheckCircle2 className="h-5 w-5" /> Perfil de {answers.appear === 'Quero aparecer' ? 'Autoridade' : 'Vendedor Oculto'} configurado
-                </div>
-                <div className="flex items-center gap-3 text-sm font-bold text-green-400">
-                  <CheckCircle2 className="h-5 w-5" /> Plano de execução de 3 dias gerado
-                </div>
-                <div className="flex items-center gap-3 text-sm font-bold text-green-400">
-                  <CheckCircle2 className="h-5 w-5" /> Potencial de lucro validado
-                </div>
+              <div className="space-y-4 pt-4 border-t border-white/5">
+                {[
+                  { label: `Estratégia de ${answers.appear === 'Quero aparecer' ? 'Autoridade' : 'Vendedor Oculto'}`, done: true },
+                  { label: "Roteiro de execução para 3 dias", done: true },
+                  { label: "Mentor IA configurado para seu perfil", done: true }
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-3 text-sm font-bold text-green-400">
+                    <CheckCircle2 className="h-4 w-4 shrink-0" /> {item.label}
+                  </div>
+                ))}
               </div>
-
-              <p className="text-xs text-muted-foreground italic text-center leading-relaxed">
-                "Esse valor é baseado no seu tempo disponível e na estratégia recomendada. Seguindo o plano corretamente, você pode atingir esses resultados rapidamente."
-              </p>
 
               <Button 
                 onClick={saveResults}
                 disabled={isSubmitting}
-                className="w-full h-20 rounded-3xl bg-primary text-xl font-black uppercase tracking-widest shadow-[0_10px_40px_rgba(139,92,246,0.4)] hover:scale-105 active:scale-95 transition-all group"
+                className="w-full h-20 rounded-3xl bg-primary text-xl font-black uppercase tracking-widest shadow-[0_10px_40px_rgba(139,92,246,0.4)] hover:scale-105 transition-all group"
               >
                 {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : (
                   <span className="flex items-center gap-2">
-                    DESBLOQUEAR MEU PLANO COMPLETO <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
+                    ATIVAR MEU PLANO <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform" />
                   </span>
                 )}
               </Button>
@@ -232,12 +228,8 @@ export default function QuizPage() {
     <div className="min-h-screen bg-[#050508] flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-xl space-y-8 relative z-10">
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 text-primary font-bold mb-2">
-            <Zap className="h-6 w-6 animate-pulse" />
-            <span className="text-2xl tracking-tighter italic font-black uppercase">FlowPro Alpha</span>
-          </div>
-          <h1 className="text-3xl font-black italic uppercase tracking-tighter leading-none">Personalize sua Estratégia</h1>
-          <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-[0.2em]">O algoritmo IA precisa entender seu perfil para gerar o melhor lucro</p>
+          <h1 className="text-3xl font-black italic uppercase tracking-tighter">Personalize sua Jornada</h1>
+          <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-[0.2em]">O algoritmo precisa entender seu perfil alpha</p>
         </div>
 
         <div className="space-y-4">
@@ -284,7 +276,7 @@ export default function QuizPage() {
               disabled={!answers[currentStepData.id]}
               className="flex-[2] h-14 bg-primary rounded-2xl font-black uppercase tracking-widest"
             >
-              {currentStep === STEPS.length - 1 ? "GERAR MEU PLANO" : "PRÓXIMO"} 
+              {currentStep === STEPS.length - 1 ? "GERAR PLANO" : "PRÓXIMO"} 
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
