@@ -1,4 +1,3 @@
-
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -26,6 +25,8 @@ import {
 } from "@/components/ui/accordion";
 
 export default function Home() {
+  const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/rjyrip9n5saiz4dgdgpephqg?v=1774305985862";
+
   const pillars = [
     { title: 'IA Neural Autônoma', icon: <Cpu className="h-6 w-6" />, desc: 'Vendedores virtuais que aprendem e adaptam em tempo real.', color: 'text-purple-400' },
     { title: 'Scripts de Alta Retenção', icon: <MessageSquare className="h-6 w-6" />, desc: 'Copywriting gerado por algoritmos treinados em conversão.', color: 'text-blue-400' },
@@ -50,12 +51,17 @@ export default function Home() {
       </div>
 
       {/* Navigation */}
-      <header className="px-6 h-20 flex items-center justify-between sticky top-0 z-50 bg-[#050508]/70 backdrop-blur-xl border-b border-white/5">
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="bg-primary p-2 rounded-xl rotate-3 group-hover:rotate-12 transition-all shadow-[0_0_20px_rgba(139,92,246,0.6)]">
-            <Zap className="h-5 w-5 text-white" />
+      <header className="px-6 h-24 flex items-center justify-between sticky top-0 z-50 bg-[#050508]/70 backdrop-blur-xl border-b border-white/5">
+        <Link href="/" className="flex items-center group">
+          <div className="relative h-16 w-48 md:h-20 md:w-56 transition-transform duration-500 group-hover:scale-110">
+            <Image 
+              src={LOGO_URL} 
+              alt="FlowPro Logo" 
+              fill 
+              className="object-contain"
+              priority
+            />
           </div>
-          <span className="text-2xl font-black tracking-tighter italic uppercase">FLOW<span className="text-primary">PRO</span></span>
         </Link>
         <div className="hidden md:flex items-center gap-10">
           <Link href="#tecnologia" className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-all">Tecnologia</Link>
@@ -69,20 +75,33 @@ export default function Home() {
 
       <main className="relative z-10">
         {/* Hero Section */}
-        <section className="relative pt-24 pb-32 lg:pt-40 lg:pb-56 overflow-hidden">
+        <section className="relative pt-16 pb-32 lg:pt-24 lg:pb-56 overflow-hidden">
           <div className="container px-6 mx-auto text-center relative z-20">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.3em] mb-10 animate-float shadow-[0_0_20px_rgba(255,255,255,0.05)]">
+            {/* GIANT LOGO DISPLAY */}
+            <div className="flex justify-center mb-12 animate-float">
+              <div className="relative h-40 w-80 md:h-64 md:w-[500px] drop-shadow-[0_0_30px_rgba(139,92,246,0.3)]">
+                <Image 
+                  src={LOGO_URL} 
+                  alt="FlowPro Hero Logo" 
+                  fill 
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            </div>
+
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.3em] mb-10 shadow-[0_0_20px_rgba(255,255,255,0.05)]">
               <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
               Acesso Alpha Disponível
             </div>
             
-            <h1 className="text-6xl md:text-8xl lg:text-[10rem] font-black tracking-tighter leading-[0.85] mb-12">
+            <h1 className="text-5xl md:text-7xl lg:text-[9rem] font-black tracking-tighter leading-[0.85] mb-12 uppercase">
               ESCALE <br />
               <span className="shimmer-text italic">INFINITO</span>
             </h1>
             
             <p className="text-muted-foreground text-lg md:text-2xl max-w-3xl mx-auto mb-16 font-medium leading-relaxed">
-              O primeiro ecossistema de <span className="text-white">vendas autônomas</span> que não dorme, não reclama e nunca perde um lead. Transforme seu faturamento com inteligência neural.
+              O primeiro ecossistema de <span className="text-white">vendas autônomas</span> que transforma seu faturamento com inteligência neural.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
@@ -179,6 +198,7 @@ export default function Home() {
                   alt="Interface" 
                   fill 
                   className="object-cover opacity-60 group-hover:scale-105 transition-transform duration-[2s]"
+                  data-ai-hint="digital dashboard"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent"></div>
                 <div className="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
@@ -281,10 +301,14 @@ export default function Home() {
       <footer className="py-32 border-t border-white/5 bg-[#030305] relative z-10">
         <div className="container px-6 mx-auto grid md:grid-cols-4 gap-20">
           <div className="md:col-span-2 space-y-8">
-            <Link href="/" className="flex items-center gap-3">
-              <Zap className="h-8 w-8 text-primary" />
-              <span className="text-3xl font-black tracking-tighter italic uppercase">FLOWPRO</span>
-            </Link>
+            <div className="relative h-12 w-40">
+              <Image 
+                src={LOGO_URL} 
+                alt="FlowPro Footer Logo" 
+                fill 
+                className="object-contain"
+              />
+            </div>
             <p className="text-muted-foreground text-sm max-w-sm font-medium uppercase tracking-widest leading-loose">
               Acelerando o faturamento de milhares de negócios através de autonomia digital. O futuro não é opcional.
             </p>
