@@ -1,0 +1,660 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a registered user of the FlowPro application. Authentication details are handled by an external system.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address, used for login and communication.",
+          "format": "email"
+        },
+        "name": {
+          "type": "string",
+          "description": "The user's full name or display name."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the user account was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when the user's profile was last updated.",
+          "format": "date-time"
+        },
+        "lastLoginAt": {
+          "type": "string",
+          "description": "Timestamp of the user's last successful login.",
+          "format": "date-time"
+        },
+        "isOnboarded": {
+          "type": "boolean",
+          "description": "Indicates if the user has completed the initial onboarding quiz."
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "name",
+        "createdAt",
+        "isOnboarded"
+      ]
+    },
+    "QuizResponse": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "QuizResponse",
+      "type": "object",
+      "description": "Stores a user's answers to the personalized sales profile quiz, used for generating action plans.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the QuizResponse entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who completed the quiz. (Relationship: User 1:N QuizResponse)"
+        },
+        "responses": {
+          "type": "array",
+          "description": "An array of objects, each representing a question and its answer from the quiz.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "completedAt": {
+          "type": "string",
+          "description": "Timestamp when the quiz was completed.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "responses",
+        "completedAt"
+      ]
+    },
+    "PersonalizedPlan": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PersonalizedPlan",
+      "type": "object",
+      "description": "Holds the AI-generated sales action plan tailored for a specific user based on their quiz responses.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the PersonalizedPlan entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User for whom this plan was generated. (Relationship: User 1:1 PersonalizedPlan)"
+        },
+        "quizResponseId": {
+          "type": "string",
+          "description": "Reference to the QuizResponse that informed this personalized plan. (Relationship: QuizResponse 1:1 PersonalizedPlan)"
+        },
+        "strategy": {
+          "type": "string",
+          "description": "The best strategy suggested for the user to achieve sales goals."
+        },
+        "suggestedIncomeType": {
+          "type": "string",
+          "description": "The type of income or product/service suggested for the user."
+        },
+        "executionMethod": {
+          "type": "string",
+          "description": "Detailed guidance on how the user should execute their sales plan."
+        },
+        "generatedAt": {
+          "type": "string",
+          "description": "Timestamp when the personalized plan was generated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "quizResponseId",
+        "strategy",
+        "suggestedIncomeType",
+        "executionMethod",
+        "generatedAt"
+      ]
+    },
+    "Subscription": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Subscription",
+      "type": "object",
+      "description": "Tracks a user's premium access status and subscription plan details.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Subscription entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who holds this subscription. (Relationship: User 1:N Subscription)"
+        },
+        "planType": {
+          "type": "string",
+          "description": "The type of subscription plan (e.g., 'monthly', 'lifetime')."
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the subscription (e.g., 'active', 'cancelled', 'expired')."
+        },
+        "startDate": {
+          "type": "string",
+          "description": "The date when the subscription started.",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "description": "The date when the subscription is expected to end (null for lifetime plans).",
+          "format": "date-time"
+        },
+        "paymentProviderSubscriptionId": {
+          "type": "string",
+          "description": "Optional: Reference ID from the external payment provider for this subscription."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "planType",
+        "status",
+        "startDate"
+      ]
+    },
+    "Mission": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Mission",
+      "type": "object",
+      "description": "Defines a single day's or stage's objectives and the overall structure within the guided sales journey.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Mission entity."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the mission (e.g., 'Dia 1', 'Dia 2', 'Primeira Venda')."
+        },
+        "order": {
+          "type": "number",
+          "description": "The sequential order of the mission in the overall journey."
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the mission's goal or content."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "order",
+        "description"
+      ]
+    },
+    "MissionStep": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "MissionStep",
+      "type": "object",
+      "description": "Represents an individual task or sub-objective within a larger mission, providing practical instructions.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the MissionStep entity."
+        },
+        "missionId": {
+          "type": "string",
+          "description": "Reference to the Mission this step belongs to. (Relationship: Mission 1:N MissionStep)"
+        },
+        "order": {
+          "type": "number",
+          "description": "The sequential order of this step within its mission."
+        },
+        "title": {
+          "type": "string",
+          "description": "A short title for the mission step (e.g., 'O que vender', 'Onde encontrar clientes')."
+        },
+        "instructions": {
+          "type": "array",
+          "description": "A list of simple, practical instructions for completing this step.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "suggestedProductService": {
+          "type": "string",
+          "description": "A suggested product or service for the user to consider selling."
+        },
+        "suggestedPrice": {
+          "type": "number",
+          "description": "A suggested price point for the product or service."
+        },
+        "suggestedSalesScriptId": {
+          "type": "string",
+          "description": "Reference to a Script entity providing the main message for this step. (Relationship: Script 1:N MissionStep)"
+        },
+        "clientAcquisitionMethods": {
+          "type": "array",
+          "description": "A list of places or methods to find clients (e.g., 'Instagram', 'empresas locais').",
+          "items": {
+            "type": "string"
+          }
+        },
+        "practicalStrategies": {
+          "type": "array",
+          "description": "A list of practical strategies related to finding clients or making sales.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "closingScriptIds": {
+          "type": "array",
+          "description": "References to Script entities containing closing scripts relevant to this step. (Relationship: Script N:N MissionStep)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "objectionResponses": {
+          "type": "array",
+          "description": "A list of common objections and suggested responses (e.g., 'tá caro').",
+          "items": {
+            "type": "string"
+          }
+        },
+        "conversionStrategy": {
+          "type": "string",
+          "description": "The recommended strategy for converting leads into sales at this stage."
+        },
+        "callToAction": {
+          "type": "string",
+          "description": "A clear, actionable instruction for the user to perform to complete the step."
+        }
+      },
+      "required": [
+        "id",
+        "missionId",
+        "order",
+        "title",
+        "instructions",
+        "callToAction"
+      ]
+    },
+    "UserMissionProgress": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserMissionProgress",
+      "type": "object",
+      "description": "Records a user's progression through the guided missions and tracks their performance and simulated earnings.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the UserMissionProgress entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User whose progress is being tracked. (Relationship: User 1:N UserMissionProgress)"
+        },
+        "missionId": {
+          "type": "string",
+          "description": "Reference to the Mission this progress entry is for. (Relationship: Mission 1:N UserMissionProgress)"
+        },
+        "isCompleted": {
+          "type": "boolean",
+          "description": "Indicates if the mission has been fully completed by the user."
+        },
+        "completedAt": {
+          "type": "string",
+          "description": "Timestamp when the mission was completed.",
+          "format": "date-time"
+        },
+        "currentMissionStepId": {
+          "type": "string",
+          "description": "Reference to the MissionStep the user is currently on within this mission. (Relationship: MissionStep 1:N UserMissionProgress)"
+        },
+        "estimatedEarnings": {
+          "type": "number",
+          "description": "A simulated estimate of earnings based on completed tasks or simulated sales."
+        },
+        "lastActivityAt": {
+          "type": "string",
+          "description": "Timestamp of the last interaction or progress update for this mission.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "missionId",
+        "isCompleted",
+        "currentMissionStepId"
+      ]
+    },
+    "ChatSession": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ChatSession",
+      "type": "object",
+      "description": "Represents a single conversational thread between a user and the AI Sales Mentor.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the ChatSession entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who initiated this chat session. (Relationship: User 1:N ChatSession)"
+        },
+        "startedAt": {
+          "type": "string",
+          "description": "Timestamp when the chat session began.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when the chat session last had a message added.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "startedAt",
+        "updatedAt"
+      ]
+    },
+    "ChatMessage": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ChatMessage",
+      "type": "object",
+      "description": "Stores individual messages exchanged within an AI Sales Mentor chat session.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the ChatMessage entity."
+        },
+        "chatSessionId": {
+          "type": "string",
+          "description": "Reference to the ChatSession this message belongs to. (Relationship: ChatSession 1:N ChatMessage)"
+        },
+        "sender": {
+          "type": "string",
+          "description": "The sender of the message ('user' or 'ai')."
+        },
+        "content": {
+          "type": "string",
+          "description": "The text content of the message."
+        },
+        "sentAt": {
+          "type": "string",
+          "description": "Timestamp when the message was sent.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "chatSessionId",
+        "userId",
+        "sender",
+        "content",
+        "sentAt"
+      ]
+    },
+    "Script": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Script",
+      "type": "object",
+      "description": "Provides pre-written sales, follow-up, or closing scripts for users to utilize in their interactions.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Script entity."
+        },
+        "title": {
+          "type": "string",
+          "description": "A descriptive title for the script (e.g., 'Initial Sales Outreach', 'Follow-up Email')."
+        },
+        "type": {
+          "type": "string",
+          "description": "The category of the script (e.g., 'selling', 'follow-up', 'closing', 'message')."
+        },
+        "content": {
+          "type": "string",
+          "description": "The actual text content of the sales script."
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief explanation of when and how to use this script."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the script was created in the system.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when the script was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "type",
+        "content",
+        "description",
+        "createdAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profile data and serves as the root for all user-specific data. Security relies on `request.auth.uid` matching `{userId}`.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user, corresponding to `request.auth.uid`."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/quizResponses/{quizResponseId}",
+        "definition": {
+          "entityName": "QuizResponse",
+          "schema": {
+            "$ref": "#/backend/entities/QuizResponse"
+          },
+          "description": "Stores a user's answers to the initial personalization quiz. Includes denormalized 'userId' for authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user who completed the quiz."
+            },
+            {
+              "name": "quizResponseId",
+              "description": "The unique identifier for a specific set of quiz responses."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/personalizedPlans/{planId}",
+        "definition": {
+          "entityName": "PersonalizedPlan",
+          "schema": {
+            "$ref": "#/backend/entities/PersonalizedPlan"
+          },
+          "description": "Stores the AI-generated personalized sales action plan for a user. Includes denormalized 'userId' for authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user to whom this plan belongs."
+            },
+            {
+              "name": "planId",
+              "description": "The unique identifier for a specific personalized plan."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/subscriptions/{subscriptionId}",
+        "definition": {
+          "entityName": "Subscription",
+          "schema": {
+            "$ref": "#/backend/entities/Subscription"
+          },
+          "description": "Tracks a user's subscription status and plan details. Includes denormalized 'userId' for authorization independence. Critical for controlling access to premium features.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user holding the subscription."
+            },
+            {
+              "name": "subscriptionId",
+              "description": "The unique identifier for a specific user's subscription."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/missions/{missionId}",
+        "definition": {
+          "entityName": "Mission",
+          "schema": {
+            "$ref": "#/backend/entities/Mission"
+          },
+          "description": "Defines the global structure and content of each mission (e.g., 'Dia 1', 'Dia 2'). These are read-only for subscribed users.",
+          "params": [
+            {
+              "name": "missionId",
+              "description": "The unique identifier of a mission."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/missions/{missionId}/steps/{stepId}",
+        "definition": {
+          "entityName": "MissionStep",
+          "schema": {
+            "$ref": "#/backend/entities/MissionStep"
+          },
+          "description": "Details the individual steps or tasks within a mission. These are read-only for subscribed users.",
+          "params": [
+            {
+              "name": "missionId",
+              "description": "The unique identifier of the parent mission."
+            },
+            {
+              "name": "stepId",
+              "description": "The unique identifier of a specific mission step."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/missionProgress/{progressId}",
+        "definition": {
+          "entityName": "UserMissionProgress",
+          "schema": {
+            "$ref": "#/backend/entities/UserMissionProgress"
+          },
+          "description": "Records a specific user's progress through a mission, including completion status and estimated earnings. Includes denormalized 'userId' for authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user whose progress is being tracked."
+            },
+            {
+              "name": "progressId",
+              "description": "The unique identifier for a specific user's mission progress entry."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/chatSessions/{sessionId}",
+        "definition": {
+          "entityName": "ChatSession",
+          "schema": {
+            "$ref": "#/backend/entities/ChatSession"
+          },
+          "description": "Represents an individual chat conversation session between a user and the AI Sales Mentor. Includes denormalized 'userId' for authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user who owns this chat session."
+            },
+            {
+              "name": "sessionId",
+              "description": "The unique identifier for a specific chat session."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/chatSessions/{sessionId}/messages/{messageId}",
+        "definition": {
+          "entityName": "ChatMessage",
+          "schema": {
+            "$ref": "#/backend/entities/ChatMessage"
+          },
+          "description": "Stores individual messages within a user's chat session. Includes denormalized 'userId' for authorization independence, crucial for direct security checks.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user who owns the parent chat session."
+            },
+            {
+              "name": "sessionId",
+              "description": "The unique identifier of the parent chat session."
+            },
+            {
+              "name": "messageId",
+              "description": "The unique identifier for a specific message within the chat session."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/scripts/{scriptId}",
+        "definition": {
+          "entityName": "Script",
+          "schema": {
+            "$ref": "#/backend/entities/Script"
+          },
+          "description": "Contains pre-written sales, follow-up, and closing scripts. These are global, read-only resources available to subscribed users.",
+          "params": [
+            {
+              "name": "scriptId",
+              "description": "The unique identifier of a sales script."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The FlowPro Firestore structure prioritizes security, scalability, and debuggability by strictly adhering to the core design principles. \n\n**Authorization Independence via Denormalization:**\nThis design criticaly avoids hierarchical authorization dependencies that would require `get()` calls in security rules to check parent document attributes. For all user-specific subcollections like `quizResponses`, `personalizedPlans`, `subscriptions`, `missionProgress`, `chatSessions`, and `chatMessages`, the `userId` is explicitly included in the document schema. This denormalization ensures that authorization rules for these documents can be evaluated solely based on `request.auth.uid == resource.data.userId`, making them atomic, efficient, and robust against race conditions or complex transaction scenarios. For instance, a `ChatMessage` document, despite being nested under a `ChatSession` (which is under a `User`), directly contains `userId`, enabling a direct `request.auth.uid` check without needing to read the parent `ChatSession` or `User` document. \n\n**Structural Segregation for Homogeneous Security Posture & QAPs:**\n\n1.  **User-Specific Private Data:** All data directly owned by or specific to a single user is stored under a dedicated subcollection of their `/users/{userId}` document. This includes `/users/{userId}/quizResponses`, `/users/{userId}/personalizedPlans`, `/users/{userId}/subscriptions`, `/users/{userId}/missionProgress`, and `/users/{userId}/chatSessions`. This approach ensures **Query Authorization Predictability (QAPs)** because `list` operations (e.g., `db.collection('users').doc(userId).collection('quizResponses').get()`) inherently return only the data the authenticated user (`request.auth.uid`) is authorized to see. The security rules for these paths will simply check `request.auth.uid == userId` from the path wildcard or `resource.data.userId` from the document's denormalized field. This makes rules simple, explicit, and easy to debug.\n\n2.  **Global Read-Only Content (Conditional Access):** Core application content like `missions`, `missionSteps`, and `scripts` are placed in top-level collections (`/missions/{missionId}`, `/scripts/{scriptId}`). These documents have a homogeneous security posture: they are read-only for *all authenticated users with an active subscription*. Access to these collections will be granted through a security rule that checks the user's subscription status, typically by performing a `get()` operation on a fixed path: `/users/$(request.auth.uid)/subscriptions/{subscriptionId}`. While this involves a `get()` call, it's considered an acceptable pattern for DBAC (Database Access Control) as it's a fixed-path lookup on the current user's *own* data, not a hierarchical dependency on parent content or an arbitrary read. This design avoids duplicating static content for each user, promoting efficiency and consistency. QAPs are maintained because any user querying `/missions` or `/scripts` will retrieve all available content, and the security rules will filter access based on their global subscription status.\n\n**Summary:**\nThis structure ensures clear separation of concerns, with private user data residing in path-secured subcollections and global content residing in top-level collections with conditional access based on the user's subscription status. Denormalized `userId` fields enhance authorization independence, and the chosen path structures inherently support predictable query results, simplifying rule logic and overall system debugging."
+  }
+}
