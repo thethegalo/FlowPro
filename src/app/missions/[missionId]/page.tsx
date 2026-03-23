@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,8 @@ import {
   Layout,
   MessageSquare,
   TrendingUp,
-  Settings
+  Settings,
+  Trophy
 } from 'lucide-react';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -145,6 +146,7 @@ export default function MissionPage() {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   const handleCopy = () => {
     if (!content) return;
@@ -167,8 +169,13 @@ export default function MissionPage() {
         lastActivityAt: serverTimestamp()
       }, { merge: true });
 
-      toast({ title: "Missão Concluída!", description: "Parabéns Guerreiro Flow! Próximo nível liberado." });
-      router.push('/dashboard');
+      if (missionId === 'dia7') {
+        setShowCelebration(true);
+        toast({ title: "Jornada Concluída!", description: "Fase 1 Finalizada com sucesso!" });
+      } else {
+        toast({ title: "Missão Concluída!", description: "Parabéns Guerreiro Flow! Próximo nível liberado." });
+        router.push('/dashboard');
+      }
     } catch (error: any) {
       toast({ variant: "destructive", title: "Erro", description: error.message });
       setIsSubmitting(false);
@@ -176,6 +183,28 @@ export default function MissionPage() {
   };
 
   if (!content) return <div className="p-20 text-center text-muted-foreground font-black uppercase tracking-widest">Missão não encontrada</div>;
+
+  if (showCelebration) {
+    return (
+      <div className="min-h-screen bg-[#050508] flex items-center justify-center p-6">
+        <Card className="max-w-xl w-full bg-primary/10 border-primary/30 rounded-[2rem] p-12 text-center space-y-8 animate-in zoom-in duration-500">
+           <div className="h-24 w-24 bg-primary rounded-full flex items-center justify-center mx-auto shadow-[0_0_50px_rgba(139,92,246,0.5)]">
+             <Trophy className="h-12 w-12 text-white" />
+           </div>
+           <div className="space-y-4">
+              <h2 className="text-4xl font-black italic uppercase tracking-tighter">PRIMEIRA VENDA CONCLUÍDA!</h2>
+              <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-widest">Você dominou a Fase 1 da Jornada Flow.</p>
+           </div>
+           <p className="text-white/80 font-medium leading-relaxed">
+             Sua estrutura está pronta e sua primeira vitória foi alcançada. Agora o jogo muda. Para faturar alto e dominar seu nicho, você precisa da <strong>Escala Flow</strong>.
+           </p>
+           <Button asChild className="w-full h-16 rounded-2xl bg-primary text-lg font-black uppercase tracking-widest shadow-xl shadow-primary/30">
+             <Link href="/dashboard">IR PARA ÁREA DE ESCALA</Link>
+           </Button>
+        </Card>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-[#050508] flex flex-col">

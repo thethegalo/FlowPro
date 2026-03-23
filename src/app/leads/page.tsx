@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,11 +18,16 @@ import {
   Filter,
   Users,
   Instagram,
-  Phone
+  Phone,
+  Lock,
+  Zap,
+  Star
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { generateLeadMessage } from '@/ai/flows/generate-lead-message';
 import { useToast } from '@/hooks/use-toast';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, query } from 'firebase/firestore';
 
 const BUSINESS_TYPES = [
   "Barbearia", "Salão de Beleza", "Pizzaria", "Restaurante", "Loja de Roupas", "Academia", "Clínica"
@@ -30,9 +35,8 @@ const BUSINESS_TYPES = [
 
 const STATES = ["SP", "RJ", "MG", "PR", "SC", "RS", "BA", "CE"];
 
-// Simulated Lead Data Generation
-const generateMockLeads = (type: string, city: string) => {
-  return Array.from({ length: 8 }).map((_, i) => ({
+const generateMockLeads = (type: string, city: string, count: number) => {
+  return Array.from({ length: count }).map((_, i) => ({
     id: `lead-${i}`,
     name: `${type} ${['Express', 'Master', 'Alpha', 'Flow', 'Prime'][i % 5]} ${city}`,
     type,
@@ -44,6 +48,10 @@ const generateMockLeads = (type: string, city: string) => {
 };
 
 export default function LeadsPage() {
+  const { user } = useUser();
+  const db = useFirestore();
+  const { toast } = useToast();
+  
   const [loading, setLoading] = useState(false);
   const [leads, setLeads] = useState<any[]>([]);
   const [city, setCity] = useState('');
@@ -51,7 +59,17 @@ export default function LeadsPage() {
   const [state, setState] = useState('');
   const [generatingMsg, setGeneratingMsg] = useState<string | null>(null);
   const [approachedLeads, setApproachedLeads] = useState<string[]>([]);
-  const { toast } = useToast();
+
+  const subQuery = useMemoFirebase(() => {
+    if (!db || !user) return null;
+    return query(collection(db, 'users', user.uid, 'subscriptions'));
+  }, [db, user]);
+  const { data: subData } = useCollection(subQuery);
+
+  const isProMember = useMemo(() => {
+    if (user?.email === 'thethegalo@gmail.com') return true;
+    return subData?.some(sub => sub.planType === 'monthly' && sub.status === 'active');
+  }, [subData, user]);
 
   const handleSearch = () => {
     if (!type || !state) {
@@ -59,14 +77,25 @@ export default function LeadsPage() {
       return;
     }
     setLoading(true);
-    // Simulate API delay
+    
+    // Pro members get 15 leads, basic get 5
+    const count = isProMember ? 15 : 5;
+
     setTimeout(() => {
-      setLeads(generateMockLeads(type, city || 'Sua Cidade'));
+      setLeads(generateMockLeads(type, city || 'Sua Cidade', count));
       setLoading(false);
+      if (!isProMember) {
+        toast({ title: "Limite Básico atingido", description: "Você está vendo apenas 5 leads por busca. Assine o Flow Pro para leads ilimitados." });
+      }
     }, 1500);
   };
 
   const handleGenMessage = async (lead: any) => {
+    if (!isProMember && approachedLeads.length >= 3) {
+      toast({ variant: "destructive", title: "Recurso Bloqueado", description: "IA de abordagem avançada é exclusiva para membros Flow Pro." });
+      return;
+    }
+
     setGeneratingMsg(lead.id);
     try {
       const res = await generateLeadMessage({
@@ -95,13 +124,41 @@ export default function LeadsPage() {
         <Link href="/dashboard" className="mr-4 text-muted-foreground hover:text-primary transition-colors">
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <h1 className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-2">
-          <Users className="h-5 w-5 text-primary" /> Captar Leads Flow
-        </h1>
+        <div className="flex-1 flex items-center justify-between">
+          <h1 className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-2">
+            <Users className="h-5 w-5 text-primary" /> Captar Leads Flow
+          </h1>
+          {isProMember ? (
+            <Badge className="bg-primary/20 text-primary border-primary/30 text-[8px] font-black uppercase px-3 py-1">
+              <Star className="h-3 w-3 mr-1 fill-primary" /> UNLIMITED ACCESS
+            </Badge>
+          ) : (
+             <Button asChild size="sm" variant="outline" className="h-8 text-[9px] font-black uppercase tracking-widest border-primary/30 text-primary hover:bg-primary/10">
+               <Link href="/paywall">UPGRADE TO PRO</Link>
+             </Button>
+          )}
+        </div>
       </header>
 
       <main className="flex-1 container max-w-4xl mx-auto p-4 md:p-8 space-y-8">
-        {/* Filter Section */}
+        
+        {!isProMember && (
+          <Card className="bg-primary/5 border border-primary/20 p-4 rounded-2xl flex items-center justify-between gap-4">
+             <div className="flex items-center gap-3">
+                <div className="h-10 w-10 bg-primary/20 rounded-xl flex items-center justify-center text-primary">
+                  <Lock className="h-5 w-5" />
+                </div>
+                <div>
+                   <p className="text-xs font-black uppercase tracking-widest">Limite da Fase 1</p>
+                   <p className="text-[10px] text-muted-foreground uppercase font-medium">Você está no plano básico. Resultados e recursos limitados.</p>
+                </div>
+             </div>
+             <Button asChild size="sm" className="bg-primary hover:bg-primary/90 rounded-xl text-[9px] font-black uppercase tracking-widest px-6">
+                <Link href="/paywall">LIBERAR ESCALA</Link>
+             </Button>
+          </Card>
+        )}
+
         <Card className="glass-card border-white/10 overflow-hidden">
           <CardHeader className="bg-white/5 border-b border-white/5">
             <CardTitle className="text-sm font-black uppercase tracking-widest italic flex items-center gap-2">
@@ -154,14 +211,13 @@ export default function LeadsPage() {
           </CardContent>
         </Card>
 
-        {/* Results Section */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-black italic uppercase tracking-tighter">
               Resultados {leads.length > 0 && `(${leads.length})`}
             </h2>
             {leads.length > 0 && (
-              <Badge variant="outline" className="border-green-500/20 text-green-500 text-[8px] font-black uppercase">Pronto para Abordar</Badge>
+              <Badge variant="outline" className="border-green-500/20 text-green-500 text-[8px] font-black uppercase">Fase {isProMember ? 'Escala' : '1'} Ativa</Badge>
             )}
           </div>
 
@@ -188,14 +244,6 @@ export default function LeadsPage() {
                             </p>
                           </div>
                         </div>
-                        <div className="flex gap-4">
-                          <button className="flex items-center gap-1.5 text-[10px] font-black uppercase text-muted-foreground hover:text-white transition-colors">
-                            <Instagram className="h-3 w-3" /> {lead.instagram}
-                          </button>
-                          <button className="flex items-center gap-1.5 text-[10px] font-black uppercase text-muted-foreground hover:text-white transition-colors">
-                            <Phone className="h-3 w-3" /> {lead.phone}
-                          </button>
-                        </div>
                       </div>
 
                       <div className="flex flex-wrap gap-2 md:flex-nowrap md:items-center">
@@ -207,7 +255,7 @@ export default function LeadsPage() {
                           className="flex-1 md:flex-none h-10 border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest gap-2"
                         >
                           {generatingMsg === lead.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <MessageSquare className="h-3 w-3 text-primary" />}
-                          Gerar Mensagem IA
+                          IA de Abordagem
                         </Button>
                         <Button 
                           variant="ghost" 
@@ -215,38 +263,26 @@ export default function LeadsPage() {
                           onClick={() => toggleApproached(lead.id)}
                           className={`flex-1 md:flex-none h-10 rounded-xl text-[9px] font-black uppercase tracking-widest ${approachedLeads.includes(lead.id) ? 'text-green-500' : ''}`}
                         >
-                          {approachedLeads.includes(lead.id) ? <Check className="h-3 w-3 mr-1" /> : <Circle className="h-3 w-3 mr-1" />}
-                          {approachedLeads.includes(lead.id) ? 'ABORDADO' : 'MARCAR ABORDADO'}
+                          {approachedLeads.includes(lead.id) ? <Check className="h-3 w-3 mr-1" /> : <div className="h-3 w-3 mr-1 border border-white/30 rounded-full" />}
+                          {approachedLeads.includes(lead.id) ? 'ABORDADO' : 'MARCAR'}
                         </Button>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
               ))}
+              {!isProMember && leads.length > 0 && (
+                 <div className="p-6 text-center border border-dashed border-white/10 rounded-2xl bg-white/[0.01]">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Mais 50+ leads ocultos no plano Pro</p>
+                    <Button asChild variant="outline" className="border-primary/40 text-primary uppercase font-black text-[10px] h-10 px-8 rounded-xl">
+                       <Link href="/paywall">REVELAR TODOS OS LEADS</Link>
+                    </Button>
+                 </div>
+              )}
             </div>
           )}
         </div>
       </main>
     </div>
-  );
-}
-
-function Circle({ className, ...props }: any) {
-  return (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="24" 
-      height="24" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
-      className={className}
-      {...props}
-    >
-      <circle cx="12" cy="12" r="10" />
-    </svg>
   );
 }
