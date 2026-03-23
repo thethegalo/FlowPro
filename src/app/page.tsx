@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -6,7 +7,7 @@ import {
   ArrowRight, 
   ShieldCheck, 
   MessageSquare, 
-  Globe,
+  Globe as GlobeIcon,
   Star,
   Cpu,
   Layers,
@@ -20,6 +21,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Globe } from '@/components/ui/cobe-globe';
 
 export default function Home() {
   const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
@@ -36,6 +38,19 @@ export default function Home() {
     { name: 'GXP Vendas', amount: '297,00', time: 'Agora' },
     { name: 'Beatriz R.', amount: '890,00', time: '12 min ago' },
     { name: 'Carlos J.', amount: '147,00', time: '15 min ago' },
+  ];
+
+  const markers = [
+    { id: "saopaulo", location: [-23.5505, -46.6333] as [number, number], label: "São Paulo" },
+    { id: "lisbon", location: [38.7223, -9.1393] as [number, number], label: "Lisboa" },
+    { id: "nyc", location: [40.7128, -74.006] as [number, number], label: "New York" },
+    { id: "luanda", location: [-8.8390, 13.2894] as [number, number], label: "Luanda" },
+    { id: "tokyo", location: [35.6762, 139.6503] as [number, number], label: "Tokyo" },
+  ];
+
+  const arcs = [
+    { id: "sp-lisbon", from: [-23.5505, -46.6333] as [number, number], to: [38.7223, -9.1393] as [number, number], label: "Flow Connection" },
+    { id: "sp-nyc", from: [-23.5505, -46.6333] as [number, number], to: [40.7128, -74.006] as [number, number] },
   ];
 
   return (
@@ -71,40 +86,64 @@ export default function Home() {
 
       <main className="relative z-10">
         <section className="relative pt-24 pb-32 lg:pt-32 lg:pb-56 overflow-hidden">
-          <div className="container px-6 mx-auto text-center relative z-20">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.3em] mb-10 shadow-[0_0_20px_rgba(255,255,255,0.05)]">
-              <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
-              Acesso Flow Disponível
-            </div>
-            
-            <h1 className="text-5xl md:text-7xl lg:text-[9rem] font-black tracking-tighter leading-[0.85] mb-12 uppercase">
-              ESCALE <br />
-              <span className="shimmer-text italic">INFINITO</span>
-            </h1>
-            
-            <p className="text-muted-foreground text-lg md:text-2xl max-w-3xl mx-auto mb-16 font-medium leading-relaxed">
-              O ecossistema de <span className="text-white">vendas autônomas</span> que transforma seu faturamento em 7 dias com inteligência neural.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              <Button size="lg" className="h-20 px-12 text-xl font-black bg-primary hover:scale-110 hover:rotate-1 shadow-[0_15px_40px_rgba(139,92,246,0.4)] transition-all rounded-3xl w-full sm:w-auto group" asChild>
-                <Link href="/quiz">
-                  INICIAR JORNADA <ArrowRight className="ml-2 h-7 w-7 group-hover:translate-x-2 transition-transform" />
-                </Link>
-              </Button>
-              <div className="flex items-center gap-4 px-6 py-4 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-md">
-                <div className="flex -space-x-3">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="h-10 w-10 rounded-full border-2 border-[#050508] overflow-hidden">
-                      <Image src={`https://picsum.photos/seed/${i+100}/100/100`} alt="user" width={40} height={40} />
-                    </div>
-                  ))}
+          <div className="container px-6 mx-auto relative z-20">
+            <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
+              <div className="flex-1 text-center lg:text-left">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.3em] mb-10 shadow-[0_0_20px_rgba(255,255,255,0.05)]">
+                  <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
+                  Acesso Flow Disponível
                 </div>
-                <div className="text-left">
-                  <p className="text-xs font-black uppercase tracking-widest text-white">5.8k+ Users</p>
-                  <div className="flex gap-0.5">
-                    {[1, 2, 3, 4, 5].map((s) => <Star key={s} className="h-3 w-3 fill-primary text-primary" />)}
+                
+                <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.85] mb-12 uppercase">
+                  ESCALE <br />
+                  <span className="shimmer-text italic">INFINITO</span>
+                </h1>
+                
+                <p className="text-muted-foreground text-lg md:text-2xl max-w-2xl mx-auto lg:mx-0 mb-16 font-medium leading-relaxed">
+                  O ecossistema de <span className="text-white">vendas autônomas</span> que transforma seu faturamento em 7 dias com inteligência neural.
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start items-center">
+                  <Button size="lg" className="h-20 px-12 text-xl font-black bg-primary hover:scale-110 hover:rotate-1 shadow-[0_15px_40px_rgba(139,92,246,0.4)] transition-all rounded-3xl w-full sm:w-auto group" asChild>
+                    <Link href="/quiz">
+                      INICIAR JORNADA <ArrowRight className="ml-2 h-7 w-7 group-hover:translate-x-2 transition-transform" />
+                    </Link>
+                  </Button>
+                  <div className="flex items-center gap-4 px-6 py-4 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-md">
+                    <div className="flex -space-x-3">
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="h-10 w-10 rounded-full border-2 border-[#050508] overflow-hidden">
+                          <Image src={`https://picsum.photos/seed/${i+100}/100/100`} alt="user" width={40} height={40} />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="text-left">
+                      <p className="text-xs font-black uppercase tracking-widest text-white">5.8k+ Users</p>
+                      <div className="flex gap-0.5">
+                        {[1, 2, 3, 4, 5].map((s) => <Star key={s} className="h-3 w-3 fill-primary text-primary" />)}
+                      </div>
+                    </div>
                   </div>
+                </div>
+              </div>
+
+              <div className="flex-1 w-full max-w-[500px] lg:max-w-none relative aspect-square">
+                <div className="absolute inset-0 bg-primary/20 rounded-full blur-[100px] animate-pulse"></div>
+                <Globe 
+                  markers={markers}
+                  arcs={arcs}
+                  className="w-full h-full"
+                  speed={0.005}
+                  dark={1}
+                  markerColor={[0.54, 0.36, 0.96]}
+                  baseColor={[0.2, 0.2, 0.2]}
+                  arcColor={[0.54, 0.36, 0.96]}
+                  glowColor={[0.54, 0.36, 0.96]}
+                  mapBrightness={12}
+                />
+                <div className="absolute -bottom-10 -right-10 glass-card p-6 rounded-[2rem] animate-float">
+                  <p className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Status do Motor</p>
+                  <p className="text-sm font-black italic text-primary uppercase">Flow Ativo Global</p>
                 </div>
               </div>
             </div>
