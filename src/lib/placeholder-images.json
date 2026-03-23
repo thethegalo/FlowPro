@@ -1,28 +1,34 @@
 {
   "placeholderImages": [
     {
-      "id": "hero-ai",
-      "description": "Futuristic AI background with neon lines",
-      "imageUrl": "https://picsum.photos/seed/ai-hero/1200/800",
-      "imageHint": "futuristic technology"
+      "id": "hero-abstract",
+      "description": "Abstract neural network or data flow with neon purple highlights",
+      "imageUrl": "https://picsum.photos/seed/flowpro-hero/1200/800",
+      "imageHint": "neural network"
     },
     {
-      "id": "feature-access",
-      "description": "Abstract laptop with neon glow",
-      "imageUrl": "https://picsum.photos/seed/access/400/600",
-      "imageHint": "neon laptop"
+      "id": "module-strategy",
+      "description": "Dark futuristic control room with blue holographic displays",
+      "imageUrl": "https://picsum.photos/seed/strategy/800/600",
+      "imageHint": "holographic interface"
     },
     {
-      "id": "feature-config",
-      "description": "Tech interface background",
-      "imageUrl": "https://picsum.photos/seed/config/400/600",
-      "imageHint": "tech interface"
+      "id": "module-leads",
+      "description": "Abstract visualization of connections and nodes in cyan",
+      "imageUrl": "https://picsum.photos/seed/leads/800/600",
+      "imageHint": "digital connections"
     },
     {
-      "id": "feature-gold",
-      "description": "Abstract golden data visualization",
-      "imageUrl": "https://picsum.photos/seed/gold/400/600",
-      "imageHint": "abstract gold"
+      "id": "module-closing",
+      "description": "Golden digital key or lock symbolizing success",
+      "imageUrl": "https://picsum.photos/seed/closing/800/600",
+      "imageHint": "golden key"
+    },
+    {
+      "id": "community-avatar",
+      "description": "High-tech portrait of a modern entrepreneur",
+      "imageUrl": "https://picsum.photos/seed/avatar-1/100/100",
+      "imageHint": "modern portrait"
     }
   ]
 }
