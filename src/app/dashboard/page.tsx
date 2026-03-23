@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useEffect } from 'react';
@@ -8,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
 import { 
   CheckCircle2, 
   Circle, 
@@ -20,7 +20,8 @@ import {
   Lock,
   Loader2,
   DollarSign,
-  Target
+  Target,
+  ShieldCheck
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
@@ -29,6 +30,9 @@ export default function Dashboard() {
   const { user, isUserLoading } = useUser();
   const db = useFirestore();
   const router = useRouter();
+
+  const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
+  const ADMIN_EMAIL = "thethegalo@gmail.com";
 
   // Fetch Subscriptions (Verify access)
   const subQuery = useMemoFirebase(() => {
@@ -57,10 +61,12 @@ export default function Dashboard() {
 
   const progressPercentage = (completedMissionIds.length / missions.length) * 100;
 
-  // Security Check
+  // Security Check (Admin skips paywall)
   useEffect(() => {
-    if (!isUserLoading && !isSubLoading && user && (!subData || subData.length === 0)) {
-      router.push('/paywall');
+    if (!isUserLoading && !isSubLoading && user) {
+      if (user.email !== ADMIN_EMAIL && (!subData || subData.length === 0)) {
+        router.push('/paywall');
+      }
     }
   }, [user, subData, isUserLoading, isSubLoading, router]);
 
@@ -76,11 +82,22 @@ export default function Dashboard() {
     <div className="flex min-h-screen flex-col bg-[#050508]">
       <header className="sticky top-0 z-40 border-b border-white/5 bg-[#050508]/80 backdrop-blur-md">
         <div className="container flex h-16 items-center justify-between px-4 sm:px-6">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <Zap className="h-6 w-6 text-primary" />
-            <span className="text-xl font-black italic tracking-tighter uppercase">FlowPro</span>
+          <Link href="/dashboard" className="flex items-center group relative">
+            <div className="relative h-8 w-24 grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:drop-shadow-[0_0_8px_rgba(139,92,246,0.6)]">
+              <Image 
+                src={LOGO_URL} 
+                alt="FlowPro Logo" 
+                fill 
+                className="object-contain"
+              />
+            </div>
           </Link>
           <div className="flex items-center gap-4">
+            {user?.email === ADMIN_EMAIL && (
+              <Button asChild variant="outline" size="sm" className="bg-primary/10 border-primary/20 text-primary hover:bg-primary/20">
+                <Link href="/admin">ADMIN PANEL</Link>
+              </Button>
+            )}
             <Badge variant="secondary" className="bg-primary/10 text-primary gap-1 px-3 py-1">
               <Flame className="h-3 w-3" /> {completedMissionIds.length + 1}D STREAK
             </Badge>
@@ -90,7 +107,7 @@ export default function Dashboard() {
 
       <main className="flex-1 p-4 md:p-8 space-y-8 container mx-auto max-w-4xl">
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-black italic uppercase tracking-tighter">Olá, {user?.displayName || 'Guerreiro Alpha'}</h1>
+          <h1 className="text-3xl font-black italic uppercase tracking-tighter">Olá, {user?.displayName || (user?.email === ADMIN_EMAIL ? 'Admin Master' : 'Guerreiro Alpha')}</h1>
           <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-widest flex items-center gap-2">
             <Target className="h-3 w-3 text-primary" /> Objetivo: Sua primeira venda em 72h
           </p>
@@ -127,8 +144,8 @@ export default function Dashboard() {
           <div className="grid gap-4">
             {missions.map((mission, index) => {
               const isCompleted = completedMissionIds.includes(mission.id);
-              const isLocked = index > completedMissionIds.length;
-              const isCurrent = index === completedMissionIds.length;
+              const isLocked = index > completedMissionIds.length && user?.email !== ADMIN_EMAIL;
+              const isCurrent = index === completedMissionIds.length || user?.email === ADMIN_EMAIL;
 
               return (
                 <div 
@@ -156,7 +173,7 @@ export default function Dashboard() {
                       </div>
                     </div>
                     
-                    {!isLocked && (
+                    {(!isLocked || user?.email === ADMIN_EMAIL) && (
                       <Button asChild variant={isCurrent ? "default" : "outline"} className="rounded-xl font-black uppercase text-[10px] tracking-widest h-10 px-6">
                         <Link href={`/missions/${mission.id}`}>
                           {isCompleted ? 'REVISAR' : 'EXECUTAR'} <ChevronRight className="ml-1 h-4 w-4" />

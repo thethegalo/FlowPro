@@ -1,4 +1,3 @@
-
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -26,7 +25,7 @@ import {
 } from "@/components/ui/accordion";
 
 export default function Home() {
-  const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/mqo6mitecu26zqjr7b2ntxzs?v=1774306417581";
+  const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
 
   const pillars = [
     { title: 'IA Neural Autônoma', icon: <Cpu className="h-6 w-6" />, desc: 'Vendedores virtuais que aprendem e adaptam em tempo real.', color: 'text-purple-400' },
@@ -56,7 +55,7 @@ export default function Home() {
         <Link href="/" className="flex items-center group relative">
           <div className="absolute -inset-4 bg-primary/30 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-700 -z-10 scale-50 group-hover:scale-100"></div>
           
-          <div className="relative h-10 w-32 md:h-12 md:w-40 transition-transform duration-500 group-hover:scale-105">
+          <div className="relative h-10 w-32 md:h-12 md:w-40 transition-all duration-500 group-hover:scale-105 group-hover:drop-shadow-[0_0_15px_rgba(139,92,246,0.6)] grayscale group-hover:grayscale-0">
             <Image 
               src={LOGO_URL} 
               alt="FlowPro Logo" 
@@ -71,7 +70,7 @@ export default function Home() {
           <Link href="#faq" className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-all">Suporte</Link>
           <Link href="/auth" className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-all">Login</Link>
         </div>
-        <Button asChild className="bg-white text-black hover:bg-primary hover:text-white font-black rounded-full px-8 h-10 transition-all duration-500 hover:scale-105 active:scale-95">
+        <Button asChild className="bg-white text-black hover:bg-primary hover:text-white font-black rounded-full px-8 h-10 transition-all duration-500 hover:scale-105 active:scale-95 shadow-xl hover:shadow-primary/20">
           <Link href="/quiz">ATIVAR AGORA</Link>
         </Button>
       </header>
@@ -187,7 +186,7 @@ export default function Home() {
       <footer className="py-32 border-t border-white/5 bg-[#030305] relative z-10">
         <div className="container px-6 mx-auto grid md:grid-cols-4 gap-20">
           <div className="md:col-span-2 space-y-8">
-            <div className="relative h-12 w-40">
+            <div className="relative h-12 w-40 grayscale hover:grayscale-0 transition-all duration-500 cursor-pointer">
               <Image 
                 src={LOGO_URL} 
                 alt="FlowPro Footer Logo" 

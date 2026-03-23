@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -7,7 +6,7 @@ import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Users, BarChart3, Target, Loader2, ArrowLeft } from 'lucide-react';
+import { Users, BarChart3, Target, Loader2, ArrowLeft, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import { collection, query } from 'firebase/firestore';
 
@@ -16,11 +15,11 @@ export default function AdminPage() {
   const db = useFirestore();
   const router = useRouter();
 
-  // Basic admin check - for prototype purposes, we allow specific email or just logged users
-  // In production, this would use custom claims or a specific collection check
+  const ADMIN_EMAIL = "thethegalo@gmail.com";
+
   useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/auth');
+    if (!isUserLoading && (!user || user.email !== ADMIN_EMAIL)) {
+      router.push('/dashboard');
     }
   }, [user, isUserLoading, router]);
 
@@ -38,6 +37,21 @@ export default function AdminPage() {
     );
   }
 
+  if (user?.email !== ADMIN_EMAIL) {
+    return (
+      <div className="min-h-screen bg-[#050508] flex items-center justify-center p-4">
+        <Card className="glass-card border-destructive/20 max-w-md w-full p-8 text-center space-y-4">
+          <ShieldAlert className="h-12 w-12 text-destructive mx-auto" />
+          <h1 className="text-xl font-black uppercase italic tracking-tighter">Acesso Negado</h1>
+          <p className="text-muted-foreground text-sm">Apenas administradores podem visualizar esta área.</p>
+          <Button asChild variant="outline" className="w-full">
+            <Link href="/dashboard">Voltar para o Painel</Link>
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#050508] p-4 md:p-8">
       <div className="container max-w-6xl mx-auto space-y-8">
@@ -48,7 +62,7 @@ export default function AdminPage() {
             </Link>
             <h1 className="text-3xl font-black italic uppercase tracking-tighter">Admin Control</h1>
           </div>
-          <Badge className="bg-primary/20 text-primary uppercase tracking-widest px-4 py-1">ALPHA ACCESS</Badge>
+          <Badge className="bg-primary/20 text-primary uppercase tracking-widest px-4 py-1">ADMIN: {user.email}</Badge>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
@@ -109,7 +123,7 @@ export default function AdminPage() {
                           {u.isOnboarded ? 'ONBOARDED' : 'PENDENTE'}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-muted-foreground text-xs">{new Date(u.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell className="text-muted-foreground text-xs">{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A'}</TableCell>
                     </TableRow>
                   ))}
                   {(!usersData || usersData.length === 0) && (
@@ -126,3 +140,5 @@ export default function AdminPage() {
     </div>
   );
 }
+
+import { Button } from '@/components/ui/button';
