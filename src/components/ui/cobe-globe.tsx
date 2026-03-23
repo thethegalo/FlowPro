@@ -122,7 +122,7 @@ export function Globe({
   useEffect(() => {
     if (!canvasRef.current) return
     const canvas = canvasRef.current
-    let globe: ReturnType<typeof createGlobe> | null = null
+    let globe: any = null
     let animationId: number
     let phi = 0
 
@@ -135,60 +135,15 @@ export function Globe({
         devicePixelRatio: dpr,
         width,
         height: width,
-      phi: 0,
-      theta,
-      dark,
-      diffuse,
-      mapSamples,
-      mapBrightness,
-      baseColor,
-      markerColor,
-      glowColor,
-      markerElevation,
-      markers: markers.map((m) => ({
-        location: m.location,
-        size: markerSize,
-        id: m.id,
-      })),
-      arcs: arcs.map((a) => ({
-        from: a.from,
-        to: a.to,
-        id: a.id,
-      })),
-      arcColor,
-      arcWidth,
-      arcHeight,
-      opacity: 0.7,
-    })
-
-    function animate() {
-      if (!isPausedRef.current) {
-        phi += speed
-        if (
-          Math.abs(velocity.current.phi) > 0.0001 ||
-          Math.abs(velocity.current.theta) > 0.0001
-        ) {
-          phiOffsetRef.current += velocity.current.phi
-          thetaOffsetRef.current += velocity.current.theta
-          velocity.current.phi *= 0.95
-          velocity.current.theta *= 0.95
-        }
-        const thetaMin = -0.4,
-          thetaMax = 0.4
-        if (thetaOffsetRef.current < thetaMin) {
-          thetaOffsetRef.current += (thetaMin - thetaOffsetRef.current) * 0.1
-        } else if (thetaOffsetRef.current > thetaMax) {
-          thetaOffsetRef.current += (thetaMax - thetaOffsetRef.current) * 0.1
-        }
-      }
-      globe!.update({
-        phi: phi + phiOffsetRef.current + dragOffset.current.phi,
-        theta: theta + thetaOffsetRef.current + dragOffset.current.theta,
+        phi: 0,
+        theta,
         dark,
+        diffuse,
+        mapSamples,
         mapBrightness,
-        markerColor,
         baseColor,
-        arcColor,
+        markerColor,
+        glowColor,
         markerElevation,
         markers: markers.map((m) => ({
           location: m.location,
@@ -200,9 +155,57 @@ export function Globe({
           to: a.to,
           id: a.id,
         })),
+        arcColor,
+        arcWidth,
+        arcHeight,
+        opacity: 0.7,
       })
-      animationId = requestAnimationFrame(animate)
-    }
+
+      function animate() {
+        if (!globe || typeof globe.update !== 'function') return;
+        
+        if (!isPausedRef.current) {
+          phi += speed
+          if (
+            Math.abs(velocity.current.phi) > 0.0001 ||
+            Math.abs(velocity.current.theta) > 0.0001
+          ) {
+            phiOffsetRef.current += velocity.current.phi
+            thetaOffsetRef.current += velocity.current.theta
+            velocity.current.phi *= 0.95
+            velocity.current.theta *= 0.95
+          }
+          const thetaMin = -0.4,
+            thetaMax = 0.4
+          if (thetaOffsetRef.current < thetaMin) {
+            thetaOffsetRef.current += (thetaMin - thetaOffsetRef.current) * 0.1
+          } else if (thetaOffsetRef.current > thetaMax) {
+            thetaOffsetRef.current += (thetaMax - thetaOffsetRef.current) * 0.1
+          }
+        }
+        
+        globe.update({
+          phi: phi + phiOffsetRef.current + dragOffset.current.phi,
+          theta: theta + thetaOffsetRef.current + dragOffset.current.theta,
+          dark,
+          mapBrightness,
+          markerColor,
+          baseColor,
+          arcColor,
+          markerElevation,
+          markers: markers.map((m) => ({
+            location: m.location,
+            size: markerSize,
+            id: m.id,
+          })),
+          arcs: arcs.map((a) => ({
+            from: a.from,
+            to: a.to,
+            id: a.id,
+          })),
+        })
+        animationId = requestAnimationFrame(animate)
+      }
       animate()
       setTimeout(() => canvas && (canvas.style.opacity = "1"))
     }

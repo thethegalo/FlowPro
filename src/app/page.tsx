@@ -23,36 +23,36 @@ import {
 } from "@/components/ui/accordion";
 import { Globe } from '@/components/ui/cobe-globe';
 
+const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
+
+const pillars = [
+  { title: 'IA Neural Flow', icon: <Cpu className="h-6 w-6" />, desc: 'Abordagens personalizadas geradas em tempo real por nossa IA.', color: 'text-purple-400' },
+  { title: 'Captador de Leads', icon: <Search className="h-6 w-6" />, desc: 'Encontre clientes qualificados em qualquer nicho com um clique.', color: 'text-blue-400' },
+  { title: 'Jornada de 7 Dias', icon: <Layers className="h-6 w-6" />, desc: 'O caminho exato da primeira venda à escala brutal.', color: 'text-cyan-400' },
+];
+
+const salesActivity = [
+  { name: 'Lucas M.', amount: '497,00', time: '2 min ago' },
+  { name: 'Ana Silva', amount: '1.290,00', time: '5 min ago' },
+  { name: 'GXP Vendas', amount: '297,00', time: 'Agora' },
+  { name: 'Beatriz R.', amount: '890,00', time: '12 min ago' },
+  { name: 'Carlos J.', amount: '147,00', time: '15 min ago' },
+];
+
+const markers = [
+  { id: "saopaulo", location: [-23.5505, -46.6333] as [number, number], label: "São Paulo" },
+  { id: "lisbon", location: [38.7223, -9.1393] as [number, number], label: "Lisboa" },
+  { id: "nyc", location: [40.7128, -74.006] as [number, number], label: "New York" },
+  { id: "luanda", location: [-8.8390, 13.2894] as [number, number], label: "Luanda" },
+  { id: "tokyo", location: [35.6762, 139.6503] as [number, number], label: "Tokyo" },
+];
+
+const arcs = [
+  { id: "sp-lisbon", from: [-23.5505, -46.6333] as [number, number], to: [38.7223, -9.1393] as [number, number], label: "Flow Connection" },
+  { id: "sp-nyc", from: [-23.5505, -46.6333] as [number, number], to: [40.7128, -74.006] as [number, number] },
+];
+
 export default function Home() {
-  const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
-
-  const pillars = [
-    { title: 'IA Neural Flow', icon: <Cpu className="h-6 w-6" />, desc: 'Abordagens personalizadas geradas em tempo real por nossa IA.', color: 'text-purple-400' },
-    { title: 'Captador de Leads', icon: <Search className="h-6 w-6" />, desc: 'Encontre clientes qualificados em qualquer nicho com um clique.', color: 'text-blue-400' },
-    { title: 'Jornada de 7 Dias', icon: <Layers className="h-6 w-6" />, desc: 'O caminho exato da primeira venda à escala brutal.', color: 'text-cyan-400' },
-  ];
-
-  const salesActivity = [
-    { name: 'Lucas M.', amount: '497,00', time: '2 min ago' },
-    { name: 'Ana Silva', amount: '1.290,00', time: '5 min ago' },
-    { name: 'GXP Vendas', amount: '297,00', time: 'Agora' },
-    { name: 'Beatriz R.', amount: '890,00', time: '12 min ago' },
-    { name: 'Carlos J.', amount: '147,00', time: '15 min ago' },
-  ];
-
-  const markers = [
-    { id: "saopaulo", location: [-23.5505, -46.6333] as [number, number], label: "São Paulo" },
-    { id: "lisbon", location: [38.7223, -9.1393] as [number, number], label: "Lisboa" },
-    { id: "nyc", location: [40.7128, -74.006] as [number, number], label: "New York" },
-    { id: "luanda", location: [-8.8390, 13.2894] as [number, number], label: "Luanda" },
-    { id: "tokyo", location: [35.6762, 139.6503] as [number, number], label: "Tokyo" },
-  ];
-
-  const arcs = [
-    { id: "sp-lisbon", from: [-23.5505, -46.6333] as [number, number], to: [38.7223, -9.1393] as [number, number], label: "Flow Connection" },
-    { id: "sp-nyc", from: [-23.5505, -46.6333] as [number, number], to: [40.7128, -74.006] as [number, number] },
-  ];
-
   return (
     <div className="flex flex-col min-h-screen bg-[#050508] text-white">
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
