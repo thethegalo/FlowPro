@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -8,38 +9,40 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Progress } from '@/components/ui/progress';
-import { Zap, ArrowRight, ArrowLeft, Target, TrendingUp, Users } from 'lucide-react';
+import { Zap, ArrowRight, ArrowLeft, Target, TrendingUp, Users, Loader2 } from 'lucide-react';
 import { generateSalesActionPlan } from '@/ai/flows/generate-sales-action-plan';
 import { useToast } from '@/hooks/use-toast';
+import { useUser, useFirestore } from '@/firebase';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 const STEPS = [
   {
     id: 'industry',
-    title: 'Your Industry',
-    description: 'What field are you operating in?',
+    title: 'Seu Mercado',
+    description: 'Em qual área você quer atuar?',
     type: 'text',
-    placeholder: 'e.g. Real Estate, SaaS, E-commerce'
+    placeholder: 'Ex: Imobiliária, SaaS, E-commerce, Serviços Locais'
   },
   {
     id: 'experience',
-    title: 'Experience Level',
-    description: 'How long have you been in sales?',
+    title: 'Nível de Experiência',
+    description: 'Quanto você sabe sobre vendas?',
     type: 'radio',
-    options: ['Complete Beginner', '1-2 Years', '3-5 Years', 'Expert']
+    options: ['Iniciante Total', 'Já fiz algumas vendas', 'Experiente', 'Expert Alpha']
   },
   {
     id: 'challenge',
-    title: 'Core Challenge',
-    description: 'What is your biggest roadblock right now?',
+    title: 'Seu Maior Obstáculo',
+    description: 'O que te impede de faturar hoje?',
     type: 'radio',
-    options: ['Finding Leads', 'Closing Deals', 'Follow-up Consistency', 'Scaling My Efforts']
+    options: ['Encontrar Clientes', 'Fechar o Negócio', 'Scripts Fracos', 'Escalar Resultados']
   },
   {
     id: 'goal',
-    title: 'Monthly Goal',
-    description: 'What is your target revenue or client count?',
+    title: 'Meta Mensal',
+    description: 'Quanto você quer colocar no bolso todo mês?',
     type: 'text',
-    placeholder: 'e.g. $10,000 / month or 5 new clients'
+    placeholder: 'Ex: R$ 5.000 / mês ou 10 novos clientes'
   }
 ];
 
@@ -47,6 +50,8 @@ export default function QuizPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useUser();
+  const db = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -65,20 +70,48 @@ export default function QuizPage() {
   };
 
   const submitQuiz = async () => {
+    if (!user || !db) return;
     setIsSubmitting(true);
     try {
-      // In a real app, we'd save to Firestore here
-      const plan = await generateSalesActionPlan(answers);
+      // 1. Generate AI Plan
+      const planResponse = await generateSalesActionPlan(answers);
+      
+      // 2. Save Quiz Responses
+      const quizRef = doc(db, 'users', user.uid, 'quizResponses', 'initial');
+      await setDoc(quizRef, {
+        userId: user.uid,
+        responses: answers,
+        completedAt: serverTimestamp()
+      });
+
+      // 3. Save Personalized Plan
+      const planRef = doc(db, 'users', user.uid, 'personalizedPlans', 'current');
+      await setDoc(planRef, {
+        userId: user.uid,
+        quizResponseId: 'initial',
+        strategy: planResponse.plan[0].description, // Simplification for MVP
+        suggestedIncomeType: answers.industry,
+        executionMethod: 'Passo a passo diário FlowPro',
+        generatedAt: serverTimestamp()
+      });
+
+      // 4. Update User Profile
+      const userRef = doc(db, 'users', user.uid);
+      await setDoc(userRef, {
+        isOnboarded: true,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+
       toast({
-        title: "Profile Created!",
-        description: "Your AI Sales Plan is ready for review.",
+        title: "Perfil Criado!",
+        description: "Seu plano Alpha está pronto.",
       });
       router.push('/dashboard');
-    } catch (error) {
+    } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to generate plan. Please try again.",
+        title: "Erro",
+        description: "Falha ao gerar seu plano. Tente novamente.",
       });
     } finally {
       setIsSubmitting(false);
@@ -89,41 +122,36 @@ export default function QuizPage() {
   const progress = ((currentStep + 1) / STEPS.length) * 100;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-xl space-y-8">
+    <div className="min-h-screen bg-[#050508] flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-xl space-y-8 relative z-10">
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2 text-primary font-bold mb-2">
-            <Zap className="h-6 w-6" />
-            <span className="text-2xl tracking-tighter">FlowPro Profile</span>
+            <Zap className="h-6 w-6 animate-pulse" />
+            <span className="text-2xl tracking-tighter italic font-black uppercase">FlowPro Alpha</span>
           </div>
-          <h1 className="text-3xl font-bold font-headline">Let's build your plan</h1>
-          <p className="text-muted-foreground">Answer a few questions to get your personalized AI roadmap.</p>
+          <h1 className="text-3xl font-black italic uppercase tracking-tighter">Vamos Construir sua Máquina</h1>
+          <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-[0.2em]">Responda para personalizar sua jornada</p>
         </div>
 
         <div className="space-y-4">
-          <div className="flex justify-between text-xs font-bold text-muted-foreground uppercase tracking-widest">
-            <span>Step {currentStep + 1} of {STEPS.length}</span>
-            <span>{Math.round(progress)}% Complete</span>
+          <div className="flex justify-between text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+            <span>Passo {currentStep + 1} de {STEPS.length}</span>
+            <span>{Math.round(progress)}% Concluído</span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress value={progress} className="h-2 bg-white/5" />
         </div>
 
-        <Card className="border-none shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-8 opacity-5">
-            {currentStep === 0 && <Users className="h-24 w-24" />}
-            {currentStep === 1 && <TrendingUp className="h-24 w-24" />}
-            {currentStep === 2 && <Target className="h-24 w-24" />}
-          </div>
+        <Card className="glass-card border-white/10 relative overflow-hidden">
           <CardHeader>
-            <CardTitle>{currentStepData.title}</CardTitle>
-            <CardDescription>{currentStepData.description}</CardDescription>
+            <CardTitle className="text-xl font-black italic uppercase tracking-tight">{currentStepData.title}</CardTitle>
+            <CardDescription className="text-sm font-medium">{currentStepData.description}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {currentStepData.type === 'text' ? (
               <Input 
                 autoFocus
                 placeholder={currentStepData.placeholder} 
-                className="h-12 text-lg"
+                className="h-14 text-lg bg-white/5 border-white/10 rounded-2xl"
                 value={answers[currentStepData.id] || ''}
                 onChange={(e) => setAnswers({...answers, [currentStepData.id]: e.target.value})}
               />
@@ -136,10 +164,10 @@ export default function QuizPage() {
                 {currentStepData.options?.map((opt) => (
                   <Label
                     key={opt}
-                    className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all hover:bg-secondary/20 ${answers[currentStepData.id] === opt ? 'border-primary bg-primary/5 shadow-md' : 'border-transparent bg-secondary/10'}`}
+                    className={`flex items-center justify-between p-5 rounded-2xl border-2 cursor-pointer transition-all ${answers[currentStepData.id] === opt ? 'border-primary bg-primary/10' : 'border-white/5 bg-white/[0.02] hover:bg-white/5'}`}
                   >
-                    <span className="font-semibold">{opt}</span>
-                    <RadioGroupItem value={opt} />
+                    <span className="font-bold uppercase tracking-tight italic">{opt}</span>
+                    <RadioGroupItem value={opt} className="hidden" />
                   </Label>
                 ))}
               </RadioGroup>
@@ -150,16 +178,16 @@ export default function QuizPage() {
               variant="outline" 
               onClick={handleBack} 
               disabled={currentStep === 0 || isSubmitting}
-              className="flex-1 h-12"
+              className="flex-1 h-14 border-white/10 rounded-2xl font-black uppercase tracking-widest"
             >
-              <ArrowLeft className="mr-2 h-4 w-4" /> Back
+              VOLTAR
             </Button>
             <Button 
               onClick={handleNext} 
               disabled={!answers[currentStepData.id] || isSubmitting}
-              className="flex-[2] h-12 bg-primary shadow-lg shadow-primary/20"
+              className="flex-[2] h-14 bg-primary rounded-2xl font-black uppercase tracking-widest"
             >
-              {isSubmitting ? "Generating Plan..." : currentStep === STEPS.length - 1 ? "Complete Profile" : "Continue"} 
+              {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : currentStep === STEPS.length - 1 ? "FINALIZAR PERFIL" : "CONTINUAR"} 
               {!isSubmitting && <ArrowRight className="ml-2 h-4 w-4" />}
             </Button>
           </div>
