@@ -1,3 +1,22 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-sales",
+      "description": "Professional sales environment with growth charts",
+      "imageUrl": "https://picsum.photos/seed/flowpro-hero/1200/800",
+      "imageHint": "sales success"
+    },
+    {
+      "id": "mentor-avatar",
+      "description": "Professional AI Sales Mentor",
+      "imageUrl": "https://picsum.photos/seed/mentor/200/200",
+      "imageHint": "professional consultant"
+    },
+    {
+      "id": "quiz-bg",
+      "description": "Abstract purple geometric pattern",
+      "imageUrl": "https://picsum.photos/seed/quiz-flow/800/600",
+      "imageHint": "abstract purple"
+    }
+  ]
 }
