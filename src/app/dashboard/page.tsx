@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useEffect } from 'react';
@@ -21,13 +22,19 @@ import {
   Loader2,
   DollarSign,
   Target,
-  ShieldCheck
+  ShieldCheck,
+  LayoutDashboard,
+  Settings,
+  LogOut
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy } from 'firebase/firestore';
+import { collection, query, orderBy, doc, getDoc } from 'firebase/firestore';
+import { signOut } from 'firebase/auth';
+import { useAuth } from '@/firebase';
 
 export default function Dashboard() {
   const { user, isUserLoading } = useUser();
+  const auth = useAuth();
   const db = useFirestore();
   const router = useRouter();
 
@@ -61,14 +68,28 @@ export default function Dashboard() {
 
   const progressPercentage = (completedMissionIds.length / missions.length) * 100;
 
-  // Security Check (Admin skips paywall)
+  // Security Check
   useEffect(() => {
-    if (!isUserLoading && !isSubLoading && user) {
-      if (user.email !== ADMIN_EMAIL && (!subData || subData.length === 0)) {
-        router.push('/paywall');
+    if (!isUserLoading && !isSubLoading) {
+      if (!user) {
+        router.push('/auth');
+        return;
+      }
+      
+      // Admin bypasses paywall
+      const isAdmin = user.email === ADMIN_EMAIL;
+      const isPaid = subData && subData.length > 0;
+
+      if (!isAdmin && !isPaid) {
+        // Check if they finished quiz first, if not send to quiz
+        router.push('/quiz');
       }
     }
   }, [user, subData, isUserLoading, isSubLoading, router]);
+
+  const handleSignOut = () => {
+    signOut(auth).then(() => router.push('/'));
+  };
 
   if (isUserLoading || isSubLoading) {
     return (
@@ -92,22 +113,30 @@ export default function Dashboard() {
               />
             </div>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             {user?.email === ADMIN_EMAIL && (
-              <Button asChild variant="outline" size="sm" className="bg-primary/10 border-primary/20 text-primary hover:bg-primary/20">
-                <Link href="/admin">ADMIN PANEL</Link>
+              <Button asChild variant="outline" size="sm" className="hidden md:flex bg-primary/10 border-primary/20 text-primary hover:bg-primary/20 text-[10px] font-black uppercase tracking-widest h-8">
+                <Link href="/admin">ALPHA COMMAND</Link>
               </Button>
             )}
-            <Badge variant="secondary" className="bg-primary/10 text-primary gap-1 px-3 py-1">
+            <Badge variant="secondary" className="bg-primary/10 text-primary gap-1 px-3 py-1 text-[10px] font-black uppercase hidden sm:flex">
               <Flame className="h-3 w-3" /> {completedMissionIds.length + 1}D STREAK
             </Badge>
+            <Button variant="ghost" size="icon" onClick={handleSignOut} className="text-muted-foreground hover:text-white">
+              <LogOut className="h-5 w-5" />
+            </Button>
           </div>
         </div>
       </header>
 
       <main className="flex-1 p-4 md:p-8 space-y-8 container mx-auto max-w-4xl">
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-black italic uppercase tracking-tighter">Olá, {user?.displayName || (user?.email === ADMIN_EMAIL ? 'Admin Master' : 'Guerreiro Alpha')}</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-black italic uppercase tracking-tighter">Olá, {user?.displayName || (user?.email === ADMIN_EMAIL ? 'Admin Master' : 'Guerreiro Alpha')}</h1>
+            {user?.email === ADMIN_EMAIL && (
+              <Badge className="bg-primary text-white text-[8px] font-black px-2 py-0.5 uppercase tracking-widest">ADMIN</Badge>
+            )}
+          </div>
           <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-widest flex items-center gap-2">
             <Target className="h-3 w-3 text-primary" /> Objetivo: Sua primeira venda em 72h
           </p>
@@ -116,10 +145,10 @@ export default function Dashboard() {
         <div className="grid gap-4 md:grid-cols-2">
           <Card className="glass-card border-white/10">
             <CardHeader className="pb-2">
-              <CardTitle className="text-[10px] font-black uppercase tracking-widest opacity-70">Seu Progresso</CardTitle>
+              <CardTitle className="text-[10px] font-black uppercase tracking-widest opacity-70">Seu Progresso de Execução</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-black italic uppercase">{completedMissionIds.length} / {missions.length} CONCLUÍDO</div>
+              <div className="text-2xl font-black italic uppercase">{completedMissionIds.length} / {missions.length} MISSÕES</div>
               <Progress value={progressPercentage} className="h-2 mt-4 bg-white/5" />
             </CardContent>
           </Card>
@@ -129,30 +158,31 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-black italic flex items-center gap-1">
-                <DollarSign className="h-5 w-5" /> R$ {completedMissionIds.length * 300},00
+                <DollarSign className="h-5 w-5" /> R$ {completedMissionIds.length * 300 + 300},00
               </div>
-              <p className="text-[10px] font-bold uppercase tracking-widest opacity-50 mt-1">Baseado em execuções práticas</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest opacity-50 mt-1">Estimativa baseada em esforço</p>
             </CardContent>
           </Card>
         </div>
 
         <div className="space-y-4">
           <h2 className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-2">
-            <Zap className="h-5 w-5 text-primary" /> Missões de Execução
+            <Zap className="h-5 w-5 text-primary" /> Jornada de Vendas
           </h2>
           
           <div className="grid gap-4">
             {missions.map((mission, index) => {
               const isCompleted = completedMissionIds.includes(mission.id);
-              const isLocked = index > completedMissionIds.length && user?.email !== ADMIN_EMAIL;
-              const isCurrent = index === completedMissionIds.length || user?.email === ADMIN_EMAIL;
+              const isAdmin = user?.email === ADMIN_EMAIL;
+              const isLocked = index > completedMissionIds.length && !isAdmin;
+              const isCurrent = index === completedMissionIds.length || isAdmin;
 
               return (
                 <div 
                   key={mission.id} 
                   className={`relative overflow-hidden p-6 rounded-2xl border transition-all ${
                     isLocked 
-                    ? 'bg-white/[0.02] border-white/5 opacity-40' 
+                    ? 'bg-white/[0.01] border-white/5 opacity-30 grayscale' 
                     : isCurrent 
                     ? 'bg-primary/5 border-primary/40 shadow-[0_0_30px_rgba(139,92,246,0.1)]' 
                     : 'bg-white/[0.03] border-accent/20'
@@ -173,10 +203,10 @@ export default function Dashboard() {
                       </div>
                     </div>
                     
-                    {(!isLocked || user?.email === ADMIN_EMAIL) && (
+                    {(!isLocked || isAdmin) && (
                       <Button asChild variant={isCurrent ? "default" : "outline"} className="rounded-xl font-black uppercase text-[10px] tracking-widest h-10 px-6">
                         <Link href={`/missions/${mission.id}`}>
-                          {isCompleted ? 'REVISAR' : 'EXECUTAR'} <ChevronRight className="ml-1 h-4 w-4" />
+                          {isCompleted ? 'REVISAR' : 'COMEÇAR'} <ChevronRight className="ml-1 h-4 w-4" />
                         </Link>
                       </Button>
                     )}
@@ -193,7 +223,7 @@ export default function Dashboard() {
               <MessageSquare className="h-8 w-8 text-primary group-hover:scale-110 transition-transform" />
               <div className="text-center">
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] block">IA Mentor</span>
-                <span className="text-[8px] opacity-50 uppercase">Pergunte à IA</span>
+                <span className="text-[8px] opacity-50 uppercase">Tire dúvidas</span>
               </div>
             </Link>
           </Button>
@@ -202,11 +232,19 @@ export default function Dashboard() {
               <BookOpen className="h-8 w-8 text-accent group-hover:scale-110 transition-transform" />
               <div className="text-center">
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] block">Scripts</span>
-                <span className="text-[8px] opacity-50 uppercase">Modelos Prontos</span>
+                <span className="text-[8px] opacity-50 uppercase">Copiar/Colar</span>
               </div>
             </Link>
           </Button>
         </div>
+
+        {user?.email === ADMIN_EMAIL && (
+          <div className="md:hidden pt-4">
+            <Button asChild className="w-full bg-primary/20 text-primary border border-primary/30 font-black uppercase tracking-widest h-12 rounded-2xl">
+              <Link href="/admin">PAINEL ALPHA COMMAND</Link>
+            </Button>
+          </div>
+        )}
       </main>
     </div>
   );

@@ -9,36 +9,36 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Zap, ArrowRight, Loader2, CheckCircle2, TrendingUp, Clock, Target, ShieldCheck, Smartphone, MousePointer2, TrendingDown } from 'lucide-react';
-import { useUser, useFirestore } from '@/firebase';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { doc, setDoc, serverTimestamp, collection, query } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
 const STEPS = [
   {
     id: 'hours',
-    title: 'Disponibilidade',
-    description: 'Quantas horas por dia você pode dedicar ao FlowPro?',
+    title: 'Disponibilidade Diária',
+    description: 'Quanto tempo você tem para focar na sua liberdade financeira?',
     type: 'radio',
     options: ['1h', '2h', '3h', '4h+']
   },
   {
     id: 'appear',
-    title: 'Perfil de Atuação',
-    description: 'Você prefere aparecer nos vídeos/vendas ou ser um "vendedor oculto"?',
+    title: 'Perfil de Vendedor',
+    description: 'Você prefere ser autoridade ou trabalhar nos bastidores?',
     type: 'radio',
     options: ['Quero aparecer', 'Prefiro não aparecer']
   },
   {
     id: 'difficulty',
-    title: 'Sua Maior Dificuldade',
+    title: 'Sua Maior Barreira',
     description: 'O que te impede de faturar hoje?',
     type: 'radio',
     options: ['Falta de tempo', 'Medo de vender', 'Não sei por onde começar']
   },
   {
     id: 'invest',
-    title: 'Investimento Inicial',
-    description: 'Você tem algum capital para investir em anúncios ou ferramentas pagas agora?',
+    title: 'Capital Inicial',
+    description: 'Você tem algum valor para investir em ferramentas ou tráfego?',
     type: 'radio',
     options: ['Sim', 'Não']
   },
@@ -51,24 +51,24 @@ const STEPS = [
   },
   {
     id: 'device',
-    title: 'Seu Equipamento',
-    description: 'O que você vai usar para trabalhar?',
+    title: 'Ferramenta de Trabalho',
+    description: 'O que você vai usar para executar as missões?',
     type: 'radio',
     options: ['Só celular', 'Tenho computador']
   },
   {
     id: 'type',
     title: 'Preferência de Nicho',
-    description: 'Você prefere focar em produtos físicos ou prestação de serviços digitais?',
+    description: 'Em que mercado você se sente mais confortável?',
     type: 'radio',
-    options: ['Produtos', 'Serviços']
+    options: ['Produtos Físicos', 'Serviços Digitais']
   },
   {
     id: 'triedBefore',
-    title: 'Histórico',
-    description: 'Você já tentou ganhar dinheiro online antes?',
+    title: 'Experiência Prévia',
+    description: 'Você já tentou algum método de ganhos online?',
     type: 'radio',
-    options: ['Sim', 'Não']
+    options: ['Sim, tentei e desisti', 'Nunca tentei nada']
   }
 ];
 
@@ -79,10 +79,29 @@ export default function QuizPage() {
   const [processingMessage, setProcessingMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const db = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
+
+  const ADMIN_EMAIL = "thethegalo@gmail.com";
+
+  // Check if already paid or admin
+  const subQuery = useMemoFirebase(() => {
+    if (!db || !user) return null;
+    return query(collection(db, 'users', user.uid, 'subscriptions'));
+  }, [db, user]);
+  const { data: subData } = useCollection(subQuery);
+
+  useEffect(() => {
+    if (!isUserLoading && user) {
+      if (user.email === ADMIN_EMAIL || (subData && subData.length > 0)) {
+        router.push('/dashboard');
+      }
+    } else if (!isUserLoading && !user) {
+      router.push('/auth');
+    }
+  }, [user, isUserLoading, subData, router]);
 
   const messages = [
     "Analisando seu perfil...",
@@ -129,10 +148,7 @@ export default function QuizPage() {
   };
 
   const saveResults = async () => {
-    if (!user || !db) {
-        router.push('/auth');
-        return;
-    }
+    if (!user || !db) return;
     setIsSubmitting(true);
     try {
       const quizRef = doc(db, 'users', user.uid, 'quizResponses', 'initial');
@@ -142,12 +158,18 @@ export default function QuizPage() {
         completedAt: serverTimestamp()
       }, { merge: true });
 
+      // Mark user as onboarded
+      const userRef = doc(db, 'users', user.uid);
+      await setDoc(userRef, { isOnboarded: true }, { merge: true });
+
       router.push('/paywall');
     } catch (error: any) {
       toast({ variant: "destructive", title: "Erro", description: "Falha ao salvar seu plano." });
       setIsSubmitting(false);
     }
   };
+
+  if (isUserLoading) return null;
 
   if (status === 'processing') {
     return (
@@ -186,11 +208,11 @@ export default function QuizPage() {
             </CardHeader>
             <CardContent className="p-8 space-y-8">
               <div className="space-y-2 text-center md:text-left">
-                <p className="text-muted-foreground uppercase text-[10px] font-black tracking-widest opacity-70">Melhor Caminho</p>
-                <p className="text-xl font-bold italic">
-                  {answers.type === 'Serviços' 
-                    ? "Venda de Serviços Digitais de Alta Demanda via Abordagem Direta"
-                    : "Revenda Estratégica de Produtos Alpha com Scripts de Conversão"
+                <p className="text-muted-foreground uppercase text-[10px] font-black tracking-widest opacity-70">Caminho de Menor Resistência</p>
+                <p className="text-xl font-bold italic text-white">
+                  {answers.type === 'Serviços Digitais' 
+                    ? "Venda de Micro-Serviços de IA via Abordagem Direta"
+                    : "Intermediação Estratégica de Produtos Alpha no Orgânico"
                   }
                 </p>
               </div>
@@ -199,14 +221,14 @@ export default function QuizPage() {
                 <div className="p-5 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center md:items-start">
                   <div className="flex items-center gap-2 mb-2 text-primary">
                     <Clock className="h-4 w-4" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Tempo Disponível</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Comprometimento</span>
                   </div>
                   <p className="text-lg font-bold">{answers.hours} p/ dia</p>
                 </div>
                 <div className="p-5 rounded-2xl bg-primary/10 border border-primary/30 flex flex-col items-center md:items-start shadow-[0_0_30px_rgba(139,92,246,0.1)]">
                   <div className="flex items-center gap-2 mb-2 text-primary">
                     <TrendingUp className="h-4 w-4" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Potencial de Lucro</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Meta de Ganhos</span>
                   </div>
                   <p className="text-2xl font-black italic text-white">{calculateEarnings()}<span className="text-xs font-normal opacity-70 ml-1">/mês</span></p>
                 </div>
@@ -214,9 +236,9 @@ export default function QuizPage() {
 
               <div className="space-y-4 pt-4 border-t border-white/5">
                 {[
-                  { label: `Estratégia de ${answers.appear === 'Quero aparecer' ? 'Autoridade' : 'Vendedor Oculto'}`, done: true },
-                  { label: "Roteiro de execução para 3 dias", done: true },
-                  { label: `Otimizado para ${answers.device}`, done: true }
+                  { label: `Método de ${answers.appear === 'Quero aparecer' ? 'Autoridade' : 'Vendedor Oculto'} definido`, done: true },
+                  { label: "Roteiro de execução para 72 horas pronto", done: true },
+                  { label: `Configurado para uso em ${answers.device}`, done: true }
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-center gap-3 text-sm font-bold text-green-400">
                     <CheckCircle2 className="h-4 w-4 shrink-0" /> {item.label}
@@ -231,7 +253,7 @@ export default function QuizPage() {
               >
                 {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : (
                   <span className="flex items-center gap-2">
-                    ATIVAR MEU PLANO <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform" />
+                    VER MEU PLANO COMPLETO <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform" />
                   </span>
                 )}
               </Button>
@@ -250,7 +272,7 @@ export default function QuizPage() {
       <div className="w-full max-w-xl space-y-8 relative z-10">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-black italic uppercase tracking-tighter">Personalize sua Jornada</h1>
-          <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-[0.2em]">O algoritmo precisa entender seu perfil alpha</p>
+          <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-[0.2em]">O algoritmo está definindo sua melhor rota</p>
         </div>
 
         <div className="space-y-4">
