@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -25,7 +26,7 @@ import {
 } from "@/components/ui/accordion";
 
 export default function Home() {
-  const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/rjyrip9n5saiz4dgdgpephqg?v=1774305985862";
+  const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/mqo6mitecu26zqjr7b2ntxzs?v=1774306417581";
 
   const pillars = [
     { title: 'IA Neural Autônoma', icon: <Cpu className="h-6 w-6" />, desc: 'Vendedores virtuais que aprendem e adaptam em tempo real.', color: 'text-purple-400' },
@@ -53,10 +54,9 @@ export default function Home() {
       {/* Navigation */}
       <header className="px-6 h-20 flex items-center justify-between sticky top-0 z-50 bg-[#050508]/70 backdrop-blur-xl border-b border-white/5">
         <Link href="/" className="flex items-center group relative">
-          {/* Interactive Glow behind logo */}
           <div className="absolute -inset-4 bg-primary/30 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-700 -z-10 scale-50 group-hover:scale-100"></div>
           
-          <div className="relative h-12 w-32 md:h-14 md:w-44 transition-transform duration-500 group-hover:scale-105">
+          <div className="relative h-10 w-32 md:h-12 md:w-40 transition-transform duration-500 group-hover:scale-105">
             <Image 
               src={LOGO_URL} 
               alt="FlowPro Logo" 
@@ -68,8 +68,8 @@ export default function Home() {
         </Link>
         <div className="hidden md:flex items-center gap-10">
           <Link href="#tecnologia" className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-all">Tecnologia</Link>
-          <Link href="#planos" className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-all">Ecossistema</Link>
           <Link href="#faq" className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-all">Suporte</Link>
+          <Link href="/auth" className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-all">Login</Link>
         </div>
         <Button asChild className="bg-white text-black hover:bg-primary hover:text-white font-black rounded-full px-8 h-10 transition-all duration-500 hover:scale-105 active:scale-95">
           <Link href="/quiz">ATIVAR AGORA</Link>
@@ -159,110 +159,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Elite Training / Showcase */}
-        <section className="py-40 relative">
-          <div className="container px-6 mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-              <div className="space-y-10">
-                <Badge className="bg-primary/20 text-primary border border-primary/30">ALPHA ACADEMY</Badge>
-                <h2 className="text-5xl md:text-7xl font-black italic leading-[0.9] uppercase">NÃO É SORTE. <br /><span className="text-primary">É CÓDIGO.</span></h2>
-                <p className="text-muted-foreground text-lg leading-relaxed font-medium">
-                  Mais do que uma ferramenta, entregamos a metodologia dos maiores players do mercado global. Aprenda a configurar sua IA para fechar contratos enquanto você vive a vida.
-                </p>
-                <div className="grid grid-cols-2 gap-8">
-                  <div>
-                    <p className="text-4xl font-black text-white italic">94%</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-2">Taxa de Abertura</p>
-                  </div>
-                  <div>
-                    <p className="text-4xl font-black text-primary italic">3.8x</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-2">ROI Médio</p>
-                  </div>
-                </div>
-                <Button variant="outline" className="h-14 rounded-2xl border-white/10 hover:bg-white hover:text-black font-black uppercase tracking-widest px-8">VER CURRÍCULO</Button>
-              </div>
-
-              <div className="relative h-[600px] w-full rounded-[3rem] overflow-hidden border border-white/10 group">
-                <Image 
-                  src={PlaceHolderImages[0].imageUrl} 
-                  alt="Interface" 
-                  fill 
-                  className="object-cover opacity-60 group-hover:scale-105 transition-transform duration-[2s]"
-                  data-ai-hint="digital dashboard"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-transparent to-transparent"></div>
-                <div className="absolute inset-0 bg-primary/10 mix-blend-overlay"></div>
-                <div className="absolute bottom-12 left-12 right-12 p-8 glass-card border-white/20">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="h-3 w-3 rounded-full bg-red-500 animate-pulse"></div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em]">Live Simulation</span>
-                  </div>
-                  <p className="text-xl font-black italic uppercase tracking-tighter">"Lead qualificado em 12 segundos via IA Neural Alpha"</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Pricing Strategy */}
-        <section id="planos" className="py-40 bg-white/[0.01] border-y border-white/5">
-          <div className="container px-6 mx-auto">
-            <div className="text-center mb-24">
-              <h2 className="text-4xl md:text-6xl font-black italic uppercase mb-4">ESCOLHA SEU <span className="text-primary">COMBUSTÍVEL</span></h2>
-              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground">Vagas limitadas para o plano Vitalício</p>
-            </div>
-
-            <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-10">
-              {/* Plan 1 */}
-              <div className="glass-card p-12 flex flex-col justify-between group">
-                <div>
-                  <h3 className="text-xs font-black uppercase tracking-[0.4em] mb-10 text-muted-foreground">Standard Access</h3>
-                  <div className="mb-12">
-                    <span className="text-6xl font-black italic">R$ 197</span>
-                    <span className="text-muted-foreground text-sm font-bold">/mês</span>
-                  </div>
-                  <ul className="space-y-6 mb-16">
-                    {['Acesso à Plataforma V1', 'IA de Atendimento Básica', 'Suporte via Ticket', 'Scripts Padrão'].map((f, i) => (
-                      <li key={i} className="flex items-center gap-4 text-sm font-bold uppercase tracking-widest">
-                        <div className="h-1.5 w-1.5 rounded-full bg-primary/50"></div> {f}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <Button variant="outline" className="w-full h-16 rounded-2xl border-white/10 hover:bg-white text-black font-black uppercase tracking-[0.2em] transition-all">ASSINAR MENSAL</Button>
-              </div>
-
-              {/* Plan 2 - Highlight */}
-              <div className="relative group p-[2px] rounded-[var(--radius)] overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-marquee bg-[length:200%_200%]"></div>
-                <div className="relative bg-[#050508] p-12 flex flex-col justify-between h-full rounded-[calc(var(--radius)-2px)]">
-                  <div className="absolute top-6 right-6 bg-primary text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg">93% OFF</div>
-                  <div>
-                    <h3 className="text-xs font-black uppercase tracking-[0.4em] mb-4 text-primary">Alpha Founder Elite</h3>
-                    <div className="mb-2">
-                      <span className="text-xs text-muted-foreground line-through decoration-primary">De R$ 1.997,00</span>
-                    </div>
-                    <div className="mb-12">
-                      <span className="text-7xl font-black italic text-white">R$ 497</span>
-                      <span className="text-primary text-[10px] font-black block mt-3 tracking-[0.3em] uppercase">Taxa Única • Vitalício</span>
-                    </div>
-                    <ul className="space-y-6 mb-16">
-                      {['Tudo do Standard', 'Acesso Vitalício Garantido', 'Mentoria Alpha Mensal', 'Scripts VIP Ilimitados', 'Prioridade em Novos Modelos'].map((f, i) => (
-                        <li key={i} className="flex items-center gap-4 text-sm font-black uppercase tracking-widest text-white">
-                          <Star className="h-4 w-4 text-primary fill-primary" /> {f}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <Button className="w-full h-16 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-[0.2em] shadow-[0_15px_35px_rgba(139,92,246,0.5)] group">
-                    DOMINAR AGORA <Zap className="ml-2 h-5 w-5 fill-white group-hover:scale-125 transition-transform" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* FAQ */}
         <section id="faq" className="py-40">
           <div className="container px-6 mx-auto max-w-4xl">
@@ -307,9 +203,9 @@ export default function Home() {
             <div className="space-y-6">
               <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Sistemas</h4>
               <nav className="flex flex-col gap-4">
-                <Link href="#" className="text-xs text-muted-foreground hover:text-white transition-all uppercase tracking-widest">Dashboard</Link>
-                <Link href="#" className="text-xs text-muted-foreground hover:text-white transition-all uppercase tracking-widest">API Docs</Link>
-                <Link href="#" className="text-xs text-muted-foreground hover:text-white transition-all uppercase tracking-widest">Termos</Link>
+                <Link href="/dashboard" className="text-xs text-muted-foreground hover:text-white transition-all uppercase tracking-widest">Dashboard</Link>
+                <Link href="/auth" className="text-xs text-muted-foreground hover:text-white transition-all uppercase tracking-widest">Login</Link>
+                <Link href="/quiz" className="text-xs text-muted-foreground hover:text-white transition-all uppercase tracking-widest">Ativar Plano</Link>
               </nav>
             </div>
             <div className="space-y-6">
@@ -317,7 +213,7 @@ export default function Home() {
               <nav className="flex flex-col gap-4">
                 <Link href="#" className="text-xs text-muted-foreground hover:text-white transition-all uppercase tracking-widest">Instagram</Link>
                 <Link href="#" className="text-xs text-muted-foreground hover:text-white transition-all uppercase tracking-widest">Suporte</Link>
-                <Link href="#" className="text-xs text-muted-foreground hover:text-white transition-all uppercase tracking-widest">Comunidade</Link>
+                <Link href="/admin" className="text-xs text-muted-foreground hover:text-white transition-all uppercase tracking-widest">Admin</Link>
               </nav>
             </div>
           </div>

@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import { Zap, ArrowRight, Loader2, CheckCircle2, TrendingUp, Clock, Target, ShieldCheck } from 'lucide-react';
+import { Zap, ArrowRight, Loader2, CheckCircle2, TrendingUp, Clock, Target, ShieldCheck, Smartphone, MousePointer2, TrendingDown } from 'lucide-react';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
@@ -29,11 +29,32 @@ const STEPS = [
     options: ['Quero aparecer', 'Prefiro não aparecer']
   },
   {
+    id: 'difficulty',
+    title: 'Sua Maior Dificuldade',
+    description: 'O que te impede de faturar hoje?',
+    type: 'radio',
+    options: ['Falta de tempo', 'Medo de vender', 'Não sei por onde começar']
+  },
+  {
     id: 'invest',
     title: 'Investimento Inicial',
     description: 'Você tem algum capital para investir em anúncios ou ferramentas pagas agora?',
     type: 'radio',
     options: ['Sim', 'Não']
+  },
+  {
+    id: 'target',
+    title: 'Meta de Faturamento',
+    description: 'Quanto você quer ganhar nos próximos 30 dias?',
+    type: 'radio',
+    options: ['R$ 500', 'R$ 2.000', 'R$ 5.000+']
+  },
+  {
+    id: 'device',
+    title: 'Seu Equipamento',
+    description: 'O que você vai usar para trabalhar?',
+    type: 'radio',
+    options: ['Só celular', 'Tenho computador']
   },
   {
     id: 'type',
@@ -58,7 +79,7 @@ export default function QuizPage() {
   const [processingMessage, setProcessingMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const { user, isUserLoading } = useUser();
+  const { user } = useUser();
   const db = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
@@ -195,7 +216,7 @@ export default function QuizPage() {
                 {[
                   { label: `Estratégia de ${answers.appear === 'Quero aparecer' ? 'Autoridade' : 'Vendedor Oculto'}`, done: true },
                   { label: "Roteiro de execução para 3 dias", done: true },
-                  { label: "Mentor IA configurado para seu perfil", done: true }
+                  { label: `Otimizado para ${answers.device}`, done: true }
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-center gap-3 text-sm font-bold text-green-400">
                     <CheckCircle2 className="h-4 w-4 shrink-0" /> {item.label}
