@@ -51,9 +51,12 @@ export default function Home() {
       </div>
 
       {/* Navigation */}
-      <header className="px-6 h-24 flex items-center justify-between sticky top-0 z-50 bg-[#050508]/70 backdrop-blur-xl border-b border-white/5">
-        <Link href="/" className="flex items-center group">
-          <div className="relative h-16 w-48 md:h-20 md:w-56 transition-transform duration-500 group-hover:scale-110">
+      <header className="px-6 h-20 flex items-center justify-between sticky top-0 z-50 bg-[#050508]/70 backdrop-blur-xl border-b border-white/5">
+        <Link href="/" className="flex items-center group relative">
+          {/* Interactive Glow behind logo */}
+          <div className="absolute -inset-4 bg-primary/30 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-700 -z-10 scale-50 group-hover:scale-100"></div>
+          
+          <div className="relative h-12 w-32 md:h-14 md:w-44 transition-transform duration-500 group-hover:scale-105">
             <Image 
               src={LOGO_URL} 
               alt="FlowPro Logo" 
@@ -68,28 +71,15 @@ export default function Home() {
           <Link href="#planos" className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-all">Ecossistema</Link>
           <Link href="#faq" className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-all">Suporte</Link>
         </div>
-        <Button asChild className="bg-white text-black hover:bg-primary hover:text-white font-black rounded-full px-8 h-12 transition-all duration-500 hover:scale-105 active:scale-95">
+        <Button asChild className="bg-white text-black hover:bg-primary hover:text-white font-black rounded-full px-8 h-10 transition-all duration-500 hover:scale-105 active:scale-95">
           <Link href="/quiz">ATIVAR AGORA</Link>
         </Button>
       </header>
 
       <main className="relative z-10">
         {/* Hero Section */}
-        <section className="relative pt-16 pb-32 lg:pt-24 lg:pb-56 overflow-hidden">
+        <section className="relative pt-24 pb-32 lg:pt-32 lg:pb-56 overflow-hidden">
           <div className="container px-6 mx-auto text-center relative z-20">
-            {/* GIANT LOGO DISPLAY */}
-            <div className="flex justify-center mb-12 animate-float">
-              <div className="relative h-40 w-80 md:h-64 md:w-[500px] drop-shadow-[0_0_30px_rgba(139,92,246,0.3)]">
-                <Image 
-                  src={LOGO_URL} 
-                  alt="FlowPro Hero Logo" 
-                  fill 
-                  className="object-contain"
-                  priority
-                />
-              </div>
-            </div>
-
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.3em] mb-10 shadow-[0_0_20px_rgba(255,255,255,0.05)]">
               <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
               Acesso Alpha Disponível
