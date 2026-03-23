@@ -1,4 +1,3 @@
-
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -22,6 +21,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Globe } from '@/components/ui/cobe-globe';
+import { MacbookShowcase } from '@/components/MacbookShowcase';
 
 const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
 
@@ -186,6 +186,8 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <MacbookShowcase />
 
         <section id="faq" className="py-40">
           <div className="container px-6 mx-auto max-w-4xl">

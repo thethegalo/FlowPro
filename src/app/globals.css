@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -37,6 +36,42 @@
   }
 }
 
+/* ─── MACBOOK ANIMATIONS ─── */
+@keyframes sceneIn {
+  0%   { opacity:0; transform: perspective(1400px) rotateX(12deg) translateY(60px) scale(0.88); }
+  100% { opacity:1; transform: perspective(1400px) rotateX(0deg)  translateY(0)    scale(1); }
+}
+
+@keyframes blobMove { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-20px)} }
+
+@keyframes fadeD { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:none} }
+
+@keyframes fadeU { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+
+@keyframes pls { 0%,100%{opacity:0.35;transform:scale(0.8)} 50%{opacity:1;transform:scale(1.15)} }
+
+@keyframes grow { from { width: 0%; } to { width: 18%; } }
+
+@keyframes mac-shim { 0%{opacity:0}60%{opacity:1}100%{opacity:0} }
+
+@keyframes slideIn { from{opacity:0;transform:translateX(-18px)} to{opacity:1;transform:none} }
+
+@keyframes drawPath { to { stroke-dashoffset: 0; } }
+
+@keyframes mac-fadeIn { to { opacity: 1; } }
+
+.animate-sceneIn { animation: sceneIn 1.2s cubic-bezier(0.16,1,0.3,1) both; }
+.animate-blobMove { animation: blobMove 8s ease-in-out infinite; }
+.animate-blobMoveRev { animation: blobMove 10s ease-in-out infinite reverse; }
+.animate-fadeD { animation: fadeD 0.7s ease 0.5s both; }
+.animate-fadeU { animation: fadeU 0.7s ease 0.65s both; }
+.animate-grow { animation: grow 2.2s cubic-bezier(0.22,1,0.36,1) 1.3s forwards; }
+.animate-mac-shim { animation: mac-shim 2.2s ease 1.3s forwards; }
+.animate-slideIn-1 { animation: slideIn 0.55s ease 1.2s both; }
+.animate-slideIn-2 { animation: slideIn 0.55s ease 1.38s both; }
+.animate-slideIn-3 { animation: slideIn 0.55s ease 1.56s both; }
+
+/* ─── GLOBAL UI ANIMATIONS ─── */
 @keyframes float {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
   50% { transform: translateY(-15px) rotate(1deg); }
