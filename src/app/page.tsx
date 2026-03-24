@@ -84,7 +84,7 @@ export default function Home() {
                 
                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.85] mb-12 uppercase">
                   ESCALE <br />
-                  <span className="shimmer-text italic">INFINITO</span>
+                  <span className="shimmer-text italic pr-4">INFINITO</span>
                 </h1>
                 
                 <p className="text-muted-foreground text-lg md:text-2xl max-w-2xl mx-auto lg:mx-0 mb-16 font-medium leading-relaxed">
@@ -169,4 +169,3 @@ export default function Home() {
     </div>
   );
 }
-
