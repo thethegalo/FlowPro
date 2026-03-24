@@ -16,7 +16,8 @@ import {
   ArrowRight,
   Target,
   TrendingUp,
-  Lock
+  Lock,
+  CalendarCheck
 } from 'lucide-react';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -28,6 +29,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import Image from 'next/image';
+
+const LOGO_ICON = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/d5tqr6czngeukjb8r6whrs5s?v=1774318273085";
 
 export default function PaywallPage() {
   const { user } = useUser();
@@ -54,48 +58,60 @@ export default function PaywallPage() {
   };
 
   const faqs = [
-    { q: "Qual a diferença dos planos?", a: "O plano vitalício libera a Fase 1 (7 dias) e o suporte básico. O plano mensal (Flow Pro) libera a Fase 2, com leads ilimitados, novas estratégias de escala e IA avançada de prospecção." },
-    { q: "Posso mudar de plano depois?", a: "Sim, você pode migrar para o plano Pro a qualquer momento para desbloquear a escala ilimitada." },
-    { q: "Preciso investir dinheiro em anúncios?", a: "Não. Ensinamos estratégias de tráfego orgânico para que você faça sua primeira venda sem gastar em anúncios." },
-    { q: "Como funciona o suporte?", a: "Você terá acesso ao nosso Mentor IA 24h por dia para tirar qualquer dúvida técnica ou estratégica." }
+    { q: "Qual a diferença dos planos?", a: "O plano Vitalício libera a Fase 1 (Jornada de 7 Dias) e as ferramentas básicas para sua primeira venda. O plano Flow Pro (Assinatura) é focado em escala brutal, com leads ilimitados, IA avançada e estratégias de Fase 2." },
+    { q: "Posso parcelar o Vitalício?", a: "Sim! O plano Vitalício pode ser parcelado em até 12x no cartão de crédito através do nosso checkout seguro." },
+    { q: "Preciso investir dinheiro em anúncios?", a: "Não. O Método Flow foca 100% em prospecção ativa e tráfego orgânico para que você lucre sem depender de Facebook ou Google Ads." },
+    { q: "Como funciona o suporte?", a: "Você terá acesso ao nosso Mentor IA 24h por dia, além de acesso à comunidade de guerreiros Flow no plano Pro." }
   ];
 
   return (
     <div className="min-h-screen bg-[#050508] text-white">
-      <section className="py-20 px-4">
-        <div className="container max-w-5xl mx-auto space-y-12">
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px]"></div>
+      </div>
+
+      <section className="py-20 px-4 relative z-10">
+        <div className="container max-w-5xl mx-auto space-y-16">
           <div className="text-center space-y-6">
-            <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-[0.3em] text-[10px]">Evolução Contínua</Badge>
-            <h1 className="text-4xl md:text-7xl font-black italic uppercase tracking-tighter leading-none">
+            <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5">Evolução Contínua</Badge>
+            <h1 className="text-5xl md:text-8xl font-black italic uppercase tracking-tighter leading-[0.85]">
               DA PRIMEIRA VENDA <br /><span className="text-primary shimmer-text">À ESCALA BRUTAL.</span>
             </h1>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-medium">
+            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto font-medium uppercase tracking-tight">
               Escolha seu nível de entrada. Comece a jornada ou domine o mercado com acesso Pro ilimitado.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
-            <Card className="glass-card p-8 flex flex-col justify-between border-white/5 relative overflow-hidden rounded-[2rem] opacity-90">
-              <div className="space-y-6 relative z-10">
-                <div className="space-y-1">
-                  <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                    <Infinity className="h-4 w-4" /> Plano Vitalício (Base)
+          <div className="grid md:grid-cols-2 gap-10 max-w-4xl mx-auto items-stretch">
+            {/* PLANO VITALÍCIO */}
+            <Card className="glass-card p-10 flex flex-col justify-between border-white/10 relative overflow-hidden rounded-[2.5rem] bg-white/[0.04] group hover:bg-white/[0.06] transition-all duration-500">
+              <div className="space-y-8 relative z-10">
+                <div className="space-y-3">
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 flex items-center gap-2">
+                    <Infinity className="h-4 w-4 text-white/30" /> Plano Vitalício (Base)
                   </h3>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-muted-foreground line-through text-xs decoration-primary/50">R$ 497</span>
-                    <p className="text-4xl font-black italic text-white">R$ 267</p>
+                  <div className="space-y-1">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-muted-foreground line-through text-sm decoration-primary/50 opacity-50">R$ 497</span>
+                      <p className="text-6xl font-black italic text-white tracking-tighter">R$ 267</p>
+                    </div>
+                    <p className="text-primary text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
+                      <CalendarCheck className="h-3.5 w-3.5" /> EM ATÉ 12X NO CARTÃO
+                    </p>
                   </div>
-                  <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Acesso Único • Sem mensalidade</p>
+                  <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest bg-white/5 inline-block px-3 py-1 rounded-full">Acesso Único • Sem mensalidade</p>
                 </div>
-                <ul className="space-y-4">
+
+                <ul className="space-y-5">
                   {[
                     'Jornada de 7 Dias Completa', 
-                    'Scripts Flow Básicos', 
-                    'Ferramenta de Leads (Limitada)', 
-                    'Suporte IA Base'
+                    'Metodologia de Primeira Venda',
+                    'Scripts de Abordagem Flow', 
+                    'Radar de Leads (Acesso Base)', 
+                    'IA Mentor 24h Disponível'
                   ].map((f, i) => (
-                    <li key={i} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white/70">
-                      <CheckCircle2 className="h-4 w-4 text-white/30" /> {f}
+                    <li key={i} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white/80">
+                      <CheckCircle2 className="h-4 w-4 text-primary" /> {f}
                     </li>
                   ))}
                 </ul>
@@ -103,95 +119,122 @@ export default function PaywallPage() {
               <Button 
                 onClick={() => handleSubscription('lifetime')}
                 disabled={isLoading}
-                variant="outline" 
-                className="w-full h-14 mt-8 rounded-2xl border-white/10 hover:bg-white text-black font-black uppercase tracking-widest relative z-10"
+                className="w-full h-16 mt-10 rounded-2xl bg-white text-black hover:bg-primary hover:text-white font-black uppercase tracking-widest transition-all shadow-xl group-hover:scale-[1.02]"
               >
-                ATIVAR VITALÍCIO
+                ATIVAR MEU VITALÍCIO
               </Button>
             </Card>
 
-            <div className="relative p-[2px] rounded-[2rem] overflow-hidden scale-105 shadow-[0_0_50px_rgba(139,92,246,0.2)]">
+            {/* PLANO PRO */}
+            <div className="relative p-[2px] rounded-[2.5rem] overflow-hidden scale-105 shadow-[0_0_60px_rgba(139,92,246,0.3)]">
               <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-marquee bg-[length:200%_200%]"></div>
-              <Card className="relative bg-[#050508] p-8 flex flex-col justify-between h-full border-none rounded-[calc(2rem-2px)]">
-                <div className="absolute top-4 right-4 bg-primary text-white text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg animate-pulse">RECOMENDADO PARA ESCALA</div>
-                <div className="space-y-6">
-                  <div className="space-y-1">
-                    <h3 className="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+              <Card className="relative bg-[#050508] p-10 flex flex-col justify-between h-full border-none rounded-[calc(2.5rem-2px)]">
+                <div className="absolute top-5 right-5 bg-primary text-white text-[8px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg animate-pulse z-20">FOCO EM ESCALA</div>
+                
+                <div className="space-y-8 relative z-10">
+                  <div className="space-y-3">
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2">
                       <Zap className="h-4 w-4 fill-primary" /> Flow Pro (Assinatura)
                     </h3>
-                    <p className="text-5xl font-black italic text-white">R$ 147<span className="text-sm font-normal opacity-50 tracking-normal">/mês</span></p>
+                    <div className="flex items-baseline gap-1">
+                      <p className="text-7xl font-black italic text-white tracking-tighter">R$ 147</p>
+                      <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/mês</span>
+                    </div>
                     <p className="text-[10px] font-black uppercase text-primary tracking-widest flex items-center gap-2">
-                      <TrendingUp className="h-3 w-3" /> Fase 2: Escala Ilimitada
+                      <TrendingUp className="h-3.5 w-3.5" /> FASE 2: ESCALA ILIMITADA
                     </p>
                   </div>
-                  <ul className="space-y-4">
+
+                  <ul className="space-y-5">
                     {[
                       'Fase 2: Escala Flow Ativada',
-                      'Geração de Leads Ilimitada', 
+                      'Radar de Leads Ilimitado', 
                       'IA de Prospecção Avançada', 
-                      'Novos Nichos & Estratégias',
-                      'Acompanhamento Contínuo',
-                      'Scripts de Elite Atualizados'
+                      'Metodologias de Elite (Fase 2)',
+                      'Scripts de Fechamento Brutal',
+                      'Atualizações Mensais de Nicho'
                     ].map((f, i) => (
                       <li key={i} className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-white">
-                        <Star key={i} className="h-4 w-4 text-primary fill-primary" /> {f}
+                        <Star className="h-4 w-4 text-primary fill-primary" /> {f}
                       </li>
                     ))}
                   </ul>
                 </div>
+                
                 <Button 
                   onClick={() => handleSubscription('monthly')}
                   disabled={isLoading}
-                  className="w-full h-16 mt-8 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest shadow-[0_10px_30px_rgba(139,92,246,0.4)]"
+                  className="w-full h-20 mt-10 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest shadow-[0_15px_40px_rgba(139,92,246,0.5)] transition-all hover:scale-[1.02]"
                 >
-                  DESBLOQUEAR FLOW PRO <ArrowRight className="ml-2 h-5 w-5" />
+                  DESBLOQUEAR FLOW PRO <ArrowRight className="ml-2 h-6 w-6" />
                 </Button>
               </Card>
             </div>
           </div>
 
-          <div className="flex flex-col items-center gap-6 pt-12">
-            <div className="flex items-center gap-6 px-8 py-4 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-md">
-              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+          <div className="flex flex-col items-center gap-8 pt-8">
+            <div className="flex flex-col md:flex-row items-center gap-6 md:gap-12 px-10 py-5 bg-white/5 border border-white/10 rounded-[2rem] backdrop-blur-md">
+              <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-white/60">
                 <ShieldCheck className="h-5 w-5 text-green-500" /> 7 Dias de Garantia
               </div>
-              <div className="w-px h-4 bg-white/10"></div>
-              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+              <div className="hidden md:block w-px h-6 bg-white/10"></div>
+              <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-white/60">
                 <ShieldAlert className="h-5 w-5 text-primary" /> Pagamento 100% Seguro
+              </div>
+              <div className="hidden md:block w-px h-6 bg-white/10"></div>
+              <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-white/60">
+                <CreditCard className="h-5 w-5 text-accent" /> Parcelamento em 12x
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-20 bg-white/[0.02] border-y border-white/5">
-        <div className="container max-w-3xl mx-auto px-4">
-          <h2 className="text-3xl font-black italic uppercase tracking-tighter mb-12 text-center">Fases do FlowPro</h2>
-          <div className="grid gap-6 md:grid-cols-2 mb-12">
-             <div className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-4">
-                <h4 className="text-primary font-black uppercase text-xs tracking-widest">FASE 1: PRIMEIRA VENDA</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">O plano mestre de 7 dias para você sair do zero e colocar dinheiro no bolso. Scripts, ofertas e leads focados em velocidade.</p>
+      <section className="py-32 bg-white/[0.02] border-y border-white/5">
+        <div className="container max-w-4xl mx-auto px-4">
+          <div className="text-center mb-16 space-y-4">
+            <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter">Fases da Jornada Flow</h2>
+            <p className="text-muted-foreground text-xs font-black uppercase tracking-[0.3em]">O caminho exato do zero ao faturamento de elite</p>
+          </div>
+          
+          <div className="grid gap-8 md:grid-cols-2 mb-16">
+             <div className="p-8 rounded-[2rem] bg-white/5 border border-white/10 space-y-6 group hover:border-primary/30 transition-all">
+                <Badge className="bg-white/10 text-white border-white/10 font-black uppercase text-[9px]">FASE 1</Badge>
+                <h4 className="text-white font-black uppercase text-xl italic tracking-tight">PRIMEIRA VENDA</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed font-medium">Focada em quem quer sair do zero. Em 7 dias você aprende a estruturar sua oferta, encontrar seus primeiros 25 leads e fechar seu primeiro contrato de R$ 497+.</p>
              </div>
-             <div className="p-6 rounded-2xl bg-primary/5 border border-primary/20 space-y-4">
-                <h4 className="text-primary font-black uppercase text-xs tracking-widest">FASE 2: ESCALA FLOW</h4>
-                <p className="text-sm text-muted-foreground leading-relaxed">Para quem quer faturar R$5k, R$10k ou mais. IA avançada, automações e volume ilimitado de leads qualificados diariamente.</p>
+             <div className="p-8 rounded-[2rem] bg-primary/5 border border-primary/20 space-y-6 group hover:border-primary/50 transition-all">
+                <Badge className="bg-primary/20 text-primary border-primary/30 font-black uppercase text-[9px]">FASE 2</Badge>
+                <h4 className="text-primary font-black uppercase text-xl italic tracking-tight">ESCALA FLOW</h4>
+                <p className="text-sm text-muted-foreground leading-relaxed font-medium">Para quem já validou o processo e quer faturar R$ 5k a R$ 15k por mês. IA de prospecção ilimitada, volume agressivo de leads e automação de fechamento.</p>
              </div>
           </div>
-          <Accordion type="single" collapsible className="space-y-4">
-            {faqs.map((faq, i) => (
-              <AccordionItem key={i} value={`faq-${i}`} className="glass-card border-none rounded-2xl px-6">
-                <AccordionTrigger className="font-black uppercase tracking-widest text-xs hover:no-underline text-left">
-                  {faq.q}
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground text-sm leading-relaxed pb-6">
-                  {faq.a}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-          <div className="text-center mt-12">
-            <p className="text-muted-foreground text-xs uppercase font-black tracking-widest mb-6">Pronto para a decisão final?</p>
-            <Button asChild size="lg" className="h-16 px-12 text-sm font-black bg-primary hover:scale-105 transition-all rounded-2xl">
+
+          <div className="space-y-4 max-w-3xl mx-auto">
+            <h3 className="text-center text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground mb-8">Sincronia de Dúvidas</h3>
+            <Accordion type="single" collapsible className="space-y-4">
+              {faqs.map((faq, i) => (
+                <AccordionItem key={i} value={`faq-${i}`} className="glass-card border-none rounded-2xl px-8 bg-white/[0.03]">
+                  <AccordionTrigger className="font-black uppercase tracking-widest text-xs hover:no-underline text-left py-6">
+                    {faq.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground text-sm leading-relaxed pb-8 font-medium italic">
+                    {faq.a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+
+          <div className="text-center mt-20 space-y-8">
+            <div className="flex items-center justify-center gap-4 opacity-50">
+              <Image src={LOGO_ICON} alt="Icon" width={24} height={24} className="grayscale" />
+              <div className="h-px w-20 bg-white/10"></div>
+              <span className="text-[8px] font-black uppercase tracking-[0.5em]">FlowPro Systems</span>
+              <div className="h-px w-20 bg-white/10"></div>
+              <Image src={LOGO_ICON} alt="Icon" width={24} height={24} className="grayscale" />
+            </div>
+            <Button asChild variant="ghost" className="text-muted-foreground hover:text-primary font-black uppercase text-[10px] tracking-[0.2em]">
               <Link href="/quiz">RECOMEÇAR MEU FLOW</Link>
             </Button>
           </div>
