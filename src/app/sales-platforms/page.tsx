@@ -49,7 +49,7 @@ const PLATFORMS = [
     when: "Para quem já está vendendo e quer crescer.",
     tags: ["Escala", "Estrutura"],
     icon: <Layers className="h-5 w-5 text-blue-400" />,
-    url: "https://paradisepay.com.br"
+    url: "https://paradisepags.com"
   },
   {
     name: "Kiwify",

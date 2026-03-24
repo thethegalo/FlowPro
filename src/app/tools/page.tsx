@@ -213,16 +213,22 @@ const TOOLS = [
 ];
 
 export default function ToolsPage() {
-  const [messagesPerDay, setMessagesPerDay] = useState(20);
-  const [convRate, setConvRate] = useState(5);
-  const [ticket, setTicket] = useState(500);
+  const [messagesPerDay, setMessagesPerDay] = useState("20");
+  const [convRate, setConvRate] = useState("5");
+  const [ticket, setTicket] = useState("500");
   const [activeCategory, setActiveCategory] = useState('all');
 
-  const potentialEarnings = (messagesPerDay * 30 * (convRate / 100) * ticket);
+  const potentialEarnings = (Number(messagesPerDay || 0) * 30 * (Number(convRate || 0) / 100) * Number(ticket || 0));
 
   const filteredTools = activeCategory === 'all' 
     ? TOOLS 
     : TOOLS.filter(t => t.category === activeCategory);
+
+  const handleInputChange = (setter: (v: string) => void, value: string) => {
+    // Permite apenas números e limpa zeros à esquerda
+    const cleaned = value.replace(/\D/g, '').replace(/^0+/, '');
+    setter(cleaned);
+  };
 
   return (
     <SidebarProvider>
@@ -256,28 +262,34 @@ export default function ToolsPage() {
                       <div className="space-y-3">
                         <Label className="text-[10px] font-black uppercase tracking-widest opacity-70">Mensagens Enviadas p/ Dia</Label>
                         <Input 
-                          type="number" 
+                          type="text" 
+                          inputMode="numeric"
                           value={messagesPerDay} 
-                          onChange={e => setMessagesPerDay(Number(e.target.value))}
+                          onChange={e => handleInputChange(setMessagesPerDay, e.target.value)}
                           className="bg-white/5 border-white/10 h-14 rounded-2xl text-xl font-bold"
+                          placeholder="0"
                         />
                       </div>
                       <div className="space-y-3">
                         <Label className="text-[10px] font-black uppercase tracking-widest opacity-70">Taxa de Conversão (%)</Label>
                         <Input 
-                          type="number" 
+                          type="text" 
+                          inputMode="numeric"
                           value={convRate} 
-                          onChange={e => setConvRate(Number(e.target.value))}
+                          onChange={e => handleInputChange(setConvRate, e.target.value)}
                           className="bg-white/5 border-white/10 h-14 rounded-2xl text-xl font-bold"
+                          placeholder="0"
                         />
                       </div>
                       <div className="space-y-3">
                         <Label className="text-[10px] font-black uppercase tracking-widest opacity-70">Ticket Médio (R$)</Label>
                         <Input 
-                          type="number" 
+                          type="text" 
+                          inputMode="numeric"
                           value={ticket} 
-                          onChange={e => setTicket(Number(e.target.value))}
+                          onChange={e => handleInputChange(setTicket, e.target.value)}
                           className="bg-white/5 border-white/10 h-14 rounded-2xl text-xl font-bold"
+                          placeholder="0"
                         />
                       </div>
                     </div>
