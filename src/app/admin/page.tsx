@@ -16,7 +16,10 @@ import {
   TrendingUp,
   UserCheck,
   CreditCard,
-  Shield
+  Shield,
+  Activity,
+  Zap,
+  Search
 } from 'lucide-react';
 import { collection, query, doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
@@ -51,7 +54,6 @@ export default function AdminPage() {
       const subRef = doc(db, 'users', userId, 'subscriptions', 'active');
       if (currentStatus) {
         await deleteDoc(subRef);
-        // Também reseta o status no documento do usuário
         await setDoc(doc(db, 'users', userId), { isOnboarded: false }, { merge: true });
         toast({ title: "Acesso Removido", description: "Usuário agora está como pendente." });
       } else {
@@ -102,37 +104,53 @@ export default function AdminPage() {
           </header>
 
           <div className="flex-1 p-4 md:p-8 space-y-8 container max-w-6xl mx-auto">
-            <div className="grid gap-4 md:grid-cols-3">
-              <Card className="glass-card border-white/10">
-                <CardHeader className="pb-2">
+            {/* Status das APIs */}
+            <div className="grid gap-4 md:grid-cols-2">
+              <Card className="glass-card border-white/10 overflow-hidden rounded-2xl">
+                <CardHeader className="pb-2 bg-white/5">
                   <CardTitle className="text-[10px] font-black uppercase tracking-widest opacity-70 flex items-center gap-2">
-                    <Users className="h-4 w-4" /> Total Leads
+                    <Activity className="h-4 w-4 text-primary" /> Status do Motor Flow
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-4xl font-black italic">{usersData?.length || 0}</div>
+                <CardContent className="pt-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase text-muted-foreground flex items-center gap-2">
+                      <Zap className="h-3 w-3" /> Motor Neural (Google AI)
+                    </span>
+                    <Badge variant="outline" className="text-[8px] font-black border-green-500/20 text-green-500 bg-green-500/5">ATIVO (CÓDIGO PRONTO)</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase text-muted-foreground flex items-center gap-2">
+                      <Search className="h-3 w-3" /> Radar de Leads (Places API)
+                    </span>
+                    <Badge variant="outline" className="text-[8px] font-black border-green-500/20 text-green-500 bg-green-500/5">ATIVO (CÓDIGO PRONTO)</Badge>
+                  </div>
+                  <p className="text-[8px] text-muted-foreground italic mt-2 border-t border-white/5 pt-2">
+                    Nota: Certifique-se de que as chaves GOOGLE_PLACES_API_KEY e GOOGLE_GENAI_API_KEY estão no seu .env
+                  </p>
                 </CardContent>
               </Card>
-              <Card className="glass-card border-white/10">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-[10px] font-black uppercase tracking-widest opacity-70 flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4" /> Conversão
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-4xl font-black italic text-primary">{conversionRate}%</div>
-                </CardContent>
-              </Card>
-              <Card className="glass-card border-white/10">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-[10px] font-black uppercase tracking-widest opacity-70 flex items-center gap-2">
-                    <CreditCard className="h-4 w-4" /> Assinantes
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-4xl font-black italic">{totalPaid}</div>
-                </CardContent>
-              </Card>
+
+              <div className="grid grid-cols-3 gap-4">
+                <Card className="glass-card border-white/10">
+                  <CardContent className="p-4 flex flex-col items-center justify-center h-full text-center">
+                    <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Leads</span>
+                    <div className="text-2xl font-black italic">{usersData?.length || 0}</div>
+                  </CardContent>
+                </Card>
+                <Card className="glass-card border-white/10">
+                  <CardContent className="p-4 flex flex-col items-center justify-center h-full text-center">
+                    <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Conv.</span>
+                    <div className="text-2xl font-black italic text-primary">{conversionRate}%</div>
+                  </CardContent>
+                </Card>
+                <Card className="glass-card border-white/10">
+                  <CardContent className="p-4 flex flex-col items-center justify-center h-full text-center">
+                    <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Pro</span>
+                    <div className="text-2xl font-black italic">{totalPaid}</div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
 
             <Card className="glass-card border-white/10 overflow-hidden rounded-[2rem]">
