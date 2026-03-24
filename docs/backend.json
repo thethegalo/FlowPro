@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "User": {
@@ -28,6 +29,17 @@
         "status": { "type": "string" },
         "startDate": { "type": "string", "format": "date-time" }
       }
+    },
+    "Earning": {
+      "title": "Earning",
+      "type": "object",
+      "properties": {
+        "amount": { "type": "number" },
+        "date": { "type": "string", "format": "date" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "description": { "type": "string" }
+      },
+      "required": ["amount", "date"]
     }
   },
   "auth": {
@@ -41,6 +53,10 @@
     "/users/{userId}/subscriptions/{subId}": {
       "schema": { "$ref": "#/backend/entities/Subscription" },
       "description": "User subscription data."
+    },
+    "/users/{userId}/earnings/{earningId}": {
+      "schema": { "$ref": "#/backend/entities/Earning" },
+      "description": "Individual earning records for chart and tracking."
     }
   }
 }

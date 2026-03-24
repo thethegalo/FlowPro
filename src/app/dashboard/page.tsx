@@ -30,10 +30,11 @@ import {
   TrendingUp,
   Zap,
   AlertCircle,
-  TrendingDown
+  TrendingDown,
+  Calendar
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
-import { collection, query, orderBy, doc, setDoc, increment, serverTimestamp, getDoc } from 'firebase/firestore';
+import { collection, query, orderBy, doc, setDoc, addDoc, increment, serverTimestamp, getDoc, limit, where } from 'firebase/firestore';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { useToast } from '@/hooks/use-toast';
@@ -47,6 +48,17 @@ import {
   Tooltip
 } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const LOGO_ICON = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/d5tqr6czngeukjb8r6whrs5s?v=1774318273085";
 const ADMIN_EMAIL = "thethegalo@gmail.com";
@@ -56,7 +68,11 @@ export default function Dashboard() {
   const db = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
+  
   const [isAddingEarning, setIsAddingEarning] = useState(false);
+  const [showEarningModal, setShowEarningModal] = useState(false);
+  const [earningAmount, setEarningAmount] = useState("");
+  const [earningDate, setEarningDate] = useState(new Date().toISOString().split('T')[0]);
   const [userGoal, setUserGoal] = useState(5000);
 
   const userDocRef = useMemoFirebase(() => {
@@ -78,11 +94,16 @@ export default function Dashboard() {
     return hasActiveSub || isSpecialUser;
   }, [subData, isSpecialUser]);
 
-  const progressQuery = useMemoFirebase(() => {
+  // Fetching real earnings from subcollection
+  const earningsQuery = useMemoFirebase(() => {
     if (!db || !user) return null;
-    return query(collection(db, 'users', user.uid, 'missionProgress'), orderBy('completedAt', 'desc'));
+    return query(
+      collection(db, 'users', user.uid, 'earnings'),
+      orderBy('date', 'desc'),
+      limit(100)
+    );
   }, [db, user]);
-  const { data: progressData } = useCollection(progressQuery);
+  const { data: earningsData } = useCollection(earningsQuery);
 
   useEffect(() => {
     async function fetchGoal() {
@@ -110,6 +131,12 @@ export default function Dashboard() {
     { id: 'dia7', title: 'DIA 7: Escalar Flow', desc: 'Automatize processos e multiplique seus ganhos diários.', order: 7 },
   ];
 
+  const progressQuery = useMemoFirebase(() => {
+    if (!db || !user) return null;
+    return query(collection(db, 'users', user.uid, 'missionProgress'), orderBy('completedAt', 'desc'));
+  }, [db, user]);
+  const { data: progressData } = useCollection(progressQuery);
+
   const completedMissionIds = useMemo(() => {
     return progressData ? progressData.filter(p => p.isCompleted).map(p => p.missionId) : [];
   }, [progressData]);
@@ -123,25 +150,37 @@ export default function Dashboard() {
     }
   }, [isJourneyFinished, isProMember, router, isUserDocLoading]);
 
-  const rawEarnings = userData?.totalEarnings || 0;
-  const totalEarnings = isSpecialUser ? 28754 + rawEarnings : rawEarnings;
+  const totalEarnings = useMemo(() => {
+    const raw = userData?.totalEarnings || 0;
+    return isSpecialUser ? 28754 + raw : raw;
+  }, [userData?.totalEarnings, isSpecialUser]);
+
   const displayGoal = isSpecialUser ? 50000 : userGoal;
   const earningsProgress = (totalEarnings / displayGoal) * 100;
 
-  // Gráfico de Área: 30 dias com pontos e curva suave
   const chartData = useMemo(() => {
     const days = 30;
     const data = [];
-    const userSeed = user?.uid?.charCodeAt(0) || 1;
+    const now = new Date();
     
+    // Group real earnings by date
+    const earningsByDate: Record<string, number> = {};
+    earningsData?.forEach(e => {
+      earningsByDate[e.date] = (earningsByDate[e.date] || 0) + (e.amount || 0);
+    });
+
     for (let i = days; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const dayStr = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      const d = new Date();
+      d.setDate(now.getDate() - i);
+      const dateKey = d.toISOString().split('T')[0];
+      const dayStr = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
       
-      let dailyValue = 0;
-      if (totalEarnings > 0) {
-        const average = totalEarnings / 40;
+      let dailyValue = earningsByDate[dateKey] || 0;
+      
+      // If special user, inject some base performance if no real data
+      if (isSpecialUser && dailyValue === 0) {
+        const userSeed = user?.uid?.charCodeAt(0) || 1;
+        const average = 28754 / 40;
         const variation = 0.3 + (((i + userSeed) * 7) % 100) / 80;
         dailyValue = Math.floor(average * variation);
       }
@@ -152,7 +191,7 @@ export default function Dashboard() {
       });
     }
     return data;
-  }, [totalEarnings, user?.uid]);
+  }, [earningsData, isSpecialUser, user?.uid]);
 
   const userLevel = useMemo(() => {
     const missionsCount = completedMissionIds.length;
@@ -168,24 +207,35 @@ export default function Dashboard() {
   const dailyGoal = 10;
 
   const handleAddEarning = async () => {
-    if (!db || !user) return;
+    if (!db || !user || !earningAmount) return;
     setIsAddingEarning(true);
+    const amount = Number(earningAmount);
+    
     try {
+      // 1. Add record to earnings subcollection
+      await addDoc(collection(db, 'users', user.uid, 'earnings'), {
+        amount: amount,
+        date: earningDate,
+        createdAt: serverTimestamp(),
+        description: "Venda registrada manualmente"
+      });
+
+      // 2. Update user profile totals
       const userRef = doc(db, 'users', user.uid);
       await setDoc(userRef, {
-        totalEarnings: increment(100),
+        totalEarnings: increment(amount),
         totalActions: increment(1),
         dailyActions: increment(1),
         updatedAt: serverTimestamp(),
         lastActionAt: serverTimestamp(),
-        name: userData?.name || user.displayName || user.email?.split('@')[0],
-        email: userData?.email || user.email
       }, { merge: true });
 
       toast({
         title: "Venda Registrada!",
-        description: "R$ 100,00 adicionados ao seu placar de performance."
+        description: `R$ ${amount.toLocaleString('pt-BR')} adicionados ao seu placar.`
       });
+      setShowEarningModal(false);
+      setEarningAmount("");
     } catch (e: any) {
       toast({ variant: "destructive", title: "Erro ao salvar", description: "Verifique sua conexão." });
     } finally {
@@ -260,12 +310,12 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Gráfico Estilo Harmônico (Igual à Imagem) */}
+            {/* Gráfico Estilo Harmônico */}
             <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden p-6 md:p-10 space-y-10">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div className="space-y-1">
                   <h3 className="text-2xl font-black italic uppercase tracking-tight text-white">Ganhos dos Últimos 30 Dias</h3>
-                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60">Soma dos contratos fechados nos últimos 30 dias.</p>
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60">Visualização de performance diária.</p>
                 </div>
                 <div className="text-right">
                   <p className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1">Ganhos Totais</p>
@@ -331,14 +381,57 @@ export default function Dashboard() {
                 <CardContent className="space-y-6">
                   <div className="flex items-end justify-between">
                     <div className="text-5xl font-black italic tracking-tighter">R$ {totalEarnings.toLocaleString('pt-BR')}</div>
-                    <Button 
-                      size="sm" 
-                      onClick={handleAddEarning}
-                      disabled={isAddingEarning}
-                      className="bg-white text-black hover:bg-primary hover:text-white rounded-xl font-black uppercase text-[10px] h-10 px-4 transition-all active:scale-95"
-                    >
-                      {isAddingEarning ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Plus className="h-3 w-3 mr-1" /> ADICIONAR GANHO</>}
-                    </Button>
+                    
+                    <Dialog open={showEarningModal} onOpenChange={setShowEarningModal}>
+                      <DialogTrigger asChild>
+                        <Button 
+                          size="sm" 
+                          className="bg-white text-black hover:bg-primary hover:text-white rounded-xl font-black uppercase text-[10px] h-10 px-4 transition-all active:scale-95"
+                        >
+                          <Plus className="h-3 w-3 mr-1" /> ADICIONAR GANHO
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="bg-[#0b0b14] border-white/10 text-white rounded-[2rem]">
+                        <DialogHeader>
+                          <DialogTitle className="text-xl font-black italic uppercase tracking-widest">Registrar Venda</DialogTitle>
+                          <DialogDescription className="text-muted-foreground uppercase text-[10px] font-bold">Informe o valor para atualizar seu placar de performance.</DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-6 py-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="amount" className="text-[10px] font-black uppercase tracking-widest opacity-70">Valor da Venda (R$)</Label>
+                            <Input
+                              id="amount"
+                              type="number"
+                              placeholder="500"
+                              value={earningAmount}
+                              onChange={(e) => setEarningAmount(e.target.value)}
+                              className="bg-white/5 border-white/10 h-12 rounded-xl text-lg font-bold"
+                            />
+                          </div>
+                          {isSpecialUser && (
+                            <div className="space-y-2">
+                              <Label htmlFor="date" className="text-[10px] font-black uppercase tracking-widest text-primary">Data da Venda (Admin Only)</Label>
+                              <Input
+                                id="date"
+                                type="date"
+                                value={earningDate}
+                                onChange={(e) => setEarningDate(e.target.value)}
+                                className="bg-primary/5 border-primary/20 h-12 rounded-xl text-white"
+                              />
+                            </div>
+                          )}
+                        </div>
+                        <DialogFooter>
+                          <Button 
+                            onClick={handleAddEarning} 
+                            disabled={isAddingEarning || !earningAmount}
+                            className="w-full bg-primary h-12 rounded-xl font-black uppercase tracking-widest"
+                          >
+                            {isAddingEarning ? <Loader2 className="h-4 w-4 animate-spin" /> : 'CONFIRMAR REGISTRO'}
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between text-[8px] font-black uppercase opacity-50 tracking-widest">
