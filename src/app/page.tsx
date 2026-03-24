@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -40,7 +41,7 @@ const faqs = [
   { q: "Como a IA ajuda no processo?", a: "Nossa IA analisa o nicho do lead e gera um script de abordagem que não parece spam, aumentando drasticamente suas chances de resposta." },
   { q: "Em quanto tempo vejo resultados?", a: "Nossa jornada foi feita para você realizar sua primeira venda em até 7 dias, desde que execute todas as tarefas propostas." },
   { q: "Preciso aparecer nas redes sociais?", a: "Não. Ensinamos estratégias de bastidores onde você pode prospectar e vender sem nunca mostrar o rosto." },
-  { q: "O acesso é vitalício?", a: "Oferecemos planos Vitalícios para a Fase 1 e planos Mensais para quem deseja escala ilimitada com IA avançada." },
+  { q: "O acesso é vitalício?", a: "Oferecemos planos Vitalícios para a Fase 1 (Jornada de 7 Dias) e planos Mensais para quem deseja escala ilimitada com IA avançada." },
   { q: "Como encontro os clientes?", a: "O Radar de Leads integrado busca empresas reais direto do Google com telefone e endereço, filtrando pelo seu nicho de escolha." },
   { q: "Tenho suporte se tiver dúvidas?", a: "Sim. Além do Mentor IA 24h por dia para tirar qualquer dúvida técnica ou estratégica." },
   { q: "O que é o Método Flow?", a: "É um ecossistema de vendas que une prospecção fria, IA neural e automação para criar um Flow constante de caixa." }
@@ -139,7 +140,10 @@ export default function Home() {
           </div>
         </section>
 
-        <MacbookShowcase />
+        {/* Vitrine de dispositivos: Oculta no mobile, visível apenas do Desktop (md) em diante */}
+        <div className="hidden md:block">
+          <MacbookShowcase />
+        </div>
 
         <section id="faq" className="py-40">
           <div className="container px-6 mx-auto max-w-4xl">
