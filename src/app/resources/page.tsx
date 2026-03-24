@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -20,8 +21,8 @@ import {
   FileCheck
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query } from 'firebase/firestore';
+import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
+import { collection, query, doc } from 'firebase/firestore';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 
@@ -49,6 +50,12 @@ export default function ResourcesPage() {
   const { toast } = useToast();
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
+  const userDocRef = useMemoFirebase(() => {
+    if (!db || !user) return null;
+    return doc(db, 'users', user.uid);
+  }, [db, user]);
+  const { data: userData } = useDoc(userDocRef);
+
   const subQuery = useMemoFirebase(() => {
     if (!db || !user) return null;
     return query(collection(db, 'users', user.uid, 'subscriptions'));
@@ -57,15 +64,16 @@ export default function ResourcesPage() {
 
   const isProMember = useMemo(() => {
     const hasActiveSub = subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime') && sub.status === 'active');
-    return hasActiveSub || user?.email === ADMIN_EMAIL;
-  }, [subData, user]);
+    const hasPremiumPlan = userData?.plan === 'vitalicio' || userData?.plan === 'mensal';
+    return hasActiveSub || hasPremiumPlan || user?.email === ADMIN_EMAIL;
+  }, [subData, user, userData]);
 
   const copyToClipboard = (text: string, id: string, isPro: boolean) => {
     if (isPro && !isProMember) {
       toast({
         variant: "destructive",
         title: "Recurso Pro",
-        description: "Scripts avançados são exclusivos para membros Flow Pro.",
+        description: "Scripts avançados são exclusivos para membros Flow Pro ou Vitalícios.",
       });
       return;
     }
@@ -91,7 +99,7 @@ export default function ResourcesPage() {
             </div>
             {isProMember && (
               <Badge className="bg-primary/20 text-primary border-primary/30 text-[8px] font-black uppercase px-3 py-1">
-                PRO MEMBER
+                {userData?.plan?.toUpperCase() || 'PRO MEMBER'}
               </Badge>
             )}
           </header>

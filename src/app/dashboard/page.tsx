@@ -92,8 +92,9 @@ export default function Dashboard() {
 
   const isProMember = useMemo(() => {
     const hasActiveSub = subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime') && sub.status === 'active');
-    return hasActiveSub || isSpecialUser;
-  }, [subData, isSpecialUser]);
+    const hasPremiumPlan = userData?.plan === 'vitalicio' || userData?.plan === 'mensal';
+    return hasActiveSub || hasPremiumPlan || isSpecialUser;
+  }, [subData, isSpecialUser, userData]);
 
   const earningsQuery = useMemoFirebase(() => {
     if (!db || !user) return null;
@@ -183,10 +184,7 @@ export default function Dashboard() {
         
         if (hasSale) {
           const base = 28754 / 22; 
-          const variation = 0.4 + (rand * 1.2); 
-          dailyValue = Math.floor(base * variation);
-        } else {
-          dailyValue = 0;
+          dailyValue = Math.floor(base * (0.4 + rand * 1.2));
         }
       }
       
@@ -260,7 +258,6 @@ export default function Dashboard() {
     );
   }
 
-  // TELA DE AGUARDANDO APROVAÇÃO
   if (userData?.status !== 'approved' && !isSpecialUser) {
     return (
       <div className="min-h-screen bg-[#050508] flex items-center justify-center p-6 text-center">
@@ -298,7 +295,7 @@ export default function Dashboard() {
           </div>
 
           <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest italic">
-            Mesmo que você já tenha efetuado o pagamento, o acesso será liberado em até 24 horas úteis.
+            O acesso será liberado em até 24 horas úteis após a aprovação manual.
           </p>
 
           <Button 
@@ -313,7 +310,6 @@ export default function Dashboard() {
     );
   }
 
-  // TELA DE BLOQUEIO (BANIDO)
   if (userData?.status === 'blocked' && !isSpecialUser) {
     return (
       <div className="min-h-screen bg-[#050508] flex items-center justify-center p-6 text-center">
@@ -344,7 +340,7 @@ export default function Dashboard() {
             
             <div className="flex items-center gap-3">
               <Badge variant="outline" className={`${isProMember ? 'bg-purple-500/10 border-purple-500/30 text-purple-400' : 'bg-white/5 border-white/10 text-muted-foreground'} text-[8px] font-black uppercase px-3 py-1`}>
-                {isProMember ? 'PRO MEMBER' : 'FREE PLAN'}
+                {userData?.plan?.toUpperCase() || 'FREE PLAN'}
               </Badge>
               <Badge variant="secondary" className="bg-primary/10 text-primary gap-1 px-3 py-1 text-[10px] font-black uppercase">
                 <Flame className="h-3 w-3" /> {completedMissionIds.length}D
