@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -24,7 +25,10 @@ import {
   Loader2,
   ChevronRight,
   ShieldCheck,
-  Cpu
+  Cpu,
+  ArrowRight,
+  ExternalLink,
+  MousePointerClick
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -115,6 +119,37 @@ const FIELD_PLACEHOLDERS: Record<string, string> = {
   mainProblem: 'Ex: Não tem tempo para gerenciar redes'
 };
 
+const SUGGESTED_TOOLS: Record<string, { name: string, url: string }[]> = {
+  sites: [
+    { name: 'Lovable', url: 'https://lovable.dev' },
+    { name: 'Durable', url: 'https://durable.co' }
+  ],
+  logo: [
+    { name: 'Midjourney', url: 'https://midjourney.com' },
+    { name: 'DALL·E 3', url: 'https://chatgpt.com/?model=gpt-4-dalle' }
+  ],
+  outreach: [
+    { name: 'WhatsApp', url: 'https://web.whatsapp.com' },
+    { name: 'Instagram', url: 'https://instagram.com' }
+  ],
+  closing: [
+    { name: 'WhatsApp', url: 'https://web.whatsapp.com' },
+    { name: 'ChatGPT', url: 'https://chatgpt.com' }
+  ],
+  followup: [
+    { name: 'WhatsApp', url: 'https://web.whatsapp.com' },
+    { name: 'Instagram', url: 'https://instagram.com' }
+  ],
+  custom: [
+    { name: 'ChatGPT', url: 'https://chatgpt.com' },
+    { name: 'Copy.ai', url: 'https://copy.ai' }
+  ],
+  offer: [
+    { name: 'ChatGPT', url: 'https://chatgpt.com' },
+    { name: 'Claude', url: 'https://claude.ai' }
+  ]
+};
+
 export default function PromptsPage() {
   const [activeTemplate, setActiveTemplate] = useState(PROMPT_TEMPLATES[0]);
   const [formData, setFormData] = useState<Record<string, string>>({});
@@ -155,6 +190,8 @@ export default function PromptsPage() {
     setGeneratedPrompt('');
     setFormData({}); 
   };
+
+  const currentTools = SUGGESTED_TOOLS[activeTemplate.id] || SUGGESTED_TOOLS.custom;
 
   return (
     <SidebarProvider>
@@ -276,35 +313,76 @@ export default function PromptsPage() {
 
                 {/* Resultado */}
                 {generatedPrompt && (
-                  <Card className="bg-primary/5 border border-primary/20 rounded-[2.5rem] overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700">
-                    <CardHeader className="flex flex-row items-center justify-between p-6 border-b border-primary/10">
-                      <div className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                        <ShieldCheck className="h-3 w-3 fill-primary" /> Comando Pronto para Operação
-                      </div>
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        onClick={handleCopy}
-                        className={`text-[10px] font-black uppercase tracking-widest h-8 transition-all ${copied ? 'text-green-500' : 'text-primary hover:bg-primary/10'}`}
-                      >
-                        {copied ? <Check className="h-3 w-3 mr-2" /> : <Copy className="h-3 w-3 mr-2" />}
-                        {copied ? 'COPIADO' : 'COPIAR TUDO'}
-                      </Button>
-                    </CardHeader>
-                    <CardContent className="p-8">
-                      <div className="bg-black/40 p-6 rounded-2xl border border-white/5 group relative">
-                        <pre className="text-sm font-medium text-white/80 leading-relaxed whitespace-pre-wrap italic">
-                          {generatedPrompt}
-                        </pre>
-                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                           <Sparkles className="h-4 w-4 text-primary/40" />
+                  <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <Card className="bg-primary/5 border border-primary/20 rounded-[2.5rem] overflow-hidden">
+                      <CardHeader className="flex flex-row items-center justify-between p-6 border-b border-primary/10">
+                        <div className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                          <ShieldCheck className="h-3 w-3 fill-primary" /> Comando Pronto para Operação
                         </div>
-                      </div>
-                      <p className="text-[8px] text-center mt-6 text-muted-foreground uppercase font-black tracking-[0.3em]">
-                        Dica: Cole este comando em uma nova conversa da sua IA favorita.
-                      </p>
-                    </CardContent>
-                  </Card>
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          onClick={handleCopy}
+                          className={`text-[10px] font-black uppercase tracking-widest h-8 transition-all ${copied ? 'text-green-500' : 'text-primary hover:bg-primary/10'}`}
+                        >
+                          {copied ? <Check className="h-3 w-3 mr-2" /> : <Copy className="h-3 w-3 mr-2" />}
+                          {copied ? 'COPIADO' : 'COPIAR TUDO'}
+                        </Button>
+                      </CardHeader>
+                      <CardContent className="p-8">
+                        <div className="bg-black/40 p-6 rounded-2xl border border-white/5 group relative">
+                          <pre className="text-sm font-medium text-white/80 leading-relaxed whitespace-pre-wrap italic">
+                            {generatedPrompt}
+                          </pre>
+                          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                             <Sparkles className="h-4 w-4 text-primary/40" />
+                          </div>
+                        </div>
+                        
+                        <div className="mt-8 pt-8 border-t border-white/5 space-y-6">
+                          <div className="flex items-center gap-3">
+                            <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black text-xs">1</div>
+                            <div className="space-y-0.5">
+                              <p className="text-[10px] font-black uppercase tracking-widest text-white">Próximo Passo</p>
+                              <p className="text-xs text-muted-foreground">Copie o prompt acima e cole na ferramenta recomendada abaixo.</p>
+                            </div>
+                          </div>
+
+                          <Button onClick={handleCopy} className="w-full h-14 bg-white text-black hover:bg-primary hover:text-white rounded-xl font-black uppercase tracking-widest shadow-xl transition-all active:scale-95">
+                            {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
+                            {copied ? 'PRONTO PARA COLAR!' : 'COPIAR PROMPT AGORA'}
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="glass-card border-white/5 rounded-[2.5rem] overflow-hidden">
+                      <CardHeader className="bg-white/5 p-6 border-b border-white/5">
+                        <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                          <MousePointerClick className="h-3.5 w-3.5" /> Onde usar esse prompt
+                        </div>
+                      </CardHeader>
+                      <CardContent className="p-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {currentTools.map((tool, i) => (
+                            <div key={i} className="flex items-center justify-between p-4 bg-white/[0.03] border border-white/5 rounded-2xl group hover:border-primary/30 transition-all">
+                              <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary border border-primary/20 group-hover:scale-110 transition-transform">
+                                  <Zap className="h-5 w-5 fill-primary" />
+                                </div>
+                                <span className="font-black italic uppercase tracking-tight text-white">{tool.name}</span>
+                              </div>
+                              <Button asChild size="sm" variant="outline" className="rounded-xl border-white/10 h-10 px-4 text-[9px] font-black uppercase tracking-widest hover:bg-primary hover:border-primary hover:text-white transition-all">
+                                <a href={tool.url} target="_blank" rel="noopener noreferrer">
+                                  ACESSAR <ExternalLink className="ml-1.5 h-3 w-3" />
+                                </a>
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
                 )}
               </div>
             </div>
