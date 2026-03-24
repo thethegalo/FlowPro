@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -79,7 +80,7 @@ export default function LeadsPage() {
 
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("O servidor retornou uma resposta inválida. Verifique se o backend está configurado.");
+        throw new Error("O servidor retornou uma resposta inválida. Verifique sua chave de API.");
       }
 
       const data = await response.json();
@@ -129,9 +130,7 @@ export default function LeadsPage() {
       toast({ variant: "destructive", title: "Ops!", description: "Contato não disponível para este lead." });
       return;
     }
-    // Formata o número: remove tudo que não é dígito
     const cleanPhone = phone.replace(/\D/g, '');
-    // Garante o código do país (55 para Brasil) se não houver
     const waPhone = cleanPhone.length <= 11 ? `55${cleanPhone}` : cleanPhone;
     window.open(`https://wa.me/${waPhone}`, '_blank');
   };
@@ -184,16 +183,16 @@ export default function LeadsPage() {
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
               <div className="h-4 w-px bg-white/10 hidden md:block" />
               <h1 className="text-sm font-black italic uppercase tracking-widest flex items-center gap-2">
-                <Users className="h-4 w-4 text-primary" /> Radar de Leads Reais
+                <Users className="h-4 w-4 text-primary" /> Radar de Leads
               </h1>
             </div>
             {isProMember ? (
-              <Badge className="bg-primary/20 text-primary border-primary/30 text-[8px] font-black uppercase px-3 py-1">
-                <Star className="h-3 w-3 mr-1 fill-primary" /> RADAR ILIMITADO
+              <Badge className="bg-primary/20 text-primary border-primary/30 text-[8px] font-black uppercase px-2 md:px-3 py-1">
+                <Star className="h-3 w-3 mr-1 fill-primary hidden sm:inline" /> ILIMITADO
               </Badge>
             ) : (
                <Button asChild size="sm" variant="outline" className="h-8 text-[9px] font-black uppercase tracking-widest border-primary/30 text-primary hover:bg-primary/10">
-                 <Link href="/paywall">UPGRADE PRO</Link>
+                 <Link href="/paywall">PRO</Link>
                </Button>
             )}
           </header>
@@ -202,16 +201,16 @@ export default function LeadsPage() {
             <Card className="glass-card border-white/10 overflow-hidden rounded-[2rem]">
               <CardHeader className="bg-white/5 border-b border-white/5 p-6">
                 <CardTitle className="text-sm font-black uppercase tracking-widest italic flex items-center gap-2">
-                  <Filter className="h-4 w-4 text-primary" /> Filtro de Prospecção Real
+                  <Filter className="h-4 w-4 text-primary" /> Filtro de Prospecção
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-8">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+              <CardContent className="p-6 md:p-8">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
                   <div className="md:col-span-5 space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest opacity-50">O que você quer vender?</label>
                     <Input 
-                      placeholder="Ex: Barbearia, Dentista, Pizzaria..." 
-                      className="bg-white/5 border-white/10 h-14 rounded-2xl focus-visible:ring-primary"
+                      placeholder="Ex: Barbearia, Dentista..." 
+                      className="bg-white/5 border-white/10 h-12 md:h-14 rounded-2xl focus-visible:ring-primary"
                       value={niche}
                       onChange={e => setNiche(e.target.value)}
                     />
@@ -219,8 +218,8 @@ export default function LeadsPage() {
                   <div className="md:col-span-3 space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest opacity-50">Estado (UF)</label>
                     <Select onValueChange={setState}>
-                      <SelectTrigger className="bg-white/5 border-white/10 rounded-2xl h-14">
-                        <SelectValue placeholder="Selecione..." />
+                      <SelectTrigger className="bg-white/5 border-white/10 rounded-2xl h-12 md:h-14">
+                        <SelectValue placeholder="UF" />
                       </SelectTrigger>
                       <SelectContent className="bg-[#0b0b14] border-white/10 text-white">
                         {STATES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
@@ -231,7 +230,7 @@ export default function LeadsPage() {
                     <label className="text-[10px] font-black uppercase tracking-widest opacity-50">Cidade (Opcional)</label>
                     <Input 
                       placeholder="Ex: São Paulo" 
-                      className="bg-white/5 border-white/10 h-14 rounded-2xl focus-visible:ring-primary"
+                      className="bg-white/5 border-white/10 h-12 md:h-14 rounded-2xl focus-visible:ring-primary"
                       value={city}
                       onChange={e => setCity(e.target.value)}
                     />
@@ -240,9 +239,9 @@ export default function LeadsPage() {
                     <Button 
                       onClick={handleSearch} 
                       disabled={loading}
-                      className="w-full h-16 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-[0.98]"
+                      className="w-full h-14 md:h-16 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-[0.98]"
                     >
-                      {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><Search className="h-5 w-5 mr-2" /> BUSCAR LEADS REAIS AGORA</>}
+                      {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><Search className="h-5 w-5 mr-2" /> BUSCAR LEADS REAIS</>}
                     </Button>
                   </div>
                 </div>
@@ -251,36 +250,36 @@ export default function LeadsPage() {
 
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3">
-                  Resultados Encontrados {leads.length > 0 && <Badge className="bg-white/5 text-white border-white/10 ml-2">{leads.length}</Badge>}
+                <h2 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2">
+                  Resultados {leads.length > 0 && <Badge className="bg-white/5 text-white border-white/10 ml-2">{leads.length}</Badge>}
                 </h2>
               </div>
 
               {leads.length === 0 && !loading ? (
-                <div className="py-24 text-center glass-card rounded-[3rem] border-dashed border-white/5">
-                  <div className="h-20 w-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 opacity-20">
-                    <Search className="h-10 w-10 text-white" />
+                <div className="py-16 md:py-24 text-center glass-card rounded-[3rem] border-dashed border-white/5">
+                  <div className="h-16 w-16 md:h-20 md:w-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 opacity-20">
+                    <Search className="h-8 w-8 md:h-10 md:w-10 text-white" />
                   </div>
-                  <p className="text-muted-foreground uppercase text-[10px] font-black tracking-[0.3em]">O radar está pronto para encontrar dados reais</p>
+                  <p className="text-muted-foreground uppercase text-[10px] font-black tracking-[0.3em] px-6">Aguardando parâmetros de busca</p>
                 </div>
               ) : loading ? (
                 <div className="py-24 text-center">
                   <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
-                  <p className="text-muted-foreground uppercase text-[10px] font-black tracking-[0.3em]">Conectando à base de dados do Google via Backend Seguro...</p>
+                  <p className="text-muted-foreground uppercase text-[10px] font-black tracking-[0.3em] px-6 text-center">Conectando à base neural de dados...</p>
                 </div>
               ) : (
-                <div className="grid gap-4">
+                <div className="grid gap-4 pb-20">
                   {leads.map((lead) => (
                     <Card key={lead.id} className={`glass-card border-white/10 transition-all duration-500 rounded-[2rem] overflow-hidden ${approachedLeads.includes(lead.id) ? 'border-primary/40 shadow-[0_0_20px_rgba(139,92,246,0.1)]' : ''}`}>
-                      <CardContent className="p-8">
-                        <div className="flex flex-col lg:flex-row justify-between gap-8">
-                          <div className="flex gap-6 items-start">
-                            <div className="h-14 w-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shrink-0 border border-primary/20">
-                              <MapPin className="h-6 w-6" />
+                      <CardContent className="p-6 md:p-8">
+                        <div className="flex flex-col lg:flex-row justify-between gap-6 md:gap-8">
+                          <div className="flex gap-4 md:gap-6 items-start">
+                            <div className="h-12 w-12 md:h-14 md:w-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shrink-0 border border-primary/20">
+                              <MapPin className="h-5 w-5 md:h-6 md:w-6" />
                             </div>
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-2">
-                                <h4 className="font-black text-xl italic leading-none text-white uppercase tracking-tight">{lead.name}</h4>
+                            <div className="space-y-1 min-w-0">
+                              <div className="flex items-center flex-wrap gap-2">
+                                <h4 className="font-black text-lg md:text-xl italic leading-none text-white uppercase tracking-tight truncate">{lead.name}</h4>
                                 {lead.rating > 0 && (
                                   <Badge variant="outline" className="h-5 px-1.5 text-[9px] font-black text-yellow-500 border-yellow-500/20">
                                     <Star className="h-2.5 w-2.5 mr-1 fill-yellow-500" /> {lead.rating}
@@ -288,36 +287,36 @@ export default function LeadsPage() {
                                 )}
                               </div>
                               <div className="flex flex-col gap-1 mt-2">
-                                <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-black uppercase tracking-widest">
-                                  <span className="text-primary">{lead.type}</span>
+                                <div className="flex items-center gap-2 text-[9px] md:text-[10px] text-muted-foreground font-black uppercase tracking-widest">
+                                  <span className="text-primary truncate">{lead.type}</span>
                                   <span>•</span>
-                                  <span>{lead.city}, {lead.state}</span>
+                                  <span className="truncate">{lead.city}, {lead.state}</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-[11px] text-primary font-bold italic uppercase tracking-tighter">
+                                <div className="flex items-center gap-2 text-[11px] md:text-[12px] text-primary font-bold italic uppercase tracking-tighter">
                                   <Phone className="h-3.5 w-3.5" /> {lead.phone}
                                 </div>
-                                <p className="text-[10px] text-muted-foreground/60 font-medium uppercase">{lead.address}</p>
+                                <p className="text-[9px] md:text-[10px] text-muted-foreground/60 font-medium uppercase truncate">{lead.address}</p>
                               </div>
                             </div>
                           </div>
 
-                          <div className="flex flex-wrap gap-3 items-center">
+                          <div className="grid grid-cols-2 lg:flex lg:flex-wrap gap-2 md:gap-3 items-center">
                             <Button 
                               variant="outline" 
                               size="sm"
                               onClick={() => handleWhatsApp(lead.phone)}
-                              className={`flex-1 lg:flex-none h-12 border-green-500/20 rounded-xl text-[9px] font-black uppercase tracking-widest gap-2 bg-green-500/5 hover:bg-green-500/10 text-green-500 ${lead.phone === 'Telefone não listado' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                              className={`h-10 md:h-12 border-green-500/20 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest gap-2 bg-green-500/5 hover:bg-green-500/10 text-green-500 ${lead.phone === 'Telefone não listado' ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                              <MessageSquare className="h-3.5 w-3.5" /> WhatsApp
+                              <MessageSquare className="h-3.5 w-3.5" /> <span className="hidden sm:inline">WhatsApp</span><span className="sm:hidden">WPP</span>
                             </Button>
 
                             <Button 
                               variant="outline" 
                               size="sm"
                               onClick={() => handleCopy(lead.phone)}
-                              className={`flex-1 lg:flex-none h-12 border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest gap-2 bg-white/5 hover:bg-white/10 ${lead.phone === 'Telefone não listado' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                              className={`h-10 md:h-12 border-white/10 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest gap-2 bg-white/5 hover:bg-white/10 ${lead.phone === 'Telefone não listado' ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                              <Copy className="h-3.5 w-3.5" /> Copiar Fone
+                              <Copy className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Copiar Fone</span><span className="sm:hidden">Copiar</span>
                             </Button>
                             
                             <Button 
@@ -325,7 +324,7 @@ export default function LeadsPage() {
                               size="sm"
                               onClick={() => handleGenMessage(lead)}
                               disabled={generatingMsg === lead.id}
-                              className="flex-1 lg:flex-none h-12 bg-primary text-white rounded-xl text-[9px] font-black uppercase tracking-widest gap-2 shadow-lg shadow-primary/20 hover:scale-105 transition-all"
+                              className="col-span-2 lg:col-auto h-10 md:h-12 bg-primary text-white rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest gap-2 shadow-lg shadow-primary/20 hover:scale-105 transition-all"
                             >
                               {generatingMsg === lead.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Zap className="h-3.5 w-3.5 fill-white" />}
                               Gerar Mensagem IA
@@ -335,7 +334,7 @@ export default function LeadsPage() {
                               variant="ghost" 
                               size="sm"
                               onClick={() => toggleApproached(lead.id)}
-                              className={`flex-1 lg:flex-none h-12 rounded-xl text-[9px] font-black uppercase tracking-widest transition-colors ${approachedLeads.includes(lead.id) ? 'text-green-500 bg-green-500/5' : 'text-muted-foreground hover:text-white'}`}
+                              className={`col-span-2 lg:col-auto h-10 md:h-12 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest transition-colors ${approachedLeads.includes(lead.id) ? 'text-green-500 bg-green-500/5' : 'text-muted-foreground hover:text-white'}`}
                             >
                               {approachedLeads.includes(lead.id) ? <Check className="h-4 w-4 mr-2" /> : <div className="h-4 w-4 mr-2 border-2 border-current/30 rounded-full" />}
                               {approachedLeads.includes(lead.id) ? 'ABORDADO' : 'MARCAR'}
@@ -347,13 +346,13 @@ export default function LeadsPage() {
                   ))}
                   
                   {!isProMember && leads.length > 0 && (
-                     <div className="p-10 text-center border-2 border-dashed border-primary/20 rounded-[3rem] bg-primary/5 mt-8 space-y-6">
+                     <div className="p-8 md:p-10 text-center border-2 border-dashed border-primary/20 rounded-[2.5rem] md:rounded-[3rem] bg-primary/5 mt-8 space-y-6">
                         <div className="space-y-2">
-                          <h3 className="text-xl font-black italic uppercase tracking-tighter">Quer resultados ilimitados?</h3>
-                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Você atingiu o limite do plano básico. O Google encontrou muito mais resultados.</p>
+                          <h3 className="text-xl font-black italic uppercase tracking-tighter">Radar Pro Ativo</h3>
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground max-w-xs mx-auto">Você atingiu o limite básico. Desbloqueie centenas de outros leads.</p>
                         </div>
-                        <Button asChild className="bg-primary hover:bg-primary/90 text-white font-black uppercase text-[11px] h-14 px-12 rounded-2xl shadow-lg shadow-primary/30">
-                           <Link href="/paywall">LIBERAR RADAR COMPLETO</Link>
+                        <Button asChild className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white font-black uppercase text-[11px] h-14 px-12 rounded-2xl shadow-lg shadow-primary/30">
+                           <Link href="/paywall">LIBERAR ACESSO PRO</Link>
                         </Button>
                      </div>
                   )}

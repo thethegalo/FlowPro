@@ -5,7 +5,7 @@ import React from 'react';
 
 export function MacbookShowcase() {
   return (
-    <div className="flex items-center justify-center w-full py-20 overflow-hidden bg-transparent">
+    <div className="flex items-center justify-center w-full py-10 md:py-20 overflow-hidden bg-transparent">
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 
@@ -14,20 +14,22 @@ export function MacbookShowcase() {
           justify-content: center; 
           align-items: center; 
           font-family: 'DM Sans', sans-serif;
+          width: 100%;
         }
 
         .scene {
           display: flex;
           align-items: flex-end;
-          gap: 60px;
+          gap: 20px;
           position: relative;
-          transform: scale(0.35);
+          transform: scale(0.25);
           transform-origin: center;
         }
 
-        @media (min-width: 640px) { .scene { transform: scale(0.5); } }
-        @media (min-width: 768px) { .scene { transform: scale(0.7); } }
-        @media (min-width: 1024px) { .scene { transform: scale(1); } }
+        @media (min-width: 480px) { .scene { transform: scale(0.35); gap: 30px; } }
+        @media (min-width: 640px) { .scene { transform: scale(0.5); gap: 40px; } }
+        @media (min-width: 768px) { .scene { transform: scale(0.7); gap: 50px; } }
+        @media (min-width: 1024px) { .scene { transform: scale(1); gap: 60px; } }
 
         /* ========== NOTEBOOK ========== */
         .notebook {
@@ -236,7 +238,7 @@ export function MacbookShowcase() {
         .notif-title {
           font-size: 10px;
           font-weight: 600;
-          color: rgba(255,255,255,0.8);
+          color: rgba(255,255,255,0.85);
         }
         .notif-desc {
           font-size: 9px;
@@ -494,11 +496,6 @@ export function MacbookShowcase() {
           justify-content: center;
           font-size: 14px;
         }
-
-        .di-1 { background: rgba(124,58,237,0.5); }
-        .di-2 { background: rgba(16,185,129,0.4); }
-        .di-3 { background: rgba(59,130,246,0.4); }
-        .di-4 { background: rgba(245,158,11,0.4); }
 
         .nb-glow {
           position: absolute;
