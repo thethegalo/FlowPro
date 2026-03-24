@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -49,9 +50,8 @@ export default function ResourcesPage() {
   const { data: subData } = useCollection(subQuery);
 
   const isProMember = useMemo(() => {
-    if (user?.email === 'thethegalo@gmail.com') return true;
     return subData?.some(sub => sub.planType === 'monthly' && sub.status === 'active');
-  }, [subData, user]);
+  }, [subData]);
 
   const copyToClipboard = (text: string, id: string, isPro: boolean) => {
     if (isPro && !isProMember) {

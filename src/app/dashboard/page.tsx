@@ -53,11 +53,22 @@ export default function Dashboard() {
   }, [db, user]);
   const { data: userData, isLoading: isUserDocLoading } = useDoc(userDocRef);
 
+  const subQuery = useMemoFirebase(() => {
+    if (!db || !user) return null;
+    return query(collection(db, 'users', user.uid, 'subscriptions'));
+  }, [db, user]);
+  const { data: subData } = useCollection(subQuery);
+
   const progressQuery = useMemoFirebase(() => {
     if (!db || !user) return null;
     return query(collection(db, 'users', user.uid, 'missionProgress'), orderBy('completedAt', 'desc'));
   }, [db, user]);
   const { data: progressData } = useCollection(progressQuery);
+
+  // Verificar se é PRO
+  const isProMember = useMemo(() => {
+    return subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime') && sub.status === 'active');
+  }, [subData]);
 
   // Buscar meta do quiz
   useEffect(() => {
@@ -74,23 +85,6 @@ export default function Dashboard() {
     fetchGoal();
   }, [db, user]);
 
-  // Lógica de Reset Diário Local (MVP)
-  useEffect(() => {
-    if (userData && db && user) {
-      const lastAction = userData.lastActionAt?.toDate ? userData.lastActionAt.toDate() : null;
-      if (lastAction) {
-        const today = new Date();
-        const isDifferentDay = lastAction.getDate() !== today.getDate() || 
-                              lastAction.getMonth() !== today.getMonth() ||
-                              lastAction.getFullYear() !== today.getFullYear();
-        
-        if (isDifferentDay && userData.dailyActions > 0) {
-          updateDoc(doc(db, 'users', user.uid), { dailyActions: 0 });
-        }
-      }
-    }
-  }, [userData, db, user]);
-
   const missions = [
     { id: 'dia1', title: 'DIA 1: Criar Oferta', desc: 'Defina o que vender e seu primeiro script de ataque.', order: 1 },
     { id: 'dia2', title: 'DIA 2: Ajustar Perfil', desc: 'Prepare suas redes para converter visitas em vendas reais.', order: 2 },
@@ -105,12 +99,20 @@ export default function Dashboard() {
     return progressData ? progressData.filter(p => p.isCompleted).map(p => p.missionId) : [];
   }, [progressData]);
 
-  const progressPercentage = (completedMissionIds.length / missions.length) * 100;
+  const isJourneyFinished = completedMissionIds.includes('dia7');
 
+  useEffect(() => {
+    if (isJourneyFinished && !isProMember && !isUserDocLoading) {
+      // Pequeno delay para o usuário ver o dashboard antes do upgrade obrigatório
+      const timer = setTimeout(() => router.push('/paywall'), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isJourneyFinished, isProMember, router, isUserDocLoading]);
+
+  const progressPercentage = (completedMissionIds.length / missions.length) * 100;
   const totalEarnings = userData?.totalEarnings || 0;
   const earningsProgress = (totalEarnings / userGoal) * 100;
 
-  // Sistema de Nível
   const userLevel = useMemo(() => {
     const missionsCount = completedMissionIds.length;
     const actionsCount = userData?.totalActions || 0;
@@ -158,25 +160,6 @@ export default function Dashboard() {
     );
   }
 
-  if (userData?.status === 'blocked') {
-    return (
-      <div className="min-h-screen bg-[#050508] flex items-center justify-center p-6 text-center">
-        <Card className="max-w-md glass-card p-12 space-y-6 rounded-[2.5rem]">
-          <div className="h-20 w-20 bg-destructive/10 rounded-full flex items-center justify-center mx-auto border border-destructive/20">
-            <ShieldAlert className="h-10 w-10 text-destructive" />
-          </div>
-          <div className="space-y-2">
-            <h2 className="text-2xl font-black italic uppercase text-white">Acesso Bloqueado</h2>
-            <p className="text-muted-foreground text-sm font-medium">Sua conta foi restringida por violação de termos ou falta de pagamento. Entre em contato com o suporte.</p>
-          </div>
-          <Button asChild variant="outline" className="w-full h-14 rounded-2xl border-white/10 uppercase font-black tracking-widest">
-            <Link href="/">VOLTAR PARA HOME</Link>
-          </Button>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-[#050508]">
@@ -193,16 +176,28 @@ export default function Dashboard() {
             </div>
             
             <div className="flex items-center gap-3">
-              <Badge variant="outline" className="bg-green-500/10 border-green-500/30 text-green-500 text-[8px] font-black uppercase px-2 md:px-3 py-1">
-                <ShieldCheck className="h-3 w-3 mr-1 hidden sm:inline" /> LIBERADO
+              <Badge variant="outline" className={`${isProMember ? 'bg-purple-500/10 border-purple-500/30 text-purple-400' : 'bg-white/5 border-white/10 text-muted-foreground'} text-[8px] font-black uppercase px-3 py-1`}>
+                {isProMember ? 'PRO MEMBER' : 'FREE PLAN'}
               </Badge>
-              <Badge variant="secondary" className="bg-primary/10 text-primary gap-1 px-2 md:px-3 py-1 text-[10px] font-black uppercase">
-                <Flame className="h-3 w-3" /> {completedMissionIds.length + 1}D
+              <Badge variant="secondary" className="bg-primary/10 text-primary gap-1 px-3 py-1 text-[10px] font-black uppercase">
+                <Flame className="h-3 w-3" /> {completedMissionIds.length}D
               </Badge>
             </div>
           </header>
 
           <div className="flex-1 p-4 md:p-8 space-y-8 max-w-5xl mx-auto w-full">
+            {isJourneyFinished && !isProMember && (
+              <div className="bg-primary/10 border border-primary/20 p-6 rounded-[2rem] flex flex-col md:flex-row items-center justify-between gap-6 animate-in zoom-in duration-500">
+                <div className="space-y-1 text-center md:text-left">
+                  <h3 className="text-xl font-black italic uppercase tracking-tighter text-white">Parabéns! Você concluiu sua primeira jornada</h3>
+                  <p className="text-sm text-muted-foreground font-medium">Agora é hora de escalar seus resultados na Fase 2.</p>
+                </div>
+                <Button asChild className="bg-primary hover:bg-primary/90 rounded-2xl h-14 px-8 font-black uppercase tracking-widest shadow-xl shadow-primary/20">
+                  <Link href="/paywall">DESBLOQUEAR ESCALA PRO</Link>
+                </Button>
+              </div>
+            )}
+
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div className="space-y-2">
                 <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter leading-none">
@@ -222,9 +217,9 @@ export default function Dashboard() {
                   <p className="text-[10px] font-bold text-white/80 leading-relaxed uppercase">
                     {completedMissionIds.length === 0 
                       ? "Você está a 1 passo da sua primeira venda. Não pare agora." 
-                      : completedMissionIds.length < 4 
-                      ? "Agora é a etapa onde a maioria desiste. Continue acelerando!"
-                      : "Você já provou que é um executor. A escala é o próximo passo."}
+                      : isJourneyFinished
+                      ? "Você já provou que é um executor. A escala é o próximo passo."
+                      : "Agora é a etapa onde a maioria desiste. Continue acelerando!"}
                   </p>
                 </div>
               </div>

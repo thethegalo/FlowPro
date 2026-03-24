@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -55,9 +56,8 @@ export default function LeadsPage() {
   const { data: subData } = useCollection(subQuery);
 
   const isProMember = useMemo(() => {
-    if (user?.email === 'thethegalo@gmail.com' || user?.email === 'tietegalo@gmail.com') return true;
-    return subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime' || sub.planType === 'lifetime_admin') && sub.status === 'active');
-  }, [subData, user]);
+    return subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime') && sub.status === 'active');
+  }, [subData]);
 
   const handleSearch = async () => {
     if (!niche || !state) {
@@ -84,6 +84,7 @@ export default function LeadsPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Falha na busca de leads');
 
+      // Limite para membros Free
       const finalLeads = isProMember ? data : data.slice(0, 5);
       setLeads(finalLeads);
 
@@ -246,6 +247,15 @@ export default function LeadsPage() {
                 {leads.length > 0 ? `Resultados (${leads.length})` : 'Aguardando Busca'}
               </h2>
 
+              {!isProMember && leads.length > 0 && (
+                <div className="p-4 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-between gap-4">
+                  <p className="text-[10px] font-bold text-primary uppercase">Você atingiu o limite da busca Free. Desbloqueie leads ilimitados.</p>
+                  <Button asChild size="sm" className="bg-primary text-white text-[8px] font-black h-8 px-4 rounded-xl">
+                    <Link href="/paywall">UPGRADE PRO</Link>
+                  </Button>
+                </div>
+              )}
+
               {leads.length === 0 && !loading ? (
                 <div className="py-16 md:py-24 text-center glass-card rounded-[3rem] border-dashed border-white/5">
                   <div className="h-16 w-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 opacity-20">
@@ -309,7 +319,7 @@ export default function LeadsPage() {
                               size="sm"
                               onClick={() => {
                                 if (!approachedLeads.includes(lead.id)) {
-                                  setApproachedLeads(p => [...prev, lead.id]);
+                                  setApproachedLeads(prev => [...prev, lead.id]);
                                   trackAction();
                                 }
                               }}
