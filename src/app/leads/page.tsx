@@ -18,7 +18,8 @@ import {
   Copy,
   Zap,
   Phone,
-  AlertTriangle
+  AlertTriangle,
+  ExternalLink
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { generateLeadMessage } from '@/ai/flows/generate-lead-message';
@@ -51,7 +52,7 @@ export default function LeadsPage() {
 
   const isProMember = useMemo(() => {
     if (user?.email === 'thethegalo@gmail.com' || user?.email === 'tietegalo@gmail.com') return true;
-    return subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime_admin') && sub.status === 'active');
+    return subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime' || sub.planType === 'lifetime_admin') && sub.status === 'active');
   }, [subData, user]);
 
   const handleSearch = async () => {
@@ -76,7 +77,6 @@ export default function LeadsPage() {
         body: JSON.stringify({ niche, city, state }),
       });
 
-      // Verifica se a resposta é um JSON válido antes de tentar ler
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         throw new Error("O servidor retornou uma resposta inválida. Verifique se o backend está configurado.");
@@ -88,7 +88,6 @@ export default function LeadsPage() {
         throw new Error(data.error || 'Falha na busca de leads');
       }
 
-      // Limita resultados para usuários free
       const finalLeads = isProMember ? data : data.slice(0, 5);
       setLeads(finalLeads);
 
@@ -123,6 +122,18 @@ export default function LeadsPage() {
     }
     navigator.clipboard.writeText(text);
     toast({ title: "Copiado!", description: "Contato copiado com sucesso." });
+  };
+
+  const handleWhatsApp = (phone: string) => {
+    if (!phone || phone === 'Telefone não listado') {
+      toast({ variant: "destructive", title: "Ops!", description: "Contato não disponível para este lead." });
+      return;
+    }
+    // Formata o número: remove tudo que não é dígito
+    const cleanPhone = phone.replace(/\D/g, '');
+    // Garante o código do país (55 para Brasil) se não houver
+    const waPhone = cleanPhone.length <= 11 ? `55${cleanPhone}` : cleanPhone;
+    window.open(`https://wa.me/${waPhone}`, '_blank');
   };
 
   const handleGenMessage = async (lead: any) => {
@@ -282,6 +293,9 @@ export default function LeadsPage() {
                                   <span>•</span>
                                   <span>{lead.city}, {lead.state}</span>
                                 </div>
+                                <div className="flex items-center gap-2 text-[11px] text-primary font-bold italic uppercase tracking-tighter">
+                                  <Phone className="h-3.5 w-3.5" /> {lead.phone}
+                                </div>
                                 <p className="text-[10px] text-muted-foreground/60 font-medium uppercase">{lead.address}</p>
                               </div>
                             </div>
@@ -291,10 +305,19 @@ export default function LeadsPage() {
                             <Button 
                               variant="outline" 
                               size="sm"
+                              onClick={() => handleWhatsApp(lead.phone)}
+                              className={`flex-1 lg:flex-none h-12 border-green-500/20 rounded-xl text-[9px] font-black uppercase tracking-widest gap-2 bg-green-500/5 hover:bg-green-500/10 text-green-500 ${lead.phone === 'Telefone não listado' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            >
+                              <MessageSquare className="h-3.5 w-3.5" /> WhatsApp
+                            </Button>
+
+                            <Button 
+                              variant="outline" 
+                              size="sm"
                               onClick={() => handleCopy(lead.phone)}
                               className={`flex-1 lg:flex-none h-12 border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest gap-2 bg-white/5 hover:bg-white/10 ${lead.phone === 'Telefone não listado' ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                              <Phone className="h-3.5 w-3.5" /> {lead.phone === 'Telefone não listado' ? 'Sem Telefone' : 'Copiar Fone'}
+                              <Copy className="h-3.5 w-3.5" /> Copiar Fone
                             </Button>
                             
                             <Button 
