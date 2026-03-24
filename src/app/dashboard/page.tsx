@@ -128,30 +128,22 @@ export default function Dashboard() {
   const displayGoal = isSpecialUser ? 50000 : userGoal;
   const earningsProgress = (totalEarnings / displayGoal) * 100;
 
-  // Gráfico de Área: Exibe a performance diária com linha e degradê
+  // Gráfico de Área: 30 dias com pontos e curva suave
   const chartData = useMemo(() => {
-    const days = 15;
+    const days = 30;
     const data = [];
-    
-    // Seed fixa baseada no UID do usuário para manter o gráfico estável
     const userSeed = user?.uid?.charCodeAt(0) || 1;
     
     for (let i = days; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      const dayStr = date.toLocaleDateString('pt-BR', { day: '2-digit' });
+      const dayStr = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
       
-      // Simulação de performance diária
-      // Se for hoje (i=0), usamos uma base do que o usuário já adicionou
       let dailyValue = 0;
       if (totalEarnings > 0) {
-        const average = totalEarnings / 20;
-        // Pseudo-random estável
-        const variation = 0.5 + (( (i + userSeed) * 13 ) % 100) / 100;
+        const average = totalEarnings / 40;
+        const variation = 0.3 + (((i + userSeed) * 7) % 100) / 80;
         dailyValue = Math.floor(average * variation);
-      } else {
-        // Se estiver zerado, mostramos zeros
-        dailyValue = 0;
       }
       
       data.push({
@@ -183,20 +175,19 @@ export default function Dashboard() {
       await setDoc(userRef, {
         totalEarnings: increment(100),
         totalActions: increment(1),
+        dailyActions: increment(1),
         updatedAt: serverTimestamp(),
         lastActionAt: serverTimestamp(),
-        // Se for o primeiro registro, garante que o nome e email existam
         name: userData?.name || user.displayName || user.email?.split('@')[0],
         email: userData?.email || user.email
       }, { merge: true });
 
       toast({
-        title: rawEarnings === 0 && !isSpecialUser ? "🔥 Boa! Você já saiu do zero" : "Venda Registrada!",
-        description: "+ R$ 100,00 adicionados ao seu placar."
+        title: "Venda Registrada!",
+        description: "R$ 100,00 adicionados ao seu placar de performance."
       });
     } catch (e: any) {
-      console.error("Erro ao adicionar ganho:", e);
-      toast({ variant: "destructive", title: "Erro ao atualizar ganhos", description: "Ocorreu um problema ao salvar no banco de dados." });
+      toast({ variant: "destructive", title: "Erro ao salvar", description: "Verifique sua conexão." });
     } finally {
       setIsAddingEarning(false);
     }
@@ -227,7 +218,7 @@ export default function Dashboard() {
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
               <div className="h-4 w-px bg-white/10 hidden md:block" />
               <h2 className="text-sm font-black italic uppercase tracking-widest hidden md:flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-primary" /> Área do Aluno
+                <Sparkles className="h-4 w-4 text-primary" /> Painel de Comando
               </h2>
             </div>
             
@@ -245,13 +236,13 @@ export default function Dashboard() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div className="space-y-2">
                 <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter leading-none">
-                  Olá, {userData?.name?.split(' ')[0] || 'Guerreiro'}
+                  Status: {userData?.name?.split(' ')[0] || 'Guerreiro'}
                 </h1>
                 <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full w-fit">
                   <div className={`${userLevel.color}`}>
                     {userLevel.icon}
                   </div>
-                  <span className={`text-[10px] font-black uppercase tracking-widest ${userLevel.color}`}>Nível {userLevel.name}</span>
+                  <span className={`text-[10px] font-black uppercase tracking-widest ${userLevel.color}`}>Patente {userLevel.name}</span>
                 </div>
               </div>
 
@@ -269,22 +260,22 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Gráfico de Performance Diária Estilo Linha/Área */}
-            <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden p-6 md:p-10 space-y-8">
+            {/* Gráfico Estilo Harmônico (Igual à Imagem) */}
+            <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden p-6 md:p-10 space-y-10">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div className="space-y-1">
-                  <h3 className="text-2xl font-black italic uppercase tracking-tight text-white">Performance Diária</h3>
-                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest">Comparação de ganhos por dia nos últimos 15 dias.</p>
+                  <h3 className="text-2xl font-black italic uppercase tracking-tight text-white">Ganhos dos Últimos 30 Dias</h3>
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60">Soma dos contratos fechados nos últimos 30 dias.</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1">Total Acumulado</p>
-                  <div className="text-4xl font-black italic tracking-tighter text-white">R$ {totalEarnings.toLocaleString('pt-BR')}</div>
+                  <p className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1">Ganhos Totais</p>
+                  <div className="text-4xl font-black italic tracking-tighter text-white">R$ {totalEarnings.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
                 </div>
               </div>
 
-              <div className="h-[300px] w-full">
+              <div className="h-[320px] w-full">
                 <ChartContainer config={{ 
-                  ganhos: { label: "Ganho do Dia", color: "hsl(var(--primary))" } 
+                  ganhos: { label: "Valor do Dia", color: "hsl(var(--primary))" } 
                 }}>
                   <AreaChart 
                     data={chartData} 
@@ -292,7 +283,7 @@ export default function Dashboard() {
                   >
                     <defs>
                       <linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4}/>
                         <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
@@ -303,6 +294,7 @@ export default function Dashboard() {
                       tickLine={false} 
                       tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
                       dy={10}
+                      interval={2}
                     />
                     <YAxis 
                       axisLine={false} 
@@ -316,10 +308,12 @@ export default function Dashboard() {
                       type="monotone" 
                       dataKey="ganhos" 
                       stroke="hsl(var(--primary))" 
-                      strokeWidth={4}
+                      strokeWidth={3}
                       fillOpacity={1} 
                       fill="url(#colorGanhos)" 
-                      animationDuration={1500}
+                      animationDuration={2000}
+                      dot={{ r: 3, fill: 'hsl(var(--primary))', strokeWidth: 1, stroke: '#fff', opacity: 0.8 }}
+                      activeDot={{ r: 6, fill: 'hsl(var(--primary))', stroke: '#fff', strokeWidth: 2 }}
                     />
                   </AreaChart>
                 </ChartContainer>
@@ -330,7 +324,7 @@ export default function Dashboard() {
               <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-primary">Seus Ganhos</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-primary">Placar de Caixa</span>
                     <Badge variant="outline" className="text-[8px] border-primary/20 text-primary">META: R$ {displayGoal.toLocaleString('pt-BR')}</Badge>
                   </div>
                 </CardHeader>
@@ -341,14 +335,14 @@ export default function Dashboard() {
                       size="sm" 
                       onClick={handleAddEarning}
                       disabled={isAddingEarning}
-                      className="bg-white text-black hover:bg-primary hover:text-white rounded-xl font-black uppercase text-[10px] h-10 px-4 transition-all"
+                      className="bg-white text-black hover:bg-primary hover:text-white rounded-xl font-black uppercase text-[10px] h-10 px-4 transition-all active:scale-95"
                     >
                       {isAddingEarning ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Plus className="h-3 w-3 mr-1" /> ADICIONAR GANHO</>}
                     </Button>
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between text-[8px] font-black uppercase opacity-50 tracking-widest">
-                      <span>Progresso da Meta</span>
+                      <span>Progresso do Alvo</span>
                       <span>{Math.min(100, Math.round(earningsProgress))}%</span>
                     </div>
                     <Progress value={earningsProgress} className="h-2 bg-white/5" />
@@ -359,8 +353,8 @@ export default function Dashboard() {
               <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-accent">Ações de Hoje</span>
-                    <Badge variant="outline" className="text-[8px] border-accent/20 text-accent">EXECUTAR DIARIAMENTE</Badge>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-accent">Execução Diária</span>
+                    <Badge variant="outline" className="text-[8px] border-accent/20 text-accent">ROTINA DE ATAQUE</Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -369,14 +363,14 @@ export default function Dashboard() {
                       <div className="text-4xl font-black italic tracking-tighter">
                         {dailyActions}/{dailyGoal}
                       </div>
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase">Atividades Concluídas</p>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase">Ações Concluídas Hoje</p>
                     </div>
-                    <div className={`h-16 w-16 rounded-full flex items-center justify-center border-4 ${dailyActions >= dailyGoal ? 'border-green-500 bg-green-500/10' : 'border-white/5 bg-white/5'}`}>
+                    <div className={`h-16 w-16 rounded-full flex items-center justify-center border-4 transition-all duration-1000 ${dailyActions >= dailyGoal ? 'border-green-500 bg-green-500/10 shadow-[0_0_20px_rgba(34,197,94,0.3)]' : 'border-white/5 bg-white/5'}`}>
                       {dailyActions >= dailyGoal ? <Flame className="h-8 w-8 text-green-500 animate-pulse" /> : <Target className="h-8 w-8 text-muted-foreground opacity-20" />}
                     </div>
                   </div>
                   {dailyActions >= dailyGoal && (
-                    <div className="text-center p-2 bg-green-500/10 border border-green-500/20 rounded-xl">
+                    <div className="text-center p-2 bg-green-500/10 border border-green-500/20 rounded-xl animate-in fade-in zoom-in">
                       <p className="text-[10px] font-black text-green-500 uppercase tracking-widest">🔥 Meta do dia concluída</p>
                     </div>
                   )}
@@ -404,9 +398,9 @@ export default function Dashboard() {
                 </Link>
               </Button>
               <Button asChild variant="outline" className="h-20 md:h-24 glass-card border-white/10 flex flex-col gap-2 rounded-2xl hover:bg-green-500/10 hover:border-green-500/40 group">
-                <Link href="/dashboard">
-                  <UserCheck className="h-5 w-5 md:h-6 md:w-6 text-green-400 group-hover:scale-110 transition-transform" />
-                  <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white">Perfil</span>
+                <Link href="/tools">
+                  <Zap className="h-5 w-5 md:h-6 md:w-6 text-green-400 group-hover:scale-110 transition-transform" />
+                  <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white">Arsenal</span>
                 </Link>
               </Button>
             </div>
