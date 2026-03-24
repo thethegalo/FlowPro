@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -33,7 +32,9 @@ import {
   Clock,
   BookOpen,
   ShieldCheck,
-  Send
+  Send,
+  Wrench,
+  ExternalLink
 } from 'lucide-react';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp, updateDoc, increment } from 'firebase/firestore';
@@ -45,6 +46,7 @@ const MISSION_CONTENT = {
   'dia1': {
     title: 'DIA 1: Criar Oferta Flow',
     desc: 'O primeiro passo é definir um produto de alta demanda e seu roteiro de ataque irresistível.',
+    tool: { name: 'Lovable', desc: 'Use para criar uma Landing Page rápida da sua oferta.', url: 'https://lovable.dev' },
     guide: [
       { step: "Abra um bloco de notas ou papel.", icon: <Settings className="h-4 w-4" /> },
       { step: "Escolha 1 nicho (Ex: Dentistas).", icon: <Target className="h-4 w-4" /> },
@@ -67,6 +69,7 @@ const MISSION_CONTENT = {
   'dia2': {
     title: 'DIA 2: Ajustar Perfil Flow',
     desc: 'Transforme seu Instagram em uma vitrine de autoridade.',
+    tool: { name: 'Canva', desc: 'Use para criar sua nova foto de perfil e destaques.', url: 'https://canva.com' },
     guide: [
       { step: "Vá ao Instagram > Editar Perfil.", icon: <Layout className="h-4 w-4" /> },
       { step: "Mude sua foto para algo profissional.", icon: <UserCheck className="h-4 w-4" /> },
@@ -89,6 +92,7 @@ const MISSION_CONTENT = {
   'dia3': {
     title: 'DIA 3: Encontrar Leads',
     desc: 'Use nossa ferramenta de Radar para encontrar clientes reais.',
+    tool: { name: 'Radar Flow', desc: 'Nossa ferramenta interna para captação direta.', url: '/leads' },
     guide: [
       { step: "Acesse a aba 'Captar Leads' no menu lateral.", icon: <Search className="h-4 w-4" /> },
       { step: "Digite seu nicho e estado.", icon: <Target className="h-4 w-4" /> },
@@ -111,6 +115,7 @@ const MISSION_CONTENT = {
   'dia4': {
     title: 'DIA 4: Fazer Abordagem',
     desc: 'É hora de ativar o motor neural e enviar as primeiras mensagens.',
+    tool: { name: 'Simulador IA', desc: 'Pratique sua conversa antes de enviar.', url: '/simulator' },
     guide: [
       { step: "Volte para a lista de Leads salvos.", icon: <Users className="h-4 w-4" /> },
       { step: "Clique em 'Enviar Mensagem IA' no primeiro lead.", icon: <Zap className="h-4 w-4" /> },
@@ -133,6 +138,7 @@ const MISSION_CONTENT = {
   'dia5': {
     title: 'DIA 5: Conversar & Nutrir',
     desc: 'Gerencie as respostas e mostre o valor do seu método.',
+    tool: { name: 'WhatsApp Web', desc: 'Facilite suas conversas no computador.', url: 'https://web.whatsapp.com' },
     guide: [
       { step: "Responda quem já te deu um 'oi'.", icon: <MessageSquare className="h-4 w-4" /> },
       { step: "Use o IA Mentor para tirar dúvidas.", icon: <Bot className="h-4 w-4" /> },
@@ -154,6 +160,7 @@ const MISSION_CONTENT = {
   'dia6': {
     title: 'DIA 6: Fechar Venda Flow',
     desc: 'Hora de transformar as conversas em dinheiro.',
+    tool: { name: 'Zapier', desc: 'Automatize a entrega do seu serviço.', url: 'https://zapier.com' },
     guide: [
       { step: "Abra a biblioteca de scripts de fechamento.", icon: <BookOpen className="h-4 w-4" /> },
       { step: "Mande o link de pagamento/PIX.", icon: <DollarSign className="h-4 w-4" /> },
@@ -175,6 +182,7 @@ const MISSION_CONTENT = {
   'dia7': {
     title: 'DIA 7: Escalar Flow',
     desc: 'Sua estrutura está validada. Agora é hora de repetir.',
+    tool: { name: 'Dashboard Pro', desc: 'Acompanhe seus ganhos em larga escala.', url: '/dashboard' },
     guide: [
       { step: "Analise quais nichos mais responderam.", icon: <Target className="h-4 w-4" /> },
       { step: "Aumente a meta diária para 50 leads.", icon: <Zap className="h-4 w-4" /> },
@@ -246,7 +254,6 @@ export default function MissionPage() {
         completedAt: serverTimestamp(),
       }, { merge: true });
 
-      // Atualizar XP/Ações totais (10 pontos por missão)
       await updateDoc(doc(db, 'users', user.uid), {
         totalActions: increment(10),
         dailyActions: increment(1),
@@ -304,6 +311,30 @@ export default function MissionPage() {
       </header>
 
       <main className="flex-1 container max-w-2xl mx-auto p-4 md:p-8 space-y-8">
+        
+        {/* Sugestão de Ferramenta */}
+        {content.tool && (
+          <Card className="bg-primary/5 border border-primary/20 rounded-[1.5rem] overflow-hidden animate-in slide-in-from-top-4 duration-500">
+            <CardContent className="p-6 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary shrink-0">
+                  <Wrench className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase text-primary tracking-widest">Sugestão de Ferramenta</p>
+                  <h4 className="text-sm font-bold text-white uppercase italic">{content.tool.name}</h4>
+                  <p className="text-[11px] text-muted-foreground">{content.tool.desc}</p>
+                </div>
+              </div>
+              <Button asChild size="sm" variant="outline" className="rounded-xl border-primary/30 text-[10px] font-black uppercase px-4 h-10 hover:bg-primary hover:text-white">
+                <a href={content.tool.url} target={content.tool.url.startsWith('http') ? "_blank" : "_self"} rel="noopener noreferrer">
+                  {content.tool.url.startsWith('http') ? 'ABRIR' : 'ACESSAR'} <ExternalLink className="ml-2 h-3 w-3" />
+                </a>
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         <div className="space-y-6">
           <div className="flex items-center gap-2 mb-2">
             <Info className="h-4 w-4 text-primary" />

@@ -1,6 +1,6 @@
-
 "use client";
 
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -14,9 +14,11 @@ import {
   Phone,
   Mail,
   Lock,
-  Star
+  Star,
+  Layout,
+  MessageCircle,
+  FileCheck
 } from 'lucide-react';
-import { useState, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
@@ -32,8 +34,10 @@ const SCRIPTS = {
     { title: 'Fechamento Direto (Fase 1)', content: "Com base no que conversamos, o sistema Flow é o que falta para você automatizar sua agenda. Podemos liberar seu acesso agora e já configurar sua primeira campanha hoje mesmo?", pro: false },
     { title: 'Quebra de Objeção: Preço (Fase 2)', content: "Eu entendo o investimento. Se olharmos para o lucro de R$ [Valor] que projetamos, o sistema se paga em menos de 15 dias. Faz sentido deixar esse lucro na mesa por causa de uma parcela mensal?", pro: true },
   ],
-  followup: [
-    { title: 'Follow-up de Valor (Fase 1)', content: "Oi [Nome]! Vi este vídeo sobre [Nicho] e lembrei da nossa conversa. O ponto em 1:20 é exatamente o que o Flow resolve. Dá uma olhada quando puder!\n\nAbraço, [Meu Nome]", pro: false },
+  models: [
+    { title: 'Bio de Autoridade', content: "🚀 Especialista em Automação de Vendas para [Nicho]\n🎯 Ajudo negócios a escalarem sem anúncios\n💰 +R$ [Valor] gerados para clientes\n👇 Veja como funciona o Método Flow", pro: false },
+    { title: 'Estrutura de Oferta Irresistível', content: "1. O Problema: [O que dói no cliente]\n2. A Causa: [Por que isso acontece]\n3. A Solução: [Seu Método Flow]\n4. O Resultado: [O que ele ganha]\n5. A Garantia: [Risco Zero]\n6. CTA: [Próximo Passo]", pro: true },
+    { title: 'Proposta Comercial (Compacta)', content: "Olá [Nome],\n\nSegue o resumo da nossa solução:\n\n✅ Implementação do Radar Flow em 48h\n✅ Automação de 100% dos Leads de entrada\n✅ Dashboard de Ganhos em tempo real\n\nInvestimento: R$ [Valor]\nRetorno Estimado: [ROI]\n\nIniciamos hoje?", pro: true }
   ]
 };
 
@@ -82,7 +86,7 @@ export default function ResourcesPage() {
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
               <div className="h-4 w-px bg-white/10 hidden md:block" />
               <h1 className="text-sm font-black italic uppercase tracking-widest flex items-center gap-2">
-                <BookOpen className="h-4 w-4 text-primary" /> Biblioteca de Scripts
+                <BookOpen className="h-4 w-4 text-primary" /> Biblioteca de Elite
               </h1>
             </div>
             {isProMember && (
@@ -94,15 +98,15 @@ export default function ResourcesPage() {
 
           <div className="flex-1 container max-w-4xl mx-auto p-4 md:p-8 space-y-8">
             <div className="space-y-2">
-              <h2 className="text-3xl font-black italic uppercase tracking-tighter">Modelos de Execução</h2>
-              <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-widest">Ações comprovadas para cada fase do Flow.</p>
+              <h2 className="text-3xl font-black italic uppercase tracking-tighter">Arsenal de Scripts</h2>
+              <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-widest">Modelos de alta conversão testados no campo de batalha.</p>
             </div>
 
             <Tabs defaultValue="outreach" className="w-full">
               <TabsList className="grid w-full grid-cols-3 bg-white/5 p-1 h-14 rounded-2xl">
                 <TabsTrigger value="outreach" className="gap-2 font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-primary data-[state=active]:text-white rounded-xl"><Mail className="h-4 w-4" /> Abordagem</TabsTrigger>
                 <TabsTrigger value="closing" className="gap-2 font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-primary data-[state=active]:text-white rounded-xl"><Zap className="h-4 w-4" /> Fechamento</TabsTrigger>
-                <TabsTrigger value="followup" className="gap-2 font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-primary data-[state=active]:text-white rounded-xl"><Phone className="h-4 w-4" /> Follow-up</TabsTrigger>
+                <TabsTrigger value="models" className="gap-2 font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-primary data-[state=active]:text-white rounded-xl"><FileCheck className="h-4 w-4" /> Modelos</TabsTrigger>
               </TabsList>
 
               {Object.entries(SCRIPTS).map(([key, list]) => (
@@ -154,7 +158,7 @@ export default function ResourcesPage() {
               <Card className="bg-primary/10 border-primary/30 overflow-hidden rounded-[2rem]">
                 <CardContent className="p-8 flex flex-col md:flex-row items-center gap-6">
                   <div className="bg-primary/20 p-4 rounded-2xl">
-                    <Zap className="h-10 w-10 text-primary" />
+                    <Star className="h-10 w-10 text-primary fill-primary" />
                   </div>
                   <div className="space-y-1 text-center md:text-left flex-1">
                     <h3 className="text-xl font-black italic uppercase tracking-tighter">Precisa de Scripts de Elite?</h3>
