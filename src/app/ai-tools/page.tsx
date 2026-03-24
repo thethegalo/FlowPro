@@ -18,7 +18,8 @@ import {
   TrendingUp,
   Layout,
   Mic2,
-  Globe
+  Globe,
+  Mail
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -32,7 +33,7 @@ const AI_CATEGORIES = [
 ];
 
 const AI_TOOLS = [
-  // VENDAS
+  // IA PARA VENDAS
   {
     name: "ChatGPT",
     desc: "O assistente de IA mais versátil para scripts, ideias e estratégia.",
@@ -42,14 +43,6 @@ const AI_TOOLS = [
     url: "https://chatgpt.com"
   },
   {
-    name: "Jasper",
-    desc: "Especialista em textos persuasivos e marketing de alta performance.",
-    useCase: "Escrever anúncios irresistíveis e landing pages que convertem visitantes em clientes.",
-    category: "sales",
-    icon: <FileText className="h-5 w-5 text-orange-400" />,
-    url: "https://jasper.ai"
-  },
-  {
     name: "Copy.ai",
     desc: "IA focada em copywriting rápido para redes sociais e e-mails.",
     useCase: "Gerar legendas, headlines e e-mails de abordagem em poucos segundos.",
@@ -57,8 +50,16 @@ const AI_TOOLS = [
     icon: <Zap className="h-5 w-5 text-blue-400" />,
     url: "https://copy.ai"
   },
+  {
+    name: "Jasper",
+    desc: "Especialista em textos persuasivos e marketing de alta performance.",
+    useCase: "Escrever anúncios irresistíveis e landing pages que convertem visitantes em clientes.",
+    category: "sales",
+    icon: <FileText className="h-5 w-5 text-orange-400" />,
+    url: "https://jasper.ai"
+  },
   
-  // CRIAÇÃO
+  // IA PARA CRIAÇÃO
   {
     name: "Midjourney",
     desc: "A melhor IA para geração de imagens ultra-realistas e artísticas.",
@@ -68,9 +69,9 @@ const AI_TOOLS = [
     url: "https://midjourney.com"
   },
   {
-    name: "DALL·E 3",
+    name: "DALL·E",
     desc: "IA integrada ao ChatGPT para criação de imagens por descrição.",
-    useCase: "Transformar ideias complexas em ilustrações e fotos instantâneas para seu site.",
+    useCase: "Transformar ideias complexas em ilustrações e fotos instantâneas para seu material.",
     category: "creation",
     icon: <Sparkles className="h-5 w-5 text-pink-400" />,
     url: "https://openai.com/dall-e-3"
@@ -84,7 +85,7 @@ const AI_TOOLS = [
     url: "https://durable.co"
   },
 
-  // CONTEÚDO
+  // IA PARA CONTEÚDO
   {
     name: "CapCut IA",
     desc: "Edição de vídeo simplificada com recursos avançados de inteligência.",
@@ -104,17 +105,17 @@ const AI_TOOLS = [
   {
     name: "ElevenLabs",
     desc: "A voz de IA mais natural e realista do mundo.",
-    useCase: "Dublar vídeos e criar locuções profissionais para seus anúncios sem estúdio.",
+    useCase: "Dublar vídeos e criar locuções profissionais para seus anúncios sem precisar de estúdio.",
     category: "content",
     icon: <Mic2 className="h-5 w-5 text-yellow-400" />,
     url: "https://elevenlabs.io"
   },
 
-  // PRODUTIVIDADE
+  // IA PARA PRODUTIVIDADE
   {
     name: "Notion AI",
     desc: "Inteligência integrada ao seu espaço de trabalho e banco de dados.",
-    useCase: "Resumir reuniões, organizar sua base de conhecimento e escrever documentação.",
+    useCase: "Resumir reuniões, organizar sua base de conhecimento e escrever documentação técnica.",
     category: "prod",
     icon: <FileText className="h-5 w-5 text-white" />,
     url: "https://notion.so"
@@ -124,7 +125,7 @@ const AI_TOOLS = [
     desc: "Automação de e-mail marketing com auxílio de inteligência preditiva.",
     useCase: "Escalar seu alcance e nutrir seus leads automaticamente com e-mails inteligentes.",
     category: "prod",
-    icon: <Zap className="h-5 w-5 text-yellow-500" />,
+    icon: <Mail className="h-5 w-5 text-yellow-500" />,
     url: "https://mailchimp.com"
   }
 ];
@@ -159,8 +160,8 @@ export default function AIToolsPage() {
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[8px] font-black uppercase tracking-widest">
                   <Bot className="h-3 w-3" /> Inteligência Neural Ativa
                 </div>
-                <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white">Hub de Inteligência Artificial</h2>
-                <p className="text-muted-foreground text-sm uppercase font-bold tracking-widest max-w-2xl">O arsenal de IAs que os grandes players usam para escalar operações com custo baixo e alta performance.</p>
+                <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white">IAs Recomendadas</h2>
+                <p className="text-muted-foreground text-sm uppercase font-bold tracking-widest max-w-2xl">O seu arsenal estratégico de inteligência artificial para ganhar dinheiro e executar com alta performance.</p>
               </div>
 
               <div className="flex overflow-x-auto pb-4 gap-2 no-scrollbar">
@@ -233,7 +234,7 @@ export default function AIToolsPage() {
               <CardContent className="p-10 flex flex-col md:flex-row items-center justify-between gap-8">
                 <div className="space-y-2 text-center md:text-left">
                   <h3 className="text-2xl font-black italic uppercase tracking-tight">O futuro é neural</h3>
-                  <p className="text-muted-foreground text-sm font-medium max-w-md">Dominar essas ferramentas hoje é o que separa os amadores dos executores de alto nível. Comece por uma e domine o seu nicho.</p>
+                  <p className="text-muted-foreground text-sm font-medium max-w-md">Dominar essas ferramentas hoje é o que separa os amadores dos executores de alto nível. Comece por uma e multiplique seus resultados.</p>
                 </div>
                 <div className="flex gap-4">
                   <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center animate-pulse">
