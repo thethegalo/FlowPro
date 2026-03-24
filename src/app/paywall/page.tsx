@@ -108,7 +108,49 @@ export default function PaywallPage() {
 
           <div className="grid md:grid-cols-2 gap-10 max-w-4xl mx-auto items-stretch">
             
-            {/* PLANO PRO (AGORA NA ESQUERDA) */}
+            {/* PLANO VITALÍCIO (ESQUERDA) */}
+            <Card className="glass-card p-10 flex flex-col justify-between border-white/10 relative overflow-hidden rounded-[2.5rem] bg-white/[0.04] hover:bg-white/[0.06] transition-all duration-500">
+              <div className="space-y-8 relative z-10">
+                <div className="space-y-3">
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 flex items-center gap-2">
+                    <Infinity className="h-4 w-4 text-white/30" /> Plano Vitalício (Base)
+                  </h3>
+                  <div className="space-y-1">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-muted-foreground line-through text-sm decoration-primary/50 opacity-50">R$ 497</span>
+                      <p className="text-6xl font-black italic text-white tracking-tighter">R$ 267</p>
+                    </div>
+                    <p className="text-primary text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
+                      <CalendarCheck className="h-3.5 w-3.5" /> EM ATÉ 12X NO CARTÃO
+                    </p>
+                  </div>
+                  <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest bg-white/5 inline-block px-3 py-1 rounded-full">Acesso Único • Sem mensalidade</p>
+                </div>
+
+                <ul className="space-y-5">
+                  {[
+                    'Jornada de 7 Dias Completa', 
+                    'Metodologia de Primeira Venda',
+                    'Scripts de Abordagem Flow', 
+                    'Radar de Leads (Acesso Base)', 
+                    'IA Mentor 24h Disponível'
+                  ].map((f, i) => (
+                    <li key={i} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white/80">
+                      <CheckCircle2 className="h-4 w-4 text-primary" /> {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <Button 
+                onClick={() => handleSubscription('lifetime')}
+                disabled={isLoading}
+                className="w-full h-16 mt-10 rounded-2xl bg-white text-black hover:bg-primary hover:text-white font-black uppercase tracking-widest transition-all shadow-xl hover:scale-[1.02]"
+              >
+                ATIVAR MEU VITALÍCIO
+              </Button>
+            </Card>
+
+            {/* PLANO PRO (DIREITA - DESTAQUE MAIOR) */}
             <div className="relative p-[2px] rounded-[2.5rem] overflow-hidden shadow-[0_0_60px_rgba(139,92,246,0.35)] group">
               <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-marquee bg-[length:200%_200%]"></div>
               <Card className="relative bg-[#050508] p-10 flex flex-col justify-between h-full border-none rounded-[calc(2.5rem-2px)]">
@@ -153,48 +195,6 @@ export default function PaywallPage() {
                 </Button>
               </Card>
             </div>
-
-            {/* PLANO VITALÍCIO (AGORA NA DIREITA) */}
-            <Card className="glass-card p-10 flex flex-col justify-between border-white/10 relative overflow-hidden rounded-[2.5rem] bg-white/[0.04] hover:bg-white/[0.06] transition-all duration-500">
-              <div className="space-y-8 relative z-10">
-                <div className="space-y-3">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 flex items-center gap-2">
-                    <Infinity className="h-4 w-4 text-white/30" /> Plano Vitalício (Base)
-                  </h3>
-                  <div className="space-y-1">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-muted-foreground line-through text-sm decoration-primary/50 opacity-50">R$ 497</span>
-                      <p className="text-6xl font-black italic text-white tracking-tighter">R$ 267</p>
-                    </div>
-                    <p className="text-primary text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
-                      <CalendarCheck className="h-3.5 w-3.5" /> EM ATÉ 12X NO CARTÃO
-                    </p>
-                  </div>
-                  <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest bg-white/5 inline-block px-3 py-1 rounded-full">Acesso Único • Sem mensalidade</p>
-                </div>
-
-                <ul className="space-y-5">
-                  {[
-                    'Jornada de 7 Dias Completa', 
-                    'Metodologia de Primeira Venda',
-                    'Scripts de Abordagem Flow', 
-                    'Radar de Leads (Acesso Base)', 
-                    'IA Mentor 24h Disponível'
-                  ].map((f, i) => (
-                    <li key={i} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white/80">
-                      <CheckCircle2 className="h-4 w-4 text-primary" /> {f}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <Button 
-                onClick={() => handleSubscription('lifetime')}
-                disabled={isLoading}
-                className="w-full h-16 mt-10 rounded-2xl bg-white text-black hover:bg-primary hover:text-white font-black uppercase tracking-widest transition-all shadow-xl hover:scale-[1.02]"
-              >
-                ATIVAR MEU VITALÍCIO
-              </Button>
-            </Card>
 
           </div>
 
