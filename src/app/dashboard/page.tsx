@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useEffect, useState } from 'react';
@@ -31,7 +32,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
-import { collection, query, orderBy, doc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
+import { collection, query, orderBy, doc, updateDoc, increment, serverTimestamp, getDoc } from 'firebase/firestore';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { useToast } from '@/hooks/use-toast';
@@ -44,6 +45,7 @@ export default function Dashboard() {
   const router = useRouter();
   const { toast } = useToast();
   const [isAddingEarning, setIsAddingEarning] = useState(false);
+  const [userGoal, setUserGoal] = useState(5000);
 
   const userDocRef = useMemoFirebase(() => {
     if (!db || !user) return null;
@@ -56,6 +58,38 @@ export default function Dashboard() {
     return query(collection(db, 'users', user.uid, 'missionProgress'), orderBy('completedAt', 'desc'));
   }, [db, user]);
   const { data: progressData } = useCollection(progressQuery);
+
+  // Buscar meta do quiz
+  useEffect(() => {
+    async function fetchGoal() {
+      if (!db || !user) return;
+      const quizDoc = await getDoc(doc(db, 'users', user.uid, 'quizResponses', 'initial'));
+      if (quizDoc.exists()) {
+        const target = quizDoc.data().responses?.target;
+        if (target) {
+          setUserGoal(Array.isArray(target) ? target[0] : target);
+        }
+      }
+    }
+    fetchGoal();
+  }, [db, user]);
+
+  // Lógica de Reset Diário Local (MVP)
+  useEffect(() => {
+    if (userData && db && user) {
+      const lastAction = userData.lastActionAt?.toDate ? userData.lastActionAt.toDate() : null;
+      if (lastAction) {
+        const today = new Date();
+        const isDifferentDay = lastAction.getDate() !== today.getDate() || 
+                              lastAction.getMonth() !== today.getMonth() ||
+                              lastAction.getFullYear() !== today.getFullYear();
+        
+        if (isDifferentDay && userData.dailyActions > 0) {
+          updateDoc(doc(db, 'users', user.uid), { dailyActions: 0 });
+        }
+      }
+    }
+  }, [userData, db, user]);
 
   const missions = [
     { id: 'dia1', title: 'DIA 1: Criar Oferta', desc: 'Defina o que vender e seu primeiro script de ataque.', order: 1 },
@@ -74,17 +108,16 @@ export default function Dashboard() {
   const progressPercentage = (completedMissionIds.length / missions.length) * 100;
 
   const totalEarnings = userData?.totalEarnings || 0;
-  const goal = 5000; // Valor padrão se não vier do quiz
-  const earningsProgress = (totalEarnings / goal) * 100;
+  const earningsProgress = (totalEarnings / userGoal) * 100;
 
   // Sistema de Nível
   const userLevel = useMemo(() => {
     const missionsCount = completedMissionIds.length;
     const actionsCount = userData?.totalActions || 0;
     
-    if (missionsCount >= 6 || actionsCount >= 50) return { name: 'PRO', color: 'text-purple-400', icon: <Trophy className="h-4 w-4" /> };
-    if (missionsCount >= 4 || actionsCount >= 20) return { name: 'Vendedor', color: 'text-green-400', icon: <Zap className="h-4 w-4" /> };
-    if (missionsCount >= 2 || actionsCount >= 5) return { name: 'Executor', color: 'text-blue-400', icon: <TrendingUp className="h-4 w-4" /> };
+    if (missionsCount >= 6 || actionsCount >= 100) return { name: 'PRO', color: 'text-purple-400', icon: <Trophy className="h-4 w-4" /> };
+    if (missionsCount >= 4 || actionsCount >= 50) return { name: 'Vendedor', color: 'text-green-400', icon: <Zap className="h-4 w-4" /> };
+    if (missionsCount >= 2 || actionsCount >= 15) return { name: 'Executor', color: 'text-blue-400', icon: <TrendingUp className="h-4 w-4" /> };
     return { name: 'Iniciante', color: 'text-primary', icon: <Sparkles className="h-4 w-4" /> };
   }, [completedMissionIds, userData]);
 
@@ -97,7 +130,8 @@ export default function Dashboard() {
     try {
       await updateDoc(doc(db, 'users', user.uid), {
         totalEarnings: increment(100),
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
+        lastActionAt: serverTimestamp()
       });
       toast({
         title: totalEarnings === 0 ? "🔥 Boa! Você já saiu do zero" : "Venda Registrada!",
@@ -169,7 +203,6 @@ export default function Dashboard() {
           </header>
 
           <div className="flex-1 p-4 md:p-8 space-y-8 max-w-5xl mx-auto w-full">
-            {/* Header de Saudação e Alerta Inteligente */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div className="space-y-2">
                 <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter leading-none">
@@ -183,26 +216,26 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* Mensagem Motivacional baseada no progresso */}
               <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 max-w-xs animate-in slide-in-from-right-10 duration-700">
                 <div className="flex gap-3 items-start">
                   <AlertCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                   <p className="text-[10px] font-bold text-white/80 leading-relaxed uppercase">
                     {completedMissionIds.length === 0 
                       ? "Você está a 1 passo da sua primeira venda. Não pare agora." 
-                      : "Agora é a etapa onde a maioria desiste. Continue acelerando!"}
+                      : completedMissionIds.length < 4 
+                      ? "Agora é a etapa onde a maioria desiste. Continue acelerando!"
+                      : "Você já provou que é um executor. A escala é o próximo passo."}
                   </p>
                 </div>
               </div>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
-              {/* Placar de Ganhos */}
               <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-center">
                     <span className="text-[10px] font-black uppercase tracking-widest text-primary">Seus Ganhos</span>
-                    <Badge variant="outline" className="text-[8px] border-primary/20 text-primary">META: R$ {goal}</Badge>
+                    <Badge variant="outline" className="text-[8px] border-primary/20 text-primary">META: R$ {userGoal}</Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -227,7 +260,6 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
-              {/* Contador de Ações Diárias */}
               <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-center">
@@ -241,7 +273,7 @@ export default function Dashboard() {
                       <div className="text-4xl font-black italic tracking-tighter">
                         {dailyActions}/{dailyGoal}
                       </div>
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase">Mensagens Enviadas</p>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase">Atividades Concluídas</p>
                     </div>
                     <div className={`h-16 w-16 rounded-full flex items-center justify-center border-4 ${dailyActions >= dailyGoal ? 'border-green-500 bg-green-500/10' : 'border-white/5 bg-white/5'}`}>
                       {dailyActions >= dailyGoal ? <Flame className="h-8 w-8 text-green-500 animate-pulse" /> : <Target className="h-8 w-8 text-muted-foreground opacity-20" />}
@@ -256,7 +288,6 @@ export default function Dashboard() {
               </Card>
             </div>
 
-            {/* Atalhos Rápidos */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
               <Button asChild variant="outline" className="h-20 md:h-24 glass-card border-white/10 flex flex-col gap-2 rounded-2xl hover:bg-primary/10 hover:border-primary/40 group">
                 <Link href="/leads">
@@ -284,7 +315,6 @@ export default function Dashboard() {
               </Button>
             </div>
 
-            {/* Trilhas de Missão */}
             <div className="space-y-6 pt-4 pb-20">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2 text-white">

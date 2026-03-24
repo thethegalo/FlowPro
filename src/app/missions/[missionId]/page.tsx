@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -25,7 +26,14 @@ import {
   PartyPopper,
   Search,
   ArrowRight,
-  Info
+  Info,
+  UserCheck,
+  Sparkles,
+  Bot,
+  Clock,
+  BookOpen,
+  ShieldCheck,
+  Send
 } from 'lucide-react';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp, updateDoc, increment } from 'firebase/firestore';
@@ -238,9 +246,10 @@ export default function MissionPage() {
         completedAt: serverTimestamp(),
       }, { merge: true });
 
-      // Atualizar XP/Ações totais
+      // Atualizar XP/Ações totais (10 pontos por missão)
       await updateDoc(doc(db, 'users', user.uid), {
         totalActions: increment(10),
+        dailyActions: increment(1),
         updatedAt: serverTimestamp()
       });
 
@@ -295,7 +304,6 @@ export default function MissionPage() {
       </header>
 
       <main className="flex-1 container max-w-2xl mx-auto p-4 md:p-8 space-y-8">
-        {/* Modo Guiado (Passo a Passo) */}
         <div className="space-y-6">
           <div className="flex items-center gap-2 mb-2">
             <Info className="h-4 w-4 text-primary" />
@@ -376,8 +384,15 @@ export default function MissionPage() {
                 {copied ? 'COPIADO' : 'COPIAR SCRIPT'}
               </Button>
               <Button 
-                onClick={() => {
+                onClick={async () => {
                   toggleTask(completedTasks.length);
+                  if (db && user) {
+                    await updateDoc(doc(db, 'users', user.uid), {
+                      totalActions: increment(1),
+                      dailyActions: increment(1),
+                      lastActionAt: serverTimestamp()
+                    });
+                  }
                   toast({ title: "Boa!", description: "Ação registrada no seu progresso." });
                 }}
                 variant="outline"
