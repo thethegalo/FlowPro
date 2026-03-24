@@ -35,7 +35,8 @@ import {
   ShieldCheck,
   Send,
   Wrench,
-  ExternalLink
+  ExternalLink,
+  Zap
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { doc, setDoc, serverTimestamp, updateDoc, increment, collection, query, orderBy } from 'firebase/firestore';
