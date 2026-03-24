@@ -16,10 +16,13 @@ import {
   Users,
   Star,
   Copy,
-  Zap
+  Zap,
+  Phone,
+  AlertTriangle
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { generateLeadMessage } from '@/ai/flows/generate-lead-message';
+import { searchRealLeads } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
@@ -27,20 +30,6 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 
 const STATES = ["SP", "RJ", "MG", "PR", "SC", "RS", "BA", "CE", "PE", "GO"];
-
-const generateMockLeads = (niche: string, city: string, state: string, count: number) => {
-  const suffixes = ['Express', 'Master', 'Alpha', 'Flow', 'Prime', 'Inovação', 'Soluções'];
-  return Array.from({ length: count }).map((_, i) => ({
-    id: `lead-${i}-${Date.now()}`,
-    name: `${niche.charAt(0).toUpperCase() + niche.slice(1)} ${suffixes[i % suffixes.length]} ${city || 'Central'}`,
-    type: niche,
-    city: city || 'Capital',
-    state: state,
-    instagram: `@${niche.toLowerCase().replace(/\s/g, '')}_${(city || 'lead').toLowerCase()}_${i}`,
-    phone: `(${Math.floor(10 + Math.random() * 80)}) 9${Math.floor(10000000 + Math.random() * 90000000)}`,
-    status: 'new'
-  }));
-};
 
 export default function LeadsPage() {
   const { user } = useUser();
@@ -66,7 +55,7 @@ export default function LeadsPage() {
     return subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime_admin') && sub.status === 'active');
   }, [subData, user]);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!niche || !state) {
       toast({ 
         variant: "destructive", 
@@ -75,23 +64,45 @@ export default function LeadsPage() {
       });
       return;
     }
+    
     setLoading(true);
-    const count = isProMember ? 15 : 5;
-    setTimeout(() => {
-      setLeads(generateMockLeads(niche, city, state, count));
-      setLoading(false);
-      if (!isProMember) {
+    setLeads([]); // Limpa resultados anteriores
+
+    try {
+      const results = await searchRealLeads(niche, city, state);
+      
+      // Limita resultados para usuários free
+      const finalLeads = isProMember ? results : results.slice(0, 5);
+      setLeads(finalLeads);
+
+      if (finalLeads.length === 0) {
         toast({ 
-          title: "Limite Básico", 
-          description: "Você está vendo 5 resultados. Assine o Pro para liberar centenas." 
+          variant: "destructive",
+          title: "Busca concluída", 
+          description: "Nenhum lead encontrado, tente outro nicho ou cidade." 
         });
       } else {
-        toast({ title: "Busca Concluída", description: `Encontramos novos leads de ${niche} em ${state}.` });
+        toast({ 
+          title: "Leads Encontrados!", 
+          description: `Mostrando ${finalLeads.length} resultados reais de ${niche}.` 
+        });
       }
-    }, 1200);
+    } catch (e: any) {
+      toast({ 
+        variant: "destructive", 
+        title: "Erro na Busca", 
+        description: "Não foi possível conectar ao radar de leads. Verifique sua conexão." 
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCopy = (text: string) => {
+    if (!text || text === 'Telefone não listado') {
+      toast({ variant: "destructive", title: "Ops!", description: "Contato não disponível para este lead." });
+      return;
+    }
     navigator.clipboard.writeText(text);
     toast({ title: "Copiado!", description: "Contato copiado com sucesso." });
   };
@@ -144,12 +155,12 @@ export default function LeadsPage() {
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
               <div className="h-4 w-px bg-white/10 hidden md:block" />
               <h1 className="text-sm font-black italic uppercase tracking-widest flex items-center gap-2">
-                <Users className="h-4 w-4 text-primary" /> Captar Leads Flow
+                <Users className="h-4 w-4 text-primary" /> Captar Leads Reais
               </h1>
             </div>
             {isProMember ? (
               <Badge className="bg-primary/20 text-primary border-primary/30 text-[8px] font-black uppercase px-3 py-1">
-                <Star className="h-3 w-3 mr-1 fill-primary" /> ACESSO ILIMITADO
+                <Star className="h-3 w-3 mr-1 fill-primary" /> RADAR ILIMITADO
               </Badge>
             ) : (
                <Button asChild size="sm" variant="outline" className="h-8 text-[9px] font-black uppercase tracking-widest border-primary/30 text-primary hover:bg-primary/10">
@@ -162,7 +173,7 @@ export default function LeadsPage() {
             <Card className="glass-card border-white/10 overflow-hidden rounded-[2rem]">
               <CardHeader className="bg-white/5 border-b border-white/5 p-6">
                 <CardTitle className="text-sm font-black uppercase tracking-widest italic flex items-center gap-2">
-                  <Filter className="h-4 w-4 text-primary" /> Radar de Prospecção
+                  <Filter className="h-4 w-4 text-primary" /> Filtro de Prospecção Real
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-8">
@@ -170,7 +181,7 @@ export default function LeadsPage() {
                   <div className="md:col-span-5 space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest opacity-50">O que você quer vender?</label>
                     <Input 
-                      placeholder="Ex: Barbearia, Dentista, Loja..." 
+                      placeholder="Ex: Barbearia, Dentista, Pizzaria..." 
                       className="bg-white/5 border-white/10 h-14 rounded-2xl focus-visible:ring-primary"
                       value={niche}
                       onChange={e => setNiche(e.target.value)}
@@ -202,7 +213,7 @@ export default function LeadsPage() {
                       disabled={loading}
                       className="w-full h-16 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-[0.98]"
                     >
-                      {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><Search className="h-5 w-5 mr-2" /> BUSCAR LEADS AGORA</>}
+                      {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><Search className="h-5 w-5 mr-2" /> BUSCAR LEADS REAIS AGORA</>}
                     </Button>
                   </div>
                 </div>
@@ -216,12 +227,17 @@ export default function LeadsPage() {
                 </h2>
               </div>
 
-              {leads.length === 0 ? (
+              {leads.length === 0 && !loading ? (
                 <div className="py-24 text-center glass-card rounded-[3rem] border-dashed border-white/5">
                   <div className="h-20 w-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 opacity-20">
                     <Search className="h-10 w-10 text-white" />
                   </div>
-                  <p className="text-muted-foreground uppercase text-[10px] font-black tracking-[0.3em]">Defina um nicho e inicie a busca</p>
+                  <p className="text-muted-foreground uppercase text-[10px] font-black tracking-[0.3em]">O radar está pronto para encontrar dados reais</p>
+                </div>
+              ) : loading ? (
+                <div className="py-24 text-center">
+                  <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
+                  <p className="text-muted-foreground uppercase text-[10px] font-black tracking-[0.3em]">Conectando à base de dados do Google...</p>
                 </div>
               ) : (
                 <div className="grid gap-4">
@@ -234,11 +250,21 @@ export default function LeadsPage() {
                               <MapPin className="h-6 w-6" />
                             </div>
                             <div className="space-y-1">
-                              <h4 className="font-black text-xl italic leading-none text-white uppercase tracking-tight">{lead.name}</h4>
-                              <div className="flex flex-wrap gap-x-4 gap-y-1 items-center text-[10px] text-muted-foreground font-black uppercase tracking-widest">
-                                <span className="text-primary">{lead.type}</span>
-                                <span>•</span>
-                                <span>{lead.city}, {lead.state}</span>
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-black text-xl italic leading-none text-white uppercase tracking-tight">{lead.name}</h4>
+                                {lead.rating > 0 && (
+                                  <Badge variant="outline" className="h-5 px-1.5 text-[9px] font-black text-yellow-500 border-yellow-500/20">
+                                    <Star className="h-2.5 w-2.5 mr-1 fill-yellow-500" /> {lead.rating}
+                                  </Badge>
+                                )}
+                              </div>
+                              <div className="flex flex-col gap-1 mt-2">
+                                <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-black uppercase tracking-widest">
+                                  <span className="text-primary">{lead.type}</span>
+                                  <span>•</span>
+                                  <span>{lead.city}, {lead.state}</span>
+                                </div>
+                                <p className="text-[10px] text-muted-foreground/60 font-medium uppercase">{lead.address}</p>
                               </div>
                             </div>
                           </div>
@@ -248,9 +274,9 @@ export default function LeadsPage() {
                               variant="outline" 
                               size="sm"
                               onClick={() => handleCopy(lead.phone)}
-                              className="flex-1 lg:flex-none h-12 border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest gap-2 bg-white/5 hover:bg-white/10"
+                              className={`flex-1 lg:flex-none h-12 border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest gap-2 bg-white/5 hover:bg-white/10 ${lead.phone === 'Telefone não listado' ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
-                              <Copy className="h-3.5 w-3.5" /> Copiar Contato
+                              <Phone className="h-3.5 w-3.5" /> {lead.phone === 'Telefone não listado' ? 'Sem Telefone' : 'Copiar Fone'}
                             </Button>
                             
                             <Button 
@@ -282,11 +308,11 @@ export default function LeadsPage() {
                   {!isProMember && leads.length > 0 && (
                      <div className="p-10 text-center border-2 border-dashed border-primary/20 rounded-[3rem] bg-primary/5 mt-8 space-y-6">
                         <div className="space-y-2">
-                          <h3 className="text-xl font-black italic uppercase tracking-tighter">Quer mais 50+ leads agora?</h3>
-                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Você atingiu o limite do plano básico nesta busca.</p>
+                          <h3 className="text-xl font-black italic uppercase tracking-tighter">Quer resultados ilimitados?</h3>
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Você atingiu o limite do plano básico. O Google encontrou muito mais resultados.</p>
                         </div>
                         <Button asChild className="bg-primary hover:bg-primary/90 text-white font-black uppercase text-[11px] h-14 px-12 rounded-2xl shadow-lg shadow-primary/30">
-                           <Link href="/paywall">LIBERAR TODOS OS LEADS PRO</Link>
+                           <Link href="/paywall">LIBERAR RADAR COMPLETO</Link>
                         </Button>
                      </div>
                   )}
