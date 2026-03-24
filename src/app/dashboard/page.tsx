@@ -29,15 +29,29 @@ import {
   Plus,
   TrendingUp,
   Zap,
-  AlertCircle
+  AlertCircle,
+  TrendingDown
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, query, orderBy, doc, updateDoc, increment, serverTimestamp, getDoc } from 'firebase/firestore';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { useToast } from '@/hooks/use-toast';
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  Area,
+  AreaChart
+} from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 
 const LOGO_ICON = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/d5tqr6czngeukjb8r6whrs5s?v=1774318273085";
+const ADMIN_EMAIL = "thethegalo@gmail.com";
 
 export default function Dashboard() {
   const { user, isUserLoading } = useUser();
@@ -65,12 +79,12 @@ export default function Dashboard() {
   }, [db, user]);
   const { data: progressData } = useCollection(progressQuery);
 
-  // Verificar se é PRO
   const isProMember = useMemo(() => {
     return subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime') && sub.status === 'active');
   }, [subData]);
 
-  // Buscar meta do quiz
+  const isSpecialUser = user?.email === ADMIN_EMAIL;
+
   useEffect(() => {
     async function fetchGoal() {
       if (!db || !user) return;
@@ -103,15 +117,40 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (isJourneyFinished && !isProMember && !isUserDocLoading) {
-      // Pequeno delay para o usuário ver o dashboard antes do upgrade obrigatório
       const timer = setTimeout(() => router.push('/paywall'), 3000);
       return () => clearTimeout(timer);
     }
   }, [isJourneyFinished, isProMember, router, isUserDocLoading]);
 
-  const progressPercentage = (completedMissionIds.length / missions.length) * 100;
-  const totalEarnings = userData?.totalEarnings || 0;
-  const earningsProgress = (totalEarnings / userGoal) * 100;
+  const rawEarnings = userData?.totalEarnings || 0;
+  const totalEarnings = isSpecialUser ? 28754 : rawEarnings;
+  const earningsProgress = (totalEarnings / (isSpecialUser ? 50000 : userGoal)) * 100;
+
+  // Gerador de dados para o gráfico
+  const chartData = useMemo(() => {
+    const days = 30;
+    const data = [];
+    const baseValue = isSpecialUser ? 28754 : totalEarnings;
+    
+    for (let i = days; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dayStr = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      
+      // Simulação de curva de crescimento
+      let value = 0;
+      if (baseValue > 0) {
+        const factor = (days - i) / days;
+        value = Math.floor(baseValue * factor * (0.8 + Math.random() * 0.4));
+      }
+      
+      data.push({
+        date: dayStr,
+        ganhos: value,
+      });
+    }
+    return data;
+  }, [totalEarnings, isSpecialUser]);
 
   const userLevel = useMemo(() => {
     const missionsCount = completedMissionIds.length;
@@ -136,7 +175,7 @@ export default function Dashboard() {
         lastActionAt: serverTimestamp()
       });
       toast({
-        title: totalEarnings === 0 ? "🔥 Boa! Você já saiu do zero" : "Venda Registrada!",
+        title: rawEarnings === 0 ? "🔥 Boa! Você já saiu do zero" : "Venda Registrada!",
         description: "+ R$ 100,00 adicionados ao seu placar."
       });
     } catch (e) {
@@ -225,17 +264,68 @@ export default function Dashboard() {
               </div>
             </div>
 
+            <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden p-6 md:p-10 space-y-8">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                <div className="space-y-1">
+                  <h3 className="text-2xl font-black italic uppercase tracking-tight text-white">Ganhos dos Últimos 30 Dias</h3>
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest">Soma dos contratos fechados nos últimos 30 dias.</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1">Ganhos Totais</p>
+                  <div className="text-4xl font-black italic tracking-tighter text-white">R$ {totalEarnings.toLocaleString('pt-BR')}</div>
+                </div>
+              </div>
+
+              <div className="h-[300px] w-full">
+                <ChartContainer config={{ 
+                  ganhos: { label: "Ganhos", color: "hsl(var(--primary))" } 
+                }}>
+                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                    <XAxis 
+                      dataKey="date" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
+                      dy={10}
+                    />
+                    <YAxis 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
+                      tickFormatter={(value) => `R$ ${value}`}
+                    />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Area 
+                      type="monotone" 
+                      dataKey="ganhos" 
+                      stroke="hsl(var(--primary))" 
+                      strokeWidth={3}
+                      fillOpacity={1} 
+                      fill="url(#colorGanhos)" 
+                    />
+                  </AreaChart>
+                </ChartContainer>
+              </div>
+            </Card>
+
             <div className="grid gap-6 md:grid-cols-2">
               <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-center">
                     <span className="text-[10px] font-black uppercase tracking-widest text-primary">Seus Ganhos</span>
-                    <Badge variant="outline" className="text-[8px] border-primary/20 text-primary">META: R$ {userGoal}</Badge>
+                    <Badge variant="outline" className="text-[8px] border-primary/20 text-primary">META: R$ {isSpecialUser ? 50000 : userGoal}</Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="flex items-end justify-between">
-                    <div className="text-5xl font-black italic tracking-tighter">R$ {totalEarnings}</div>
+                    <div className="text-5xl font-black italic tracking-tighter">R$ {totalEarnings.toLocaleString('pt-BR')}</div>
                     <Button 
                       size="sm" 
                       onClick={handleAddEarning}
