@@ -242,8 +242,8 @@ export default function PaywallPage() {
           {/* Testimonials Section */}
           <div className="space-y-12 pt-20">
             <div className="text-center space-y-2">
-              <h2 className="text-3xl font-black italic uppercase tracking-tighter">Provas de Execução</h2>
-              <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest">Guerreiros que já estão operando no Flow.</p>
+              <h2 className="text-3xl font-black italic uppercase tracking-tighter">Resultados de Quem Executa</h2>
+              <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest">Alunos que já estão operando no Flow.</p>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
               {TESTIMONIALS.map((t, i) => (

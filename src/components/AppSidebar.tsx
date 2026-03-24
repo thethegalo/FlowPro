@@ -152,7 +152,7 @@ export function AppSidebar() {
             </div>
             <div className="flex-1 overflow-hidden">
               <p className="text-[10px] font-black uppercase truncate text-white">
-                {user?.displayName || "Guerreiro Flow"}
+                {user?.displayName || "Usuário Flow"}
               </p>
               <p className="text-[8px] font-bold uppercase text-muted-foreground truncate">
                 {user?.email}

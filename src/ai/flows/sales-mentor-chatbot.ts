@@ -45,7 +45,7 @@ DIRETRIZES:
 3. Se o usuário estiver com dúvida sobre o que dizer, forneça um pequeno script.
 4. Foque sempre no fechamento da venda ou no próximo passo (CTA).
 
-Pergunta do Guerreiro Flow: "{{{question}}}"
+Pergunta: "{{{question}}}"
 
 Output format:
 {"advice": "Sua orientação prática aqui."}

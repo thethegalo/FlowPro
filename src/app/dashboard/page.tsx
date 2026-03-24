@@ -289,7 +289,7 @@ export default function Dashboard() {
             <Badge className="bg-primary/20 text-primary border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5">Acesso Restrito</Badge>
             <h1 className="text-3xl font-black italic uppercase tracking-tighter">Cadastro em Análise</h1>
             <p className="text-muted-foreground text-sm font-medium leading-relaxed">
-              Olá, <span className="text-white">{userData?.name || 'Guerreiro'}</span>. <br />
+              Olá, <span className="text-white">{userData?.name || 'Usuário'}</span>. <br />
               Para garantir a qualidade da nossa rede neural, todos os novos acessos passam por uma validação de segurança manual.
             </p>
           </div>
@@ -355,7 +355,7 @@ export default function Dashboard() {
               <div className="space-y-3">
                 <div className="space-y-1">
                   <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter leading-none text-white">
-                    Guerreiro: {userData?.name?.split(' ')[0] || 'Flow'}
+                    {userData?.name?.split(' ')[0] || 'Usuário'}
                   </h1>
                   <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full w-fit">
                     <div className={`${userLevel.color}`}>

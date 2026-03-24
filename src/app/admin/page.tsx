@@ -123,7 +123,7 @@ export default function AdminPage() {
           <div className="flex-1 p-4 md:p-8 space-y-8 container max-w-6xl mx-auto">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
               <Card className="glass-card border-white/10 p-6 flex flex-col items-center justify-center text-center">
-                <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Total Guerreiros</span>
+                <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Total Usuários</span>
                 <div className="text-3xl font-black italic">{usersData?.length || 0}</div>
               </Card>
               <Card className="glass-card border-white/10 p-6 flex flex-col items-center justify-center text-center">
@@ -157,7 +157,7 @@ export default function AdminPage() {
                   <Table>
                     <TableHeader className="bg-white/5">
                       <TableRow className="border-white/5 hover:bg-transparent">
-                        <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Guerreiro</TableHead>
+                        <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Usuário</TableHead>
                         <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Email</TableHead>
                         <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Status</TableHead>
                         <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Plano</TableHead>
