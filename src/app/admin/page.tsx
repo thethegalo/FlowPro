@@ -19,12 +19,22 @@ import {
   Zap,
   Search,
   AlertCircle,
-  Ban
+  Ban,
+  Save,
+  Infinity,
+  CalendarDays
 } from 'lucide-react';
 import { collection, query, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function AdminPage() {
   const { user, isUserLoading } = useUser();
@@ -32,6 +42,7 @@ export default function AdminPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [plansToUpdate, setPlansToUpdate] = useState<Record<string, string>>({});
 
   const ADMIN_EMAIL = "thethegalo@gmail.com";
 
@@ -56,6 +67,25 @@ export default function AdminPage() {
         updatedAt: serverTimestamp()
       });
       toast({ title: "Status Atualizado", description: `Usuário agora está como ${newStatus}.` });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Erro", description: error.message });
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const updatePlan = async (userId: string) => {
+    if (!db) return;
+    const newPlan = plansToUpdate[userId];
+    if (!newPlan) return;
+
+    setUpdatingId(userId);
+    try {
+      await updateDoc(doc(db, 'users', userId), { 
+        plan: newPlan,
+        updatedAt: serverTimestamp()
+      });
+      toast({ title: "Plano Atualizado", description: "O acesso do usuário foi modificado com sucesso." });
     } catch (error: any) {
       toast({ variant: "destructive", title: "Erro", description: error.message });
     } finally {
@@ -119,7 +149,7 @@ export default function AdminPage() {
             <Card className="glass-card border-white/10 overflow-hidden rounded-[2rem]">
               <CardHeader className="bg-white/5 border-b border-white/5 p-6">
                 <CardTitle className="text-sm font-black uppercase tracking-widest italic flex items-center gap-2">
-                  <UserCheck className="h-4 w-4 text-primary" /> Gestão de Solicitações
+                  <UserCheck className="h-4 w-4 text-primary" /> Gestão de Operadores
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
@@ -127,10 +157,11 @@ export default function AdminPage() {
                   <Table>
                     <TableHeader className="bg-white/5">
                       <TableRow className="border-white/5 hover:bg-transparent">
-                        <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Usuário</TableHead>
+                        <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Guerreiro</TableHead>
                         <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Email</TableHead>
-                        <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Status Atual</TableHead>
-                        <TableHead className="text-muted-foreground text-[10px] uppercase font-black text-right">Ações de Comando</TableHead>
+                        <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Status</TableHead>
+                        <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Plano</TableHead>
+                        <TableHead className="text-muted-foreground text-[10px] uppercase font-black text-right">Comandos</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -146,6 +177,38 @@ export default function AdminPage() {
                             }`}>
                               {u.status?.toUpperCase() || 'PENDING'}
                             </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Select 
+                                defaultValue={u.plan || 'nenhum'} 
+                                onValueChange={(val) => setPlansToUpdate(prev => ({ ...prev, [u.id]: val }))}
+                              >
+                                <SelectTrigger className="h-8 w-[120px] bg-white/5 border-white/10 text-[9px] font-black uppercase">
+                                  <SelectValue placeholder="Plano" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-[#0b0b14] border-white/10 text-white">
+                                  <SelectItem value="nenhum" className="text-[10px] font-black uppercase">Nenhum</SelectItem>
+                                  <SelectItem value="mensal" className="text-[10px] font-black uppercase flex items-center gap-2">
+                                    <CalendarDays className="h-3 w-3 inline mr-1" /> Mensal
+                                  </SelectItem>
+                                  <SelectItem value="vitalicio" className="text-[10px] font-black uppercase flex items-center gap-2">
+                                    <Infinity className="h-3 w-3 inline mr-1 text-primary" /> Vitalício
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                              {plansToUpdate[u.id] && plansToUpdate[u.id] !== u.plan && (
+                                <Button 
+                                  size="icon" 
+                                  variant="ghost" 
+                                  onClick={() => updatePlan(u.id)}
+                                  disabled={updatingId === u.id}
+                                  className="h-8 w-8 text-primary hover:bg-primary/10"
+                                >
+                                  {updatingId === u.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
+                                </Button>
+                              )}
+                            </div>
                           </TableCell>
                           <TableCell className="text-right flex justify-end gap-2 p-4">
                             {u.status !== 'approved' && (
