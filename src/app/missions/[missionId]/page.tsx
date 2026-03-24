@@ -1,9 +1,8 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
+import Link from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -23,7 +22,8 @@ import {
   TrendingUp,
   Settings,
   Trophy,
-  PartyPopper
+  PartyPopper,
+  Search
 } from 'lucide-react';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -45,7 +45,7 @@ const MISSION_CONTENT = {
       'Escrever uma promessa de 1 frase (ex: "Recupero 30% das suas vendas perdidas").',
       'Validar se o valor cobrado é compatível com o mercado local.'
     ],
-    script: "Olá! Notei que vocês estão com o atendimento um pouco lento hoje. Criei um fluxo Flow que recupera até 30% das vendas que vocês perdem por demora. Quer ver como funciona?",
+    script: "Olá! Notei que vocês estão com o atendimento um pouco lento hoje. Criei um Flow que recupera até 30% das vendas que vocês perdem por demora. Quer ver como funciona?",
     cta: 'Defina sua oferta agora'
   },
   'dia2': {
@@ -125,15 +125,15 @@ const MISSION_CONTENT = {
       'Enviar o link de pagamento ou PIX para o cliente.',
       'Confirmar o recebimento e dar as boas-vindas ao novo parceiro.'
     ],
-    script: "Entendo o receio, por isso ofereço 7 dias de garantia. Se não ver o fluxo de clientes aumentar, devolvo seu investimento. Vamos começar?",
+    script: "Entendo o receio, por isso ofereço 7 dias de garantia. Se não ver o Flow de clientes aumentar, devolvo seu investimento. Vamos começar?",
     cta: 'Feche seu contrato agora'
   },
   'dia7': {
-    title: 'DIA 7: Escalar Fluxo',
+    title: 'DIA 7: Escalar Flow',
     desc: 'Sua estrutura está validada. Agora é hora de escalar e automatizar o processo.',
     stats: [
       { label: 'Foco', value: 'Escalabilidade', icon: <Settings className="h-4 w-4" /> },
-      { label: 'Meta', value: 'Repetir o Fluxo', icon: <TrendingUp className="h-4 w-4" /> },
+      { label: 'Meta', value: 'Repetir o Flow', icon: <TrendingUp className="h-4 w-4" /> },
     ],
     tasks: [
       'Analisar quais nichos trouxeram as melhores respostas.',
@@ -332,4 +332,3 @@ export default function MissionPage() {
     </div>
   );
 }
-

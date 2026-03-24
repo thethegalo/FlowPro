@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -192,9 +191,9 @@ export default function QuizPage() {
 
   return (
     <div className="min-h-screen bg-[#050508] flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-xl space-y-8 relative z-10 animate-in fade-in duration-500">
+      <div className="w-full max-xl space-y-8 relative z-10 animate-in fade-in duration-500">
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-black italic uppercase tracking-tighter">Inicie seu Fluxo</h1>
+          <h1 className="text-3xl font-black italic uppercase tracking-tighter">Inicie seu Flow</h1>
           <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-[0.2em]">Responda e receba sua rota personalizada</p>
         </div>
 

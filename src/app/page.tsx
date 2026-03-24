@@ -1,4 +1,3 @@
-
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -44,7 +43,7 @@ const faqs = [
   { q: "O acesso é vitalício?", a: "Oferecemos planos Vitalícios para a Fase 1 e planos Mensais para quem deseja escala ilimitada com IA avançada." },
   { q: "Como encontro os clientes?", a: "O Radar de Leads integrado busca empresas reais direto do Google com telefone e endereço, filtrando pelo seu nicho de escolha." },
   { q: "Tenho suporte se tiver dúvidas?", a: "Sim. Além do Mentor IA 24h por dia para tirar qualquer dúvida técnica ou estratégica." },
-  { q: "O que é o Método Flow?", a: "É um ecossistema de vendas que une prospecção fria, IA neural e automação para criar um fluxo constante de caixa." }
+  { q: "O que é o Método Flow?", a: "É um ecossistema de vendas que une prospecção fria, IA neural e automação para criar um Flow constante de caixa." }
 ];
 
 export default function Home() {
@@ -167,13 +166,15 @@ export default function Home() {
               NÃO APENAS VENDA. <span className="text-primary shimmer-text">DOMINE.</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-12 font-medium uppercase tracking-[0.2em] text-[10px]">
-              O fluxo não espera por ninguém. A próxima janela de escala neural está aberta para quem executa.
+              O Flow não espera por ninguém. A próxima janela de escala neural está aberta para quem executa.
             </p>
-            <Button asChild size="lg" className="h-20 px-16 text-xl font-black bg-primary hover:scale-110 hover:rotate-1 shadow-[0_15px_40px_rgba(139,92,246,0.4)] transition-all rounded-3xl group">
-              <Link href="/quiz">
-                ENTRAR NO FLUXO AGORA <ArrowRight className="ml-2 h-7 w-7 group-hover:translate-x-2 transition-transform" />
-              </Link>
-            </Button>
+            <div className="flex justify-center">
+              <Button asChild size="lg" className="h-20 px-16 text-xl font-black bg-primary hover:scale-110 hover:rotate-1 shadow-[0_15px_40px_rgba(139,92,246,0.4)] transition-all rounded-3xl group">
+                <Link href="/quiz">
+                  ENTRAR NO FLOW AGORA <ArrowRight className="ml-2 h-7 w-7 group-hover:translate-x-2 transition-transform" />
+                </Link>
+              </Button>
+            </div>
           </div>
         </section>
       </main>

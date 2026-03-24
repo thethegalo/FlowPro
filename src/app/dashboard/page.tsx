@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useEffect } from 'react';
@@ -25,6 +24,7 @@ import {
   ShieldAlert,
   Clock,
   ShieldCheck,
+  Sparkles
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, query, orderBy, doc } from 'firebase/firestore';
@@ -57,7 +57,7 @@ export default function Dashboard() {
     { id: 'dia4', title: 'DIA 4: Fazer Abordagem', desc: 'Inicie conversas estratégicas e gere interesse com IA.', order: 4 },
     { id: 'dia5', title: 'DIA 5: Conversar & Nutrir', desc: 'Tire dúvidas e mostre o valor da sua solução Flow.', order: 5 },
     { id: 'dia6', title: 'DIA 6: Fechar Venda', desc: 'Quebre as objeções finais e receba o primeiro pagamento.', order: 6 },
-    { id: 'dia7', title: 'DIA 7: Escalar Fluxo', desc: 'Automatize processos e multiplique seus ganhos diários.', order: 7 },
+    { id: 'dia7', title: 'DIA 7: Escalar Flow', desc: 'Automatize processos e multiplique seus ganhos diários.', order: 7 },
   ];
 
   const completedMissionIds = useMemo(() => {
@@ -80,7 +80,6 @@ export default function Dashboard() {
     );
   }
 
-  // STATUS: BLOCKED
   if (userData?.status === 'blocked') {
     return (
       <div className="min-h-screen bg-[#050508] flex items-center justify-center p-6 text-center">
@@ -100,7 +99,6 @@ export default function Dashboard() {
     );
   }
 
-  // STATUS: PENDING
   if (userData?.status === 'pending') {
     return (
       <div className="min-h-screen bg-[#050508] flex items-center justify-center p-6 text-center">
@@ -140,7 +138,6 @@ export default function Dashboard() {
     );
   }
 
-  // STATUS: APPROVED (ÁREA DO ALUNO)
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-[#050508]">
@@ -152,10 +149,7 @@ export default function Dashboard() {
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
               <div className="h-4 w-px bg-white/10 hidden md:block" />
               <h2 className="text-sm font-black italic uppercase tracking-widest hidden md:block flex items-center gap-2">
-                <div className="relative h-4 w-4">
-                  <Image src={LOGO_ICON} alt="Icon" fill className="object-contain" />
-                </div>
-                Área do Aluno
+                <Sparkles className="h-4 w-4 text-primary" /> Área do Aluno
               </h2>
             </div>
             
@@ -299,4 +293,3 @@ export default function Dashboard() {
     </SidebarProvider>
   );
 }
-

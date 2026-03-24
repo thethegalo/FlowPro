@@ -75,7 +75,6 @@ export default function PaywallPage() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
-            {/* Lifetime Plan */}
             <Card className="glass-card p-8 flex flex-col justify-between border-white/5 relative overflow-hidden rounded-[2rem] opacity-90">
               <div className="space-y-6 relative z-10">
                 <div className="space-y-1">
@@ -111,7 +110,6 @@ export default function PaywallPage() {
               </Button>
             </Card>
 
-            {/* Monthly Pro Plan */}
             <div className="relative p-[2px] rounded-[2rem] overflow-hidden scale-105 shadow-[0_0_50px_rgba(139,92,246,0.2)]">
               <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-marquee bg-[length:200%_200%]"></div>
               <Card className="relative bg-[#050508] p-8 flex flex-col justify-between h-full border-none rounded-[calc(2rem-2px)]">
@@ -191,6 +189,12 @@ export default function PaywallPage() {
               </AccordionItem>
             ))}
           </Accordion>
+          <div className="text-center mt-12">
+            <p className="text-muted-foreground text-xs uppercase font-black tracking-widest mb-6">Pronto para a decisão final?</p>
+            <Button asChild size="lg" className="h-16 px-12 text-sm font-black bg-primary hover:scale-105 transition-all rounded-2xl">
+              <Link href="/quiz">RECOMEÇAR MEU FLOW</Link>
+            </Button>
+          </div>
         </div>
       </section>
     </div>
