@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { 
   Terminal, 
@@ -14,11 +13,14 @@ import {
   Check, 
   Zap, 
   MessageSquare, 
-  Video, 
   Target, 
   Sparkles,
-  RefreshCcw,
-  Layout
+  Layout,
+  Globe,
+  Palette,
+  History,
+  Lightbulb,
+  Search
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -26,10 +28,42 @@ import { useToast } from '@/hooks/use-toast';
 
 const PROMPT_TEMPLATES = [
   {
+    id: 'sites',
+    title: 'Estrutura de Site/LP',
+    icon: <Globe className="h-4 w-4" />,
+    description: 'Crie o roteiro completo de uma Landing Page que vende.',
+    fields: ['product', 'niche', 'target'],
+    template: (data: any) => `Atue como um Copywriter de Resposta Direta e Especialista em UX Design.
+Crie a estrutura completa de uma Landing Page focada em conversão para: ${data.product || '[Produto/Serviço]'}.
+O nicho é ${data.niche || '[Nicho]'} e o público-alvo são ${data.target || '[Público]'}.
+ESTRUTURA NECESSÁRIA:
+1. Headline Irresistível (Gancho + Benefício + Curiosidade).
+2. Subheadline explicativa.
+3. Seção de Dor (Liste 3 problemas comuns do público).
+4. Seção de Solução (Como meu produto resolve isso).
+5. Prova Social (Dicas de onde colocar depoimentos).
+6. Oferta e Garantia.
+7. CTA (Chamada para ação clara).
+Use gatilhos mentais de escassez e autoridade.`
+  },
+  {
+    id: 'logo',
+    title: 'Criação de Logo/ID',
+    icon: <Palette className="h-4 w-4" />,
+    description: 'Gere instruções perfeitas para IAs de imagem.',
+    fields: ['businessName', 'style', 'colors'],
+    template: (data: any) => `Generate a professional logo design prompt for "${data.businessName || '[Nome do Negócio]'}".
+Style: ${data.style || 'Minimalist, modern, and clean'}.
+Primary Colors: ${data.colors || 'Luxury gold and deep black'}.
+TECHNICAL SPECS: Vector style, flat design, high resolution, 8k, white background, symmetrical, professional typography, trending on Behance.
+Ensure the symbol represents growth and elite performance.`
+  },
+  {
     id: 'outreach',
     title: 'Abordagem Irresistível',
     icon: <MessageSquare className="h-4 w-4" />,
-    description: 'Para gerar mensagens de WhatsApp/Direct que convertem.',
+    description: 'Para mensagens de WhatsApp/Direct que convertem.',
+    fields: ['product', 'niche', 'tone'],
     template: (data: any) => `Atue como um especialista em Cold Outreach e Psicologia de Vendas.
 Gere uma mensagem de abordagem curta e altamente personalizada para um dono de negócio do nicho de ${data.niche || '[Nicho]'}.
 O produto/serviço que estou oferecendo é: ${data.product || '[Produto/Serviço]'}.
@@ -38,43 +72,74 @@ FOCO: Começar com um elogio genuíno, citar um gargalo de mercado que ele prova
 LIMITE: Máximo 300 caracteres.`
   },
   {
-    id: 'reels',
-    title: 'Roteiro Viral (Reels/Shorts)',
-    icon: <Video className="h-4 w-4" />,
-    description: 'Para criar vídeos curtos que geram engajamento e vendas.',
-    template: (data: any) => `Crie um roteiro de 30 segundos para um Reels/TikTok focado em vender ${data.product || '[Produto]'}.
-PÚBLICO: ${data.target || '[Público Alvo]'}.
-ESTRUTURA:
-1. Gancho (0-3s): Uma frase que pare o scroll imediatamente.
-2. Problema (3-10s): Exponha a dor do público de forma visual.
-3. Solução/Benefício (10-25s): Como meu produto resolve isso rápido.
-4. CTA (25-30s): Comando de ação claro (Ex: "Comente FLOW para saber mais").
-Use uma linguagem ${data.tone || 'dinâmica e direta'}.`
-  },
-  {
-    id: 'objection',
-    title: 'Quebra de Objeções',
+    id: 'closing',
+    title: 'Fechamento Brutal',
     icon: <Target className="h-4 w-4" />,
-    description: 'Para quando o cliente diz "está caro" ou "vou pensar".',
-    template: (data: any) => `Sou um vendedor oferecendo ${data.product || '[Produto]'} para um cliente que acabou de dizer a seguinte objeção: "${data.objection || 'Está muito caro para mim agora'}".
-Gere 3 opções de respostas curtas para WhatsApp que usem o gatilho da inversão de risco e foquem no ROI (Retorno sobre Investimento).
-Tom: ${data.tone || 'Confiante e empático'}.`
+    description: 'Para converter interessados em clientes pagantes.',
+    fields: ['product', 'price', 'objection'],
+    template: (data: any) => `Sou um vendedor fechando um contrato de ${data.product || '[Produto]'} por R$ ${data.price || '[Preço]'}.
+O cliente apresentou a seguinte dúvida/objeção: "${data.objection || 'Vou pensar e te falo'}".
+Gere uma resposta estratégica que utilize a técnica de "Inversão de Risco" e foque no custo de oportunidade (o quanto ele perde por não fechar hoje).
+O tom deve ser confiante, escasso e direto ao ponto.`
   },
   {
-    id: 'content',
-    title: 'Estratégia de Conteúdo',
-    icon: <Layout className="h-4 w-4" />,
-    description: 'Para planejar sua semana de posts focados em conversão.',
-    template: (data: any) => `Crie um calendário de conteúdo para 5 dias no Instagram para o nicho de ${data.niche || '[Nicho]'}.
-OBJETIVO: Vender ${data.product || '[Produto]'}.
-Cada dia deve ter:
-- Tema do Post
-- Headline Irresistível
-- Legenda focada em conversão
-- Sugestão de imagem/vídeo
-Foque em educar o público sobre o problema e posicionar meu produto como a única solução viável.`
+    id: 'followup',
+    title: 'Follow-up de Elite',
+    icon: <History className="h-4 w-4" />,
+    description: 'Retome conversas paradas sem parecer chato.',
+    fields: ['businessName', 'context'],
+    template: (data: any) => `Gere uma mensagem de follow-up estratégica para "${data.businessName || '[Negócio]'}".
+Contexto da última conversa: ${data.context || 'Mandei a proposta mas não respondeu'}.
+DIRETRIZES:
+1. Não peça desculpas por incomodar.
+2. Use o gancho: "Acredito que as coisas estejam corridas por aí...".
+3. Agregue um valor rápido (ex: "Vi uma atualização no seu nicho e lembrei de você").
+4. Termine com uma pergunta de sim ou não sobre o próximo passo.
+Máximo 200 caracteres.`
+  },
+  {
+    id: 'offer',
+    title: 'Ideias de Oferta',
+    icon: <Lightbulb className="h-4 w-4" />,
+    description: 'Transforme seu serviço em uma oferta irresistível.',
+    fields: ['niche', 'mainProblem'],
+    template: (data: any) => `Atue como um Especialista em Estratégia de Produtos e Ofertas Irresistíveis.
+Meu nicho é ${data.niche || '[Nicho]'} e o maior problema que resolvo é ${data.mainProblem || '[Problema]'}.
+Crie 3 variações de ofertas "High Ticket":
+1. Oferta de Implementação (Você faz para ele).
+2. Oferta de Acompanhamento (Você ensina ele a fazer).
+3. Oferta Híbrida (Software + Consultoria).
+Para cada uma, defina um nome impactante, o que está incluso e por que ele não pode dizer não.`
   }
 ];
+
+const FIELD_LABELS: Record<string, string> = {
+  product: 'Seu Produto/Serviço',
+  niche: 'Nicho de Atuação',
+  target: 'Público Alvo',
+  businessName: 'Nome da Empresa',
+  style: 'Estilo Visual (Ex: Minimalista, Retrô)',
+  colors: 'Cores Principais',
+  tone: 'Tom de Voz',
+  price: 'Preço da Oferta',
+  objection: 'Objeção do Cliente',
+  context: 'Contexto da Conversa',
+  mainProblem: 'Maior Dor do Cliente'
+};
+
+const FIELD_PLACEHOLDERS: Record<string, string> = {
+  product: 'Ex: Consultoria de Vendas',
+  niche: 'Ex: Dentistas, Academias',
+  target: 'Ex: Donos de clínicas pequenas',
+  businessName: 'Ex: FlowPro Systems',
+  style: 'Ex: Futurista, Neon, High-tech',
+  colors: 'Ex: Roxo e Branco',
+  tone: 'Ex: Agressivo, Educado, Elegante',
+  price: 'Ex: 1.500,00',
+  objection: 'Ex: Achei caro',
+  context: 'Ex: Visualizou a proposta e sumiu',
+  mainProblem: 'Ex: Não tem tempo para gerenciar redes'
+};
 
 export default function PromptsPage() {
   const [activeTemplate, setActiveTemplate] = useState(PROMPT_TEMPLATES[0]);
@@ -96,6 +161,12 @@ export default function PromptsPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleTemplateChange = (template: typeof PROMPT_TEMPLATES[0]) => {
+    setActiveTemplate(template);
+    setGeneratedPrompt('');
+    setFormData({}); // Limpa os dados ao trocar de categoria
+  };
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-[#050508]">
@@ -114,22 +185,22 @@ export default function PromptsPage() {
 
           <div className="flex-1 container max-w-5xl mx-auto p-4 md:p-8 space-y-8">
             <div className="space-y-2">
-              <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white">Engenharia Neural</h2>
-              <p className="text-muted-foreground text-sm uppercase font-bold tracking-widest">Transforme suas ideias em instruções de alta performance para IA.</p>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[8px] font-black uppercase tracking-widest">
+                <Sparkles className="h-3 w-3" /> Engenharia Neural Ativa
+              </div>
+              <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white">Fábrica de Comandos</h2>
+              <p className="text-muted-foreground text-sm uppercase font-bold tracking-widest">Transforme variáveis em instruções de alta performance para extrair o melhor da IA.</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               {/* Seleção de Templates */}
               <div className="lg:col-span-4 space-y-4">
-                <div className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Selecione o Modelo</div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Selecione o Objetivo</div>
                 <div className="grid gap-3">
                   {PROMPT_TEMPLATES.map((t) => (
                     <button
                       key={t.id}
-                      onClick={() => {
-                        setActiveTemplate(t);
-                        setGeneratedPrompt('');
-                      }}
+                      onClick={() => handleTemplateChange(t)}
                       className={`p-4 rounded-2xl border text-left transition-all group ${
                         activeTemplate.id === t.id 
                         ? 'bg-primary/10 border-primary text-white shadow-[0_0_20px_rgba(139,92,246,0.1)]' 
@@ -153,71 +224,42 @@ export default function PromptsPage() {
                 <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden">
                   <CardHeader className="bg-white/5 border-b border-white/5 p-6">
                     <CardTitle className="text-xs font-black uppercase tracking-widest italic flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-primary" /> Personalizar Instrução
+                      {activeTemplate.icon} Personalizar: {activeTemplate.title}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-8 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Seu Produto/Serviço</Label>
-                        <Input 
-                          placeholder="Ex: Consultoria de Vendas" 
-                          className="bg-white/5 border-white/10 h-12 rounded-xl"
-                          onChange={(e) => setFormData({...formData, product: e.target.value})}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Nicho de Atuação</Label>
-                        <Input 
-                          placeholder="Ex: Dentistas, Academias" 
-                          className="bg-white/5 border-white/10 h-12 rounded-xl"
-                          onChange={(e) => setFormData({...formData, niche: e.target.value})}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Tom de Voz</Label>
-                        <Input 
-                          placeholder="Ex: Agressivo, Educado, Descontraído" 
-                          className="bg-white/5 border-white/10 h-12 rounded-xl"
-                          onChange={(e) => setFormData({...formData, tone: e.target.value})}
-                        />
-                      </div>
-                      {activeTemplate.id === 'reels' && (
-                        <div className="space-y-2">
-                          <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Público Alvo</Label>
+                      {activeTemplate.fields.map((field) => (
+                        <div key={field} className="space-y-2">
+                          <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">
+                            {FIELD_LABELS[field] || field}
+                          </Label>
                           <Input 
-                            placeholder="Ex: Donos de negócio local" 
-                            className="bg-white/5 border-white/10 h-12 rounded-xl"
-                            onChange={(e) => setFormData({...formData, target: e.target.value})}
+                            placeholder={FIELD_PLACEHOLDERS[field] || 'Preencha aqui...'}
+                            className="bg-white/5 border-white/10 h-12 rounded-xl focus-visible:ring-primary"
+                            value={formData[field] || ''}
+                            onChange={(e) => setFormData({...formData, [field]: e.target.value})}
                           />
                         </div>
-                      )}
-                      {activeTemplate.id === 'objection' && (
-                        <div className="space-y-2">
-                          <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Objeção do Cliente</Label>
-                          <Input 
-                            placeholder="Ex: Não tenho dinheiro agora" 
-                            className="bg-white/5 border-white/10 h-12 rounded-xl"
-                            onChange={(e) => setFormData({...formData, objection: e.target.value})}
-                          />
-                        </div>
-                      )}
+                      ))}
                     </div>
 
                     <Button 
                       onClick={handleGenerate}
                       className="w-full h-14 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-[0.98]"
                     >
-                      MONTAR PROMPT AGORA <Zap className="ml-2 h-4 w-4 fill-white" />
+                      GERAR PROMPT MESTRE <Zap className="ml-2 h-4 w-4 fill-white" />
                     </Button>
                   </CardContent>
                 </Card>
 
                 {/* Resultado */}
                 {generatedPrompt && (
-                  <Card className="bg-primary/5 border border-primary/20 rounded-[2rem] overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <Card className="bg-primary/5 border border-primary/20 rounded-[2.5rem] overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <CardHeader className="flex flex-row items-center justify-between p-6 border-b border-primary/10">
-                      <div className="text-[10px] font-black uppercase tracking-widest text-primary">Prompt Gerado</div>
+                      <div className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                        <Zap className="h-3 w-3 fill-primary" /> Prompt Gerado com Sucesso
+                      </div>
                       <Button 
                         size="sm" 
                         variant="ghost" 
@@ -229,9 +271,14 @@ export default function PromptsPage() {
                       </Button>
                     </CardHeader>
                     <CardContent className="p-8">
-                      <pre className="text-sm font-medium text-white/80 leading-relaxed whitespace-pre-wrap italic">
-                        "{generatedPrompt}"
-                      </pre>
+                      <div className="bg-black/40 p-6 rounded-2xl border border-white/5">
+                        <pre className="text-sm font-medium text-white/80 leading-relaxed whitespace-pre-wrap italic">
+                          "{generatedPrompt}"
+                        </pre>
+                      </div>
+                      <p className="text-[8px] text-center mt-6 text-muted-foreground uppercase font-black tracking-[0.3em]">
+                        Dica: Cole este comando no ChatGPT, Claude ou Midjourney para resultados imediatos.
+                      </p>
                     </CardContent>
                   </Card>
                 )}
