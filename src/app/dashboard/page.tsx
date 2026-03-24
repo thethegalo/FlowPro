@@ -32,7 +32,8 @@ import {
   AlertCircle,
   TrendingDown,
   Calendar,
-  ShieldX
+  ShieldX,
+  ChevronRight
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, query, orderBy, doc, setDoc, addDoc, increment, serverTimestamp, getDoc, limit, where } from 'firebase/firestore';
@@ -134,7 +135,7 @@ export default function Dashboard() {
 
   const progressQuery = useMemoFirebase(() => {
     if (!db || !user) return null;
-    return query(collection(db, 'users', user.uid, 'missionProgress'), orderBy('completedAt', 'desc'));
+    return query(collection(db, 'users', user.uid, 'missionProgress'), orderBy('completedAt', 'asc'));
   }, [db, user]);
   const { data: progressData } = useCollection(progressQuery);
 
@@ -142,11 +143,12 @@ export default function Dashboard() {
     return progressData ? progressData.filter(p => p.isCompleted).map(p => p.missionId) : [];
   }, [progressData]);
 
+  const journeyProgress = (completedMissionIds.length / missions.length) * 100;
   const isJourneyFinished = completedMissionIds.includes('dia7');
 
   useEffect(() => {
     if (isJourneyFinished && !isProMember && !isUserDocLoading) {
-      const timer = setTimeout(() => router.push('/paywall'), 3000);
+      const timer = setTimeout(() => router.push('/paywall'), 5000);
       return () => clearTimeout(timer);
     }
   }, [isJourneyFinished, isProMember, router, isUserDocLoading]);
@@ -310,19 +312,6 @@ export default function Dashboard() {
     );
   }
 
-  if (userData?.status === 'blocked' && !isSpecialUser) {
-    return (
-      <div className="min-h-screen bg-[#050508] flex items-center justify-center p-6 text-center">
-        <Card className="w-full max-w-md glass-card border-destructive/20 p-12 space-y-6 rounded-[3rem]">
-          <ShieldX className="h-16 w-16 text-destructive mx-auto" />
-          <h1 className="text-2xl font-black italic uppercase text-destructive">Acesso Bloqueado</h1>
-          <p className="text-muted-foreground text-sm">Sua conta foi suspensa por violação dos termos de uso do FlowPro.</p>
-          <Button onClick={() => router.push('/')} variant="link" className="text-primary text-[10px] font-black uppercase">FALAR COM SUPORTE</Button>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-[#050508]">
@@ -339,12 +328,6 @@ export default function Dashboard() {
             </div>
             
             <div className="flex items-center gap-3">
-              <div className="text-right hidden sm:block">
-                <p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest">Plano Atual</p>
-                <p className={`text-[10px] font-black uppercase italic ${userData?.plan === 'vitalicio' ? 'text-primary' : 'text-white'}`}>
-                  {userData?.plan === 'vitalicio' ? 'Vitalício' : userData?.plan === 'mensal' ? 'Mensal' : 'Nenhum'}
-                </p>
-              </div>
               <Badge variant="outline" className={`${isProMember ? 'bg-purple-500/10 border-purple-500/30 text-purple-400' : 'bg-white/5 border-white/10 text-muted-foreground'} text-[8px] font-black uppercase px-3 py-1`}>
                 {userData?.plan?.toUpperCase() || 'FREE PLAN'}
               </Badge>
@@ -369,7 +352,6 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Status de Plano Dinâmico */}
                 <div className="space-y-2">
                   {userData?.plan === 'mensal' && (
                     <div className="flex items-center gap-2 px-3 py-1 bg-yellow-500/5 border border-yellow-500/20 rounded-full w-fit">
@@ -403,8 +385,8 @@ export default function Dashboard() {
             <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden p-6 md:p-10 space-y-10">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div className="space-y-1">
-                  <h3 className="text-2xl font-black italic uppercase tracking-tight text-white">Ganhos dos Últimos 30 Dias</h3>
-                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60">Visualização de performance diária.</p>
+                  <h3 className="text-2xl font-black italic uppercase tracking-tight text-white">Ganhos Diários</h3>
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60">Visualização de performance 30 dias.</p>
                 </div>
                 <div className="text-right">
                   <p className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1">Ganhos Totais</p>
@@ -412,7 +394,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="h-[320px] w-full">
+              <div className="h-[280px] w-full">
                 <ChartContainer config={{ 
                   ganhos: { label: "Valor do Dia", color: "hsl(var(--primary))" } 
                 }}>
@@ -483,7 +465,7 @@ export default function Dashboard() {
                       <DialogContent className="bg-[#0b0b14] border-white/10 text-white rounded-[2rem]">
                         <DialogHeader>
                           <DialogTitle className="text-xl font-black italic uppercase tracking-widest">Registrar Venda</DialogTitle>
-                          <DialogDescription className="text-muted-foreground uppercase text-[10px] font-bold">Informe o valor para atualizar seu placar de performance.</DialogDescription>
+                          <DialogDescription className="text-muted-foreground uppercase text-[10px] font-bold">Informe o valor para atualizar seu placar.</DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-6 py-4">
                           <div className="space-y-2">
@@ -497,18 +479,6 @@ export default function Dashboard() {
                               className="bg-white/5 border-white/10 h-12 rounded-xl text-lg font-bold"
                             />
                           </div>
-                          {isSpecialUser && (
-                            <div className="space-y-2">
-                              <Label htmlFor="date" className="text-[10px] font-black uppercase tracking-widest text-primary">Data da Venda (Admin Only)</Label>
-                              <Input
-                                id="date"
-                                type="date"
-                                value={earningDate}
-                                onChange={(e) => setEarningDate(e.target.value)}
-                                className="bg-primary/5 border-primary/20 h-12 rounded-xl text-white"
-                              />
-                            </div>
-                          )}
                         </div>
                         <DialogFooter>
                           <Button 
@@ -551,60 +521,41 @@ export default function Dashboard() {
                       {dailyActions >= dailyGoal ? <Flame className="h-8 w-8 text-green-500 animate-pulse" /> : <Target className="h-8 w-8 text-muted-foreground opacity-20" />}
                     </div>
                   </div>
-                  {dailyActions >= dailyGoal && (
-                    <div className="text-center p-2 bg-green-500/10 border border-green-500/20 rounded-xl animate-in fade-in zoom-in">
-                      <p className="text-[10px] font-black text-green-500 uppercase tracking-widest">🔥 Meta do dia concluída</p>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-              <Button asChild variant="outline" className="h-20 md:h-24 glass-card border-white/10 flex flex-col gap-2 rounded-2xl hover:bg-primary/10 hover:border-primary/40 group">
-                <Link href="/leads">
-                  <Search className="h-5 w-5 md:h-6 md:w-6 text-primary group-hover:scale-110 transition-transform" />
-                  <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white">Captar Leads</span>
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="h-20 md:h-24 glass-card border-white/10 flex flex-col gap-2 rounded-2xl hover:bg-accent/10 hover:border-accent/40 group">
-                <Link href="/mentor">
-                  <MessageSquare className="h-5 w-5 md:h-6 md:w-6 text-accent group-hover:scale-110 transition-transform" />
-                  <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white">IA Mentor</span>
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="h-20 md:h-24 glass-card border-white/10 flex flex-col gap-2 rounded-2xl hover:bg-purple-500/10 hover:border-purple-500/40 group">
-                <Link href="/resources">
-                  <BookOpen className="h-5 w-5 md:h-6 md:w-6 text-purple-400 group-hover:scale-110 transition-transform" />
-                  <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white">Scripts</span>
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="h-20 md:h-24 glass-card border-white/10 flex flex-col gap-2 rounded-2xl hover:bg-green-500/10 hover:border-green-500/40 group">
-                <Link href="/tools">
-                  <Zap className="h-5 w-5 md:h-6 md:w-6 text-green-400 group-hover:scale-110 transition-transform" />
-                  <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-white">Arsenal</span>
-                </Link>
-              </Button>
-            </div>
-
             <div className="space-y-6 pt-4 pb-20">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2 text-white">
-                  <div className="relative h-5 w-5 md:h-6 md:w-6">
-                    <Image src={LOGO_ICON} alt="Icon" fill className="object-contain" />
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2 text-white">
+                    <div className="relative h-6 w-6">
+                      <Image src={LOGO_ICON} alt="Icon" fill className="object-contain" />
+                    </div>
+                    Trilha de Missão: 7 Dias
+                  </h2>
+                  <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest">Execute para desbloquear a Fase de Escala.</p>
+                </div>
+                
+                <div className="flex items-center gap-4 bg-white/5 px-6 py-3 rounded-2xl border border-white/10">
+                  <div className="space-y-1 flex-1 min-w-[120px]">
+                    <div className="flex justify-between text-[8px] font-black uppercase tracking-widest mb-1">
+                      <span>Seu Progresso</span>
+                      <span>{completedMissionIds.length}/7</span>
+                    </div>
+                    <Progress value={journeyProgress} className="h-1.5 bg-white/10" />
                   </div>
-                  Trilhas de Missão
-                </h2>
-                <div className="flex items-center gap-2 text-[8px] font-black text-muted-foreground uppercase bg-white/5 px-3 py-1 rounded-full border border-white/10">
-                  <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span> Alguém acabou de fechar uma venda
+                  {isJourneyFinished && (
+                    <Badge className="bg-green-500/20 text-green-500 border-green-500/30 text-[8px] font-black uppercase">JORNADA COMPLETA</Badge>
+                  )}
                 </div>
               </div>
               
               <div className="grid gap-3 md:gap-4">
                 {missions.map((mission, index) => {
                   const isCompleted = completedMissionIds.includes(mission.id);
-                  const isLocked = index > completedMissionIds.length;
-                  const isCurrent = index === completedMissionIds.length;
+                  const isLocked = index > 0 && !completedMissionIds.includes(missions[index - 1].id) && !isCompleted;
+                  const isCurrent = !isCompleted && !isLocked;
 
                   return (
                     <div 

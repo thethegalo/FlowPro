@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/navigation';
 import Image from 'next/image';
@@ -36,8 +37,8 @@ import {
   Wrench,
   ExternalLink
 } from 'lucide-react';
-import { useUser, useFirestore } from '@/firebase';
-import { doc, setDoc, serverTimestamp, updateDoc, increment } from 'firebase/firestore';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { doc, setDoc, serverTimestamp, updateDoc, increment, collection, query, orderBy } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
 const LOGO_ICON = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/d5tqr6czngeukjb8r6whrs5s?v=1774318273085";
@@ -64,7 +65,7 @@ const MISSION_CONTENT = {
       'Validar se o valor cobrado é compatível.'
     ],
     script: "Olá! Notei que vocês estão com o atendimento um pouco lento hoje. Criei um Flow que recupera até 30% das vendas que vocês perdem por demora. Quer ver como funciona?",
-    cta: 'Defina sua oferta agora'
+    cta: 'Ajustar seu perfil para atrair clientes'
   },
   'dia2': {
     title: 'DIA 2: Ajustar Perfil Flow',
@@ -87,7 +88,7 @@ const MISSION_CONTENT = {
       'Fixar um post com sua promessa.'
     ],
     script: "Bio Sugerida: Especialista em Automação de Vendas para [Nicho]. Ajudo negócios locais a escalarem sem anúncios. Clique no link abaixo 👇",
-    cta: 'Atualize suas redes sociais'
+    cta: 'Buscar seus primeiros leads reais'
   },
   'dia3': {
     title: 'DIA 3: Encontrar Leads',
@@ -97,7 +98,7 @@ const MISSION_CONTENT = {
       { step: "Acesse a aba 'Captar Leads' no menu lateral.", icon: <Search className="h-4 w-4" /> },
       { step: "Digite seu nicho e estado.", icon: <Target className="h-4 w-4" /> },
       { step: "Clique em Buscar Leads Reais.", icon: <Zap className="h-4 w-4" /> },
-      { step: "Favorite 25 empresas da lista.", icon: <Star className="h-4 w-4" /> }
+      { step: "Favorite 25 empresas da lista.", icon: <Sparkles className="h-4 w-4" /> }
     ],
     stats: [
       { label: 'Meta', value: '25 Leads Reais', icon: <Users className="h-4 w-4" /> },
@@ -110,7 +111,7 @@ const MISSION_CONTENT = {
       'Identificar o nome do proprietário.'
     ],
     script: "O segredo está no volume. Quanto mais leads qualificados, mais chances de fechar.",
-    cta: 'Acesse o Radar de Leads'
+    cta: 'Iniciar as abordagens com IA'
   },
   'dia4': {
     title: 'DIA 4: Fazer Abordagem',
@@ -133,7 +134,7 @@ const MISSION_CONTENT = {
       'Marcar cada lead abordado no radar.'
     ],
     script: "Oi [Nome]! Vi que você é dono da [Empresa]. Gostei muito do seu perfil! Posso te mandar uma sugestão rápida de automação que vi que vocês ainda não usam?",
-    cta: 'Inicie as abordagens hoje'
+    cta: 'Converter e nutrir interessados'
   },
   'dia5': {
     title: 'DIA 5: Conversar & Nutrir',
@@ -155,7 +156,7 @@ const MISSION_CONTENT = {
       'Agendar uma chamada de vídeo.'
     ],
     script: "Que bom que gostou! Gravei este vídeo rápido mostrando como o sistema Flow organiza seus leads. Teria 5 minutos para falarmos amanhã?",
-    cta: 'Nutra seus interessados'
+    cta: 'Fechar sua primeira venda'
   },
   'dia6': {
     title: 'DIA 6: Fechar Venda Flow',
@@ -177,7 +178,7 @@ const MISSION_CONTENT = {
       'Confirmar o recebimento.'
     ],
     script: "Entendo o receio, por isso ofereço 7 dias de garantia. Se não ver o Flow de clientes aumentar, devolvo seu investimento. Vamos começar?",
-    cta: 'Feche seu contrato agora'
+    cta: 'Escalar seu faturamento'
   },
   'dia7': {
     title: 'DIA 7: Escalar Flow',
@@ -199,7 +200,7 @@ const MISSION_CONTENT = {
       'Celebrar evolução.'
     ],
     script: "Venda concluída é apenas o começo. O lucro real está na escala.",
-    cta: 'Escala ativada'
+    cta: 'Escala ativada com sucesso'
   }
 };
 
@@ -217,6 +218,29 @@ export default function MissionPage() {
   const [copied, setCopied] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [completedTasks, setCompletedTasks] = useState<number[]>([]);
+
+  // Carregar progresso prévio para verificar se a missão já foi concluída
+  const progressQuery = useMemoFirebase(() => {
+    if (!db || !user) return null;
+    return query(collection(db, 'users', user.uid, 'missionProgress'), orderBy('completedAt', 'asc'));
+  }, [db, user]);
+  const { data: progressData } = useCollection(progressQuery);
+
+  const completedMissionIds = useMemo(() => {
+    return progressData ? progressData.filter(p => p.isCompleted).map(p => p.missionId) : [];
+  }, [progressData]);
+
+  // Verificar se a missão atual é permitida (sequencial)
+  useEffect(() => {
+    if (progressData && missionId !== 'dia1') {
+      const dayNum = parseInt(missionId.replace('dia', ''));
+      const prevMissionId = `dia${dayNum - 1}`;
+      if (!completedMissionIds.includes(prevMissionId) && !completedMissionIds.includes(missionId)) {
+        toast({ variant: "destructive", title: "Missão Bloqueada", description: "Complete a etapa anterior primeiro." });
+        router.push('/dashboard');
+      }
+    }
+  }, [progressData, missionId, completedMissionIds, router, toast]);
 
   const handleCopy = () => {
     if (!content) return;
@@ -239,7 +263,7 @@ export default function MissionPage() {
       toast({ 
         variant: "destructive", 
         title: "Ação Requerida", 
-        description: "Complete todos os passos da checklist antes de concluir a missão." 
+        description: "Marque todos os itens da checklist antes de concluir a missão." 
       });
       return;
     }
@@ -263,7 +287,7 @@ export default function MissionPage() {
       if (missionId === 'dia7') {
         setShowCelebration(true);
       } else {
-        toast({ title: "Missão Concluída!", description: "Boa! Você avançou para o próximo nível." });
+        toast({ title: "Missão Concluída!", description: `Etapa finalizada com sucesso! Próximo passo: ${content.cta}` });
         router.push('/dashboard');
       }
     } catch (error: any) {
@@ -312,7 +336,6 @@ export default function MissionPage() {
 
       <main className="flex-1 container max-w-2xl mx-auto p-4 md:p-8 space-y-8">
         
-        {/* Sugestão de Ferramenta */}
         {content.tool && (
           <Card className="bg-primary/5 border border-primary/20 rounded-[1.5rem] overflow-hidden animate-in slide-in-from-top-4 duration-500">
             <CardContent className="p-6 flex items-center justify-between gap-4">
@@ -401,7 +424,7 @@ export default function MissionPage() {
         <Card className="glass-card border-white/10 overflow-hidden rounded-[2rem]">
           <CardHeader className="bg-white/5 border-b border-white/5 p-6">
             <CardTitle className="text-sm font-black uppercase tracking-widest italic flex items-center gap-2">
-               <Image src={LOGO_ICON} alt="Icon" width={16} height={16} /> Script de Ataque
+               <Image src={LOGO_ICON} alt="Icon" width={16} height={16} /> Script Sugerido
             </CardTitle>
             <CardDescription className="uppercase text-[9px] font-bold tracking-widest opacity-70">Copie e adapte para seu lead</CardDescription>
           </CardHeader>
@@ -409,29 +432,10 @@ export default function MissionPage() {
             <div className="bg-black/60 p-6 rounded-2xl border border-white/5 text-sm leading-relaxed italic text-white/80 font-medium">
               "{content.script}"
             </div>
-            <div className="flex gap-3">
-              <Button onClick={handleCopy} className="flex-1 h-14 rounded-2xl bg-white text-black font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-xl shadow-white/5">
-                {copied ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
-                {copied ? 'COPIADO' : 'COPIAR SCRIPT'}
-              </Button>
-              <Button 
-                onClick={async () => {
-                  toggleTask(completedTasks.length);
-                  if (db && user) {
-                    await updateDoc(doc(db, 'users', user.uid), {
-                      totalActions: increment(1),
-                      dailyActions: increment(1),
-                      lastActionAt: serverTimestamp()
-                    });
-                  }
-                  toast({ title: "Boa!", description: "Ação registrada no seu progresso." });
-                }}
-                variant="outline"
-                className="h-14 px-6 border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest"
-              >
-                JÁ FIZ ISSO
-              </Button>
-            </div>
+            <Button onClick={handleCopy} className="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-xl shadow-white/5">
+              {copied ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+              {copied ? 'COPIADO' : 'COPIAR SCRIPT'}
+            </Button>
           </CardContent>
         </Card>
 
