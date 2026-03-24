@@ -29,7 +29,7 @@ const masterPromptPrompt = ai.definePrompt({
   input: { schema: GenerateMasterPromptInputSchema },
   output: { schema: GenerateMasterPromptOutputSchema },
   prompt: `Você é um Engenheiro de Prompts Sênior e Especialista em Marketing Digital.
-Sua tarefa é transformar os dados fornecidos pelo usuário em um comando (PROMPT) estruturado que ele usará em outras IAs (ChatGPT, Claude, Gemini).
+Sua tarefa é transformar os dados fornecidos pelo usuário em um comando (PROMPT) estruturado de alta performance.
 
 DADOS DO USUÁRIO:
 Categoria: {{{category}}}
@@ -39,14 +39,21 @@ Variáveis:
 {{/each}}
 Complexidade: {{{complexity}}}
 
-DIRETRIZES PARA O PROMPT GERADO:
-1. O prompt final deve instruir a IA a agir como uma PERSONA específica.
-2. Deve conter seções claras: [CONTEXTO], [TAREFA], [REQUISITOS], [FORMATO DE SAÍDA].
-3. Se a complexidade for "advanced", inclua restrições negativas (o que evitar) e use frameworks de marketing (AIDA, PAS ou Inversão de Risco).
-4. O tom do prompt gerado deve ser autoritário e técnico.
-5. NÃO forneça a resposta para a tarefa, mas sim o COMANDO para que outra IA resolva a tarefa.
+DIRETRIZES DE ENGENHARIA (SE CATEGORIA FOR SITES/LP):
+Se a categoria for relacionada a Sites ou Landing Pages, gere um prompt otimizado para ferramentas de IA de código (como Lovable, Bolt ou v0).
+1. Instrua a IA a agir como um "Expert Web Designer e Desenvolvedor Frontend (React/Tailwind)".
+2. Exija o uso de componentes modernos (Shadcn UI, Lucide Icons).
+3. Defina a estrutura: Hero Section, Prova Social, Grade de Benefícios, Seção de Preços (AIDA framework) e CTA.
+4. Inclua a paleta de cores e estilo visual informados.
 
-Gere apenas o texto final do prompt estruturado.`,
+DIRETRIZES GERAIS:
+1. O prompt final deve instruir a IA a agir como uma PERSONA específica.
+2. Deve conter seções claras: [CONTEXTO], [TAREFA], [REQUISITOS TÉCNICOS], [ESTILO VISUAL/TOM], [FORMATO DE SAÍDA].
+3. Se a complexidade for "advanced", use frameworks de marketing (AIDA, PAS ou Inversão de Risco).
+4. O tom do prompt gerado deve ser autoritário e técnico.
+5. NÃO forneça o conteúdo final, mas sim o COMANDO MESTRE para que outra IA execute a tarefa perfeitamente.
+
+Gere apenas o texto final do prompt estruturado, pronto para ser colado.`,
 });
 
 const generateMasterPromptFlow = ai.defineFlow(

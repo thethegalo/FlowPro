@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -49,7 +48,7 @@ const PROMPT_TEMPLATES = [
     title: 'Estrutura de Site/LP',
     icon: <Globe className="h-4 w-4" />,
     description: 'Crie o roteiro completo de uma Landing Page que vende.',
-    fields: ['product', 'niche', 'target'],
+    fields: ['product', 'niche', 'style', 'colors'],
   },
   {
     id: 'logo',
@@ -92,7 +91,7 @@ const FIELD_LABELS: Record<string, string> = {
   niche: 'Nicho do Negócio',
   serviceType: 'Tipo de Serviço',
   goal: 'Qual seu Objetivo?',
-  style: 'Estilo / Tom de Voz',
+  style: 'Estilo Visual / Tom',
   product: 'Seu Produto/Serviço',
   target: 'Público Alvo',
   businessName: 'Nome da Empresa',
@@ -108,11 +107,11 @@ const FIELD_PLACEHOLDERS: Record<string, string> = {
   niche: 'Ex: Advocacia, Infoprodutos...',
   serviceType: 'Ex: Gestão de Tráfego, Mentorias...',
   goal: 'Ex: Criar um roteiro de vendas, Estruturar funil...',
-  style: 'Ex: Agressivo, Sofisticado, Engraçado...',
+  style: 'Ex: Minimalista, Moderno, High-Tech...',
   product: 'Ex: Consultoria de Vendas',
   target: 'Ex: Donos de clínicas pequenas',
   businessName: 'Ex: FlowPro Systems',
-  colors: 'Ex: Roxo e Branco',
+  colors: 'Ex: Roxo, Preto e Branco',
   tone: 'Ex: Educado e Elegante',
   price: 'Ex: 1.500,00',
   objection: 'Ex: Achei caro',
@@ -143,7 +142,7 @@ const SUGGESTED_TOOLS: Record<string, { name: string, url: string }[]> = {
   ],
   custom: [
     { name: 'ChatGPT', url: 'https://chatgpt.com' },
-    { name: 'Copy.ai', url: 'https://copy.ai' }
+    { name: 'Claude', url: 'https://claude.ai' }
   ],
   offer: [
     { name: 'ChatGPT', url: 'https://chatgpt.com' },
@@ -386,22 +385,22 @@ export default function PromptsPage() {
                         <h3 className="text-xl font-black italic uppercase tracking-tighter text-white">Onde Executar este Comando</h3>
                       </div>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {currentTools.map((tool, i) => (
                           <Card key={i} className="glass-card border-white/5 rounded-3xl overflow-hidden group hover:border-primary/40 transition-all duration-500">
                             <CardContent className="p-6 flex items-center justify-between gap-4">
-                              <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 bg-white/5 rounded-2xl flex items-center justify-center text-white border border-white/10 group-hover:bg-primary/10 group-hover:border-primary/20 transition-all">
+                              <div className="flex items-center gap-4 min-w-0">
+                                <div className="h-12 w-12 bg-white/5 rounded-2xl flex items-center justify-center text-white border border-white/10 group-hover:bg-primary/10 group-hover:border-primary/20 transition-all shrink-0">
                                   {i === 0 ? <Zap className="h-6 w-6 text-primary fill-primary" /> : <Sparkles className="h-6 w-6 text-accent" />}
                                 </div>
-                                <div className="space-y-0.5">
+                                <div className="space-y-0.5 truncate">
                                   <p className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground">Ferramenta Sugerida</p>
-                                  <h4 className="font-black italic uppercase tracking-tight text-lg text-white">{tool.name}</h4>
+                                  <h4 className="font-black italic uppercase tracking-tight text-lg text-white truncate">{tool.name}</h4>
                                 </div>
                               </div>
-                              <Button asChild size="sm" variant="outline" className="rounded-xl border-white/10 h-12 px-6 text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:border-primary hover:text-white transition-all shadow-lg active:scale-95">
+                              <Button asChild size="sm" variant="outline" className="rounded-xl border-white/10 h-12 px-6 text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:border-primary hover:text-white transition-all shadow-lg active:scale-95 shrink-0">
                                 <a href={tool.url} target="_blank" rel="noopener noreferrer">
-                                  ACESSAR AGORA <ExternalLink className="ml-2 h-3.5 w-3.5" />
+                                  ACESSAR <ExternalLink className="ml-2 h-3.5 w-3.5" />
                                 </a>
                               </Button>
                             </CardContent>
@@ -412,7 +411,7 @@ export default function PromptsPage() {
                       <div className="p-6 rounded-3xl bg-white/[0.02] border border-dashed border-white/10 flex items-start gap-4">
                         <Info className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
                         <p className="text-[10px] font-medium text-muted-foreground leading-relaxed uppercase">
-                          Dica Flow: Se os resultados não forem perfeitos de primeira, use o <span className="text-white">Modo Avançado</span> acima para gerar instruções com mais restrições e frameworks de copy.
+                          Dica Flow: Se você usar a <span className="text-white">Lovable</span>, cole o prompt e peça para ela criar a estrutura completa primeiro. Depois, peça para ajustar o copy usando os argumentos gerados aqui.
                         </p>
                       </div>
                     </div>
