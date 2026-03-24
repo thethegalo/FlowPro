@@ -42,6 +42,16 @@
         "createdAt",
         "status"
       ]
+    },
+    "Subscription": {
+      "title": "Subscription",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "planType": { "type": "string", "enum": ["monthly", "lifetime", "lifetime_admin"] },
+        "status": { "type": "string" },
+        "startDate": { "type": "string", "format": "date-time" }
+      }
     }
   },
   "auth": {
@@ -51,17 +61,13 @@
     ]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/users/{userId}",
-        "definition": {
-          "entityName": "User",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "Stores user profile data."
-        }
-      }
-    ]
+    "/users/{userId}": {
+      "schema": { "$ref": "#/backend/entities/User" },
+      "description": "Stores user profile data."
+    },
+    "/users/{userId}/subscriptions/{subId}": {
+      "schema": { "$ref": "#/backend/entities/Subscription" },
+      "description": "User subscription data."
+    }
   }
 }
