@@ -33,7 +33,8 @@ import {
   TrendingDown,
   Calendar,
   ShieldX,
-  ChevronRight
+  ChevronRight,
+  Timer
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, query, orderBy, doc, setDoc, addDoc, increment, serverTimestamp, getDoc, limit, where } from 'firebase/firestore';
@@ -96,6 +97,18 @@ export default function Dashboard() {
     const hasPremiumPlan = userData?.plan === 'vitalicio' || userData?.plan === 'mensal';
     return hasActiveSub || hasPremiumPlan || isSpecialUser;
   }, [subData, isSpecialUser, userData]);
+
+  // Cálculo do dia atual da jornada (1 por dia)
+  const currentJourneyDay = useMemo(() => {
+    if (!userData?.createdAt) return 1;
+    // Se for admin, libera tudo para teste
+    if (isSpecialUser) return 7;
+    
+    const created = userData.createdAt.toDate ? userData.createdAt.toDate() : new Date(userData.createdAt);
+    const diffInMs = Date.now() - created.getTime();
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+    return diffInDays + 1; // Dia 1 começa no momento zero
+  }, [userData?.createdAt, isSpecialUser]);
 
   const earningsQuery = useMemoFirebase(() => {
     if (!db || !user) return null;
@@ -554,7 +567,9 @@ export default function Dashboard() {
               <div className="grid gap-3 md:gap-4">
                 {missions.map((mission, index) => {
                   const isCompleted = completedMissionIds.includes(mission.id);
-                  const isLocked = index > 0 && !completedMissionIds.includes(missions[index - 1].id) && !isCompleted;
+                  const isTimeLocked = mission.order > currentJourneyDay;
+                  const isDependencyLocked = index > 0 && !completedMissionIds.includes(missions[index - 1].id) && !isCompleted;
+                  const isLocked = isDependencyLocked || isTimeLocked;
                   const isCurrent = !isCompleted && !isLocked;
 
                   return (
@@ -579,7 +594,13 @@ export default function Dashboard() {
                             <h4 className={`font-black italic uppercase tracking-tight text-base md:text-xl truncate ${isCompleted ? 'text-muted-foreground' : 'text-white'}`}>
                               {mission.title}
                             </h4>
-                            <p className="text-xs text-muted-foreground line-clamp-1 opacity-70 group-hover:opacity-100 transition-opacity">{mission.desc}</p>
+                            <p className="text-xs text-muted-foreground line-clamp-1 opacity-70 group-hover:opacity-100 transition-opacity">
+                              {isTimeLocked ? (
+                                <span className="flex items-center gap-1 text-yellow-500/80 font-bold">
+                                  <Timer className="h-3 w-3" /> LIBERA EM {mission.order - currentJourneyDay} DIA(S)
+                                </span>
+                              ) : mission.desc}
+                            </p>
                           </div>
                         </div>
                         

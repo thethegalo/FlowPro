@@ -36,9 +36,10 @@ import {
   Send,
   Wrench,
   ExternalLink,
-  Zap
+  Zap,
+  Timer
 } from 'lucide-react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { doc, setDoc, serverTimestamp, updateDoc, increment, collection, query, orderBy } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
@@ -46,6 +47,7 @@ const LOGO_ICON = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmq
 
 const MISSION_CONTENT = {
   'dia1': {
+    order: 1,
     title: 'DIA 1: Criar Oferta Flow',
     desc: 'O primeiro passo é definir um produto de alta demanda e seu roteiro de ataque irresistível.',
     tool: { name: 'Lovable', desc: 'Use para criar uma Landing Page rápida da sua oferta.', url: 'https://lovable.dev' },
@@ -69,6 +71,7 @@ const MISSION_CONTENT = {
     cta: 'Ajustar seu perfil para atrair clientes'
   },
   'dia2': {
+    order: 2,
     title: 'DIA 2: Ajustar Perfil Flow',
     desc: 'Transforme seu Instagram em uma vitrine de autoridade.',
     tool: { name: 'Canva', desc: 'Use para criar sua nova foto de perfil e destaques.', url: 'https://canva.com' },
@@ -92,6 +95,7 @@ const MISSION_CONTENT = {
     cta: 'Buscar seus primeiros leads reais'
   },
   'dia3': {
+    order: 3,
     title: 'DIA 3: Encontrar Leads',
     desc: 'Use nossa ferramenta de Radar para encontrar clientes reais.',
     tool: { name: 'Radar Flow', desc: 'Nossa ferramenta interna para captação direta.', url: '/leads' },
@@ -115,6 +119,7 @@ const MISSION_CONTENT = {
     cta: 'Iniciar as abordagens com IA'
   },
   'dia4': {
+    order: 4,
     title: 'DIA 4: Fazer Abordagem',
     desc: 'É hora de ativar o motor neural e enviar as primeiras mensagens.',
     tool: { name: 'Simulador IA', desc: 'Pratique sua conversa antes de enviar.', url: '/simulator' },
@@ -138,6 +143,7 @@ const MISSION_CONTENT = {
     cta: 'Converter e nutrir interessados'
   },
   'dia5': {
+    order: 5,
     title: 'DIA 5: Conversar & Nutrir',
     desc: 'Gerencie as respostas e mostre o valor do seu método.',
     tool: { name: 'WhatsApp Web', desc: 'Facilite suas conversas no computador.', url: 'https://web.whatsapp.com' },
@@ -160,6 +166,7 @@ const MISSION_CONTENT = {
     cta: 'Fechar sua primeira venda'
   },
   'dia6': {
+    order: 6,
     title: 'DIA 6: Fechar Venda Flow',
     desc: 'Hora de transformar as conversas em dinheiro.',
     tool: { name: 'Zapier', desc: 'Automatize a entrega do seu serviço.', url: 'https://zapier.com' },
@@ -182,6 +189,7 @@ const MISSION_CONTENT = {
     cta: 'Escalar seu faturamento'
   },
   'dia7': {
+    order: 7,
     title: 'DIA 7: Escalar Flow',
     desc: 'Sua estrutura está validada. Agora é hora de repetir.',
     tool: { name: 'Dashboard Pro', desc: 'Acompanhe seus ganhos em larga escala.', url: '/dashboard' },
@@ -220,6 +228,12 @@ export default function MissionPage() {
   const [showCelebration, setShowCelebration] = useState(false);
   const [completedTasks, setCompletedTasks] = useState<number[]>([]);
 
+  const userDocRef = useMemoFirebase(() => {
+    if (!db || !user) return null;
+    return doc(db, 'users', user.uid);
+  }, [db, user]);
+  const { data: userData, isLoading: isUserDocLoading } = useDoc(userDocRef);
+
   const progressQuery = useMemoFirebase(() => {
     if (!db || !user) return null;
     return query(collection(db, 'users', user.uid, 'missionProgress'), orderBy('completedAt', 'asc'));
@@ -230,18 +244,41 @@ export default function MissionPage() {
     return progressData ? progressData.filter(p => p.isCompleted).map(p => p.missionId) : [];
   }, [progressData]);
 
+  // Verificação de segurança (Conclusão prévia + Tempo)
   useEffect(() => {
-    if (!isUserLoading && !isProgressLoading && progressData && missionId !== 'dia1') {
-      const dayNum = parseInt(missionId.replace('dia', ''));
-      if (isNaN(dayNum)) return;
+    if (!isUserLoading && !isProgressLoading && !isUserDocLoading && progressData && userData && missionId) {
+      if (!content) return;
+
+      const isSpecialUser = user?.email === "thethegalo@gmail.com";
       
-      const prevMissionId = `dia${dayNum - 1}`;
-      if (!completedMissionIds.includes(prevMissionId) && !completedMissionIds.includes(missionId)) {
-        toast({ variant: "destructive", title: "Missão Bloqueada", description: "Complete a etapa anterior primeiro." });
-        router.push('/dashboard');
+      // 1. Verificação de Ordem
+      if (missionId !== 'dia1') {
+        const dayNum = parseInt(missionId.replace('dia', ''));
+        const prevMissionId = `dia${dayNum - 1}`;
+        if (!completedMissionIds.includes(prevMissionId) && !completedMissionIds.includes(missionId)) {
+          toast({ variant: "destructive", title: "Missão Bloqueada", description: "Complete a etapa anterior primeiro." });
+          router.push('/dashboard');
+          return;
+        }
+      }
+
+      // 2. Verificação de Tempo (1 por dia)
+      if (!isSpecialUser) {
+        const created = userData.createdAt.toDate ? userData.createdAt.toDate() : new Date(userData.createdAt);
+        const diffInMs = Date.now() - created.getTime();
+        const currentJourneyDay = Math.floor(diffInMs / (1000 * 60 * 60 * 24)) + 1;
+
+        if (content.order > currentJourneyDay && !completedMissionIds.includes(missionId)) {
+          toast({ 
+            variant: "destructive", 
+            title: "Aguarde o Tempo Neural", 
+            description: `Esta missão será liberada em ${content.order - currentJourneyDay} dia(s).` 
+          });
+          router.push('/dashboard');
+        }
       }
     }
-  }, [progressData, missionId, completedMissionIds, router, toast, isUserLoading, isProgressLoading]);
+  }, [progressData, userData, missionId, completedMissionIds, router, toast, isUserLoading, isProgressLoading, isUserDocLoading, content, user?.email]);
 
   const handleCopy = () => {
     if (!content) return;
@@ -297,7 +334,7 @@ export default function MissionPage() {
     }
   };
 
-  if (isUserLoading || isProgressLoading) {
+  if (isUserLoading || isProgressLoading || isUserDocLoading) {
     return (
       <div className="min-h-screen bg-[#050508] flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
