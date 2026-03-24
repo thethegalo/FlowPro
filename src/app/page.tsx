@@ -94,7 +94,7 @@ export default function Home() {
                 <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start items-center">
                   <Button size="lg" className="h-20 px-12 text-xl font-black bg-primary hover:scale-110 hover:rotate-1 shadow-[0_15px_40px_rgba(139,92,246,0.4)] transition-all rounded-3xl w-full sm:w-auto group" asChild>
                     <Link href="/quiz">
-                      INICIAR QUIZ IA <ArrowRight className="ml-2 h-7 w-7 group-hover:translate-x-2 transition-transform" />
+                      PRONTO PARA ESCALAR! <ArrowRight className="ml-2 h-7 w-7 group-hover:translate-x-2 transition-transform" />
                     </Link>
                   </Button>
                 </div>
@@ -129,7 +129,7 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               {pillars.map((p, i) => (
                 <Card key={i} className="glass-card p-10 group relative overflow-hidden rounded-[2rem]">
-                  <div className="mb-8 p-4 rounded-2xl bg-white/5 inline-block ${p.color} transition-all group-hover:scale-125 group-hover:rotate-12 shadow-xl">
+                  <div className="mb-8 p-4 rounded-2xl bg-white/5 inline-block transition-all group-hover:scale-125 group-hover:rotate-12 shadow-xl">
                     {p.icon}
                   </div>
                   <h3 className="text-2xl font-black mb-4 italic tracking-tight uppercase text-white">{p.title}</h3>
