@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -17,7 +18,9 @@ import {
   Target,
   TrendingUp,
   Lock,
-  CalendarCheck
+  CalendarCheck,
+  Quote,
+  Flame
 } from 'lucide-react';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -32,6 +35,27 @@ import {
 import Image from 'next/image';
 
 const LOGO_ICON = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/d5tqr6czngeukjb8r6whrs5s?v=1774318273085";
+
+const TESTIMONIALS = [
+  {
+    name: "João Pedro",
+    role: "Guerreiro Flow",
+    text: "Em 4 dias seguindo a jornada, fechei minha primeira automação de R$ 800. O roteiro de ataque é bizarro.",
+    avatar: "https://picsum.photos/seed/jp/100/100"
+  },
+  {
+    name: "Maria Vitória",
+    role: "Agência Digital",
+    text: "O radar de leads é bruxaria pura. O que eu levava horas pra achar, o sistema entrega em segundos com telefone real.",
+    avatar: "https://picsum.photos/seed/mv/100/100"
+  },
+  {
+    name: "Ricardo Torres",
+    role: "Estrategista",
+    text: "Saí de R$ 0 para R$ 4.500 em menos de um mês. O segredo está no Flow constante de abordagens que a IA gera.",
+    avatar: "https://picsum.photos/seed/rt/100/100"
+  }
+];
 
 export default function PaywallPage() {
   const { user } = useUser();
@@ -75,16 +99,63 @@ export default function PaywallPage() {
           <div className="text-center space-y-6">
             <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5">Evolução Contínua</Badge>
             <h1 className="text-5xl md:text-8xl font-black italic uppercase tracking-tighter leading-[0.85]">
-              DA PRIMEIRA VENDA <br /><span className="text-primary shimmer-text">À ESCALA BRUTAL.</span>
+              DOMINE O MERCADO <br /><span className="text-primary shimmer-text">COM PODER IA.</span>
             </h1>
             <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto font-medium uppercase tracking-tight">
-              Escolha seu nível de entrada. Comece a jornada ou domine o mercado com acesso Pro ilimitado.
+              A jornada de 7 dias foi apenas o começo. Escolha como você quer escalar a partir de agora.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-10 max-w-4xl mx-auto items-stretch">
-            {/* PLANO VITALÍCIO */}
-            <Card className="glass-card p-10 flex flex-col justify-between border-white/10 relative overflow-hidden rounded-[2.5rem] bg-white/[0.04] group hover:bg-white/[0.06] transition-all duration-500">
+            
+            {/* PLANO PRO (AGORA NA ESQUERDA) */}
+            <div className="relative p-[2px] rounded-[2.5rem] overflow-hidden shadow-[0_0_60px_rgba(139,92,246,0.35)] group">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-marquee bg-[length:200%_200%]"></div>
+              <Card className="relative bg-[#050508] p-10 flex flex-col justify-between h-full border-none rounded-[calc(2.5rem-2px)]">
+                <div className="absolute top-5 right-5 bg-primary text-white text-[8px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg animate-pulse z-20">RECOMENDADO PARA ESCALA</div>
+                
+                <div className="space-y-8 relative z-10">
+                  <div className="space-y-3">
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2">
+                      <Zap className="h-4 w-4 fill-primary" /> Flow Pro (Assinatura)
+                    </h3>
+                    <div className="flex items-baseline gap-1">
+                      <p className="text-7xl font-black italic text-white tracking-tighter">R$ 147</p>
+                      <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/mês</span>
+                    </div>
+                    <p className="text-[10px] font-black uppercase text-primary tracking-widest flex items-center gap-2">
+                      <TrendingUp className="h-3.5 w-3.5" /> FASE 2: ESCALA ILIMITADA
+                    </p>
+                  </div>
+
+                  <ul className="space-y-5">
+                    {[
+                      'Fase 2: Escala Flow Ativada',
+                      'Radar de Leads Ilimitado', 
+                      'IA de Prospecção Avançada', 
+                      'Metodologias de Elite (Fase 2)',
+                      'Scripts de Fechamento Brutal',
+                      'Acesso ao Mentor IA Premium'
+                    ].map((f, i) => (
+                      <li key={i} className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-white">
+                        <Star className="h-4 w-4 text-primary fill-primary" /> {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <Button 
+                  onClick={() => handleSubscription('monthly')}
+                  disabled={isLoading}
+                  className="w-full h-20 mt-10 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest shadow-[0_15px_40px_rgba(139,92,246,0.5)] transition-all hover:scale-[1.02]"
+                >
+                  DESBLOQUEAR FLOW PRO <ArrowRight className="ml-2 h-6 w-6" />
+                </Button>
+              </Card>
+            </div>
+
+            {/* PLANO VITALÍCIO (AGORA NA DIREITA) */}
+            <Card className="glass-card p-10 flex flex-col justify-between border-white/10 relative overflow-hidden rounded-[2.5rem] bg-white/[0.04] hover:bg-white/[0.06] transition-all duration-500">
               <div className="space-y-8 relative z-10">
                 <div className="space-y-3">
                   <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 flex items-center gap-2">
@@ -119,56 +190,40 @@ export default function PaywallPage() {
               <Button 
                 onClick={() => handleSubscription('lifetime')}
                 disabled={isLoading}
-                className="w-full h-16 mt-10 rounded-2xl bg-white text-black hover:bg-primary hover:text-white font-black uppercase tracking-widest transition-all shadow-xl group-hover:scale-[1.02]"
+                className="w-full h-16 mt-10 rounded-2xl bg-white text-black hover:bg-primary hover:text-white font-black uppercase tracking-widest transition-all shadow-xl hover:scale-[1.02]"
               >
                 ATIVAR MEU VITALÍCIO
               </Button>
             </Card>
 
-            {/* PLANO PRO */}
-            <div className="relative p-[2px] rounded-[2.5rem] overflow-hidden scale-105 shadow-[0_0_60px_rgba(139,92,246,0.3)]">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-marquee bg-[length:200%_200%]"></div>
-              <Card className="relative bg-[#050508] p-10 flex flex-col justify-between h-full border-none rounded-[calc(2.5rem-2px)]">
-                <div className="absolute top-5 right-5 bg-primary text-white text-[8px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg animate-pulse z-20">FOCO EM ESCALA</div>
-                
-                <div className="space-y-8 relative z-10">
-                  <div className="space-y-3">
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2">
-                      <Zap className="h-4 w-4 fill-primary" /> Flow Pro (Assinatura)
-                    </h3>
-                    <div className="flex items-baseline gap-1">
-                      <p className="text-7xl font-black italic text-white tracking-tighter">R$ 147</p>
-                      <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/mês</span>
-                    </div>
-                    <p className="text-[10px] font-black uppercase text-primary tracking-widest flex items-center gap-2">
-                      <TrendingUp className="h-3.5 w-3.5" /> FASE 2: ESCALA ILIMITADA
-                    </p>
-                  </div>
+          </div>
 
-                  <ul className="space-y-5">
-                    {[
-                      'Fase 2: Escala Flow Ativada',
-                      'Radar de Leads Ilimitado', 
-                      'IA de Prospecção Avançada', 
-                      'Metodologias de Elite (Fase 2)',
-                      'Scripts de Fechamento Brutal',
-                      'Atualizações Mensais de Nicho'
-                    ].map((f, i) => (
-                      <li key={i} className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-white">
-                        <Star className="h-4 w-4 text-primary fill-primary" /> {f}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                <Button 
-                  onClick={() => handleSubscription('monthly')}
-                  disabled={isLoading}
-                  className="w-full h-20 mt-10 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest shadow-[0_15px_40px_rgba(139,92,246,0.5)] transition-all hover:scale-[1.02]"
-                >
-                  DESBLOQUEAR FLOW PRO <ArrowRight className="ml-2 h-6 w-6" />
-                </Button>
-              </Card>
+          {/* DEPOIMENTOS */}
+          <div className="pt-32 space-y-16">
+            <div className="text-center space-y-4">
+              <h2 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter">Guerreiros no <span className="text-primary">Flow</span></h2>
+              <p className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.3em]">Resultados reais de quem já executa o método</p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-6">
+              {TESTIMONIALS.map((t, i) => (
+                <Card key={i} className="glass-card p-8 border-white/5 rounded-[2rem] flex flex-col gap-6 relative group hover:border-primary/40">
+                  <Quote className="absolute top-6 right-8 h-8 w-8 text-primary/10 group-hover:text-primary/20 transition-colors" />
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-primary/20">
+                      <img src={t.avatar} alt={t.name} className="h-full w-full object-cover" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-black italic uppercase text-white">{t.name}</h4>
+                      <p className="text-[9px] font-bold uppercase text-primary tracking-widest">{t.role}</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-muted-foreground italic leading-relaxed font-medium">"{t.text}"</p>
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, j) => <Star key={j} className="h-3 w-3 fill-primary text-primary" />)}
+                  </div>
+                </Card>
+              ))}
             </div>
           </div>
 
