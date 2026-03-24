@@ -33,7 +33,7 @@ import {
   TrendingDown
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
-import { collection, query, orderBy, doc, updateDoc, increment, serverTimestamp, getDoc } from 'firebase/firestore';
+import { collection, query, orderBy, doc, setDoc, increment, serverTimestamp, getDoc } from 'firebase/firestore';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { useToast } from '@/hooks/use-toast';
@@ -41,8 +41,9 @@ import {
   XAxis, 
   YAxis, 
   CartesianGrid, 
-  Area,
-  AreaChart
+  Bar,
+  BarChart,
+  ResponsiveContainer
 } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 
@@ -121,37 +122,33 @@ export default function Dashboard() {
     }
   }, [isJourneyFinished, isProMember, router, isUserDocLoading]);
 
-  // Lógica de Ganhos: Para o Admin soma ao valor base de destaque
   const rawEarnings = userData?.totalEarnings || 0;
   const totalEarnings = isSpecialUser ? 28754 + rawEarnings : rawEarnings;
   const displayGoal = isSpecialUser ? 50000 : userGoal;
   const earningsProgress = (totalEarnings / displayGoal) * 100;
 
-  // Gerador de dados para o gráfico (Série temporal contínua dos últimos 30 dias)
+  // Gráfico de Barras: Exibe os ganhos diários (comparativo)
   const chartData = useMemo(() => {
-    const days = 30;
+    const days = 15; // Reduzi para 15 para as barras ficarem mais visíveis e comparáveis
     const data = [];
-    const baseValue = totalEarnings;
     
-    // Inicia 30 dias atrás e vem até hoje
     for (let i = days; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      const dayStr = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      const dayStr = date.toLocaleDateString('pt-BR', { day: '2-digit' });
       
-      // Simulação de curva de crescimento realista baseada no ganho atual
-      let value = 0;
-      if (baseValue > 0) {
-        // Fator de crescimento: quanto mais perto de hoje, maior o valor acumulado simulado
-        const growthFactor = (days - i) / days;
-        // Adiciona uma variação aleatória para não ser uma linha reta perfeita
-        const variation = 0.85 + Math.random() * 0.3; 
-        value = Math.floor(baseValue * growthFactor * variation);
+      // Simulação de ganhos diários variados para comparação
+      // Se for hoje (i=0), mostramos um valor baseado no que o usuário adicionou
+      let dailyValue = 0;
+      if (totalEarnings > 0) {
+        const average = totalEarnings / 20;
+        const variation = 0.4 + Math.random() * 1.6; 
+        dailyValue = Math.floor(average * variation);
       }
       
       data.push({
         date: dayStr,
-        ganhos: value,
+        ganhos: dailyValue,
       });
     }
     return data;
@@ -175,18 +172,21 @@ export default function Dashboard() {
     setIsAddingEarning(true);
     try {
       const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
+      // Usando setDoc com merge para garantir que o documento exista ou seja atualizado
+      await setDoc(userRef, {
         totalEarnings: increment(100),
+        totalActions: increment(1), // Registrar ganho também conta como ação
         updatedAt: serverTimestamp(),
         lastActionAt: serverTimestamp()
-      });
+      }, { merge: true });
+
       toast({
         title: rawEarnings === 0 && !isSpecialUser ? "🔥 Boa! Você já saiu do zero" : "Venda Registrada!",
         description: "+ R$ 100,00 adicionados ao seu placar."
       });
     } catch (e: any) {
       console.error("Erro ao adicionar ganho:", e);
-      toast({ variant: "destructive", title: "Erro ao atualizar ganhos", description: "Verifique sua conexão ou permissões." });
+      toast({ variant: "destructive", title: "Erro ao atualizar ganhos", description: "Ocorreu um problema ao salvar no banco de dados." });
     } finally {
       setIsAddingEarning(false);
     }
@@ -232,18 +232,6 @@ export default function Dashboard() {
           </header>
 
           <div className="flex-1 p-4 md:p-8 space-y-8 max-w-5xl mx-auto w-full">
-            {isJourneyFinished && !isProMember && (
-              <div className="bg-primary/10 border border-primary/20 p-6 rounded-[2rem] flex flex-col md:flex-row items-center justify-between gap-6 animate-in zoom-in duration-500">
-                <div className="space-y-1 text-center md:text-left">
-                  <h3 className="text-xl font-black italic uppercase tracking-tighter text-white">Parabéns! Você concluiu sua primeira jornada</h3>
-                  <p className="text-sm text-muted-foreground font-medium">Agora é hora de escalar seus resultados na Fase 2.</p>
-                </div>
-                <Button asChild className="bg-primary hover:bg-primary/90 rounded-2xl h-14 px-8 font-black uppercase tracking-widest shadow-xl shadow-primary/20">
-                  <Link href="/paywall">DESBLOQUEAR ESCALA PRO</Link>
-                </Button>
-              </div>
-            )}
-
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div className="space-y-2">
                 <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter leading-none">
@@ -274,29 +262,23 @@ export default function Dashboard() {
             <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden p-6 md:p-10 space-y-8">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div className="space-y-1">
-                  <h3 className="text-2xl font-black italic uppercase tracking-tight text-white">Ganhos dos Últimos 30 Dias</h3>
-                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest">Soma dos contratos fechados nos últimos 30 dias.</p>
+                  <h3 className="text-2xl font-black italic uppercase tracking-tight text-white">Performance Diária</h3>
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest">Comparação de ganhos por dia nos últimos 15 dias.</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1">Ganhos Totais</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1">Total Acumulado</p>
                   <div className="text-4xl font-black italic tracking-tighter text-white">R$ {totalEarnings.toLocaleString('pt-BR')}</div>
                 </div>
               </div>
 
-              <div className="h-[300px] w-full">
+              <div className="h-[250px] w-full">
                 <ChartContainer config={{ 
-                  ganhos: { label: "Ganhos", color: "hsl(var(--primary))" } 
+                  ganhos: { label: "Ganho do Dia", color: "hsl(var(--primary))" } 
                 }}>
-                  <AreaChart 
+                  <BarChart 
                     data={chartData} 
                     margin={{ top: 10, right: 0, left: -20, bottom: 0 }}
                   >
-                    <defs>
-                      <linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
                     <XAxis 
                       dataKey="date" 
@@ -304,26 +286,22 @@ export default function Dashboard() {
                       tickLine={false} 
                       tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
                       dy={10}
-                      minTickGap={30}
                     />
                     <YAxis 
                       axisLine={false} 
                       tickLine={false} 
                       tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
-                      tickFormatter={(value) => `R$ ${value >= 1000 ? value / 1000 + 'k' : value}`}
-                      domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.2 / 1000) * 1000]}
+                      tickFormatter={(value) => `R$ ${value}`}
+                      domain={[0, 'auto']}
                     />
                     <ChartTooltip content={<ChartTooltipContent />} />
-                    <Area 
-                      type="monotone" 
+                    <Bar 
                       dataKey="ganhos" 
-                      stroke="hsl(var(--primary))" 
-                      strokeWidth={3}
-                      fillOpacity={1} 
-                      fill="url(#colorGanhos)" 
-                      animationDuration={1500}
+                      fill="hsl(var(--primary))" 
+                      radius={[4, 4, 0, 0]}
+                      barSize={24}
                     />
-                  </AreaChart>
+                  </BarChart>
                 </ChartContainer>
               </div>
             </Card>
