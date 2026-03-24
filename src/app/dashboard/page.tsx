@@ -86,6 +86,7 @@ export default function Dashboard() {
 
   // Nome formatado para exibição
   const displayName = useMemo(() => {
+    if (user?.email === ADMIN_EMAIL) return 'Lucas';
     if (userData?.name) return userData.name;
     if (user?.displayName) return user.displayName;
     if (user?.email) return user.email.split('@')[0];
