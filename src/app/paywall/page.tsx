@@ -116,7 +116,7 @@ export default function PaywallPage() {
           {/* Pricing Grid */}
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto items-stretch">
             
-            {/* PLANO PRO (MENSAL) - AGORA À ESQUERDA */}
+            {/* PLANO PRO (MENSAL) */}
             <Card className="glass-card p-10 flex flex-col justify-between border-white/10 relative overflow-hidden rounded-[2.5rem] bg-white/[0.04] hover:bg-white/[0.06] transition-all duration-500">
               <div className="space-y-8 relative z-10">
                 <div className="space-y-3">
@@ -156,8 +156,8 @@ export default function PaywallPage() {
               </Button>
             </Card>
 
-            {/* PLANO VITALÍCIO - AGORA À DIREITA E DESTACADO */}
-            <div className="relative p-[2px] rounded-[2.5rem] overflow-hidden shadow-[0_0_80px_rgba(139,92,246,0.4)]">
+            {/* PLANO VITALÍCIO - DESTAQUE MÁXIMO */}
+            <div className="relative p-[2px] rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(139,92,246,0.5)] scale-105 md:scale-110 z-20">
               <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-pulse"></div>
               <Card className="relative bg-[#050508] p-10 flex flex-col justify-between h-full border-none rounded-[calc(2.5rem-2px)]">
                 <div className="absolute top-5 right-5 bg-primary text-white text-[8px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg flex items-center gap-1">
@@ -165,16 +165,25 @@ export default function PaywallPage() {
                 </div>
                 
                 <div className="space-y-8 relative z-10">
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2">
-                      <Infinity className="h-4 w-4 fill-primary" /> Acesso Vitalício (Único)
+                      <Infinity className="h-4 w-4 fill-primary" /> Acesso Vitalício (Pagamento Único)
                     </h3>
-                    <div className="flex items-baseline gap-1">
-                      <p className="text-7xl font-black italic text-white tracking-tighter">R$ 267</p>
+                    
+                    <div className="space-y-1">
+                      <div className="flex items-baseline gap-1">
+                        <p className="text-7xl md:text-8xl font-black italic text-white tracking-tighter">R$ 267</p>
+                      </div>
+                      
+                      {/* ÁREA DE PARCELAMENTO EM DESTAQUE */}
+                      <div className="bg-primary/10 border border-primary/30 rounded-2xl px-5 py-3 w-full animate-in fade-in zoom-in duration-1000 delay-500">
+                        <p className="text-[11px] md:text-sm font-black uppercase text-primary tracking-widest flex items-center gap-2">
+                          <CalendarCheck className="h-5 w-5 fill-primary text-[#050508]" /> 
+                          OU EM ATÉ 12X DE R$ 26,80
+                        </p>
+                        <p className="text-[8px] font-bold text-primary/60 uppercase tracking-widest mt-1 ml-7">NO CARTÃO DE CRÉDITO</p>
+                      </div>
                     </div>
-                    <p className="text-[10px] font-black uppercase text-primary tracking-widest flex items-center gap-2">
-                      <CalendarCheck className="h-3.5 w-3.5" /> EM ATÉ 12X NO CARTÃO
-                    </p>
                   </div>
 
                   <ul className="space-y-5">
@@ -196,9 +205,9 @@ export default function PaywallPage() {
                 <Button 
                   onClick={() => handleSubscription('lifetime')}
                   disabled={isLoading}
-                  className="w-full h-20 mt-10 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest shadow-[0_15px_40px_rgba(139,92,246,0.5)] transition-all hover:scale-[1.02] group"
+                  className="w-full h-24 mt-10 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest shadow-[0_15px_40px_rgba(139,92,246,0.5)] transition-all hover:scale-[1.02] group text-lg"
                 >
-                  GARANTIR ACESSO VITALÍCIO <ArrowRight className="ml-2 h-6 w-6 group-hover:translate-x-1 transition-transform" />
+                  GARANTIR ACESSO VITALÍCIO <ArrowRight className="ml-2 h-7 w-7 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Card>
             </div>
