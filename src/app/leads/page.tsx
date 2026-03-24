@@ -28,7 +28,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { generateLeadMessage } from '@/ai/flows/generate-lead-message';
 import { generateFollowUp } from '@/ai/flows/generate-follow-up';
 import { useToast } from '@/hooks/use-toast';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, query, doc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -48,7 +48,12 @@ export default function LeadsPage() {
   const [state, setState] = useState('');
   const [generatingMsg, setGeneratingMsg] = useState<string | null>(null);
   const [approachedLeads, setApproachedLeads] = useState<string[]>([]);
-  const [noResponseLeads, setNoResponseLeads] = useState<string[]>([]);
+
+  const userDocRef = useMemoFirebase(() => {
+    if (!db || !user) return null;
+    return doc(db, 'users', user.uid);
+  }, [db, user]);
+  const { data: userData } = useDoc(userDocRef);
 
   const subQuery = useMemoFirebase(() => {
     if (!db || !user) return null;
@@ -58,18 +63,60 @@ export default function LeadsPage() {
 
   const isProMember = useMemo(() => {
     const hasActiveSub = subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime') && sub.status === 'active');
-    return hasActiveSub || user?.email === ADMIN_EMAIL;
-  }, [subData, user]);
+    const hasAdminOrVitalicio = user?.email === ADMIN_EMAIL || userData?.plan === 'vitalicio' || userData?.plan === 'mensal';
+    return hasActiveSub || hasAdminOrVitalicio;
+  }, [subData, user, userData]);
+
+  const isUnlimited = user?.email === ADMIN_EMAIL || userData?.plan === 'vitalicio';
+
+  const checkLimitAndTrack = async (type: 'leadsUsed' | 'messagesUsed', limitValue: number) => {
+    if (!db || !user || !userData) return true;
+    if (isUnlimited) return true;
+    if (userData.plan !== 'mensal') return true; // Aplicando limites especificamente ao mensal conforme pedido
+
+    const lastAction = userData.lastActionAt;
+    const today = new Date().toDateString();
+    const lastDate = lastAction ? (lastAction.toDate ? lastAction.toDate().toDateString() : new Date(lastAction).toDateString()) : '';
+    
+    const isNewDay = today !== lastDate;
+    const currentUsage = isNewDay ? 0 : (userData.dailyUsage?.[type] || 0);
+
+    if (currentUsage >= limitValue) {
+      toast({ 
+        variant: "destructive", 
+        title: "Limite Atingido", 
+        description: "Você atingiu o limite diário do plano mensal." 
+      });
+      return false;
+    }
+
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      const updates: any = {
+        lastActionAt: serverTimestamp(),
+        [`dailyUsage.${type}`]: isNewDay ? 1 : increment(1),
+      };
+      
+      if (isNewDay) {
+        const otherType = type === 'leadsUsed' ? 'messagesUsed' : 'leadsUsed';
+        updates[`dailyUsage.${otherType}`] = 0;
+      }
+
+      await updateDoc(userRef, updates);
+      return true;
+    } catch (e) {
+      return true;
+    }
+  };
 
   const handleSearch = async () => {
     if (!niche || !state) {
-      toast({ 
-        variant: "destructive", 
-        title: "Campos Obrigatórios", 
-        description: "Por favor, digite o nicho e selecione o estado." 
-      });
+      toast({ variant: "destructive", title: "Campos Obrigatórios", description: "Por favor, digite o nicho e selecione o estado." });
       return;
     }
+
+    const canProceed = await checkLimitAndTrack('leadsUsed', 20);
+    if (!canProceed) return;
     
     setLoading(true);
     setLeads([]);
@@ -77,43 +124,22 @@ export default function LeadsPage() {
     try {
       const response = await fetch('/api/leads', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ niche, city, state }),
       });
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Falha na busca de leads');
 
-      // Limite para membros Free
       const finalLeads = isProMember ? data : data.slice(0, 5);
       setLeads(finalLeads);
 
-      toast({ 
-        title: "Radar Ativo!", 
-        description: `Encontramos ${finalLeads.length} leads reais.` 
-      });
+      toast({ title: "Radar Ativo!", description: `Encontramos ${finalLeads.length} leads reais.` });
     } catch (e: any) {
-      toast({ 
-        variant: "destructive", 
-        title: "Erro na Busca", 
-        description: e.message || "Falha na conexão com o motor de leads." 
-      });
+      toast({ variant: "destructive", title: "Erro na Busca", description: e.message || "Falha na conexão." });
     } finally {
       setLoading(false);
     }
-  };
-
-  const trackAction = async () => {
-    if (!db || !user) return;
-    try {
-      await updateDoc(doc(db, 'users', user.uid), {
-        dailyActions: increment(1),
-        totalActions: increment(1),
-        lastActionAt: serverTimestamp()
-      });
-    } catch (e) {}
   };
 
   const handleWhatsApp = (phone: string, message?: string) => {
@@ -125,11 +151,13 @@ export default function LeadsPage() {
     const waPhone = cleanPhone.length <= 11 ? `55${cleanPhone}` : cleanPhone;
     const encodedMsg = message ? encodeURIComponent(message) : '';
     
-    trackAction();
     window.open(`https://wa.me/${waPhone}${message ? `?text=${encodedMsg}` : ''}`, '_blank');
   };
 
   const handleGenMessage = async (lead: any) => {
+    const canProceed = await checkLimitAndTrack('messagesUsed', 10);
+    if (!canProceed) return;
+
     setGeneratingMsg(lead.id);
     try {
       const res = await generateLeadMessage({
@@ -138,9 +166,7 @@ export default function LeadsPage() {
         city: lead.city
       });
       
-      // Abrir WhatsApp direto com a mensagem
       handleWhatsApp(lead.phone, res.message);
-      
       toast({ title: "WhatsApp Aberto!", description: "Mensagem enviada para o aplicativo." });
       
       if (!approachedLeads.includes(lead.id)) {
@@ -154,6 +180,9 @@ export default function LeadsPage() {
   };
 
   const handleFollowUp = async (lead: any) => {
+    const canProceed = await checkLimitAndTrack('messagesUsed', 10);
+    if (!canProceed) return;
+
     setGeneratingMsg(`follow-${lead.id}`);
     try {
       const res = await generateFollowUp({
@@ -185,10 +214,12 @@ export default function LeadsPage() {
             </div>
             <div className="flex items-center gap-3">
                <div className="hidden sm:flex items-center gap-2 bg-white/5 px-3 py-1 rounded-full border border-white/10">
-                  <span className="text-[8px] font-black uppercase text-muted-foreground tracking-widest">+100 usuários ativos hoje</span>
+                  <span className="text-[8px] font-black uppercase text-muted-foreground tracking-widest">
+                    {userData?.plan === 'mensal' ? `Leads: ${userData?.dailyUsage?.leadsUsed || 0}/20` : '+100 usuários ativos'}
+                  </span>
                </div>
                <Badge className="bg-primary/20 text-primary border-primary/30 text-[8px] font-black uppercase px-2 md:px-3 py-1">
-                 {isProMember ? 'PRO MEMBER' : 'FREE'}
+                 {userData?.plan?.toUpperCase() || 'FREE'}
                </Badge>
             </div>
           </header>
@@ -322,7 +353,6 @@ export default function LeadsPage() {
                               onClick={() => {
                                 if (!approachedLeads.includes(lead.id)) {
                                   setApproachedLeads(prev => [...prev, lead.id]);
-                                  trackAction();
                                 }
                               }}
                               className={`h-12 rounded-xl text-[9px] font-black uppercase tracking-widest ${approachedLeads.includes(lead.id) ? 'text-green-500 bg-green-500/5' : 'text-muted-foreground'}`}
