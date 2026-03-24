@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -6,17 +7,21 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Zap, Loader2 } from 'lucide-react';
-import { useAuth } from '@/firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously } from 'firebase/auth';
+import { Zap, Loader2, ShieldCheck } from 'lucide-react';
+import { useAuth, useFirestore } from '@/firebase';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
   const auth = useAuth();
+  const db = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -26,24 +31,48 @@ export default function AuthPage() {
     try {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
+        router.push('/dashboard');
       } else {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Recuperar dados do quiz temporários
+        const tempQuiz = sessionStorage.getItem('temp_quiz');
+        const tempPlan = sessionStorage.getItem('temp_plan');
+
+        // Criar perfil do usuário como PENDENTE
+        await setDoc(doc(db, 'users', user.uid), {
+          id: user.uid,
+          email: user.email,
+          name: name || email.split('@')[0],
+          status: 'pending',
+          createdAt: serverTimestamp(),
+          isOnboarded: !!tempQuiz
+        });
+
+        if (tempQuiz && tempPlan) {
+          const answers = JSON.parse(tempQuiz);
+          const plan = JSON.parse(tempPlan);
+
+          await setDoc(doc(db, 'users', user.uid, 'quizResponses', 'initial'), {
+            userId: user.uid,
+            responses: answers,
+            completedAt: serverTimestamp()
+          });
+
+          await setDoc(doc(db, 'users', user.uid, 'personalizedPlans', 'active'), {
+            userId: user.uid,
+            strategy: plan?.[0]?.title || "Estratégia Flow",
+            fullPlan: plan || [],
+            generatedAt: serverTimestamp()
+          });
+        }
+
+        toast({ title: "Conta Criada!", description: "Sua solicitação de acesso foi enviada para análise." });
+        router.push('/dashboard');
       }
-      router.push('/quiz');
     } catch (error: any) {
       toast({ variant: "destructive", title: "Erro na Autenticação", description: error.message });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleAnonymous = async () => {
-    setIsLoading(true);
-    try {
-      await signInAnonymously(auth);
-      router.push('/quiz');
-    } catch (error: any) {
-      toast({ variant: "destructive", title: "Erro no Acesso Convidado", description: error.message });
     } finally {
       setIsLoading(false);
     }
@@ -55,24 +84,35 @@ export default function AuthPage() {
         <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[140px]"></div>
       </div>
 
-      <Card className="w-full max-w-md glass-card border-white/10 relative z-10 rounded-[2rem]">
-        <CardHeader className="space-y-1 text-center p-8">
+      <Card className="w-full max-w-md glass-card border-white/10 relative z-10 rounded-[2rem] overflow-hidden">
+        <CardHeader className="space-y-1 text-center p-8 bg-white/5 border-b border-white/5">
           <div className="flex justify-center mb-4">
             <Zap className="h-10 w-10 text-primary animate-pulse" />
           </div>
           <CardTitle className="text-2xl font-black italic uppercase tracking-tighter">
-            {isLogin ? 'Bem-vindo ao FlowPro' : 'Criar sua conta Flow'}
+            {isLogin ? 'Bem-vindo ao FlowPro' : 'Finalizar seu Cadastro'}
           </CardTitle>
           <CardDescription className="text-muted-foreground uppercase text-[10px] font-bold tracking-[0.2em]">
-            O seu futuro nas vendas começa agora
+            {isLogin ? 'O seu futuro nas vendas continua aqui' : 'Crie sua conta para solicitar acesso'}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 px-8 pb-8">
+        <CardContent className="space-y-4 p-8">
           <form onSubmit={handleAuth} className="space-y-4">
+            {!isLogin && (
+              <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest opacity-70">Nome Completo</Label>
+                <Input 
+                  placeholder="Seu nome" 
+                  className="bg-white/5 border-white/10 rounded-xl h-12"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
+            )}
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest opacity-70">Email</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest opacity-70">Email</Label>
               <Input 
-                id="email" 
                 type="email" 
                 placeholder="nome@exemplo.com" 
                 className="bg-white/5 border-white/10 rounded-xl h-12"
@@ -82,9 +122,8 @@ export default function AuthPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest opacity-70">Senha</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest opacity-70">Senha</Label>
               <Input 
-                id="password" 
                 type="password" 
                 className="bg-white/5 border-white/10 rounded-xl h-12"
                 value={password}
@@ -92,28 +131,22 @@ export default function AuthPage() {
                 required
               />
             </div>
-            <Button className="w-full bg-primary hover:bg-primary/90 h-14 font-black uppercase tracking-widest rounded-xl" disabled={isLoading}>
-              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : isLogin ? 'ENTRAR' : 'CADASTRAR'}
+            
+            <Button className="w-full bg-primary hover:bg-primary/90 h-14 font-black uppercase tracking-widest rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98]" disabled={isLoading}>
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : isLogin ? 'ENTRAR' : 'SOLICITAR ACESSO'}
             </Button>
           </form>
 
-          <div className="relative py-2">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-white/10" />
+          {!isLogin && (
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/5 border border-primary/10 text-[10px] font-bold text-primary uppercase text-center justify-center">
+              <ShieldCheck className="h-3 w-3" /> Acesso sujeito a aprovação manual
             </div>
-            <div className="relative flex justify-center text-[8px] uppercase font-black tracking-widest">
-              <span className="bg-[#050508] px-2 text-muted-foreground">Ou continue com</span>
-            </div>
-          </div>
-
-          <Button variant="outline" className="w-full border-white/10 hover:bg-white/5 h-14 font-black uppercase tracking-widest rounded-xl" onClick={handleAnonymous} disabled={isLoading}>
-            MODO CONVIDADO
-          </Button>
+          )}
 
           <div className="text-center mt-4">
             <button 
               onClick={() => setIsLogin(!isLogin)}
-              className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline"
+              className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline transition-all"
             >
               {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Faça Login'}
             </button>

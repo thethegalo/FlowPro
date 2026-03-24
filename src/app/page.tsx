@@ -1,17 +1,14 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { 
   Zap, 
   ArrowRight, 
-  ShieldCheck, 
-  MessageSquare, 
-  Globe as GlobeIcon,
   Star,
   Cpu,
   Layers,
-  Search,
-  CheckCircle2
+  Search
 } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -39,48 +36,26 @@ const salesActivity = [
   { name: 'Carlos J.', amount: '147,00', time: '15 min ago' },
 ];
 
-const markers = [
-  { id: "saopaulo", location: [-23.5505, -46.6333] as [number, number], label: "São Paulo" },
-  { id: "lisbon", location: [38.7223, -9.1393] as [number, number], label: "Lisboa" },
-  { id: "nyc", location: [40.7128, -74.006] as [number, number], label: "New York" },
-  { id: "luanda", location: [-8.8390, 13.2894] as [number, number], label: "Luanda" },
-  { id: "tokyo", location: [35.6762, 139.6503] as [number, number], label: "Tokyo" },
-];
-
-const arcs = [
-  { id: "sp-lisbon", from: [-23.5505, -46.6333] as [number, number], to: [38.7223, -9.1393] as [number, number], label: "Flow Connection" },
-  { id: "sp-nyc", from: [-23.5505, -46.6333] as [number, number], to: [40.7128, -74.006] as [number, number] },
-];
-
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-[#050508] text-white">
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[140px] animate-pulse-glow"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent/10 rounded-full blur-[140px] animate-pulse-glow" style={{ animationDelay: '5s' }}></div>
         <div className="absolute inset-0 grid-background opacity-20"></div>
       </div>
 
       <header className="px-6 h-20 flex items-center justify-between sticky top-0 z-50 bg-[#050508]/70 backdrop-blur-xl border-b border-white/5">
         <Link href="/" className="flex items-center group relative">
-          <div className="absolute -inset-4 bg-primary/30 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-700 -z-10 scale-50 group-hover:scale-100"></div>
           <div className="relative h-10 w-32 md:h-12 md:w-40 transition-all duration-500 group-hover:scale-105 group-hover:drop-shadow-[0_0_15px_rgba(139,92,246,0.6)] grayscale group-hover:grayscale-0">
-            <Image 
-              src={LOGO_URL} 
-              alt="FlowPro Logo" 
-              fill 
-              className="object-contain"
-              priority
-            />
+            <Image src={LOGO_URL} alt="FlowPro Logo" fill className="object-contain" priority />
           </div>
         </Link>
         <div className="hidden md:flex items-center gap-10">
           <Link href="#tecnologia" className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-all">Tecnologia</Link>
-          <Link href="#faq" className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-all">Suporte</Link>
-          <Link href="/auth" className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-all">Login</Link>
+          <Link href="/auth" className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-all">Área do Aluno</Link>
         </div>
-        <Button asChild className="bg-white text-black hover:bg-primary hover:text-white font-black rounded-full px-8 h-10 transition-all duration-500 hover:scale-105 active:scale-95 shadow-xl hover:shadow-primary/20">
-          <Link href="/quiz">ATIVAR FLUXO</Link>
+        <Button asChild className="bg-white text-black hover:bg-primary hover:text-white font-black rounded-full px-8 h-10 transition-all duration-500 hover:scale-105 active:scale-95 shadow-xl">
+          <Link href="/quiz">COMEÇAR JORNADA</Link>
         </Button>
       </header>
 
@@ -89,7 +64,7 @@ export default function Home() {
           <div className="container px-6 mx-auto relative z-20">
             <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
               <div className="flex-1 text-center lg:text-left">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.3em] mb-10 shadow-[0_0_20px_rgba(255,255,255,0.05)]">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.3em] mb-10">
                   <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
                   Acesso Flow Disponível
                 </div>
@@ -106,52 +81,20 @@ export default function Home() {
                 <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start items-center">
                   <Button size="lg" className="h-20 px-12 text-xl font-black bg-primary hover:scale-110 hover:rotate-1 shadow-[0_15px_40px_rgba(139,92,246,0.4)] transition-all rounded-3xl w-full sm:w-auto group" asChild>
                     <Link href="/quiz">
-                      INICIAR JORNADA <ArrowRight className="ml-2 h-7 w-7 group-hover:translate-x-2 transition-transform" />
+                      INICIAR QUIZ IA <ArrowRight className="ml-2 h-7 w-7 group-hover:translate-x-2 transition-transform" />
                     </Link>
                   </Button>
-                  <div className="flex items-center gap-4 px-6 py-4 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-md">
-                    <div className="flex -space-x-3">
-                      {[1, 2, 3].map((i) => (
-                        <div key={i} className="h-10 w-10 rounded-full border-2 border-[#050508] overflow-hidden">
-                          <Image src={`https://picsum.photos/seed/${i+100}/100/100`} alt="user" width={40} height={40} />
-                        </div>
-                      ))}
-                    </div>
-                    <div className="text-left">
-                      <p className="text-xs font-black uppercase tracking-widest text-white">5.8k+ Users</p>
-                      <div className="flex gap-0.5">
-                        {[1, 2, 3, 4, 5].map((s) => <Star key={s} className="h-3 w-3 fill-primary text-primary" />)}
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
 
               <div className="flex-1 w-full max-w-[500px] lg:max-w-none relative aspect-square">
-                <div className="absolute inset-0 bg-primary/20 rounded-full blur-[100px] animate-pulse"></div>
-                <Globe 
-                  markers={markers}
-                  arcs={arcs}
-                  className="w-full h-full"
-                  speed={0.005}
-                  dark={1}
-                  markerColor={[0.54, 0.36, 0.96]}
-                  baseColor={[0.2, 0.2, 0.2]}
-                  arcColor={[0.54, 0.36, 0.96]}
-                  glowColor={[0.54, 0.36, 0.96]}
-                  mapBrightness={12}
-                />
-                <div className="absolute -bottom-10 -right-10 glass-card p-6 rounded-[2rem] animate-float">
-                  <p className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Status do Motor</p>
-                  <p className="text-sm font-black italic text-primary uppercase">Flow Ativo Global</p>
-                </div>
+                <Globe className="w-full h-full" speed={0.005} dark={1} />
               </div>
             </div>
           </div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] hero-gradient pointer-events-none -z-10"></div>
         </section>
 
-        <div className="bg-primary/5 border-y border-white/5 py-6 overflow-hidden whitespace-nowrap backdrop-blur-sm">
+        <div className="bg-primary/5 border-y border-white/5 py-6 overflow-hidden whitespace-nowrap">
           <div className="flex animate-marquee gap-16 items-center">
             {[...salesActivity, ...salesActivity].map((sale, i) => (
               <div key={i} className="flex items-center gap-4 bg-white/[0.03] px-6 py-2 rounded-full border border-white/5">
@@ -167,19 +110,16 @@ export default function Home() {
         <section id="tecnologia" className="py-40">
           <div className="container px-6 mx-auto">
             <div className="text-center mb-24">
-              <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-6">SISTEMA <span className="text-primary">FLOW</span></h2>
+              <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-6 text-white">SISTEMA <span className="text-primary">FLOW</span></h2>
               <p className="text-muted-foreground max-w-xl mx-auto uppercase tracking-[0.2em] text-[10px] font-black">Performance brutal em cada camada do seu funil</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               {pillars.map((p, i) => (
                 <Card key={i} className="glass-card p-10 group relative overflow-hidden rounded-[2rem]">
-                  <div className="absolute -right-4 -top-4 opacity-[0.02] group-hover:opacity-[0.08] transition-opacity rotate-12">
+                  <div className="mb-8 p-4 rounded-2xl bg-white/5 inline-block ${p.color} transition-all group-hover:scale-125 group-hover:rotate-12 shadow-xl">
                     {p.icon}
                   </div>
-                  <div className={`mb-8 p-4 rounded-2xl bg-white/5 inline-block ${p.color} transition-all group-hover:scale-125 group-hover:rotate-12 group-hover:bg-primary/10 shadow-xl`}>
-                    {p.icon}
-                  </div>
-                  <h3 className="text-2xl font-black mb-4 italic tracking-tight uppercase">{p.title}</h3>
+                  <h3 className="text-2xl font-black mb-4 italic tracking-tight uppercase text-white">{p.title}</h3>
                   <p className="text-muted-foreground leading-relaxed font-medium">{p.desc}</p>
                 </Card>
               ))}
@@ -191,18 +131,17 @@ export default function Home() {
 
         <section id="faq" className="py-40">
           <div className="container px-6 mx-auto max-w-4xl">
-            <h2 className="text-4xl md:text-5xl font-black italic mb-16 text-center uppercase tracking-tighter">SINCRONIA <span className="text-primary">FLOW</span> (FAQ)</h2>
+            <h2 className="text-4xl md:text-5xl font-black italic mb-16 text-center uppercase tracking-tighter text-white">SINCRONIA <span className="text-primary">FLOW</span></h2>
             <Accordion type="single" collapsible className="space-y-6">
               {[
-                { q: "O sistema funciona para quem não tem experiência?", a: "Totalmente. O FlowPro foi desenhado como uma jornada guiada de 7 dias. Você só precisa seguir as tarefas diárias." },
-                { q: "Quanto tempo para configurar?", a: "Em menos de 10 minutos você completa o setup inicial e já recebe seu primeiro plano de ação personalizado." },
-                { q: "Como a IA ajuda no processo?", a: "Nossa IA gera scripts de abordagem personalizados para cada lead que você encontra, removendo o bloqueio de 'o que dizer'." },
+                { q: "O sistema funciona para quem não tem experiência?", a: "Totalmente. O FlowPro foi desenhado como uma jornada guiada de 7 dias." },
+                { q: "Como a IA ajuda no processo?", a: "Nossa IA gera scripts de abordagem personalizados para cada lead que você encontra." },
               ].map((item, i) => (
-                <AccordionItem key={i} value={`item-${i}`} className="glass-card border-white/5 rounded-[2rem] px-10 border-none">
-                  <AccordionTrigger className="font-black hover:no-underline py-8 uppercase tracking-[0.2em] text-xs text-left">
+                <AccordionItem key={i} value={`item-${i}`} className="glass-card border-none rounded-[2rem] px-10">
+                  <AccordionTrigger className="font-black hover:no-underline py-8 uppercase tracking-[0.2em] text-xs text-left text-white">
                     {item.q}
                   </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground text-base leading-relaxed pb-8 font-medium italic border-t border-white/5 pt-6">
+                  <AccordionContent className="text-muted-foreground text-base leading-relaxed pb-8 font-medium italic">
                     {item.a}
                   </AccordionContent>
                 </AccordionItem>
@@ -212,45 +151,10 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="py-32 border-t border-white/5 bg-[#030305] relative z-10">
-        <div className="container px-6 mx-auto grid md:grid-cols-4 gap-20">
-          <div className="md:col-span-2 space-y-8">
-            <div className="relative h-12 w-40 grayscale hover:grayscale-0 transition-all duration-500 cursor-pointer">
-              <Image 
-                src={LOGO_URL} 
-                alt="FlowPro Footer Logo" 
-                fill 
-                className="object-contain"
-              />
-            </div>
-            <p className="text-muted-foreground text-sm max-w-sm font-medium uppercase tracking-widest leading-loose">
-              Acelerando o faturamento de negócios através de autonomia digital. O futuro não é opcional.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 gap-12 md:col-span-2">
-            <div className="space-y-6">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Sistemas</h4>
-              <nav className="flex flex-col gap-4">
-                <Link href="/dashboard" className="text-xs text-muted-foreground hover:text-white transition-all uppercase tracking-widest">Dashboard</Link>
-                <Link href="/leads" className="text-xs text-muted-foreground hover:text-white transition-all uppercase tracking-widest">Leads</Link>
-                <Link href="/quiz" className="text-xs text-muted-foreground hover:text-white transition-all uppercase tracking-widest">Ativar Plano</Link>
-              </nav>
-            </div>
-            <div className="space-y-6">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Conexão</h4>
-              <nav className="flex flex-col gap-4">
-                <Link href="#" className="text-xs text-muted-foreground hover:text-white transition-all uppercase tracking-widest">Instagram</Link>
-                <Link href="#" className="text-xs text-muted-foreground hover:text-white transition-all uppercase tracking-widest">Suporte</Link>
-                <Link href="/admin" className="text-xs text-muted-foreground hover:text-white transition-all uppercase tracking-widest">Flow Command</Link>
-              </nav>
-            </div>
-          </div>
-        </div>
-        <div className="container px-6 mx-auto mt-32 pt-10 border-t border-white/5 text-center">
-          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.5em]">
-            © 2024 FLOWPRO NEURAL SYSTEMS • DESBLOQUEIE O INFINITO
-          </p>
-        </div>
+      <footer className="py-20 border-t border-white/5 bg-[#030305] text-center">
+        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.5em]">
+          © 2024 FLOWPRO NEURAL SYSTEMS
+        </p>
       </footer>
     </div>
   );

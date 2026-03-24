@@ -13,16 +13,15 @@ import {
   Loader2, 
   CheckCircle2, 
   XCircle,
-  TrendingUp,
-  UserCheck,
-  CreditCard,
-  Shield,
   Activity,
+  UserCheck,
+  Shield,
   Zap,
   Search,
-  AlertCircle
+  AlertCircle,
+  Ban
 } from 'lucide-react';
-import { collection, query, doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -48,25 +47,15 @@ export default function AdminPage() {
   }, [db]);
   const { data: usersData, isLoading: isUsersLoading } = useCollection(usersQuery);
 
-  const togglePayment = async (userId: string, currentStatus: boolean) => {
+  const updateStatus = async (userId: string, newStatus: string) => {
     if (!db) return;
     setUpdatingId(userId);
     try {
-      const subRef = doc(db, 'users', userId, 'subscriptions', 'active');
-      if (currentStatus) {
-        await deleteDoc(subRef);
-        await setDoc(doc(db, 'users', userId), { isOnboarded: false }, { merge: true });
-        toast({ title: "Acesso Removido", description: "Usuário agora está como pendente." });
-      } else {
-        await setDoc(subRef, {
-          userId,
-          planType: 'lifetime_admin',
-          status: 'active',
-          startDate: serverTimestamp()
-        });
-        await setDoc(doc(db, 'users', userId), { isOnboarded: true }, { merge: true });
-        toast({ title: "Acesso Liberado", description: "Usuário agora possui acesso total." });
-      }
+      await updateDoc(doc(db, 'users', userId), { 
+        status: newStatus,
+        updatedAt: serverTimestamp()
+      });
+      toast({ title: "Status Atualizado", description: `Usuário agora está como ${newStatus}.` });
     } catch (error: any) {
       toast({ variant: "destructive", title: "Erro", description: error.message });
     } finally {
@@ -84,9 +73,6 @@ export default function AdminPage() {
 
   if (user?.email !== ADMIN_EMAIL) return null;
 
-  const totalPaid = usersData?.filter(u => u.isOnboarded).length || 0;
-  const conversionRate = usersData && usersData.length > 0 ? ((totalPaid / usersData.length) * 100).toFixed(1) : 0;
-
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-[#050508]">
@@ -98,107 +84,105 @@ export default function AdminPage() {
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
               <div className="h-4 w-px bg-white/10 hidden md:block" />
               <h1 className="text-sm font-black italic uppercase tracking-widest flex items-center gap-2">
-                <Shield className="h-4 w-4 text-primary" /> Flow Command (Admin)
+                <Shield className="h-4 w-4 text-primary" /> Flow Command
               </h1>
             </div>
-            <Badge className="bg-primary/20 text-primary uppercase tracking-widest px-4 py-1 border-primary/30 text-[8px] font-black">ADMIN LEVEL 10</Badge>
+            <Badge className="bg-primary/20 text-primary uppercase tracking-widest px-4 py-1 border-primary/30 text-[8px] font-black">ADMIN MASTER</Badge>
           </header>
 
           <div className="flex-1 p-4 md:p-8 space-y-8 container max-w-6xl mx-auto">
-            {/* Status das APIs */}
-            <div className="grid gap-4 md:grid-cols-2">
-              <Card className="glass-card border-white/10 overflow-hidden rounded-2xl">
-                <CardHeader className="pb-2 bg-white/5">
-                  <CardTitle className="text-[10px] font-black uppercase tracking-widest opacity-70 flex items-center gap-2">
-                    <Activity className="h-4 w-4 text-primary" /> Diagnóstico do Motor Flow
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase text-muted-foreground flex items-center gap-2">
-                      <Zap className="h-3 w-3" /> Motor Neural (Google AI)
-                    </span>
-                    <Badge variant="outline" className="text-[8px] font-black border-green-500/20 text-green-500 bg-green-500/5">
-                      VAR CONFIGURADA
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase text-muted-foreground flex items-center gap-2">
-                      <Search className="h-3 w-3" /> Radar de Leads (Places API)
-                    </span>
-                    <Badge variant="outline" className="text-[8px] font-black border-green-500/20 text-green-500 bg-green-500/5">
-                      VAR CONFIGURADA
-                    </Badge>
-                  </div>
-                  <div className="mt-4 p-3 rounded-lg bg-primary/5 border border-primary/10 flex gap-3">
-                    <AlertCircle className="h-4 w-4 text-primary shrink-0" />
-                    <p className="text-[9px] text-muted-foreground leading-relaxed italic">
-                      Suas chaves no .env foram detectadas pelo sistema. Se as buscas falharem, certifique-se de que as APIs estão <strong>Ativas</strong> no Console do Google Cloud.
-                    </p>
-                  </div>
-                </CardContent>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <Card className="glass-card border-white/10 p-6 flex flex-col items-center justify-center text-center">
+                <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Total Guerreiros</span>
+                <div className="text-3xl font-black italic">{usersData?.length || 0}</div>
               </Card>
-
-              <div className="grid grid-cols-3 gap-4">
-                <Card className="glass-card border-white/10">
-                  <CardContent className="p-4 flex flex-col items-center justify-center h-full text-center">
-                    <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Leads</span>
-                    <div className="text-2xl font-black italic">{usersData?.length || 0}</div>
-                  </CardContent>
-                </Card>
-                <Card className="glass-card border-white/10">
-                  <CardContent className="p-4 flex flex-col items-center justify-center h-full text-center">
-                    <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Conv.</span>
-                    <div className="text-2xl font-black italic text-primary">{conversionRate}%</div>
-                  </CardContent>
-                </Card>
-                <Card className="glass-card border-white/10">
-                  <CardContent className="p-4 flex flex-col items-center justify-center h-full text-center">
-                    <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Pro</span>
-                    <div className="text-2xl font-black italic">{totalPaid}</div>
-                  </CardContent>
-                </Card>
-              </div>
+              <Card className="glass-card border-white/10 p-6 flex flex-col items-center justify-center text-center">
+                <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Aguardando</span>
+                <div className="text-3xl font-black italic text-yellow-500">
+                  {usersData?.filter(u => u.status === 'pending').length || 0}
+                </div>
+              </Card>
+              <Card className="glass-card border-white/10 p-6 flex flex-col items-center justify-center text-center">
+                <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Aprovados</span>
+                <div className="text-3xl font-black italic text-green-500">
+                  {usersData?.filter(u => u.status === 'approved').length || 0}
+                </div>
+              </Card>
+              <Card className="glass-card border-white/10 p-6 flex flex-col items-center justify-center text-center">
+                <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Bloqueados</span>
+                <div className="text-3xl font-black italic text-destructive">
+                  {usersData?.filter(u => u.status === 'blocked').length || 0}
+                </div>
+              </Card>
             </div>
 
             <Card className="glass-card border-white/10 overflow-hidden rounded-[2rem]">
               <CardHeader className="bg-white/5 border-b border-white/5 p-6">
                 <CardTitle className="text-sm font-black uppercase tracking-widest italic flex items-center gap-2">
-                  <UserCheck className="h-4 w-4 text-primary" /> Gestão de Guerreiros Flow
+                  <UserCheck className="h-4 w-4 text-primary" /> Gestão de Solicitações
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="rounded-md overflow-hidden">
+                <div className="rounded-md overflow-x-auto">
                   <Table>
                     <TableHeader className="bg-white/5">
                       <TableRow className="border-white/5 hover:bg-transparent">
                         <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Usuário</TableHead>
                         <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Email</TableHead>
-                        <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Progresso</TableHead>
-                        <TableHead className="text-muted-foreground text-[10px] uppercase font-black text-right">Ações</TableHead>
+                        <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Status Atual</TableHead>
+                        <TableHead className="text-muted-foreground text-[10px] uppercase font-black text-right">Ações de Comando</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {usersData?.map((u) => (
                         <TableRow key={u.id} className="border-white/5 hover:bg-white/[0.02]">
-                          <TableCell className="font-bold text-xs">{u.name || u.email?.split('@')[0]}</TableCell>
+                          <TableCell className="font-bold text-xs text-white">{u.name || u.email?.split('@')[0]}</TableCell>
                           <TableCell className="text-muted-foreground text-xs">{u.email}</TableCell>
                           <TableCell>
-                            <Badge variant="outline" className={`text-[8px] uppercase font-black border-white/10 ${u.isOnboarded ? 'text-green-500 border-green-500/20' : ''}`}>
-                              {u.isOnboarded ? 'FLOW ATIVO' : 'PENDENTE'}
+                            <Badge variant="outline" className={`text-[8px] uppercase font-black border-white/10 ${
+                              u.status === 'approved' ? 'text-green-500 border-green-500/20 bg-green-500/5' : 
+                              u.status === 'pending' ? 'text-yellow-500 border-yellow-500/20 bg-yellow-500/5' : 
+                              'text-destructive border-destructive/20 bg-destructive/5'
+                            }`}>
+                              {u.status?.toUpperCase() || 'PENDING'}
                             </Badge>
                           </TableCell>
-                          <TableCell className="text-right">
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
-                              disabled={updatingId === u.id}
-                              onClick={() => togglePayment(u.id, !!u.isOnboarded)}
-                              className={`h-8 px-3 rounded-lg text-[10px] font-black uppercase tracking-widest ${u.isOnboarded ? 'text-destructive hover:text-destructive' : 'text-primary hover:text-primary'}`}
-                            >
-                              {updatingId === u.id ? <Loader2 className="h-3 w-3 animate-spin" /> : u.isOnboarded ? <XCircle className="h-3 w-3 mr-1" /> : <CheckCircle2 className="h-3 w-3 mr-1" />}
-                              {u.isOnboarded ? 'REVOGAR' : 'LIBERAR'}
-                            </Button>
+                          <TableCell className="text-right flex justify-end gap-2 p-4">
+                            {u.status !== 'approved' && (
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                disabled={updatingId === u.id}
+                                onClick={() => updateStatus(u.id, 'approved')}
+                                className="h-8 px-3 rounded-lg text-[9px] font-black uppercase tracking-widest text-green-500 hover:bg-green-500/10 border-green-500/20"
+                              >
+                                {updatingId === u.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <CheckCircle2 className="h-3 w-3 mr-1" />}
+                                LIBERAR
+                              </Button>
+                            )}
+                            {u.status !== 'blocked' && (
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                disabled={updatingId === u.id}
+                                onClick={() => updateStatus(u.id, 'blocked')}
+                                className="h-8 px-3 rounded-lg text-[9px] font-black uppercase tracking-widest text-destructive hover:bg-destructive/10 border-destructive/20"
+                              >
+                                {updatingId === u.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Ban className="h-3 w-3 mr-1" />}
+                                BLOQUEAR
+                              </Button>
+                            )}
+                            {u.status === 'blocked' && (
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                disabled={updatingId === u.id}
+                                onClick={() => updateStatus(u.id, 'pending')}
+                                className="h-8 px-3 rounded-lg text-[9px] font-black uppercase tracking-widest text-yellow-500 hover:bg-yellow-500/10 border-yellow-500/20"
+                              >
+                                REVERTER
+                              </Button>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}
