@@ -94,7 +94,6 @@ export default function Dashboard() {
     return hasActiveSub || isSpecialUser;
   }, [subData, isSpecialUser]);
 
-  // Fetching real earnings from subcollection
   const earningsQuery = useMemoFirebase(() => {
     if (!db || !user) return null;
     return query(
@@ -163,7 +162,6 @@ export default function Dashboard() {
     const data = [];
     const now = new Date();
     
-    // Group real earnings by date
     const earningsByDate: Record<string, number> = {};
     earningsData?.forEach(e => {
       earningsByDate[e.date] = (earningsByDate[e.date] || 0) + (e.amount || 0);
@@ -177,12 +175,19 @@ export default function Dashboard() {
       
       let dailyValue = earningsByDate[dateKey] || 0;
       
-      // If special user, inject some base performance if no real data
       if (isSpecialUser && dailyValue === 0) {
-        const userSeed = user?.uid?.charCodeAt(0) || 1;
-        const average = 28754 / 40;
-        const variation = 0.3 + (((i + userSeed) * 7) % 100) / 80;
-        dailyValue = Math.floor(average * variation);
+        // Deterministic organic noise function
+        const seed = (i * 1234.5) + (user?.uid?.charCodeAt(0) || 1);
+        const rand = Math.abs(Math.sin(seed) * 10000) % 1;
+        const hasSale = (Math.abs(Math.cos(seed * 0.8) * 100) % 1) > 0.55; // ~45% sales frequency
+        
+        if (hasSale) {
+          const base = 28754 / 22; // Avg over active days
+          const variation = 0.4 + (rand * 1.2); // 40% to 160% variation
+          dailyValue = Math.floor(base * variation);
+        } else {
+          dailyValue = 0;
+        }
       }
       
       data.push({
@@ -212,7 +217,6 @@ export default function Dashboard() {
     const amount = Number(earningAmount);
     
     try {
-      // 1. Add record to earnings subcollection
       await addDoc(collection(db, 'users', user.uid, 'earnings'), {
         amount: amount,
         date: earningDate,
@@ -220,7 +224,6 @@ export default function Dashboard() {
         description: "Venda registrada manualmente"
       });
 
-      // 2. Update user profile totals
       const userRef = doc(db, 'users', user.uid);
       await setDoc(userRef, {
         totalEarnings: increment(amount),
@@ -310,7 +313,6 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Gráfico Estilo Harmônico */}
             <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden p-6 md:p-10 space-y-10">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div className="space-y-1">
