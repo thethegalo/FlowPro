@@ -23,10 +23,12 @@ import {
   Settings,
   Trophy,
   PartyPopper,
-  Search
+  Search,
+  ArrowRight,
+  Info
 } from 'lucide-react';
 import { useUser, useFirestore } from '@/firebase';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp, updateDoc, increment } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
 const LOGO_ICON = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/d5tqr6czngeukjb8r6whrs5s?v=1774318273085";
@@ -35,113 +37,152 @@ const MISSION_CONTENT = {
   'dia1': {
     title: 'DIA 1: Criar Oferta Flow',
     desc: 'O primeiro passo é definir um produto de alta demanda e seu roteiro de ataque irresistível.',
+    guide: [
+      { step: "Abra um bloco de notas ou papel.", icon: <Settings className="h-4 w-4" /> },
+      { step: "Escolha 1 nicho (Ex: Dentistas).", icon: <Target className="h-4 w-4" /> },
+      { step: "Defina o preço: R$ 497,00.", icon: <DollarSign className="h-4 w-4" /> },
+      { step: "Escreva sua promessa central.", icon: <TrendingUp className="h-4 w-4" /> }
+    ],
     stats: [
       { label: 'O Que Vender', value: 'SaaS / Gestão Local', icon: <Target className="h-4 w-4" /> },
       { label: 'Valor Sugerido', value: 'R$ 497,00', icon: <DollarSign className="h-4 w-4" /> },
     ],
     tasks: [
-      'Escolher um nicho local lucrativo (ex: Odontologia, Estética).',
-      'Definir o problema principal que você resolve (ex: falta de leads).',
-      'Escrever uma promessa de 1 frase (ex: "Recupero 30% das suas vendas perdidas").',
-      'Validar se o valor cobrado é compatível com o mercado local.'
+      'Escolher um nicho local lucrativo.',
+      'Definir o problema principal que você resolve.',
+      'Escrever uma promessa de 1 frase.',
+      'Validar se o valor cobrado é compatível.'
     ],
     script: "Olá! Notei que vocês estão com o atendimento um pouco lento hoje. Criei um Flow que recupera até 30% das vendas que vocês perdem por demora. Quer ver como funciona?",
     cta: 'Defina sua oferta agora'
   },
   'dia2': {
     title: 'DIA 2: Ajustar Perfil Flow',
-    desc: 'Transforme seu Instagram em uma vitrine de autoridade que converte visitas em dinheiro.',
+    desc: 'Transforme seu Instagram em uma vitrine de autoridade.',
+    guide: [
+      { step: "Vá ao Instagram > Editar Perfil.", icon: <Layout className="h-4 w-4" /> },
+      { step: "Mude sua foto para algo profissional.", icon: <UserCheck className="h-4 w-4" /> },
+      { step: "Cole a Bio sugerida abaixo.", icon: <MessageSquare className="h-4 w-4" /> },
+      { step: "Crie o primeiro destaque 'Como Funciona'.", icon: <Sparkles className="h-4 w-4" /> }
+    ],
     stats: [
       { label: 'Foco', value: 'Autoridade & Bio', icon: <Layout className="h-4 w-4" /> },
       { label: 'Meta', value: 'Perfil Profissional', icon: <TrendingUp className="h-4 w-4" /> },
     ],
     tasks: [
-      'Ajustar a Bio com foco na transformação do cliente.',
-      'Trocar a foto de perfil por uma com boa iluminação e profissional.',
-      'Criar 3 destaques estratégicos (Quem Sou, Provas, Como Funciona).',
-      'Fixar um post com sua promessa irresistível no topo.'
+      'Ajustar a Bio com foco na transformação.',
+      'Trocar a foto de perfil.',
+      'Criar 3 destaques estratégicos.',
+      'Fixar um post com sua promessa.'
     ],
     script: "Bio Sugerida: Especialista em Automação de Vendas para [Nicho]. Ajudo negócios locais a escalarem sem anúncios. Clique no link abaixo 👇",
     cta: 'Atualize suas redes sociais'
   },
   'dia3': {
     title: 'DIA 3: Encontrar Leads',
-    desc: 'Use nossa ferramenta de Radar para encontrar clientes reais com dinheiro no bolso.',
+    desc: 'Use nossa ferramenta de Radar para encontrar clientes reais.',
+    guide: [
+      { step: "Acesse a aba 'Captar Leads' no menu lateral.", icon: <Search className="h-4 w-4" /> },
+      { step: "Digite seu nicho e estado.", icon: <Target className="h-4 w-4" /> },
+      { step: "Clique em Buscar Leads Reais.", icon: <Zap className="h-4 w-4" /> },
+      { step: "Favorite 25 empresas da lista.", icon: <Star className="h-4 w-4" /> }
+    ],
     stats: [
       { label: 'Meta', value: '25 Leads Reais', icon: <Users className="h-4 w-4" /> },
       { label: 'Ferramenta', value: 'Radar de Leads', icon: <Search className="h-4 w-4" /> },
     ],
     tasks: [
-      'Acessar a ferramenta "Captar Leads" no dashboard.',
-      'Buscar por negócios no seu nicho escolhido e região.',
-      'Salvar 25 perfis/telefones que possuem avaliações no Google.',
-      'Identificar o nome do proprietário em pelo menos 10 desses leads.'
+      'Acessar a ferramenta "Captar Leads".',
+      'Buscar por negócios no seu nicho.',
+      'Salvar 25 perfis/telefones.',
+      'Identificar o nome do proprietário.'
     ],
     script: "O segredo está no volume. Quanto mais leads qualificados, mais chances de fechar.",
     cta: 'Acesse o Radar de Leads'
   },
   'dia4': {
     title: 'DIA 4: Fazer Abordagem',
-    desc: 'É hora de ativar o motor neural e enviar as primeiras mensagens estratégicas.',
+    desc: 'É hora de ativar o motor neural e enviar as primeiras mensagens.',
+    guide: [
+      { step: "Volte para a lista de Leads salvos.", icon: <Users className="h-4 w-4" /> },
+      { step: "Clique em 'Enviar Mensagem IA' no primeiro lead.", icon: <Zap className="h-4 w-4" /> },
+      { step: "O WhatsApp abrirá com a mensagem pronta.", icon: <Send className="h-4 w-4" /> },
+      { step: "Repita o processo com 15 leads hoje.", icon: <ArrowRight className="h-4 w-4" /> }
+    ],
     stats: [
       { label: 'Ação', value: '15 Envios Diretos', icon: <MessageSquare className="h-4 w-4" /> },
       { label: 'Meta', value: '5 Respostas', icon: <PartyPopper className="h-4 w-4" /> },
     ],
     tasks: [
-      'Gerar as 15 mensagens personalizadas usando a IA do FlowPro.',
-      'Personalizar o início de cada abordagem com o nome do dono.',
-      'Enviar as mensagens via WhatsApp ou Direct.',
-      'Marcar cada lead abordado no seu controle de radar.'
+      'Gerar as 15 mensagens personalizadas.',
+      'Personalizar o início de cada abordagem.',
+      'Enviar as mensagens via WhatsApp.',
+      'Marcar cada lead abordado no radar.'
     ],
     script: "Oi [Nome]! Vi que você é dono da [Empresa]. Gostei muito do seu perfil! Posso te mandar uma sugestão rápida de automação que vi que vocês ainda não usam?",
     cta: 'Inicie as abordagens hoje'
   },
   'dia5': {
     title: 'DIA 5: Conversar & Nutrir',
-    desc: 'Gerencie as respostas dos interessados e mostre o valor do seu método.',
+    desc: 'Gerencie as respostas e mostre o valor do seu método.',
+    guide: [
+      { step: "Responda quem já te deu um 'oi'.", icon: <MessageSquare className="h-4 w-4" /> },
+      { step: "Use o IA Mentor para tirar dúvidas.", icon: <Bot className="h-4 w-4" /> },
+      { step: "Agende reuniões para amanhã.", icon: <Clock className="h-4 w-4" /> }
+    ],
     stats: [
       { label: 'Foco', value: 'Relacionamento', icon: <Users className="h-4 w-4" /> },
       { label: 'Meta', value: '2 Reuniões Marcadas', icon: <MessageSquare className="h-4 w-4" /> },
     ],
     tasks: [
       'Responder todos os leads em menos de 15 minutos.',
-      'Usar o IA Mentor para quebrar as primeiras objeções.',
-      'Enviar um vídeo de 1 minuto mostrando os benefícios do sistema.',
-      'Agendar uma chamada de vídeo ou visita presencial para fechar.'
+      'Usar o IA Mentor para quebrar objeções.',
+      'Enviar um vídeo de 1 minuto mostrando benefícios.',
+      'Agendar uma chamada de vídeo.'
     ],
-    script: "Que bom que gostou! Gravei este vídeo rápido mostrando como o sistema Flow organiza seus leads. Teria 5 minutos para falarmos amanhã sobre como adaptar isso na [Empresa]?",
+    script: "Que bom que gostou! Gravei este vídeo rápido mostrando como o sistema Flow organiza seus leads. Teria 5 minutos para falarmos amanhã?",
     cta: 'Nutra seus interessados'
   },
   'dia6': {
     title: 'DIA 6: Fechar Venda Flow',
-    desc: 'Hora de transformar as conversas em dinheiro e concluir sua primeira vitória.',
+    desc: 'Hora de transformar as conversas em dinheiro.',
+    guide: [
+      { step: "Abra a biblioteca de scripts de fechamento.", icon: <BookOpen className="h-4 w-4" /> },
+      { step: "Mande o link de pagamento/PIX.", icon: <DollarSign className="h-4 w-4" /> },
+      { step: "Ofereça a garantia de 7 dias.", icon: <ShieldCheck className="h-4 w-4" /> }
+    ],
     stats: [
       { label: 'Ação', value: 'Fechamento Brutal', icon: <DollarSign className="h-4 w-4" /> },
       { label: 'Meta', value: '1ª Venda Concluída', icon: <CheckCircle2 className="h-4 w-4" /> },
     ],
     tasks: [
-      'Revisar os scripts de fechamento na biblioteca.',
-      'Oferecer a garantia incondicional de 7 dias do FlowPro.',
-      'Enviar o link de pagamento ou PIX para o cliente.',
-      'Confirmar o recebimento e dar as boas-vindas ao novo parceiro.'
+      'Revisar os scripts de fechamento.',
+      'Oferecer a garantia incondicional.',
+      'Enviar o link de pagamento.',
+      'Confirmar o recebimento.'
     ],
     script: "Entendo o receio, por isso ofereço 7 dias de garantia. Se não ver o Flow de clientes aumentar, devolvo seu investimento. Vamos começar?",
     cta: 'Feche seu contrato agora'
   },
   'dia7': {
     title: 'DIA 7: Escalar Flow',
-    desc: 'Sua estrutura está validada. Agora é hora de escalar e automatizar o processo.',
+    desc: 'Sua estrutura está validada. Agora é hora de repetir.',
+    guide: [
+      { step: "Analise quais nichos mais responderam.", icon: <Target className="h-4 w-4" /> },
+      { step: "Aumente a meta diária para 50 leads.", icon: <Zap className="h-4 w-4" /> },
+      { step: "Registre seu primeiro ganho no Dashboard.", icon: <DollarSign className="h-4 w-4" /> }
+    ],
     stats: [
       { label: 'Foco', value: 'Escalabilidade', icon: <Settings className="h-4 w-4" /> },
       { label: 'Meta', value: 'Repetir o Flow', icon: <TrendingUp className="h-4 w-4" /> },
     ],
     tasks: [
-      'Analisar quais nichos trouxeram as melhores respostas.',
-      'Aumentar o radar para 50 leads por dia.',
-      'Contratar uma automação simples de disparo se necessário.',
-      'Celebrar sua evolução e preparar para o faturamento de 5k.'
+      'Analisar nichos vencedores.',
+      'Aumentar o radar para 50 leads.',
+      'Contratar automação de disparo.',
+      'Celebrar evolução.'
     ],
-    script: "Venda concluída é apenas o começo. O lucro real está na escala e na repetição do processo validado.",
+    script: "Venda concluída é apenas o começo. O lucro real está na escala.",
     cta: 'Escala ativada'
   }
 };
@@ -197,6 +238,12 @@ export default function MissionPage() {
         completedAt: serverTimestamp(),
       }, { merge: true });
 
+      // Atualizar XP/Ações totais
+      await updateDoc(doc(db, 'users', user.uid), {
+        totalActions: increment(10),
+        updatedAt: serverTimestamp()
+      });
+
       if (missionId === 'dia7') {
         setShowCelebration(true);
       } else {
@@ -248,8 +295,26 @@ export default function MissionPage() {
       </header>
 
       <main className="flex-1 container max-w-2xl mx-auto p-4 md:p-8 space-y-8">
-        <div className="space-y-4">
-          <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-widest text-[10px] px-4 py-1.5">EXECUÇÃO IMEDIATA</Badge>
+        {/* Modo Guiado (Passo a Passo) */}
+        <div className="space-y-6">
+          <div className="flex items-center gap-2 mb-2">
+            <Info className="h-4 w-4 text-primary" />
+            <h3 className="text-[10px] font-black uppercase tracking-widest text-primary">Modo Guiado de Execução</h3>
+          </div>
+          <div className="grid gap-3">
+            {content.guide?.map((item, i) => (
+              <div key={i} className="flex items-center gap-4 p-4 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.04] transition-colors">
+                <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 border border-primary/20">
+                  {item.icon}
+                </div>
+                <p className="text-xs font-bold text-white/80 uppercase tracking-tight">{item.step}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-4 pt-4">
+          <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-widest text-[10px] px-4 py-1.5">AÇÕES OBRIGATÓRIAS</Badge>
           <h2 className="text-4xl md:text-5xl font-black italic uppercase leading-none tracking-tighter">{content.title}</h2>
           <p className="text-muted-foreground text-lg">{content.desc}</p>
         </div>
@@ -305,10 +370,22 @@ export default function MissionPage() {
             <div className="bg-black/60 p-6 rounded-2xl border border-white/5 text-sm leading-relaxed italic text-white/80 font-medium">
               "{content.script}"
             </div>
-            <Button onClick={handleCopy} className="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-xl shadow-white/5">
-              {copied ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
-              {copied ? 'COPIADO' : 'COPIAR SCRIPT'}
-            </Button>
+            <div className="flex gap-3">
+              <Button onClick={handleCopy} className="flex-1 h-14 rounded-2xl bg-white text-black font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all shadow-xl shadow-white/5">
+                {copied ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+                {copied ? 'COPIADO' : 'COPIAR SCRIPT'}
+              </Button>
+              <Button 
+                onClick={() => {
+                  toggleTask(completedTasks.length);
+                  toast({ title: "Boa!", description: "Ação registrada no seu progresso." });
+                }}
+                variant="outline"
+                className="h-14 px-6 border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest"
+              >
+                JÁ FIZ ISSO
+              </Button>
+            </div>
           </CardContent>
         </Card>
 

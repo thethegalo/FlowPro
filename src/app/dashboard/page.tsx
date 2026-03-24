@@ -1,12 +1,11 @@
-
 "use client";
 
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -25,12 +24,17 @@ import {
   ShieldAlert,
   Clock,
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  Plus,
+  TrendingUp,
+  Zap,
+  AlertCircle
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
-import { collection, query, orderBy, doc } from 'firebase/firestore';
+import { collection, query, orderBy, doc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
+import { useToast } from '@/hooks/use-toast';
 
 const LOGO_ICON = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/d5tqr6czngeukjb8r6whrs5s?v=1774318273085";
 
@@ -38,6 +42,8 @@ export default function Dashboard() {
   const { user, isUserLoading } = useUser();
   const db = useFirestore();
   const router = useRouter();
+  const { toast } = useToast();
+  const [isAddingEarning, setIsAddingEarning] = useState(false);
 
   const userDocRef = useMemoFirebase(() => {
     if (!db || !user) return null;
@@ -66,6 +72,43 @@ export default function Dashboard() {
   }, [progressData]);
 
   const progressPercentage = (completedMissionIds.length / missions.length) * 100;
+
+  const totalEarnings = userData?.totalEarnings || 0;
+  const goal = 5000; // Valor padrão se não vier do quiz
+  const earningsProgress = (totalEarnings / goal) * 100;
+
+  // Sistema de Nível
+  const userLevel = useMemo(() => {
+    const missionsCount = completedMissionIds.length;
+    const actionsCount = userData?.totalActions || 0;
+    
+    if (missionsCount >= 6 || actionsCount >= 50) return { name: 'PRO', color: 'text-purple-400', icon: <Trophy className="h-4 w-4" /> };
+    if (missionsCount >= 4 || actionsCount >= 20) return { name: 'Vendedor', color: 'text-green-400', icon: <Zap className="h-4 w-4" /> };
+    if (missionsCount >= 2 || actionsCount >= 5) return { name: 'Executor', color: 'text-blue-400', icon: <TrendingUp className="h-4 w-4" /> };
+    return { name: 'Iniciante', color: 'text-primary', icon: <Sparkles className="h-4 w-4" /> };
+  }, [completedMissionIds, userData]);
+
+  const dailyActions = userData?.dailyActions || 0;
+  const dailyGoal = 10;
+
+  const handleAddEarning = async () => {
+    if (!db || !user) return;
+    setIsAddingEarning(true);
+    try {
+      await updateDoc(doc(db, 'users', user.uid), {
+        totalEarnings: increment(100),
+        updatedAt: serverTimestamp()
+      });
+      toast({
+        title: totalEarnings === 0 ? "🔥 Boa! Você já saiu do zero" : "Venda Registrada!",
+        description: "+ R$ 100,00 adicionados ao seu placar."
+      });
+    } catch (e) {
+      toast({ variant: "destructive", title: "Erro ao atualizar ganhos" });
+    } finally {
+      setIsAddingEarning(false);
+    }
+  };
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -100,45 +143,6 @@ export default function Dashboard() {
     );
   }
 
-  if (userData?.status === 'pending') {
-    return (
-      <div className="min-h-screen bg-[#050508] flex items-center justify-center p-6 text-center">
-        <Card className="max-w-lg glass-card p-12 space-y-8 rounded-[2.5rem] border-primary/20">
-          <div className="relative h-24 w-24 mx-auto">
-            <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl animate-pulse"></div>
-            <div className="relative h-24 w-24 bg-primary/10 rounded-full flex items-center justify-center border border-primary/30 overflow-hidden p-4">
-              <Image src={LOGO_ICON} alt="Icon" fill className="object-contain p-4" />
-            </div>
-          </div>
-          <div className="space-y-3">
-            <Badge className="bg-primary/20 text-primary border-primary/30 uppercase tracking-[0.2em] text-[8px] px-4 py-1">Solicitação Recebida</Badge>
-            <h2 className="text-3xl font-black italic uppercase text-white tracking-tight">Aguardando Liberação</h2>
-            <p className="text-muted-foreground text-base max-w-sm mx-auto leading-relaxed">
-              O administrador está analisando seu perfil. Em breve sua jornada na <strong>Área do Aluno</strong> será desbloqueada.
-            </p>
-          </div>
-          <div className="p-6 bg-white/5 rounded-2xl border border-white/10 space-y-4">
-            <div className="flex items-center gap-3 text-left">
-              <div className="h-8 w-8 rounded-lg bg-green-500/10 flex items-center justify-center text-green-500 shrink-0">
-                <CheckCircle2 className="h-5 w-5" />
-              </div>
-              <p className="text-xs font-bold text-white/80 uppercase">Pagamento Detectado</p>
-            </div>
-            <div className="flex items-center gap-3 text-left">
-              <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 animate-pulse p-2">
-                 <Image src={LOGO_ICON} alt="Icon" fill className="object-contain p-2" />
-              </div>
-              <p className="text-xs font-bold text-white/80 uppercase">Configurando Ambiente Neural...</p>
-            </div>
-          </div>
-          <Button variant="ghost" onClick={() => window.location.reload()} className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">
-            ATUALIZAR STATUS
-          </Button>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-[#050508]">
@@ -165,46 +169,94 @@ export default function Dashboard() {
           </header>
 
           <div className="flex-1 p-4 md:p-8 space-y-8 max-w-5xl mx-auto w-full">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+            {/* Header de Saudação e Alerta Inteligente */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
               <div className="space-y-2">
                 <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter leading-none">
                   Olá, {userData?.name?.split(' ')[0] || 'Guerreiro'}
                 </h1>
-                <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-widest flex items-center gap-2">
-                  <Target className="h-3 w-3 text-primary" /> Meta: R$ 5.000+
-                </p>
-              </div>
-              <div className="grid grid-cols-2 gap-4 w-full md:w-auto">
-                <div className="glass-card px-4 md:px-6 py-3 rounded-2xl flex flex-col items-center justify-center min-w-[100px]">
-                  <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Seu Nível</span>
-                  <span className="text-sm font-black italic text-primary uppercase">Elite</span>
+                <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full w-fit">
+                  <div className={`${userLevel.color}`}>
+                    {userLevel.icon}
+                  </div>
+                  <span className={`text-[10px] font-black uppercase tracking-widest ${userLevel.color}`}>Nível {userLevel.name}</span>
                 </div>
-                <div className="glass-card px-4 md:px-6 py-3 rounded-2xl flex flex-col items-center justify-center min-w-[100px]">
-                  <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Ganhos</span>
-                  <span className="text-sm font-black italic flex items-center gap-1">
-                    <DollarSign className="h-3 w-3" /> {completedMissionIds.length * 450}
-                  </span>
+              </div>
+
+              {/* Mensagem Motivacional baseada no progresso */}
+              <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 max-w-xs animate-in slide-in-from-right-10 duration-700">
+                <div className="flex gap-3 items-start">
+                  <AlertCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                  <p className="text-[10px] font-bold text-white/80 leading-relaxed uppercase">
+                    {completedMissionIds.length === 0 
+                      ? "Você está a 1 passo da sua primeira venda. Não pare agora." 
+                      : "Agora é a etapa onde a maioria desiste. Continue acelerando!"}
+                  </p>
                 </div>
               </div>
             </div>
 
-            <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden">
-              <CardContent className="p-6 md:p-8 space-y-6">
-                <div className="flex justify-between items-end">
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Progresso</p>
-                    <h3 className="text-xl md:text-2xl font-black italic uppercase tracking-tight">{Math.round(progressPercentage)}% Concluído</h3>
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* Placar de Ganhos */}
+              <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-primary">Seus Ganhos</span>
+                    <Badge variant="outline" className="text-[8px] border-primary/20 text-primary">META: R$ {goal}</Badge>
                   </div>
-                  <Trophy className="h-8 w-8 text-primary opacity-20" />
-                </div>
-                <Progress value={progressPercentage} className="h-3 bg-white/5" />
-                <div className="flex justify-between text-[8px] font-black uppercase opacity-50 tracking-widest">
-                  <span>Início</span>
-                  <span>Escala Profissional</span>
-                </div>
-              </CardContent>
-            </Card>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex items-end justify-between">
+                    <div className="text-5xl font-black italic tracking-tighter">R$ {totalEarnings}</div>
+                    <Button 
+                      size="sm" 
+                      onClick={handleAddEarning}
+                      disabled={isAddingEarning}
+                      className="bg-white text-black hover:bg-primary hover:text-white rounded-xl font-black uppercase text-[10px] h-10 px-4 transition-all"
+                    >
+                      {isAddingEarning ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Plus className="h-3 w-3 mr-1" /> ADICIONAR GANHO</>}
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-[8px] font-black uppercase opacity-50 tracking-widest">
+                      <span>Progresso da Meta</span>
+                      <span>{Math.min(100, Math.round(earningsProgress))}%</span>
+                    </div>
+                    <Progress value={earningsProgress} className="h-2 bg-white/5" />
+                  </div>
+                </CardContent>
+              </Card>
 
+              {/* Contador de Ações Diárias */}
+              <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-accent">Ações de Hoje</span>
+                    <Badge variant="outline" className="text-[8px] border-accent/20 text-accent">EXECUTAR DIARIAMENTE</Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <div className="text-4xl font-black italic tracking-tighter">
+                        {dailyActions}/{dailyGoal}
+                      </div>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase">Mensagens Enviadas</p>
+                    </div>
+                    <div className={`h-16 w-16 rounded-full flex items-center justify-center border-4 ${dailyActions >= dailyGoal ? 'border-green-500 bg-green-500/10' : 'border-white/5 bg-white/5'}`}>
+                      {dailyActions >= dailyGoal ? <Flame className="h-8 w-8 text-green-500 animate-pulse" /> : <Target className="h-8 w-8 text-muted-foreground opacity-20" />}
+                    </div>
+                  </div>
+                  {dailyActions >= dailyGoal && (
+                    <div className="text-center p-2 bg-green-500/10 border border-green-500/20 rounded-xl">
+                      <p className="text-[10px] font-black text-green-500 uppercase tracking-widest">🔥 Meta do dia concluída</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Atalhos Rápidos */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
               <Button asChild variant="outline" className="h-20 md:h-24 glass-card border-white/10 flex flex-col gap-2 rounded-2xl hover:bg-primary/10 hover:border-primary/40 group">
                 <Link href="/leads">
@@ -232,6 +284,7 @@ export default function Dashboard() {
               </Button>
             </div>
 
+            {/* Trilhas de Missão */}
             <div className="space-y-6 pt-4 pb-20">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2 text-white">
@@ -240,7 +293,9 @@ export default function Dashboard() {
                   </div>
                   Trilhas de Missão
                 </h2>
-                <Badge variant="outline" className="text-[8px] font-black uppercase border-white/10 px-2 text-muted-foreground">Ativo</Badge>
+                <div className="flex items-center gap-2 text-[8px] font-black text-muted-foreground uppercase bg-white/5 px-3 py-1 rounded-full border border-white/10">
+                  <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span> Alguém acabou de fechar uma venda
+                </div>
               </div>
               
               <div className="grid gap-3 md:gap-4">
