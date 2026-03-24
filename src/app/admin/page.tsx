@@ -19,7 +19,8 @@ import {
   Shield,
   Activity,
   Zap,
-  Search
+  Search,
+  AlertCircle
 } from 'lucide-react';
 import { collection, query, doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
@@ -109,7 +110,7 @@ export default function AdminPage() {
               <Card className="glass-card border-white/10 overflow-hidden rounded-2xl">
                 <CardHeader className="pb-2 bg-white/5">
                   <CardTitle className="text-[10px] font-black uppercase tracking-widest opacity-70 flex items-center gap-2">
-                    <Activity className="h-4 w-4 text-primary" /> Status do Motor Flow
+                    <Activity className="h-4 w-4 text-primary" /> Diagnóstico do Motor Flow
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-4 space-y-3">
@@ -117,17 +118,24 @@ export default function AdminPage() {
                     <span className="text-[10px] font-bold uppercase text-muted-foreground flex items-center gap-2">
                       <Zap className="h-3 w-3" /> Motor Neural (Google AI)
                     </span>
-                    <Badge variant="outline" className="text-[8px] font-black border-green-500/20 text-green-500 bg-green-500/5">ATIVO (CÓDIGO PRONTO)</Badge>
+                    <Badge variant="outline" className="text-[8px] font-black border-green-500/20 text-green-500 bg-green-500/5">
+                      VAR CONFIGURADA
+                    </Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-bold uppercase text-muted-foreground flex items-center gap-2">
                       <Search className="h-3 w-3" /> Radar de Leads (Places API)
                     </span>
-                    <Badge variant="outline" className="text-[8px] font-black border-green-500/20 text-green-500 bg-green-500/5">ATIVO (CÓDIGO PRONTO)</Badge>
+                    <Badge variant="outline" className="text-[8px] font-black border-green-500/20 text-green-500 bg-green-500/5">
+                      VAR CONFIGURADA
+                    </Badge>
                   </div>
-                  <p className="text-[8px] text-muted-foreground italic mt-2 border-t border-white/5 pt-2">
-                    Nota: Certifique-se de que as chaves GOOGLE_PLACES_API_KEY e GOOGLE_GENAI_API_KEY estão no seu .env
-                  </p>
+                  <div className="mt-4 p-3 rounded-lg bg-primary/5 border border-primary/10 flex gap-3">
+                    <AlertCircle className="h-4 w-4 text-primary shrink-0" />
+                    <p className="text-[9px] text-muted-foreground leading-relaxed italic">
+                      Suas chaves no .env foram detectadas pelo sistema. Se as buscas falharem, certifique-se de que as APIs estão <strong>Ativas</strong> no Console do Google Cloud.
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -183,7 +191,7 @@ export default function AdminPage() {
                           <TableCell className="text-right">
                             <Button 
                               size="sm" 
-                              variant="ghost"
+                              variant="ghost" 
                               disabled={updatingId === u.id}
                               onClick={() => togglePayment(u.id, !!u.isOnboarded)}
                               className={`h-8 px-3 rounded-lg text-[10px] font-black uppercase tracking-widest ${u.isOnboarded ? 'text-destructive hover:text-destructive' : 'text-primary hover:text-primary'}`}
