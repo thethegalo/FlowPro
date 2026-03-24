@@ -31,7 +31,8 @@ import {
   Zap,
   AlertCircle,
   TrendingDown,
-  Calendar
+  Calendar,
+  ShieldX
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, query, orderBy, doc, setDoc, addDoc, increment, serverTimestamp, getDoc, limit, where } from 'firebase/firestore';
@@ -176,14 +177,13 @@ export default function Dashboard() {
       let dailyValue = earningsByDate[dateKey] || 0;
       
       if (isSpecialUser && dailyValue === 0) {
-        // Deterministic organic noise function
         const seed = (i * 1234.5) + (user?.uid?.charCodeAt(0) || 1);
         const rand = Math.abs(Math.sin(seed) * 10000) % 1;
-        const hasSale = (Math.abs(Math.cos(seed * 0.8) * 100) % 1) > 0.55; // ~45% sales frequency
+        const hasSale = (Math.abs(Math.cos(seed * 0.8) * 100) % 1) > 0.55; 
         
         if (hasSale) {
-          const base = 28754 / 22; // Avg over active days
-          const variation = 0.4 + (rand * 1.2); // 40% to 160% variation
+          const base = 28754 / 22; 
+          const variation = 0.4 + (rand * 1.2); 
           dailyValue = Math.floor(base * variation);
         } else {
           dailyValue = 0;
@@ -256,6 +256,73 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen bg-[#050508] flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // TELA DE AGUARDANDO APROVAÇÃO
+  if (userData?.status !== 'approved' && !isSpecialUser) {
+    return (
+      <div className="min-h-screen bg-[#050508] flex items-center justify-center p-6 text-center">
+        <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+          <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[140px]"></div>
+        </div>
+        
+        <Card className="w-full max-w-lg glass-card border-white/10 p-12 space-y-8 rounded-[3rem] relative z-10">
+          <div className="h-24 w-24 bg-white/5 rounded-full flex items-center justify-center mx-auto border border-white/10">
+            <ShieldAlert className="h-12 w-12 text-primary animate-pulse" />
+          </div>
+          
+          <div className="space-y-4">
+            <Badge className="bg-primary/20 text-primary border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5">Acesso Restrito</Badge>
+            <h1 className="text-3xl font-black italic uppercase tracking-tighter">Cadastro em Análise</h1>
+            <p className="text-muted-foreground text-sm font-medium leading-relaxed">
+              Olá, <span className="text-white">{userData?.name || 'Guerreiro'}</span>. <br />
+              Para garantir a qualidade da nossa rede neural, todos os novos acessos passam por uma validação de segurança manual.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white/5 border border-white/5 space-y-4 text-left">
+            <div className="flex items-center gap-3">
+              <div className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]"></div>
+              <p className="text-[10px] font-black uppercase text-white/80">Identidade confirmada</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse shadow-[0_0_10px_#eab308]"></div>
+              <p className="text-[10px] font-black uppercase text-white/80">Validação estratégica em curso</p>
+            </div>
+            <div className="flex items-center gap-3 opacity-30">
+              <div className="h-2 w-2 rounded-full bg-white"></div>
+              <p className="text-[10px] font-black uppercase text-white/80">Liberação de arsenal</p>
+            </div>
+          </div>
+
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest italic">
+            Mesmo que você já tenha efetuado o pagamento, o acesso será liberado em até 24 horas úteis.
+          </p>
+
+          <Button 
+            onClick={() => router.push('/auth')} 
+            variant="outline" 
+            className="w-full h-14 rounded-2xl border-white/10 text-[10px] font-black uppercase tracking-widest"
+          >
+            VOLTAR PARA LOGIN
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // TELA DE BLOQUEIO (BANIDO)
+  if (userData?.status === 'blocked' && !isSpecialUser) {
+    return (
+      <div className="min-h-screen bg-[#050508] flex items-center justify-center p-6 text-center">
+        <Card className="w-full max-w-md glass-card border-destructive/20 p-12 space-y-6 rounded-[3rem]">
+          <ShieldX className="h-16 w-16 text-destructive mx-auto" />
+          <h1 className="text-2xl font-black italic uppercase text-destructive">Acesso Bloqueado</h1>
+          <p className="text-muted-foreground text-sm">Sua conta foi suspensa por violação dos termos de uso do FlowPro.</p>
+          <Button onClick={() => router.push('/')} variant="link" className="text-primary text-[10px] font-black uppercase">FALAR COM SUPORTE</Button>
+        </Card>
       </div>
     );
   }
