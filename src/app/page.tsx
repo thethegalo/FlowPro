@@ -3,12 +3,11 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { 
-  Zap, 
   ArrowRight, 
-  Star,
   Cpu,
   Layers,
-  Search
+  Search,
+  CheckCircle2
 } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -21,6 +20,7 @@ import { Globe } from '@/components/ui/cobe-globe';
 import { MacbookShowcase } from '@/components/MacbookShowcase';
 
 const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
+const LOGO_ICON = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/d5tqr6czngeukjb8r6whrs5s?v=1774318273085";
 
 const pillars = [
   { title: 'IA Neural Flow', icon: <Cpu className="h-6 w-6" />, desc: 'Abordagens personalizadas geradas em tempo real por nossa IA.', color: 'text-purple-400' },
@@ -34,6 +34,17 @@ const salesActivity = [
   { name: 'GXP Vendas', amount: '297,00', time: 'Agora' },
   { name: 'Beatriz R.', amount: '890,00', time: '12 min ago' },
   { name: 'Carlos J.', amount: '147,00', time: '15 min ago' },
+];
+
+const faqs = [
+  { q: "O sistema funciona para quem não tem experiência?", a: "Totalmente. O FlowPro foi desenhado como uma jornada guiada passo a passo. Você só precisa seguir as missões diárias." },
+  { q: "Como a IA ajuda no processo?", a: "Nossa IA analisa o nicho do lead e gera um script de abordagem que não parece spam, aumentando drasticamente suas chances de resposta." },
+  { q: "Em quanto tempo vejo resultados?", a: "Nossa jornada foi feita para você realizar sua primeira venda em até 7 dias, desde que execute todas as tarefas propostas." },
+  { q: "Preciso aparecer nas redes sociais?", a: "Não. Ensinamos estratégias de bastidores onde você pode prospectar e vender sem nunca mostrar o rosto." },
+  { q: "O acesso é vitalício?", a: "Oferecemos planos Vitalícios para a Fase 1 e planos Mensais para quem deseja escala ilimitada com IA avançada." },
+  { q: "Como encontro os clientes?", a: "O Radar de Leads integrado busca empresas reais direto do Google com telefone e endereço, filtrando pelo seu nicho de escolha." },
+  { q: "Tenho suporte se tiver dúvidas?", a: "Sim. Além do Mentor IA 24h, você tem acesso aos scripts e materiais de apoio na biblioteca de recursos." },
+  { q: "O que é o Método Flow?", a: "É um ecossistema de vendas que une prospecção fria, IA neural e automação para criar um fluxo constante de caixa." }
 ];
 
 export default function Home() {
@@ -65,8 +76,10 @@ export default function Home() {
             <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
               <div className="flex-1 text-center lg:text-left">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.3em] mb-10">
-                  <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
-                  Acesso Flow Disponível
+                  <div className="relative h-3 w-3">
+                    <Image src={LOGO_ICON} alt="Icon" fill className="object-contain animate-pulse" />
+                  </div>
+                  Sincronia Flow Ativa
                 </div>
                 
                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.85] mb-12 uppercase">
@@ -133,10 +146,7 @@ export default function Home() {
           <div className="container px-6 mx-auto max-w-4xl">
             <h2 className="text-4xl md:text-5xl font-black italic mb-16 text-center uppercase tracking-tighter text-white">SINCRONIA <span className="text-primary">FLOW</span></h2>
             <Accordion type="single" collapsible className="space-y-6">
-              {[
-                { q: "O sistema funciona para quem não tem experiência?", a: "Totalmente. O FlowPro foi desenhado como uma jornada guiada de 7 dias." },
-                { q: "Como a IA ajuda no processo?", a: "Nossa IA gera scripts de abordagem personalizados para cada lead que você encontra." },
-              ].map((item, i) => (
+              {faqs.map((item, i) => (
                 <AccordionItem key={i} value={`item-${i}`} className="glass-card border-none rounded-[2rem] px-10">
                   <AccordionTrigger className="font-black hover:no-underline py-8 uppercase tracking-[0.2em] text-xs text-left text-white">
                     {item.q}
@@ -159,3 +169,4 @@ export default function Home() {
     </div>
   );
 }
+

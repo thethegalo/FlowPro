@@ -1,18 +1,20 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { 
   ArrowLeft, 
   Copy, 
   Check, 
   CheckCircle2, 
   Target, 
-  Zap,
   Loader2,
   DollarSign,
   Users,
@@ -20,116 +22,126 @@ import {
   MessageSquare,
   TrendingUp,
   Settings,
-  Trophy
+  Trophy,
+  PartyPopper
 } from 'lucide-react';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
+const LOGO_ICON = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/d5tqr6czngeukjb8r6whrs5s?v=1774318273085";
+
 const MISSION_CONTENT = {
   'dia1': {
     title: 'DIA 1: Criar Oferta Flow',
-    desc: 'O primeiro passo é definir um produto de alta demanda e seu roteiro de ataque.',
+    desc: 'O primeiro passo é definir um produto de alta demanda e seu roteiro de ataque irresistível.',
     stats: [
       { label: 'O Que Vender', value: 'SaaS / Gestão Local', icon: <Target className="h-4 w-4" /> },
       { label: 'Valor Sugerido', value: 'R$ 497,00', icon: <DollarSign className="h-4 w-4" /> },
     ],
-    instructions: [
-      'Escolha um nicho local que você conheça bem.',
-      'Defina o benefício principal (ex: recuperar vendas perdidas).',
-      'Escreva sua promessa irresistível.'
+    tasks: [
+      'Escolher um nicho local lucrativo (ex: Odontologia, Estética).',
+      'Definir o problema principal que você resolve (ex: falta de leads).',
+      'Escrever uma promessa de 1 frase (ex: "Recupero 30% das suas vendas perdidas").',
+      'Validar se o valor cobrado é compatível com o mercado local.'
     ],
     script: "Olá! Notei que vocês estão com o atendimento um pouco lento hoje. Criei um fluxo Flow que recupera até 30% das vendas que vocês perdem por demora. Quer ver como funciona?",
     cta: 'Defina sua oferta agora'
   },
   'dia2': {
     title: 'DIA 2: Ajustar Perfil Flow',
-    desc: 'Transforme seu Instagram em uma máquina de conversão.',
+    desc: 'Transforme seu Instagram em uma vitrine de autoridade que converte visitas em dinheiro.',
     stats: [
       { label: 'Foco', value: 'Autoridade & Bio', icon: <Layout className="h-4 w-4" /> },
       { label: 'Meta', value: 'Perfil Profissional', icon: <TrendingUp className="h-4 w-4" /> },
     ],
-    instructions: [
-      'Ajuste sua bio focada em resolver o problema do cliente.',
-      'Destaque seus melhores serviços nos fixados.',
-      'Use uma foto de perfil que transmita confiança.'
+    tasks: [
+      'Ajustar a Bio com foco na transformação do cliente.',
+      'Trocar a foto de perfil por uma com boa iluminação e profissional.',
+      'Criar 3 destaques estratégicos (Quem Sou, Provas, Como Funciona).',
+      'Fixar um post com sua promessa irresistível no topo.'
     ],
-    script: "Link na Bio: Especialista em Recuperação de Vendas para [Nicho]. Clique para automatizar seu negócio.",
+    script: "Bio Sugerida: Especialista em Automação de Vendas para [Nicho]. Ajudo negócios locais a escalarem sem anúncios. Clique no link abaixo 👇",
     cta: 'Atualize suas redes sociais'
   },
   'dia3': {
     title: 'DIA 3: Encontrar Leads',
-    desc: 'Use nossa ferramenta de busca para achar clientes prontos para pagar.',
+    desc: 'Use nossa ferramenta de Radar para encontrar clientes reais com dinheiro no bolso.',
     stats: [
-      { label: 'Meta', value: '25 Leads Qualificados', icon: <Users className="h-4 w-4" /> },
-      { label: 'Ferramenta', value: 'Captador Flow', icon: <Zap className="h-4 w-4" /> },
+      { label: 'Meta', value: '25 Leads Reais', icon: <Users className="h-4 w-4" /> },
+      { label: 'Ferramenta', value: 'Radar de Leads', icon: <Search className="h-4 w-4" /> },
     ],
-    instructions: [
-      'Acesse a ferramenta "Captar Leads" no dashboard.',
-      'Busque por negócios no seu nicho escolhido.',
-      'Mapeie 25 perfis que postam conteúdo regularmente.'
+    tasks: [
+      'Acessar a ferramenta "Captar Leads" no dashboard.',
+      'Buscar por negócios no seu nicho escolhido e região.',
+      'Salvar 25 perfis/telefones que possuem avaliações no Google.',
+      'Identificar o nome do proprietário em pelo menos 10 desses leads.'
     ],
-    script: "Use a IA Flow para gerar as mensagens de abordagem.",
-    cta: 'Acesse o Captador de Leads'
+    script: "O segredo está no volume. Quanto mais leads qualificados, mais chances de fechar.",
+    cta: 'Acesse o Radar de Leads'
   },
   'dia4': {
     title: 'DIA 4: Fazer Abordagem',
-    desc: 'É hora de enviar as primeiras mensagens e gerar interesse real.',
+    desc: 'É hora de ativar o motor neural e enviar as primeiras mensagens estratégicas.',
     stats: [
       { label: 'Ação', value: '15 Envios Diretos', icon: <MessageSquare className="h-4 w-4" /> },
-      { label: 'Meta', value: '5 Respostas', icon: <Zap className="h-4 w-4" /> },
+      { label: 'Meta', value: '5 Respostas', icon: <PartyPopper className="h-4 w-4" /> },
     ],
-    instructions: [
-      'Envie as mensagens geradas pela IA para os leads mapeados.',
-      'Personalize o início de cada mensagem com o nome do dono.',
-      'Não tente vender ainda, foque em marcar uma conversa.'
+    tasks: [
+      'Gerar as 15 mensagens personalizadas usando a IA do FlowPro.',
+      'Personalizar o início de cada abordagem com o nome do dono.',
+      'Enviar as mensagens via WhatsApp ou Direct.',
+      'Marcar cada lead abordado no seu controle de radar.'
     ],
     script: "Oi [Nome]! Vi que você é dono da [Empresa]. Gostei muito do seu perfil! Posso te mandar uma sugestão rápida de automação que vi que vocês ainda não usam?",
-    cta: 'Envie para 15 leads hoje'
+    cta: 'Inicie as abordagens hoje'
   },
   'dia5': {
     title: 'DIA 5: Conversar & Nutrir',
-    desc: 'Tire as dúvidas dos interessados e mostre seu protótipo.',
+    desc: 'Gerencie as respostas dos interessados e mostre o valor do seu método.',
     stats: [
       { label: 'Foco', value: 'Relacionamento', icon: <Users className="h-4 w-4" /> },
-      { label: 'Meta', value: '2 Reuniões/Chamadas', icon: <MessageSquare className="h-4 w-4" /> },
+      { label: 'Meta', value: '2 Reuniões Marcadas', icon: <MessageSquare className="h-4 w-4" /> },
     ],
-    instructions: [
-      'Responda rapidamente a todos que demonstraram interesse.',
-      'Use o Mentor IA para ajudar com dúvidas técnicas.',
-      'Envie um vídeo curto mostrando como sua solução funciona.'
+    tasks: [
+      'Responder todos os leads em menos de 15 minutos.',
+      'Usar o IA Mentor para quebrar as primeiras objeções.',
+      'Enviar um vídeo de 1 minuto mostrando os benefícios do sistema.',
+      'Agendar uma chamada de vídeo ou visita presencial para fechar.'
     ],
-    script: "Que bom que gostou! Gravei este vídeo de 1 min mostrando como o sistema Flow organiza seus leads automaticamente. O que achou?",
-    cta: 'Responda todos os interessados'
+    script: "Que bom que gostou! Gravei este vídeo rápido mostrando como o sistema Flow organiza seus leads. Teria 5 minutos para falarmos amanhã sobre como adaptar isso na [Empresa]?",
+    cta: 'Nutra seus interessados'
   },
   'dia6': {
     title: 'DIA 6: Fechar Venda Flow',
-    desc: 'Hora de transformar as conversas em dinheiro no bolso.',
+    desc: 'Hora de transformar as conversas em dinheiro e concluir sua primeira vitória.',
     stats: [
       { label: 'Ação', value: 'Fechamento Brutal', icon: <DollarSign className="h-4 w-4" /> },
       { label: 'Meta', value: '1ª Venda Concluída', icon: <CheckCircle2 className="h-4 w-4" /> },
     ],
-    instructions: [
-      'Quebre as objeções finais com os scripts da biblioteca.',
-      'Ofereça uma garantia de 7 dias para reduzir o risco.',
-      'Envie o link de pagamento ou dados para PIX.'
+    tasks: [
+      'Revisar os scripts de fechamento na biblioteca.',
+      'Oferecer a garantia incondicional de 7 dias do FlowPro.',
+      'Enviar o link de pagamento ou PIX para o cliente.',
+      'Confirmar o recebimento e dar as boas-vindas ao novo parceiro.'
     ],
     script: "Entendo o receio, por isso ofereço 7 dias de garantia. Se não ver o fluxo de clientes aumentar, devolvo seu investimento. Vamos começar?",
-    cta: 'Feche seu primeiro contrato'
+    cta: 'Feche seu contrato agora'
   },
   'dia7': {
     title: 'DIA 7: Escalar Fluxo',
-    desc: 'Prepare-se para repetir o processo e escalar seus ganhos.',
+    desc: 'Sua estrutura está validada. Agora é hora de escalar e automatizar o processo.',
     stats: [
       { label: 'Foco', value: 'Escalabilidade', icon: <Settings className="h-4 w-4" /> },
-      { label: 'Meta', value: 'R$ 5.000/mês', icon: <TrendingUp className="h-4 w-4" /> },
+      { label: 'Meta', value: 'Repetir o Fluxo', icon: <TrendingUp className="h-4 w-4" /> },
     ],
-    instructions: [
-      'Analise quais leads responderam melhor.',
-      'Configure automações simples para sua prospecção.',
-      'Aumente o volume de abordagens diárias.'
+    tasks: [
+      'Analisar quais nichos trouxeram as melhores respostas.',
+      'Aumentar o radar para 50 leads por dia.',
+      'Contratar uma automação simples de disparo se necessário.',
+      'Celebrar sua evolução e preparar para o faturamento de 5k.'
     ],
-    script: "O processo Flow é cíclico. Quanto mais você repete, mais você ganha.",
+    script: "Venda concluída é apenas o começo. O lucro real está na escala e na repetição do processo validado.",
     cta: 'Escala ativada'
   }
 };
@@ -147,17 +159,34 @@ export default function MissionPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [completedTasks, setCompletedTasks] = useState<number[]>([]);
 
   const handleCopy = () => {
     if (!content) return;
     navigator.clipboard.writeText(content.script);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-    toast({ title: "Script Copiado!", description: "Agora personalize e envie." });
+    toast({ title: "Script Copiado!", description: "Personalize e envie para o lead." });
+  };
+
+  const toggleTask = (index: number) => {
+    setCompletedTasks(prev => 
+      prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
+    );
   };
 
   const handleComplete = async () => {
     if (!user || !db || !content) return;
+    
+    if (completedTasks.length < content.tasks.length) {
+      toast({ 
+        variant: "destructive", 
+        title: "Ação Requerida", 
+        description: "Complete todos os passos da checklist antes de concluir a missão." 
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const progressRef = doc(db, 'users', user.uid, 'missionProgress', missionId);
@@ -166,14 +195,12 @@ export default function MissionPage() {
         missionId,
         isCompleted: true,
         completedAt: serverTimestamp(),
-        lastActivityAt: serverTimestamp()
       }, { merge: true });
 
       if (missionId === 'dia7') {
         setShowCelebration(true);
-        toast({ title: "Jornada Concluída!", description: "Fase 1 Finalizada com sucesso!" });
       } else {
-        toast({ title: "Missão Concluída!", description: "Parabéns Guerreiro Flow! Próximo nível liberado." });
+        toast({ title: "Missão Concluída!", description: "Boa! Você avançou para o próximo nível." });
         router.push('/dashboard');
       }
     } catch (error: any) {
@@ -187,7 +214,7 @@ export default function MissionPage() {
   if (showCelebration) {
     return (
       <div className="min-h-screen bg-[#050508] flex items-center justify-center p-6">
-        <Card className="max-w-xl w-full bg-primary/10 border-primary/30 rounded-[2rem] p-12 text-center space-y-8 animate-in zoom-in duration-500">
+        <Card className="max-w-xl w-full bg-primary/10 border-primary/30 rounded-[2.5rem] p-12 text-center space-y-8 animate-in zoom-in duration-500">
            <div className="h-24 w-24 bg-primary rounded-full flex items-center justify-center mx-auto shadow-[0_0_50px_rgba(139,92,246,0.5)]">
              <Trophy className="h-12 w-12 text-white" />
            </div>
@@ -212,7 +239,12 @@ export default function MissionPage() {
         <Link href="/dashboard" className="mr-4 text-muted-foreground hover:text-primary transition-colors">
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <h1 className="text-xl font-black italic uppercase tracking-tighter">{content.title}</h1>
+        <div className="flex items-center gap-3">
+          <div className="relative h-6 w-6">
+            <Image src={LOGO_ICON} alt="Icon" fill className="object-contain" />
+          </div>
+          <h1 className="text-xl font-black italic uppercase tracking-tighter">{content.title}</h1>
+        </div>
       </header>
 
       <main className="flex-1 container max-w-2xl mx-auto p-4 md:p-8 space-y-8">
@@ -234,10 +266,38 @@ export default function MissionPage() {
           ))}
         </div>
 
+        <div className="space-y-6">
+          <h3 className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-2">
+            <CheckCircle2 className="h-5 w-5 text-primary" /> Checklist da Missão
+          </h3>
+          <div className="grid gap-3">
+            {content.tasks.map((task, i) => (
+              <div 
+                key={i} 
+                onClick={() => toggleTask(i)}
+                className={`flex items-start gap-4 p-5 rounded-2xl border transition-all cursor-pointer ${
+                  completedTasks.includes(i) 
+                  ? 'bg-primary/5 border-primary/30 opacity-70' 
+                  : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.04]'
+                }`}
+              >
+                <Checkbox 
+                  checked={completedTasks.includes(i)} 
+                  onCheckedChange={() => toggleTask(i)}
+                  className="mt-1"
+                />
+                <span className={`text-sm font-medium ${completedTasks.includes(i) ? 'line-through text-muted-foreground' : 'text-white/80'}`}>
+                  {task}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <Card className="glass-card border-white/10 overflow-hidden rounded-[2rem]">
           <CardHeader className="bg-white/5 border-b border-white/5 p-6">
             <CardTitle className="text-sm font-black uppercase tracking-widest italic flex items-center gap-2">
-              <Zap className="h-4 w-4 text-primary" /> Script de Ataque
+               <Image src={LOGO_ICON} alt="Icon" width={16} height={16} /> Script de Ataque
             </CardTitle>
             <CardDescription className="uppercase text-[9px] font-bold tracking-widest opacity-70">Copie e adapte para seu lead</CardDescription>
           </CardHeader>
@@ -252,20 +312,6 @@ export default function MissionPage() {
           </CardContent>
         </Card>
 
-        <div className="space-y-6">
-          <h3 className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-2">
-            <Layout className="h-5 w-5 text-primary" /> Plano de Ação
-          </h3>
-          <ul className="space-y-4">
-            {content.instructions.map((inst, i) => (
-              <li key={i} className="flex gap-5 p-5 rounded-2xl bg-white/[0.02] border border-white/5 group hover:bg-white/[0.04] transition-colors">
-                <span className="text-primary font-black text-2xl italic leading-none opacity-50 group-hover:opacity-100 transition-opacity">{i + 1}</span>
-                <span className="text-sm text-muted-foreground leading-relaxed font-medium group-hover:text-white/80 transition-colors">{inst}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
         <div className="pt-8 pb-20">
           <Button 
             onClick={handleComplete} 
@@ -274,7 +320,7 @@ export default function MissionPage() {
           >
             {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : (
               <span className="flex items-center gap-3">
-                CONCLUIR DIA <CheckCircle2 className="h-6 w-6" />
+                CONCLUIR MISSÃO <CheckCircle2 className="h-6 w-6" />
               </span>
             )}
           </Button>
@@ -286,3 +332,4 @@ export default function MissionPage() {
     </div>
   );
 }
+

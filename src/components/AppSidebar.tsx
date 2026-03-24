@@ -4,7 +4,6 @@
 import * as React from "react";
 import { 
   LayoutDashboard, 
-  Zap, 
   Search, 
   FileText, 
   MessageSquare, 
@@ -12,7 +11,6 @@ import {
   Shield, 
   LogOut,
   ChevronRight,
-  Flame
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -33,9 +31,9 @@ import {
   SidebarGroupLabel,
   SidebarGroupContent,
 } from "@/components/ui/sidebar";
-import { Badge } from "@/components/ui/badge";
 
 const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
+const LOGO_ICON = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/d5tqr6czngeukjb8r6whrs5s?v=1774318273085";
 const ADMIN_EMAIL = "thethegalo@gmail.com";
 
 export function AppSidebar() {
@@ -50,7 +48,7 @@ export function AppSidebar() {
 
   const menuItems = [
     { title: "Dashboard", icon: LayoutDashboard, url: "/dashboard" },
-    { title: "Jornada 7 Dias", icon: Zap, url: "/dashboard" }, // Geralmente aponta pro dashboard onde estão as missões
+    { title: "Jornada 7 Dias", icon: () => <div className="relative h-5 w-5"><Image src={LOGO_ICON} alt="Icon" fill className="object-contain" /></div>, url: "/dashboard" },
     { title: "Captar Leads", icon: Search, url: "/leads" },
     { title: "Scripts", icon: FileText, url: "/resources" },
     { title: "IA Mentor", icon: MessageSquare, url: "/mentor" },
@@ -87,7 +85,7 @@ export function AppSidebar() {
                     className={`h-12 rounded-xl transition-all ${pathname === item.url ? 'bg-primary/10 text-primary border border-primary/20' : 'hover:bg-white/5'}`}
                   >
                     <Link href={item.url} className="flex items-center gap-3">
-                      <item.icon className={`h-5 w-5 ${pathname === item.url ? 'text-primary' : 'text-muted-foreground'}`} />
+                      {typeof item.icon === 'function' ? <item.icon /> : <item.icon className={`h-5 w-5 ${pathname === item.url ? 'text-primary' : 'text-muted-foreground'}`} />}
                       <span className="text-xs font-bold uppercase tracking-widest">{item.title}</span>
                       {pathname === item.url && <ChevronRight className="ml-auto h-4 w-4 text-primary" />}
                     </Link>
@@ -147,3 +145,4 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
+

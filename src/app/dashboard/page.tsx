@@ -4,6 +4,7 @@
 import { useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -13,7 +14,6 @@ import {
   Flame, 
   MessageSquare, 
   BookOpen, 
-  Zap,
   Lock,
   Loader2,
   DollarSign,
@@ -22,16 +22,16 @@ import {
   UserCheck,
   Trophy,
   ArrowUpRight,
-  Star,
   ShieldAlert,
   Clock,
   ShieldCheck,
-  Sparkles
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, query, orderBy, doc } from 'firebase/firestore';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
+
+const LOGO_ICON = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/d5tqr6czngeukjb8r6whrs5s?v=1774318273085";
 
 export default function Dashboard() {
   const { user, isUserLoading } = useUser();
@@ -46,18 +46,18 @@ export default function Dashboard() {
 
   const progressQuery = useMemoFirebase(() => {
     if (!db || !user) return null;
-    return query(collection(db, 'users', user.uid, 'missionProgress'), orderBy('lastActivityAt', 'desc'));
+    return query(collection(db, 'users', user.uid, 'missionProgress'), orderBy('completedAt', 'desc'));
   }, [db, user]);
   const { data: progressData } = useCollection(progressQuery);
 
   const missions = [
-    { id: 'dia1', title: 'DIA 1: Criar Oferta', desc: 'Defina o que vender e seu primeiro script.', order: 1 },
-    { id: 'dia2', title: 'DIA 2: Ajustar Perfil', desc: 'Prepare suas redes para converter visitas em vendas.', order: 2 },
-    { id: 'dia3', title: 'DIA 3: Encontrar Leads', desc: 'Identifique os clientes ideais com nossa ferramenta.', order: 3 },
-    { id: 'dia4', title: 'DIA 4: Fazer Abordagem', desc: 'Inicie conversas estratégicas e gere interesse.', order: 4 },
-    { id: 'dia5', title: 'DIA 5: Conversar & Nutrir', desc: 'Tire dúvidas e mostre o valor da sua solução.', order: 5 },
-    { id: 'dia6', title: 'DIA 6: Fechar Venda', desc: 'Quebre as objeções finais e receba o pagamento.', order: 6 },
-    { id: 'dia7', title: 'DIA 7: Escalar Fluxo', desc: 'Automatize processos e multiplique seus ganhos.', order: 7 },
+    { id: 'dia1', title: 'DIA 1: Criar Oferta', desc: 'Defina o que vender e seu primeiro script de ataque.', order: 1 },
+    { id: 'dia2', title: 'DIA 2: Ajustar Perfil', desc: 'Prepare suas redes para converter visitas em vendas reais.', order: 2 },
+    { id: 'dia3', title: 'DIA 3: Encontrar Leads', desc: 'Identifique os clientes ideais com nosso Radar de Leads.', order: 3 },
+    { id: 'dia4', title: 'DIA 4: Fazer Abordagem', desc: 'Inicie conversas estratégicas e gere interesse com IA.', order: 4 },
+    { id: 'dia5', title: 'DIA 5: Conversar & Nutrir', desc: 'Tire dúvidas e mostre o valor da sua solução Flow.', order: 5 },
+    { id: 'dia6', title: 'DIA 6: Fechar Venda', desc: 'Quebre as objeções finais e receba o primeiro pagamento.', order: 6 },
+    { id: 'dia7', title: 'DIA 7: Escalar Fluxo', desc: 'Automatize processos e multiplique seus ganhos diários.', order: 7 },
   ];
 
   const completedMissionIds = useMemo(() => {
@@ -107,8 +107,8 @@ export default function Dashboard() {
         <Card className="max-w-lg glass-card p-12 space-y-8 rounded-[2.5rem] border-primary/20">
           <div className="relative h-24 w-24 mx-auto">
             <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl animate-pulse"></div>
-            <div className="relative h-24 w-24 bg-primary/10 rounded-full flex items-center justify-center border border-primary/30">
-              <Clock className="h-12 w-12 text-primary" />
+            <div className="relative h-24 w-24 bg-primary/10 rounded-full flex items-center justify-center border border-primary/30 overflow-hidden p-4">
+              <Image src={LOGO_ICON} alt="Icon" fill className="object-contain p-4" />
             </div>
           </div>
           <div className="space-y-3">
@@ -126,8 +126,8 @@ export default function Dashboard() {
               <p className="text-xs font-bold text-white/80 uppercase">Pagamento Detectado</p>
             </div>
             <div className="flex items-center gap-3 text-left">
-              <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 animate-pulse">
-                <Zap className="h-5 w-5" />
+              <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 animate-pulse p-2">
+                 <Image src={LOGO_ICON} alt="Icon" fill className="object-contain p-2" />
               </div>
               <p className="text-xs font-bold text-white/80 uppercase">Configurando Ambiente Neural...</p>
             </div>
@@ -152,7 +152,10 @@ export default function Dashboard() {
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
               <div className="h-4 w-px bg-white/10 hidden md:block" />
               <h2 className="text-sm font-black italic uppercase tracking-widest hidden md:block flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-primary" /> Área do Aluno
+                <div className="relative h-4 w-4">
+                  <Image src={LOGO_ICON} alt="Icon" fill className="object-contain" />
+                </div>
+                Área do Aluno
               </h2>
             </div>
             
@@ -237,7 +240,10 @@ export default function Dashboard() {
             <div className="space-y-6 pt-4 pb-20">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2 text-white">
-                  <Zap className="h-6 w-6 text-primary" /> Trilhas de Missão
+                  <div className="relative h-6 w-6">
+                    <Image src={LOGO_ICON} alt="Icon" fill className="object-contain" />
+                  </div>
+                  Trilhas de Missão
                 </h2>
                 <Badge variant="outline" className="text-[8px] font-black uppercase border-white/10 px-3 text-muted-foreground">Status: Ativo</Badge>
               </div>
@@ -293,3 +299,4 @@ export default function Dashboard() {
     </SidebarProvider>
   );
 }
+
