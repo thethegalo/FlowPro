@@ -51,6 +51,8 @@ export default function AdminPage() {
       const subRef = doc(db, 'users', userId, 'subscriptions', 'active');
       if (currentStatus) {
         await deleteDoc(subRef);
+        // Também reseta o status no documento do usuário
+        await setDoc(doc(db, 'users', userId), { isOnboarded: false }, { merge: true });
         toast({ title: "Acesso Removido", description: "Usuário agora está como pendente." });
       } else {
         await setDoc(subRef, {
@@ -59,6 +61,7 @@ export default function AdminPage() {
           status: 'active',
           startDate: serverTimestamp()
         });
+        await setDoc(doc(db, 'users', userId), { isOnboarded: true }, { merge: true });
         toast({ title: "Acesso Liberado", description: "Usuário agora possui acesso total." });
       }
     } catch (error: any) {
