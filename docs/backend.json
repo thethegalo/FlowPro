@@ -13,10 +13,18 @@
         "createdAt": { "type": "string", "format": "date-time" },
         "status": { "type": "string", "enum": ["pending", "approved", "blocked"] },
         "isOnboarded": { "type": "boolean" },
+        "plan": { "type": "string", "enum": ["nenhum", "mensal", "vitalicio"], "default": "nenhum" },
         "totalEarnings": { "type": "number", "default": 0 },
         "dailyActions": { "type": "number", "default": 0 },
         "totalActions": { "type": "number", "default": 0 },
-        "lastActionAt": { "type": "string", "format": "date-time" }
+        "lastActionAt": { "type": "string", "format": "date-time" },
+        "dailyUsage": {
+          "type": "object",
+          "properties": {
+            "leadsUsed": { "type": "number", "default": 0 },
+            "messagesUsed": { "type": "number", "default": 0 }
+          }
+        }
       },
       "required": ["id", "email", "name", "createdAt", "status"]
     },

@@ -40,12 +40,17 @@ export default function AuthPage() {
         const tempQuiz = sessionStorage.getItem('temp_quiz');
         const tempPlan = sessionStorage.getItem('temp_plan');
 
-        // Criar perfil do usuário como PENDENTE
+        // Criar perfil do usuário como PENDENTE e plano inicial
         await setDoc(doc(db, 'users', user.uid), {
           id: user.uid,
           email: user.email,
           name: name || email.split('@')[0],
           status: 'pending',
+          plan: 'nenhum',
+          dailyUsage: {
+            leadsUsed: 0,
+            messagesUsed: 0
+          },
           createdAt: serverTimestamp(),
           isOnboarded: !!tempQuiz
         });

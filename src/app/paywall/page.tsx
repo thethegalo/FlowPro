@@ -24,7 +24,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { useUser, useFirestore } from '@/firebase';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import {
@@ -72,6 +72,7 @@ export default function PaywallPage() {
     if (!user || !db) return;
     setIsLoading(true);
     try {
+      // Registrar subcoleção de assinatura
       const subRef = doc(db, 'users', user.uid, 'subscriptions', 'active');
       await setDoc(subRef, {
         userId: user.uid,
@@ -79,6 +80,13 @@ export default function PaywallPage() {
         status: 'active',
         startDate: serverTimestamp()
       }, { merge: true });
+
+      // Atualizar plano principal no documento do usuário
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
+        plan: plan === 'monthly' ? 'mensal' : 'vitalicio',
+        updatedAt: serverTimestamp()
+      });
 
       router.push('/dashboard');
     } catch (error) {
