@@ -15,18 +15,46 @@ import {
   MousePointerClick,
   Smartphone,
   CheckCircle2,
-  Clock
+  Clock,
+  Star,
+  Rocket,
+  Layers
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 
 const PLATFORMS = [
   {
+    name: "Perfect Pay",
+    desc: "Ideal para iniciantes começarem a vender produtos digitais rapidamente.",
+    when: "Se você está começando e quer algo simples e direto.",
+    tags: ["Mais indicado", "Foco em Iniciante"],
+    icon: <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />,
+    url: "https://perfectpay.com.br",
+    highlight: true
+  },
+  {
+    name: "Cakto",
+    desc: "Ótimo para criar páginas de pagamento rápidas e testar ofertas.",
+    when: "Para testar produtos e validar ideias.",
+    tags: ["Páginas Rápidas", "Testes"],
+    icon: <Zap className="h-5 w-5 text-purple-400" />,
+    url: "https://cakto.com.br"
+  },
+  {
+    name: "Paradise",
+    desc: "Plataforma para quem quer escalar vendas com mais estrutura.",
+    when: "Para quem já está vendendo e quer crescer.",
+    tags: ["Escala", "Estrutura"],
+    icon: <Layers className="h-5 w-5 text-blue-400" />,
+    url: "https://paradisepay.com.br"
+  },
+  {
     name: "Kiwify",
     desc: "A plataforma com o checkout mais rápido e intuitivo do mercado brasileiro.",
     when: "Ideal para infoprodutos, mentorias e serviços que precisam de aprovação imediata.",
-    tags: ["Pix Rápido", "Checkout 1-Clique"],
-    icon: <Zap className="h-5 w-5 text-green-400" />,
+    tags: ["Pix Rápido", "Simplicidade"],
+    icon: <Rocket className="h-5 w-5 text-green-400" />,
     url: "https://kiwify.com.br"
   },
   {
@@ -38,36 +66,12 @@ const PLATFORMS = [
     url: "https://hotmart.com"
   },
   {
-    name: "Eduzz",
-    desc: "Plataforma focada no crescimento do produtor com ótimas taxas de comissão.",
-    when: "Excelente para vender serviços e integrar com a área de membros Nutror.",
-    tags: ["Foco em Produtor", "Nutror"],
-    icon: <TrendingUp className="h-5 w-5 text-blue-400" />,
-    url: "https://eduzz.com"
-  },
-  {
     name: "Stripe",
     desc: "A infraestrutura financeira mundial. Aceite pagamentos de qualquer lugar do mundo.",
     when: "Para quem está criando um SaaS ou quer total controle sobre a API de pagamentos.",
-    tags: ["Internacional", "Developer Friendly"],
+    tags: ["Internacional", "API"],
     icon: <CreditCard className="h-5 w-5 text-indigo-400" />,
     url: "https://stripe.com"
-  },
-  {
-    name: "Mercado Pago",
-    desc: "A solução mais conhecida para links de pagamento direto e vendas via QR Code.",
-    when: "Para negócios locais e freelancers que precisam de um link rápido via WhatsApp.",
-    tags: ["Link Direto", "Maquininha"],
-    icon: <Smartphone className="h-5 w-5 text-sky-400" />,
-    url: "https://mercadopago.com.br"
-  },
-  {
-    name: "InfinitePay",
-    desc: "Plataforma com as melhores taxas do mercado para recebimento via Pix e cartão.",
-    when: "Quando sua prioridade é o lucro líquido e taxas de parcelamento baixas.",
-    tags: ["Melhores Taxas", "Pix"],
-    icon: <DollarSign className="h-5 w-5 text-emerald-400" />,
-    url: "https://infinitepay.io"
   }
 ];
 
@@ -101,15 +105,15 @@ export default function SalesPlatformsPage() {
 
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {PLATFORMS.map((platform, i) => (
-                  <Card key={i} className="glass-card border-white/5 hover:border-primary/30 transition-all duration-500 rounded-[2rem] group flex flex-col h-full overflow-hidden">
+                  <Card key={i} className={`glass-card border-white/5 transition-all duration-500 rounded-[2rem] group flex flex-col h-full overflow-hidden ${platform.highlight ? 'border-primary/50 bg-primary/5 shadow-[0_0_30px_rgba(139,92,246,0.1)]' : 'hover:border-primary/30'}`}>
                     <CardContent className="p-8 space-y-6 flex-1 flex flex-col relative z-10">
                       <div className="flex justify-between items-start">
-                        <div className="p-4 bg-white/5 rounded-2xl group-hover:scale-110 transition-transform border border-white/5 shadow-xl group-hover:shadow-primary/10">
+                        <div className={`p-4 rounded-2xl group-hover:scale-110 transition-transform border border-white/5 shadow-xl ${platform.highlight ? 'bg-primary/20 border-primary/30' : 'bg-white/5'}`}>
                           {platform.icon}
                         </div>
                         <div className="flex flex-col gap-1 items-end">
                           {platform.tags.map(tag => (
-                            <Badge key={tag} variant="outline" className="text-[7px] font-black uppercase border-white/10 bg-white/5 whitespace-nowrap">
+                            <Badge key={tag} variant={tag === "Mais indicado" ? "default" : "outline"} className={`text-[7px] font-black uppercase border-white/10 whitespace-nowrap ${tag === "Mais indicado" ? 'bg-primary text-white border-primary animate-pulse' : 'bg-white/5'}`}>
                               {tag}
                             </Badge>
                           ))}
@@ -118,11 +122,14 @@ export default function SalesPlatformsPage() {
                       
                       <div className="space-y-4 flex-1">
                         <div className="space-y-2">
-                          <h3 className="text-xl font-black italic uppercase tracking-tight text-white">{platform.name}</h3>
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-xl font-black italic uppercase tracking-tight text-white">{platform.name}</h3>
+                            {platform.highlight && <Badge className="bg-yellow-500 text-black text-[7px] font-black uppercase px-2 py-0.5">Iniciante</Badge>}
+                          </div>
                           <p className="text-xs text-muted-foreground font-medium leading-relaxed">{platform.desc}</p>
                         </div>
                         
-                        <div className="bg-primary/5 border border-primary/10 rounded-2xl p-5 group-hover:bg-primary/10 transition-colors">
+                        <div className={`rounded-2xl p-5 group-hover:bg-primary/10 transition-colors ${platform.highlight ? 'bg-primary/10 border border-primary/20' : 'bg-primary/5 border border-primary/10'}`}>
                           <p className="text-[8px] font-black uppercase text-primary tracking-widest mb-2 flex items-center gap-1">
                             <MousePointerClick className="h-2.5 w-2.5 fill-primary" /> Quando usar:
                           </p>
@@ -130,7 +137,7 @@ export default function SalesPlatformsPage() {
                         </div>
                       </div>
 
-                      <Button asChild className="w-full bg-white text-black hover:bg-primary hover:text-white rounded-xl h-12 font-black uppercase tracking-widest text-[10px] mt-6 shadow-xl active:scale-[0.98] transition-all">
+                      <Button asChild className={`w-full rounded-xl h-12 font-black uppercase tracking-widest text-[10px] mt-6 shadow-xl active:scale-[0.98] transition-all ${platform.highlight ? 'bg-primary text-white hover:bg-primary/90' : 'bg-white text-black hover:bg-primary hover:text-white'}`}>
                         <a href={platform.url} target="_blank" rel="noopener noreferrer">
                           ACESSAR PLATAFORMA <ExternalLink className="ml-2 h-3 w-3" />
                         </a>
@@ -148,8 +155,8 @@ export default function SalesPlatformsPage() {
                   <div className="flex items-center gap-2 text-accent text-[10px] font-black uppercase tracking-widest mb-2">
                     <CheckCircle2 className="h-4 w-4" /> Dica de Especialista
                   </div>
-                  <h3 className="text-2xl font-black italic uppercase tracking-tight">Não perca tempo com burocracia</h3>
-                  <p className="text-muted-foreground text-sm font-medium max-w-md">Para sua primeira venda, foque na plataforma com aprovação mais rápida. Depois que o dinheiro entrar, você otimiza as taxas.</p>
+                  <h3 className="text-2xl font-black italic uppercase tracking-tight">Comece pelo simples</h3>
+                  <p className="text-muted-foreground text-sm font-medium max-w-md">Para sua primeira venda, foque na plataforma com aprovação mais rápida (recomendamos a Perfect Pay para quem está do zero). Depois que o dinheiro entrar, você otimiza as taxas.</p>
                 </div>
                 <div className="flex gap-4">
                   <div className="h-16 w-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center">
