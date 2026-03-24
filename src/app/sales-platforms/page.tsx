@@ -18,7 +18,9 @@ import {
   Clock,
   Star,
   Rocket,
-  Layers
+  Layers,
+  ChevronRight,
+  Target
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -94,13 +96,65 @@ export default function SalesPlatformsPage() {
 
           <div className="flex-1 container max-w-5xl mx-auto p-4 md:p-8 space-y-12">
             
+            {/* Seção Qual Escolher - Guia Rápido */}
             <section className="space-y-6">
               <div className="space-y-2">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[8px] font-black uppercase tracking-widest">
-                  <ShieldCheck className="h-3 w-3" /> Infraestrutura de Recebimento
+                  <Target className="h-3 w-3" /> Rota de Decisão Rápida
                 </div>
-                <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white">Onde Receber</h2>
-                <p className="text-muted-foreground text-sm uppercase font-bold tracking-widest max-w-2xl">Escolha a rota mais rápida para transformar suas abordagens em dinheiro na conta.</p>
+                <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white">Qual escolher?</h2>
+                <p className="text-muted-foreground text-sm uppercase font-bold tracking-widest max-w-2xl">Não perca tempo comparando. Siga a recomendação neural baseada no seu momento.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card className="glass-card border-primary/30 bg-primary/5 p-6 rounded-2xl flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-white font-black text-xs">1</div>
+                    <span className="text-xs font-black uppercase italic text-white tracking-tight">Iniciante</span>
+                  </div>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase leading-relaxed">Se você está começando do zero absoluto e quer sua primeira venda hoje.</p>
+                  <div className="mt-auto pt-2 border-t border-white/5 flex items-center justify-between">
+                    <span className="text-sm font-black italic text-primary">Perfect Pay</span>
+                    <ChevronRight className="h-4 w-4 text-primary" />
+                  </div>
+                </Card>
+
+                <Card className="glass-card border-white/10 p-6 rounded-2xl flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center text-white font-black text-xs">2</div>
+                    <span className="text-xs font-black uppercase italic text-white tracking-tight">Testar Ideias</span>
+                  </div>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase leading-relaxed">Se você já tem uma oferta e quer validar o checkout rapidamente.</p>
+                  <div className="mt-auto pt-2 border-t border-white/5 flex items-center justify-between">
+                    <span className="text-sm font-black italic text-white">Cakto</span>
+                    <ChevronRight className="h-4 w-4 text-white/20" />
+                  </div>
+                </Card>
+
+                <Card className="glass-card border-white/10 p-6 rounded-2xl flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center text-white font-black text-xs">3</div>
+                    <span className="text-xs font-black uppercase italic text-white tracking-tight">Escalar</span>
+                  </div>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase leading-relaxed">Se você já está vendendo e precisa de infraestrutura robusta.</p>
+                  <div className="mt-auto pt-2 border-t border-white/5 flex items-center justify-between">
+                    <span className="text-sm font-black italic text-white">Paradise</span>
+                    <ChevronRight className="h-4 w-4 text-white/20" />
+                  </div>
+                </Card>
+              </div>
+
+              <div className="bg-primary/5 border border-dashed border-primary/30 rounded-2xl p-6 text-center">
+                <p className="text-sm font-black uppercase tracking-widest text-white italic">
+                  <span className="text-primary mr-2">AÇÃO:</span> Escolha uma plataforma abaixo, crie sua conta e comece a vender.
+                </p>
+              </div>
+            </section>
+
+            <section className="space-y-8 pb-20">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white">Arsenal de Recebimento</h2>
+                <p className="text-muted-foreground text-sm uppercase font-bold tracking-widest">As ferramentas de elite para processar seus lucros.</p>
               </div>
 
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
