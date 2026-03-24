@@ -22,7 +22,6 @@ import {
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { generateLeadMessage } from '@/ai/flows/generate-lead-message';
-import { searchRealLeads } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
@@ -51,7 +50,7 @@ export default function LeadsPage() {
   const { data: subData } = useCollection(subQuery);
 
   const isProMember = useMemo(() => {
-    if (user?.email === 'thethegalo@gmail.com') return true;
+    if (user?.email === 'thethegalo@gmail.com' || user?.email === 'tietegalo@gmail.com') return true;
     return subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime_admin') && sub.status === 'active');
   }, [subData, user]);
 
@@ -66,12 +65,26 @@ export default function LeadsPage() {
     }
     
     setLoading(true);
-    setLeads([]); // Limpa resultados anteriores
+    setLeads([]);
 
     try {
-      const results = await searchRealLeads(niche, city, state);
+      // Chama o endpoint interno do backend para evitar CORS e proteger a API Key
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ niche, city, state }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Falha na busca de leads');
+      }
+
+      const results = await response.json();
       
-      // Limita resultados para usuários free
+      // Limita resultados para usuários free (Fase 1)
       const finalLeads = isProMember ? results : results.slice(0, 5);
       setLeads(finalLeads);
 
@@ -88,10 +101,11 @@ export default function LeadsPage() {
         });
       }
     } catch (e: any) {
+      console.error('Erro na busca de leads:', e);
       toast({ 
         variant: "destructive", 
         title: "Erro na Busca", 
-        description: "Não foi possível conectar ao radar de leads. Verifique sua conexão." 
+        description: e.message || "Não foi possível conectar ao radar de leads." 
       });
     } finally {
       setLoading(false);
@@ -155,7 +169,7 @@ export default function LeadsPage() {
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
               <div className="h-4 w-px bg-white/10 hidden md:block" />
               <h1 className="text-sm font-black italic uppercase tracking-widest flex items-center gap-2">
-                <Users className="h-4 w-4 text-primary" /> Captar Leads Reais
+                <Users className="h-4 w-4 text-primary" /> Radar de Leads Reais
               </h1>
             </div>
             {isProMember ? (
@@ -237,7 +251,7 @@ export default function LeadsPage() {
               ) : loading ? (
                 <div className="py-24 text-center">
                   <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
-                  <p className="text-muted-foreground uppercase text-[10px] font-black tracking-[0.3em]">Conectando à base de dados do Google...</p>
+                  <p className="text-muted-foreground uppercase text-[10px] font-black tracking-[0.3em]">Conectando à base de dados do Google via Backend Seguro...</p>
                 </div>
               ) : (
                 <div className="grid gap-4">
