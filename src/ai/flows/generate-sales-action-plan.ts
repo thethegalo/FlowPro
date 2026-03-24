@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A Genkit flow for generating a personalized sales action plan based on user quiz answers.
@@ -43,12 +44,18 @@ const salesActionPlanPrompt = ai.definePrompt({
   name: 'salesActionPlanPrompt',
   input: { schema: GenerateSalesActionPlanInputSchema },
   output: { schema: GenerateSalesActionPlanOutputSchema },
-  prompt: `You are an expert sales mentor. Based on the user's quiz answers, generate a concise and personalized sales action plan with practical, executable steps. Focus on helping a new user quickly start their sales journey.
+  prompt: `Você é um Mentor de Elite do FlowPro. Com base nas respostas do quiz do usuário, gere um plano de ação de vendas personalizado e ultra-prático.
+O plano deve focar em como o usuário pode fazer sua PRIMEIRA VENDA em 7 dias usando o tempo e ferramentas que ele possui.
 
-User Quiz Answers:
+Respostas do Quiz:
 {{#each this as |value key|}}
 - {{key}}: {{value}}
 {{/each}}
+
+REGRAS:
+1. Gere um array de 3 passos principais (Fase de Preparação, Fase de Ataque, Fase de Escala).
+2. O tom deve ser encorajador e focado em execução.
+3. Idioma: Português do Brasil.
 `,
 });
 
@@ -60,6 +67,7 @@ const generateSalesActionPlanFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await salesActionPlanPrompt(input);
-    return output!;
+    if (!output) throw new Error("Falha ao gerar plano IA.");
+    return output;
   }
 );

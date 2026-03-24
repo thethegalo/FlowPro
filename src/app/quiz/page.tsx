@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -11,6 +12,7 @@ import { Zap, ArrowRight, Loader2, CheckCircle2, TrendingUp, Clock, Target, Shie
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { doc, setDoc, serverTimestamp, collection, query } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
+import { generateSalesActionPlan } from '@/ai/flows/generate-sales-action-plan';
 
 const STEPS = [
   {
@@ -77,6 +79,7 @@ export default function QuizPage() {
   const [status, setStatus] = useState<'quiz' | 'processing' | 'result'>('quiz');
   const [processingMessage, setProcessingMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [aiPlan, setAiPlan] = useState<any>(null);
   
   const { user, isUserLoading } = useUser();
   const db = useFirestore();
@@ -103,9 +106,10 @@ export default function QuizPage() {
 
   const messages = [
     "Analisando seu perfil...",
-    "Montando sua estratégia Flow...",
+    "Conectando ao Motor Neural Flow...",
     "Calculando seu potencial de ganho...",
-    "Finalizando seu plano personalizado..."
+    "IA gerando estratégia personalizada...",
+    "Finalizando seu plano mestre..."
   ];
 
   useEffect(() => {
@@ -116,9 +120,22 @@ export default function QuizPage() {
         i++;
         if (i >= messages.length) {
           clearInterval(interval);
-          setTimeout(() => setStatus('result'), 800);
         }
-      }, 1000);
+      }, 1200);
+
+      // Call AI Flow
+      const runAi = async () => {
+        try {
+          const result = await generateSalesActionPlan(answers);
+          setAiPlan(result.plan);
+          setTimeout(() => setStatus('result'), 1000);
+        } catch (e) {
+          console.error("AI Error:", e);
+          setTimeout(() => setStatus('result'), 1000);
+        }
+      };
+      runAi();
+
       return () => clearInterval(interval);
     }
   }, [status]);
@@ -150,6 +167,16 @@ export default function QuizPage() {
         completedAt: serverTimestamp()
       }, { merge: true });
 
+      const planRef = doc(db, 'users', user.uid, 'personalizedPlans', 'active');
+      await setDoc(planRef, {
+        userId: user.uid,
+        strategy: aiPlan?.[0]?.title || "Estratégia Flow",
+        suggestedIncomeType: answers.type,
+        executionMethod: aiPlan?.[0]?.description || "Abordagem direta via canais digitais",
+        fullPlan: aiPlan || [],
+        generatedAt: serverTimestamp()
+      }, { merge: true });
+
       const userRef = doc(db, 'users', user.uid);
       await setDoc(userRef, { isOnboarded: true }, { merge: true });
 
@@ -170,9 +197,12 @@ export default function QuizPage() {
             <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
             <Loader2 className="h-24 w-24 text-primary animate-spin relative z-10" />
           </div>
-          <h2 className="text-xl font-black italic uppercase tracking-tighter shimmer-text animate-pulse">
-            {processingMessage}
-          </h2>
+          <div className="space-y-2">
+            <h2 className="text-xl font-black italic uppercase tracking-tighter shimmer-text">
+              {processingMessage}
+            </h2>
+            <p className="text-[8px] font-black uppercase tracking-[0.4em] text-muted-foreground animate-pulse">Neural Engine v2.5 Running</p>
+          </div>
         </div>
       </div>
     );
@@ -184,7 +214,7 @@ export default function QuizPage() {
         <div className="w-full max-w-2xl space-y-8 relative z-10">
           <div className="text-center space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
-              <ShieldCheck className="h-4 w-4" /> Perfil Flow Validado
+              <ShieldCheck className="h-4 w-4" /> Perfil Flow Validado via IA
             </div>
             <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-tight">
               SEU PLANO ESTÁ <span className="text-primary">PRONTO</span>
@@ -199,12 +229,14 @@ export default function QuizPage() {
             </CardHeader>
             <CardContent className="p-8 space-y-8">
               <div className="space-y-2 text-center md:text-left">
-                <p className="text-muted-foreground uppercase text-[10px] font-black tracking-widest opacity-70">Caminho Flow de Execução</p>
-                <p className="text-xl font-bold italic text-white">
-                  {answers.type === 'Serviços Digitais' 
+                <p className="text-muted-foreground uppercase text-[10px] font-black tracking-widest opacity-70">Caminho Gerado por IA</p>
+                <p className="text-xl font-bold italic text-white leading-tight">
+                  {aiPlan?.[0]?.title || (answers.type === 'Serviços Digitais' 
                     ? "Micro-Serviços IA via Abordagem Direta"
-                    : "Intermediação Estratégica no Orgânico"
-                  }
+                    : "Intermediação Estratégica no Orgânico")}
+                </p>
+                <p className="text-xs text-muted-foreground font-medium italic">
+                  "{aiPlan?.[0]?.description?.substring(0, 120)}..."
                 </p>
               </div>
 
@@ -227,8 +259,8 @@ export default function QuizPage() {
 
               <div className="space-y-4 pt-4 border-t border-white/5">
                 {[
-                  { label: "Jornada de 7 Dias definida", done: true },
-                  { label: "Roteiro de abordagem pronto", done: true },
+                  { label: "Plano Neural de 7 Dias definido", done: true },
+                  { label: "Roteiro de abordagem otimizado", done: true },
                   { label: `Configurado para ${answers.device}`, done: true }
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-center gap-3 text-sm font-bold text-green-400">
@@ -244,7 +276,7 @@ export default function QuizPage() {
               >
                 {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : (
                   <span className="flex items-center gap-2">
-                    VER MEU PLANO COMPLETO <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform" />
+                    DESBLOQUEAR PLANO COMPLETO <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform" />
                   </span>
                 )}
               </Button>
@@ -288,7 +320,7 @@ export default function QuizPage() {
               {currentStepData.options?.map((opt) => (
                 <Label
                   key={opt}
-                  className={`flex items-center justify-between p-5 rounded-2xl border-2 cursor-pointer transition-all ${answers[currentStepData.id] === opt ? 'border-primary bg-primary/10' : 'border-white/5 bg-white/[0.02] hover:bg-white/5'}`}
+                  className={`flex items-center justify-between p-5 rounded-2xl border-2 cursor-pointer transition-all ${answers[currentStepData.id] === opt ? 'border-primary bg-primary/10 text-white' : 'border-white/5 bg-white/[0.02] hover:bg-white/5 text-muted-foreground'}`}
                 >
                   <span className="font-bold uppercase tracking-tight italic">{opt}</span>
                   <RadioGroupItem value={opt} className="hidden" />
@@ -310,7 +342,7 @@ export default function QuizPage() {
               disabled={!answers[currentStepData.id]}
               className="flex-[2] h-14 bg-primary rounded-2xl font-black uppercase tracking-widest"
             >
-              {currentStep === STEPS.length - 1 ? "GERAR PLANO" : "PRÓXIMO"} 
+              {currentStep === STEPS.length - 1 ? "GERAR PLANO IA" : "PRÓXIMO"} 
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
