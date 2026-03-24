@@ -20,13 +20,31 @@ import {
   Palette,
   History,
   Lightbulb,
-  Search
+  Search,
+  Settings2
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { useToast } from '@/hooks/use-toast';
 
 const PROMPT_TEMPLATES = [
+  {
+    id: 'custom',
+    title: 'Prompt Customizado',
+    icon: <Settings2 className="h-4 w-4" />,
+    description: 'Crie um comando mestre para qualquer necessidade específica.',
+    fields: ['niche', 'serviceType', 'goal', 'style'],
+    template: (data: any) => `Atue como um Especialista em Marketing Digital e Vendas de Alta Performance.
+CONTEXTO: Atuo no nicho de ${data.niche || '[Nicho]'} e ofereço o serviço de ${data.serviceType || '[Serviço]'}.
+MEU OBJETIVO COM ESTE PROMPT: ${data.goal || '[Objetivo]'}.
+${data.style ? `ESTILO E TOM DE VOZ: Utilize um estilo ${data.style}.` : ''}
+
+REQUISITOS DO OUTPUT:
+1. Forneça uma solução prática e direto ao ponto.
+2. Use gatilhos mentais adequados ao nicho mencionado.
+3. Foque 100% em conversão e ROI.
+Gere agora o conteúdo/estratégia solicitado.`
+  },
   {
     id: 'sites',
     title: 'Estrutura de Site/LP',
@@ -114,11 +132,13 @@ Para cada uma, defina um nome impactante, o que está incluso e por que ele não
 ];
 
 const FIELD_LABELS: Record<string, string> = {
+  niche: 'Nicho do Negócio',
+  serviceType: 'Tipo de Serviço',
+  goal: 'Qual seu Objetivo?',
+  style: 'Estilo / Tom de Voz (Opcional)',
   product: 'Seu Produto/Serviço',
-  niche: 'Nicho de Atuação',
   target: 'Público Alvo',
   businessName: 'Nome da Empresa',
-  style: 'Estilo Visual (Ex: Minimalista, Retrô)',
   colors: 'Cores Principais',
   tone: 'Tom de Voz',
   price: 'Preço da Oferta',
@@ -128,13 +148,15 @@ const FIELD_LABELS: Record<string, string> = {
 };
 
 const FIELD_PLACEHOLDERS: Record<string, string> = {
+  niche: 'Ex: Advocacia, Infoprodutos...',
+  serviceType: 'Ex: Gestão de Tráfego, Mentorias...',
+  goal: 'Ex: Criar um roteiro de vendas, Estruturar funil...',
+  style: 'Ex: Agressivo, Sofisticado, Engraçado...',
   product: 'Ex: Consultoria de Vendas',
-  niche: 'Ex: Dentistas, Academias',
   target: 'Ex: Donos de clínicas pequenas',
   businessName: 'Ex: FlowPro Systems',
-  style: 'Ex: Futurista, Neon, High-tech',
   colors: 'Ex: Roxo e Branco',
-  tone: 'Ex: Agressivo, Educado, Elegante',
+  tone: 'Ex: Educado e Elegante',
   price: 'Ex: 1.500,00',
   objection: 'Ex: Achei caro',
   context: 'Ex: Visualizou a proposta e sumiu',
@@ -164,7 +186,7 @@ export default function PromptsPage() {
   const handleTemplateChange = (template: typeof PROMPT_TEMPLATES[0]) => {
     setActiveTemplate(template);
     setGeneratedPrompt('');
-    setFormData({}); // Limpa os dados ao trocar de categoria
+    setFormData({}); 
   };
 
   return (
