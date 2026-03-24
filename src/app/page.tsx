@@ -159,6 +159,23 @@ export default function Home() {
             </Accordion>
           </div>
         </section>
+
+        <section className="py-32 relative overflow-hidden border-t border-white/5">
+          <div className="absolute inset-0 bg-primary/5 blur-3xl rounded-full scale-150 pointer-events-none"></div>
+          <div className="container px-6 mx-auto text-center relative z-10">
+            <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-8 text-white">
+              NÃO APENAS VENDA. <span className="text-primary shimmer-text">DOMINE.</span>
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto mb-12 font-medium uppercase tracking-[0.2em] text-[10px]">
+              O fluxo não espera por ninguém. A próxima janela de escala neural está aberta para quem executa.
+            </p>
+            <Button asChild size="lg" className="h-20 px-16 text-xl font-black bg-primary hover:scale-110 hover:rotate-1 shadow-[0_15px_40px_rgba(139,92,246,0.4)] transition-all rounded-3xl group">
+              <Link href="/quiz">
+                ENTRAR NO FLUXO AGORA <ArrowRight className="ml-2 h-7 w-7 group-hover:translate-x-2 transition-transform" />
+              </Link>
+            </Button>
+          </div>
+        </section>
       </main>
 
       <footer className="py-20 border-t border-white/5 bg-[#030305] text-center">
