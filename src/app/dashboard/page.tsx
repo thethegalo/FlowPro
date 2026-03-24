@@ -308,7 +308,7 @@ export default function Dashboard() {
           >
             VOLTAR PARA LOGIN
           </Button>
-        </div>
+        </Card>
       </div>
     );
   }
