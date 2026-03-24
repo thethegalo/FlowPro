@@ -28,7 +28,8 @@ import {
   Cpu,
   ArrowRight,
   ExternalLink,
-  MousePointerClick
+  MousePointerClick,
+  Info
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -209,7 +210,7 @@ export default function PromptsPage() {
             </div>
           </header>
 
-          <div className="flex-1 container max-w-5xl mx-auto p-4 md:p-8 space-y-8">
+          <div className="flex-1 container max-w-5xl mx-auto p-4 md:p-8 space-y-12">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
               <div className="space-y-2">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[8px] font-black uppercase tracking-widest">
@@ -235,10 +236,12 @@ export default function PromptsPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
               {/* Seleção de Templates */}
               <div className="lg:col-span-4 space-y-4">
-                <div className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2 px-2">Selecione o Objetivo</div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2 px-2 flex items-center gap-2">
+                  <Target className="h-3 w-3" /> Selecione o Objetivo
+                </div>
                 <div className="grid gap-3">
                   {PROMPT_TEMPLATES.map((t) => (
                     <button
@@ -268,14 +271,14 @@ export default function PromptsPage() {
               </div>
 
               {/* Formulário de Variáveis */}
-              <div className="lg:col-span-8 space-y-6">
-                <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden">
-                  <CardHeader className="bg-white/5 border-b border-white/5 p-6">
+              <div className="lg:col-span-8 space-y-10">
+                <Card className="glass-card border-white/10 rounded-[2.5rem] overflow-hidden">
+                  <CardHeader className="bg-white/5 border-b border-white/5 p-8">
                     <CardTitle className="text-xs font-black uppercase tracking-widest italic flex items-center gap-2">
-                      {activeTemplate.icon} Personalizar: {activeTemplate.title}
+                      <Settings2 className="h-4 w-4 text-primary" /> Personalizar: {activeTemplate.title}
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="p-8 space-y-6">
+                  <CardContent className="p-8 md:p-10 space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {activeTemplate.fields.map((field) => (
                         <div key={field} className="space-y-2">
@@ -284,7 +287,7 @@ export default function PromptsPage() {
                           </Label>
                           <Input 
                             placeholder={FIELD_PLACEHOLDERS[field] || 'Preencha aqui...'}
-                            className="bg-white/5 border-white/10 h-12 rounded-xl focus-visible:ring-primary font-medium"
+                            className="bg-white/5 border-white/10 h-14 rounded-2xl focus-visible:ring-primary font-medium"
                             value={formData[field] || ''}
                             onChange={(e) => setFormData({...formData, [field]: e.target.value})}
                           />
@@ -295,93 +298,125 @@ export default function PromptsPage() {
                     <Button 
                       onClick={handleGenerate}
                       disabled={isLoading || Object.values(formData).filter(v => v.trim()).length === 0}
-                      className="w-full h-14 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-[0.98] group"
+                      className="w-full h-16 md:h-20 bg-primary hover:bg-primary/90 rounded-[2rem] font-black uppercase tracking-[0.2em] text-xs md:text-sm shadow-xl shadow-primary/20 transition-all active:scale-[0.98] group"
                     >
                       {isLoading ? (
                         <>
-                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                          ENGENHARIA NEURAL...
+                          <Loader2 className="mr-3 h-6 w-6 animate-spin" />
+                          ENGENHARIA NEURAL EM CURSO...
                         </>
                       ) : (
                         <>
-                          GERAR COMANDO MESTRE <Zap className="ml-2 h-4 w-4 fill-white group-hover:scale-125 transition-transform" />
+                          GERAR COMANDO MESTRE <Zap className="ml-3 h-5 w-5 fill-white group-hover:scale-125 transition-transform" />
                         </>
                       )}
                     </Button>
                   </CardContent>
                 </Card>
 
-                {/* Resultado */}
+                {/* Resultado Ultra Otimizado */}
                 {generatedPrompt && (
-                  <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                    <Card className="bg-primary/5 border border-primary/20 rounded-[2.5rem] overflow-hidden">
-                      <CardHeader className="flex flex-row items-center justify-between p-6 border-b border-primary/10">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                          <ShieldCheck className="h-3 w-3 fill-primary" /> Comando Pronto para Operação
-                        </div>
-                        <Button 
-                          size="sm" 
-                          variant="ghost" 
-                          onClick={handleCopy}
-                          className={`text-[10px] font-black uppercase tracking-widest h-8 transition-all ${copied ? 'text-green-500' : 'text-primary hover:bg-primary/10'}`}
-                        >
-                          {copied ? <Check className="h-3 w-3 mr-2" /> : <Copy className="h-3 w-3 mr-2" />}
-                          {copied ? 'COPIADO' : 'COPIAR TUDO'}
-                        </Button>
-                      </CardHeader>
-                      <CardContent className="p-8">
-                        <div className="bg-black/40 p-6 rounded-2xl border border-white/5 group relative">
-                          <pre className="text-sm font-medium text-white/80 leading-relaxed whitespace-pre-wrap italic">
-                            {generatedPrompt}
-                          </pre>
-                          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                             <Sparkles className="h-4 w-4 text-primary/40" />
-                          </div>
-                        </div>
-                        
-                        <div className="mt-8 pt-8 border-t border-white/5 space-y-6">
+                  <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-1000 fill-mode-both">
+                    
+                    {/* Container do Prompt */}
+                    <div className="relative p-[2px] rounded-[3rem] overflow-hidden bg-gradient-to-br from-primary via-accent/50 to-primary/30 shadow-[0_0_60px_rgba(139,92,246,0.2)]">
+                      <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent animate-pulse"></div>
+                      <Card className="relative bg-[#0b0b14] border-none rounded-[calc(3rem-2px)] overflow-hidden">
+                        <CardHeader className="flex flex-row items-center justify-between p-8 border-b border-white/5">
                           <div className="flex items-center gap-3">
-                            <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black text-xs">1</div>
+                            <div className="h-10 w-10 rounded-2xl bg-primary/20 flex items-center justify-center text-primary border border-primary/20">
+                              <ShieldCheck className="h-6 w-6" />
+                            </div>
                             <div className="space-y-0.5">
-                              <p className="text-[10px] font-black uppercase tracking-widest text-white">Próximo Passo</p>
-                              <p className="text-xs text-muted-foreground">Copie o prompt acima e cole na ferramenta recomendada abaixo.</p>
+                              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Comando Mestre Pronto</p>
+                              <p className="text-[8px] font-bold text-muted-foreground uppercase">Resultado da Engenharia Neural</p>
                             </div>
                           </div>
+                          <Badge variant="outline" className="border-primary/30 text-primary text-[8px] font-black uppercase px-3 py-1">
+                            {complexity.toUpperCase()} ENGINE
+                          </Badge>
+                        </CardHeader>
+                        
+                        <CardContent className="p-8 md:p-10 space-y-8">
+                          <div className="bg-black/40 p-8 rounded-[2rem] border border-white/5 group relative shadow-inner">
+                            <pre className="text-sm md:text-base font-medium text-white/90 leading-relaxed whitespace-pre-wrap italic font-body">
+                              {generatedPrompt}
+                            </pre>
+                            <div className="absolute top-4 right-4 opacity-30">
+                               <Sparkles className="h-5 w-5 text-primary" />
+                            </div>
+                          </div>
+                          
+                          <div className="flex flex-col gap-6">
+                            <div className="flex items-center gap-4 px-6 py-4 bg-primary/5 border border-primary/10 rounded-2xl">
+                              <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-white font-black text-xs">1</div>
+                              <p className="text-[11px] md:text-xs font-bold text-white/80 uppercase tracking-wide">
+                                <span className="text-primary">Ação Necessária:</span> Clique no botão abaixo para copiar e leve para a ferramenta recomendada.
+                              </p>
+                            </div>
 
-                          <Button onClick={handleCopy} className="w-full h-14 bg-white text-black hover:bg-primary hover:text-white rounded-xl font-black uppercase tracking-widest shadow-xl transition-all active:scale-95">
-                            {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
-                            {copied ? 'PRONTO PARA COLAR!' : 'COPIAR PROMPT AGORA'}
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="glass-card border-white/5 rounded-[2.5rem] overflow-hidden">
-                      <CardHeader className="bg-white/5 p-6 border-b border-white/5">
-                        <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                          <MousePointerClick className="h-3.5 w-3.5" /> Onde usar esse prompt
-                        </div>
-                      </CardHeader>
-                      <CardContent className="p-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {currentTools.map((tool, i) => (
-                            <div key={i} className="flex items-center justify-between p-4 bg-white/[0.03] border border-white/5 rounded-2xl group hover:border-primary/30 transition-all">
-                              <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary border border-primary/20 group-hover:scale-110 transition-transform">
-                                  <Zap className="h-5 w-5 fill-primary" />
-                                </div>
-                                <span className="font-black italic uppercase tracking-tight text-white">{tool.name}</span>
+                            <Button 
+                              onClick={handleCopy} 
+                              className={`w-full h-20 md:h-24 rounded-[2.5rem] text-lg md:text-2xl font-black uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95 group overflow-hidden relative ${
+                                copied ? 'bg-green-500 hover:bg-green-600' : 'bg-white text-black hover:bg-white/90'
+                              }`}
+                            >
+                              <div className="flex items-center justify-center gap-4 relative z-10">
+                                {copied ? (
+                                  <>
+                                    <Check className="h-8 w-8 animate-in zoom-in" /> PROMPT COPIADO!
+                                  </>
+                                ) : (
+                                  <>
+                                    <Copy className="h-7 w-7 group-hover:rotate-12 transition-transform" /> PRONTO PARA COLAR!
+                                  </>
+                                )}
                               </div>
-                              <Button asChild size="sm" variant="outline" className="rounded-xl border-white/10 h-10 px-4 text-[9px] font-black uppercase tracking-widest hover:bg-primary hover:border-primary hover:text-white transition-all">
+                              <div className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Roteiro de Ferramentas */}
+                    <div className="space-y-6 pt-4">
+                      <div className="flex items-center gap-3 px-2">
+                        <MousePointerClick className="h-5 w-5 text-primary" />
+                        <h3 className="text-xl font-black italic uppercase tracking-tighter text-white">Onde Executar este Comando</h3>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {currentTools.map((tool, i) => (
+                          <Card key={i} className="glass-card border-white/5 rounded-3xl overflow-hidden group hover:border-primary/40 transition-all duration-500">
+                            <CardContent className="p-6 flex items-center justify-between gap-4">
+                              <div className="flex items-center gap-4">
+                                <div className="h-12 w-12 bg-white/5 rounded-2xl flex items-center justify-center text-white border border-white/10 group-hover:bg-primary/10 group-hover:border-primary/20 transition-all">
+                                  {i === 0 ? <Zap className="h-6 w-6 text-primary fill-primary" /> : <Sparkles className="h-6 w-6 text-accent" />}
+                                </div>
+                                <div className="space-y-0.5">
+                                  <p className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground">Ferramenta Sugerida</p>
+                                  <h4 className="font-black italic uppercase tracking-tight text-lg text-white">{tool.name}</h4>
+                                </div>
+                              </div>
+                              <Button asChild size="sm" variant="outline" className="rounded-xl border-white/10 h-12 px-6 text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:border-primary hover:text-white transition-all shadow-lg active:scale-95">
                                 <a href={tool.url} target="_blank" rel="noopener noreferrer">
-                                  ACESSAR <ExternalLink className="ml-1.5 h-3 w-3" />
+                                  ACESSAR AGORA <ExternalLink className="ml-2 h-3.5 w-3.5" />
                                 </a>
                               </Button>
-                            </div>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+
+                      <div className="p-6 rounded-3xl bg-white/[0.02] border border-dashed border-white/10 flex items-start gap-4">
+                        <Info className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+                        <p className="text-[10px] font-medium text-muted-foreground leading-relaxed uppercase">
+                          Dica Flow: Se os resultados não forem perfeitos de primeira, use o <span className="text-white">Modo Avançado</span> acima para gerar instruções com mais restrições e frameworks de copy.
+                        </p>
+                      </div>
+                    </div>
+
                   </div>
                 )}
               </div>
