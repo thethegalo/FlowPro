@@ -32,6 +32,7 @@ import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@
 import { collection, query, doc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
+import { useRouter } from 'next/navigation';
 
 const STATES = ["SP", "RJ", "MG", "PR", "SC", "RS", "BA", "CE", "PE", "GO"];
 const ADMIN_EMAIL = "thethegalo@gmail.com";
@@ -40,6 +41,7 @@ export default function LeadsPage() {
   const { user } = useUser();
   const db = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
   
   const [loading, setLoading] = useState(false);
   const [leads, setLeads] = useState<any[]>([]);
@@ -55,58 +57,69 @@ export default function LeadsPage() {
   }, [db, user]);
   const { data: userData } = useDoc(userDocRef);
 
-  const subQuery = useMemoFirebase(() => {
-    if (!db || !user) return null;
-    return query(collection(db, 'users', user.uid, 'subscriptions'));
-  }, [db, user]);
-  const { data: subData } = useCollection(subQuery);
+  const isUnlimited = useMemo(() => {
+    return user?.email === ADMIN_EMAIL || userData?.plan === 'vitalicio';
+  }, [user, userData]);
 
   const isProMember = useMemo(() => {
-    const hasActiveSub = subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime') && sub.status === 'active');
-    const hasAdminOrVitalicio = user?.email === ADMIN_EMAIL || userData?.plan === 'vitalicio' || userData?.plan === 'mensal';
-    return hasActiveSub || hasAdminOrVitalicio;
-  }, [subData, user, userData]);
-
-  const isUnlimited = user?.email === ADMIN_EMAIL || userData?.plan === 'vitalicio';
+    return isUnlimited || userData?.plan === 'mensal';
+  }, [isUnlimited, userData]);
 
   const checkLimitAndTrack = async (type: 'leadsUsed' | 'messagesUsed', limitValue: number) => {
-    if (!db || !user || !userData) return true;
-    if (isUnlimited) return true;
-    if (userData.plan !== 'mensal') return true; // Aplicando limites especificamente ao mensal conforme pedido
-
-    const lastAction = userData.lastActionAt;
-    const today = new Date().toDateString();
-    const lastDate = lastAction ? (lastAction.toDate ? lastAction.toDate().toDateString() : new Date(lastAction).toDateString()) : '';
+    if (!db || !user || !userData) return false;
     
-    const isNewDay = today !== lastDate;
-    const currentUsage = isNewDay ? 0 : (userData.dailyUsage?.[type] || 0);
+    // Se for Vitalício ou Admin, permite tudo sem rastrear limite
+    if (isUnlimited) return true;
 
-    if (currentUsage >= limitValue) {
+    // Se não tiver plano, bloqueia e manda pro paywall
+    if (userData.plan === 'nenhum') {
       toast({ 
         variant: "destructive", 
-        title: "Limite Atingido", 
-        description: "Você atingiu o limite diário do plano mensal." 
+        title: "Plano Necessário", 
+        description: "Assine um plano para liberar o Radar de Leads." 
       });
+      router.push('/paywall');
       return false;
     }
 
-    try {
-      const userRef = doc(db, 'users', user.uid);
-      const updates: any = {
-        lastActionAt: serverTimestamp(),
-        [`dailyUsage.${type}`]: isNewDay ? 1 : increment(1),
-      };
+    // Se for mensal, verifica limite
+    if (userData.plan === 'mensal') {
+      const lastAction = userData.lastActionAt;
+      const today = new Date().toDateString();
+      const lastDate = lastAction ? (lastAction.toDate ? lastAction.toDate().toDateString() : new Date(lastAction).toDateString()) : '';
       
-      if (isNewDay) {
-        const otherType = type === 'leadsUsed' ? 'messagesUsed' : 'leadsUsed';
-        updates[`dailyUsage.${otherType}`] = 0;
+      const isNewDay = today !== lastDate;
+      const currentUsage = isNewDay ? 0 : (userData.dailyUsage?.[type] || 0);
+
+      if (currentUsage >= limitValue) {
+        toast({ 
+          variant: "destructive", 
+          title: "Limite Atingido", 
+          description: `Você atingiu o limite diário de ${type === 'leadsUsed' ? 'leads' : 'mensagens'} do seu plano.` 
+        });
+        return false;
       }
 
-      await updateDoc(userRef, updates);
-      return true;
-    } catch (e) {
-      return true;
+      try {
+        const userRef = doc(db, 'users', user.uid);
+        const updates: any = {
+          lastActionAt: serverTimestamp(),
+          [`dailyUsage.${type}`]: isNewDay ? 1 : increment(1),
+        };
+        
+        if (isNewDay) {
+          const otherType = type === 'leadsUsed' ? 'messagesUsed' : 'leadsUsed';
+          updates[`dailyUsage.${otherType}`] = 0;
+        }
+
+        await updateDoc(userRef, updates);
+        return true;
+      } catch (e) {
+        return true;
+      }
     }
+
+    return true;
   };
 
   const handleSearch = async () => {
@@ -215,10 +228,10 @@ export default function LeadsPage() {
             <div className="flex items-center gap-3">
                <div className="hidden sm:flex items-center gap-2 bg-white/5 px-3 py-1 rounded-full border border-white/10">
                   <span className="text-[8px] font-black uppercase text-muted-foreground tracking-widest">
-                    {userData?.plan === 'mensal' ? `Leads: ${userData?.dailyUsage?.leadsUsed || 0}/20` : '+100 usuários ativos'}
+                    {isUnlimited ? 'USO ILIMITADO' : `Créditos: ${userData?.dailyUsage?.leadsUsed || 0}/20`}
                   </span>
                </div>
-               <Badge className="bg-primary/20 text-primary border-primary/30 text-[8px] font-black uppercase px-2 md:px-3 py-1">
+               <Badge className={`bg-primary/20 text-primary border-primary/30 text-[8px] font-black uppercase px-2 md:px-3 py-1 ${isUnlimited ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' : ''}`}>
                  {userData?.plan?.toUpperCase() || 'FREE'}
                </Badge>
             </div>
@@ -282,7 +295,7 @@ export default function LeadsPage() {
 
               {!isProMember && leads.length > 0 && (
                 <div className="p-4 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-between gap-4">
-                  <p className="text-[10px] font-bold text-primary uppercase">Você atingiu o limite da busca Free. Desbloqueie leads ilimitados.</p>
+                  <p className="text-[10px] font-bold text-primary uppercase">Assine o Pro para ver todos os resultados e ter acesso ilimitado.</p>
                   <Button asChild size="sm" className="bg-primary text-white text-[8px] font-black h-8 px-4 rounded-xl">
                     <Link href="/paywall">UPGRADE PRO</Link>
                   </Button>

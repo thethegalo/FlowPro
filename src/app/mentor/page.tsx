@@ -14,6 +14,8 @@ import { AppSidebar } from '@/components/AppSidebar';
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
+import { Badge } from '@/components/ui/badge';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -26,6 +28,7 @@ export default function MentorPage() {
   const { user } = useUser();
   const db = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
   
   const userDocRef = useMemoFirebase(() => {
     if (!db || !user) return null;
@@ -39,45 +42,64 @@ export default function MentorPage() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const isUnlimited = user?.email === ADMIN_EMAIL || userData?.plan === 'vitalicio';
+  const isUnlimited = useMemo(() => {
+    return user?.email === ADMIN_EMAIL || userData?.plan === 'vitalicio';
+  }, [user, userData]);
 
   const checkLimitAndTrack = async () => {
-    if (!db || !user || !userData) return true;
-    if (isUnlimited) return true;
-    if (userData.plan !== 'mensal') return true;
-
-    const lastAction = userData.lastActionAt;
-    const today = new Date().toDateString();
-    const lastDate = lastAction ? (lastAction.toDate ? lastAction.toDate().toDateString() : new Date(lastAction).toDateString()) : '';
+    if (!db || !user || !userData) return false;
     
-    const isNewDay = today !== lastDate;
-    const currentUsage = isNewDay ? 0 : (userData.dailyUsage?.messagesUsed || 0);
+    // Admin e Vitalício = Ilimitado
+    if (isUnlimited) return true;
 
-    if (currentUsage >= 10) {
+    // Se não tiver plano, bloqueia e manda pro paywall
+    if (userData.plan === 'nenhum') {
       toast({ 
         variant: "destructive", 
-        title: "Limite Atingido", 
-        description: "Você atingiu o limite diário de mensagens do plano mensal." 
+        title: "Acesso Restrito", 
+        description: "Assine um plano para liberar o IA Mentor." 
       });
+      router.push('/paywall');
       return false;
     }
 
-    try {
-      const userRef = doc(db, 'users', user.uid);
-      const updates: any = {
-        lastActionAt: serverTimestamp(),
-        'dailyUsage.messagesUsed': isNewDay ? 1 : increment(1),
-      };
+    // Se for mensal, aplica limite de 10 mensagens
+    if (userData.plan === 'mensal') {
+      const lastAction = userData.lastActionAt;
+      const today = new Date().toDateString();
+      const lastDate = lastAction ? (lastAction.toDate ? lastAction.toDate().toDateString() : new Date(lastAction).toDateString()) : '';
       
-      if (isNewDay) {
-        updates['dailyUsage.leadsUsed'] = 0;
+      const isNewDay = today !== lastDate;
+      const currentUsage = isNewDay ? 0 : (userData.dailyUsage?.messagesUsed || 0);
+
+      if (currentUsage >= 10) {
+        toast({ 
+          variant: "destructive", 
+          title: "Limite Atingido", 
+          description: "Você atingiu o limite diário de mensagens do plano mensal." 
+        });
+        return false;
       }
 
-      await updateDoc(userRef, updates);
-      return true;
-    } catch (e) {
-      return true;
+      try {
+        const userRef = doc(db, 'users', user.uid);
+        const updates: any = {
+          lastActionAt: serverTimestamp(),
+          'dailyUsage.messagesUsed': isNewDay ? 1 : increment(1),
+        };
+        
+        if (isNewDay) {
+          updates['dailyUsage.leadsUsed'] = 0;
+        }
+
+        await updateDoc(userRef, updates);
+        return true;
+      } catch (e) {
+        return true;
+      }
     }
+
+    return true;
   };
 
   const handleSend = async () => {
@@ -101,7 +123,8 @@ export default function MentorPage() {
   };
 
   const messagesRemaining = useMemo(() => {
-    if (isUnlimited || userData?.plan !== 'mensal') return null;
+    if (isUnlimited) return null;
+    if (userData?.plan !== 'mensal') return 0;
     const lastAction = userData.lastActionAt;
     const today = new Date().toDateString();
     const lastDate = lastAction ? (lastAction.toDate ? lastAction.toDate().toDateString() : new Date(lastAction).toDateString()) : '';
@@ -124,8 +147,13 @@ export default function MentorPage() {
               </h1>
             </div>
             {messagesRemaining !== null && (
-              <Badge variant="outline" className="text-[8px] font-black uppercase border-white/10">
+              <Badge variant="outline" className={`text-[8px] font-black uppercase border-white/10 ${messagesRemaining === 0 ? 'text-destructive' : ''}`}>
                 {messagesRemaining} Mensagens hoje
+              </Badge>
+            )}
+            {isUnlimited && (
+              <Badge variant="outline" className="text-[8px] font-black uppercase border-purple-500/30 text-purple-400 bg-purple-500/10">
+                USO ILIMITADO
               </Badge>
             )}
           </header>
