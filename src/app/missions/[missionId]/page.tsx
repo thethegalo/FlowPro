@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/navigation';
+import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -209,7 +209,7 @@ export default function MissionPage() {
   const missionId = params.missionId as string;
   const content = MISSION_CONTENT[missionId as keyof typeof MISSION_CONTENT];
   
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const db = useFirestore();
   const { toast } = useToast();
   const router = useRouter();
@@ -219,28 +219,28 @@ export default function MissionPage() {
   const [showCelebration, setShowCelebration] = useState(false);
   const [completedTasks, setCompletedTasks] = useState<number[]>([]);
 
-  // Carregar progresso prévio para verificar se a missão já foi concluída
   const progressQuery = useMemoFirebase(() => {
     if (!db || !user) return null;
     return query(collection(db, 'users', user.uid, 'missionProgress'), orderBy('completedAt', 'asc'));
   }, [db, user]);
-  const { data: progressData } = useCollection(progressQuery);
+  const { data: progressData, isLoading: isProgressLoading } = useCollection(progressQuery);
 
   const completedMissionIds = useMemo(() => {
     return progressData ? progressData.filter(p => p.isCompleted).map(p => p.missionId) : [];
   }, [progressData]);
 
-  // Verificar se a missão atual é permitida (sequencial)
   useEffect(() => {
-    if (progressData && missionId !== 'dia1') {
+    if (!isUserLoading && !isProgressLoading && progressData && missionId !== 'dia1') {
       const dayNum = parseInt(missionId.replace('dia', ''));
+      if (isNaN(dayNum)) return;
+      
       const prevMissionId = `dia${dayNum - 1}`;
       if (!completedMissionIds.includes(prevMissionId) && !completedMissionIds.includes(missionId)) {
         toast({ variant: "destructive", title: "Missão Bloqueada", description: "Complete a etapa anterior primeiro." });
         router.push('/dashboard');
       }
     }
-  }, [progressData, missionId, completedMissionIds, router, toast]);
+  }, [progressData, missionId, completedMissionIds, router, toast, isUserLoading, isProgressLoading]);
 
   const handleCopy = () => {
     if (!content) return;
@@ -287,7 +287,7 @@ export default function MissionPage() {
       if (missionId === 'dia7') {
         setShowCelebration(true);
       } else {
-        toast({ title: "Missão Concluída!", description: `Etapa finalizada com sucesso! Próximo passo: ${content.cta}` });
+        toast({ title: "Missão Concluída!", description: `Etapa finalizada com sucesso!` });
         router.push('/dashboard');
       }
     } catch (error: any) {
@@ -295,6 +295,14 @@ export default function MissionPage() {
       setIsSubmitting(false);
     }
   };
+
+  if (isUserLoading || isProgressLoading) {
+    return (
+      <div className="min-h-screen bg-[#050508] flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (!content) return <div className="p-20 text-center text-muted-foreground font-black uppercase tracking-widest">Missão não encontrada</div>;
 
