@@ -73,17 +73,18 @@ export default function Dashboard() {
   }, [db, user]);
   const { data: subData } = useCollection(subQuery);
 
+  const isSpecialUser = user?.email === ADMIN_EMAIL;
+
+  const isProMember = useMemo(() => {
+    const hasActiveSub = subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime') && sub.status === 'active');
+    return hasActiveSub || isSpecialUser;
+  }, [subData, isSpecialUser]);
+
   const progressQuery = useMemoFirebase(() => {
     if (!db || !user) return null;
     return query(collection(db, 'users', user.uid, 'missionProgress'), orderBy('completedAt', 'desc'));
   }, [db, user]);
   const { data: progressData } = useCollection(progressQuery);
-
-  const isProMember = useMemo(() => {
-    return subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime') && sub.status === 'active');
-  }, [subData]);
-
-  const isSpecialUser = user?.email === ADMIN_EMAIL;
 
   useEffect(() => {
     async function fetchGoal() {
@@ -130,7 +131,7 @@ export default function Dashboard() {
   const chartData = useMemo(() => {
     const days = 30;
     const data = [];
-    const baseValue = isSpecialUser ? 28754 : totalEarnings;
+    const baseValue = totalEarnings;
     
     for (let i = days; i >= 0; i--) {
       const date = new Date();
@@ -150,7 +151,7 @@ export default function Dashboard() {
       });
     }
     return data;
-  }, [totalEarnings, isSpecialUser]);
+  }, [totalEarnings]);
 
   const userLevel = useMemo(() => {
     const missionsCount = completedMissionIds.length;
@@ -448,7 +449,7 @@ export default function Dashboard() {
                         {!isLocked && (
                           <Button asChild variant={isCurrent ? "default" : "ghost"} className="rounded-xl font-black uppercase text-[8px] md:text-[10px] tracking-widest h-10 md:h-12 px-4 md:px-8">
                             <Link href={`/missions/${mission.id}`}>
-                              {isCompleted ? 'REVISAR' : 'EXECUTAR'} <ArrowUpRight className="ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4" />
+                              {isCompleted ? 'REVISAR' : 'EXECUTAR'} <ArrowUpRight className="ml-1 md:ml-2 h-3 w-3 md:h-4 w-4" />
                             </Link>
                           </Button>
                         )}

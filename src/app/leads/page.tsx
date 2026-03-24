@@ -34,6 +34,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 
 const STATES = ["SP", "RJ", "MG", "PR", "SC", "RS", "BA", "CE", "PE", "GO"];
+const ADMIN_EMAIL = "thethegalo@gmail.com";
 
 export default function LeadsPage() {
   const { user } = useUser();
@@ -56,8 +57,9 @@ export default function LeadsPage() {
   const { data: subData } = useCollection(subQuery);
 
   const isProMember = useMemo(() => {
-    return subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime') && sub.status === 'active');
-  }, [subData]);
+    const hasActiveSub = subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime') && sub.status === 'active');
+    return hasActiveSub || user?.email === ADMIN_EMAIL;
+  }, [subData, user]);
 
   const handleSearch = async () => {
     if (!niche || !state) {

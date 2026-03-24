@@ -37,6 +37,8 @@ const SCRIPTS = {
   ]
 };
 
+const ADMIN_EMAIL = "thethegalo@gmail.com";
+
 export default function ResourcesPage() {
   const { user } = useUser();
   const db = useFirestore();
@@ -50,8 +52,9 @@ export default function ResourcesPage() {
   const { data: subData } = useCollection(subQuery);
 
   const isProMember = useMemo(() => {
-    return subData?.some(sub => sub.planType === 'monthly' && sub.status === 'active');
-  }, [subData]);
+    const hasActiveSub = subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime') && sub.status === 'active');
+    return hasActiveSub || user?.email === ADMIN_EMAIL;
+  }, [subData, user]);
 
   const copyToClipboard = (text: string, id: string, isPro: boolean) => {
     if (isPro && !isProMember) {
