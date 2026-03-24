@@ -339,6 +339,12 @@ export default function Dashboard() {
             </div>
             
             <div className="flex items-center gap-3">
+              <div className="text-right hidden sm:block">
+                <p className="text-[8px] font-black uppercase text-muted-foreground tracking-widest">Plano Atual</p>
+                <p className={`text-[10px] font-black uppercase italic ${userData?.plan === 'vitalicio' ? 'text-primary' : 'text-white'}`}>
+                  {userData?.plan === 'vitalicio' ? 'Vitalício' : userData?.plan === 'mensal' ? 'Mensal' : 'Nenhum'}
+                </p>
+              </div>
               <Badge variant="outline" className={`${isProMember ? 'bg-purple-500/10 border-purple-500/30 text-purple-400' : 'bg-white/5 border-white/10 text-muted-foreground'} text-[8px] font-black uppercase px-3 py-1`}>
                 {userData?.plan?.toUpperCase() || 'FREE PLAN'}
               </Badge>
@@ -350,15 +356,33 @@ export default function Dashboard() {
 
           <div className="flex-1 p-4 md:p-8 space-y-8 max-w-5xl mx-auto w-full">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-              <div className="space-y-2">
-                <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter leading-none">
-                  Status: {userData?.name?.split(' ')[0] || 'Guerreiro'}
-                </h1>
-                <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full w-fit">
-                  <div className={`${userLevel.color}`}>
-                    {userLevel.icon}
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter leading-none text-white">
+                    Guerreiro: {userData?.name?.split(' ')[0] || 'Flow'}
+                  </h1>
+                  <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full w-fit">
+                    <div className={`${userLevel.color}`}>
+                      {userLevel.icon}
+                    </div>
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${userLevel.color}`}>Patente {userLevel.name}</span>
                   </div>
-                  <span className={`text-[10px] font-black uppercase tracking-widest ${userLevel.color}`}>Patente {userLevel.name}</span>
+                </div>
+
+                {/* Status de Plano Dinâmico */}
+                <div className="space-y-2">
+                  {userData?.plan === 'mensal' && (
+                    <div className="flex items-center gap-2 px-3 py-1 bg-yellow-500/5 border border-yellow-500/20 rounded-full w-fit">
+                      <AlertCircle className="h-3 w-3 text-yellow-500" />
+                      <span className="text-[8px] font-bold uppercase tracking-widest text-yellow-500/80">Plano mensal possui limites diários</span>
+                    </div>
+                  )}
+                  {userData?.plan === 'vitalicio' && (
+                    <div className="flex items-center gap-2 px-3 py-1 bg-green-500/5 border border-green-500/20 rounded-full w-fit">
+                      <ShieldCheck className="h-3 w-3 text-green-500" />
+                      <span className="text-[8px] font-bold uppercase tracking-widest text-green-500/80">Acesso completo liberado</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
