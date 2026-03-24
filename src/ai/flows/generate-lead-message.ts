@@ -1,6 +1,7 @@
 'use server';
 /**
  * @fileOverview Gera mensagens personalizadas de abordagem para leads.
+ * Focado em prospecção natural e conversão rápida.
  */
 
 import { ai } from '@/ai/genkit';
@@ -28,14 +29,19 @@ const leadMessagePrompt = ai.definePrompt({
   name: 'leadMessagePrompt',
   input: { schema: GenerateLeadMessageInputSchema },
   output: { schema: GenerateLeadMessageOutputSchema },
-  prompt: `Você é um especialista em prospecção de vendas. 
-Gere uma mensagem curta, direta e amigável para abordar o dono de um(a) {{{businessType}}} chamado "{{{businessName}}}" em {{{city}}}.
+  prompt: `Você é um especialista em prospecção de vendas (Cold Outreach) via WhatsApp e Direct.
+Gere uma mensagem de abertura para o dono do negócio "{{{businessName}}}" ({{{businessType}}}) em {{{city}}}.
 
-A mensagem deve:
-1. Ser focada em ajudar o negócio a crescer ou resolver um problema (como falta de automação ou marketing).
-2. Não parecer spam.
-3. Terminar com uma pergunta simples para iniciar a conversa.
-4. Usar um tom profissional porém informal (estilo WhatsApp/Direct).`,
+DIRETRIZES DA MENSAGEM:
+1. TOM: Amigável, profissional e "humano". Evite parecer um robô ou script de vendas pronto.
+2. ESTRUTURA:
+   - Saudação informal (ex: "Opa, tudo bem?").
+   - Elogio ou Gancho: Mencione que viu o perfil deles e achou o trabalho de {{{businessType}}} interessante.
+   - Dor/Oportunidade: Mencione algo específico que pode ser melhorado (ex: automação de atendimento ou captação de clientes).
+   - Pergunta Aberta: Termine com uma pergunta simples para iniciar a conversa (ex: "Vocês já usam algo para automatizar isso por aí?").
+3. TAMANHO: Máximo 350 caracteres. Deve caber na tela do celular sem precisar de "ver mais".
+
+Gere apenas o texto da mensagem final.`,
 });
 
 const generateLeadMessageFlow = ai.defineFlow(

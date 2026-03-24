@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -15,9 +14,9 @@ import {
   Loader2,
   Filter,
   Users,
-  Lock,
   Star,
-  Copy
+  Copy,
+  Zap
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { generateLeadMessage } from '@/ai/flows/generate-lead-message';
@@ -64,7 +63,7 @@ export default function LeadsPage() {
 
   const isProMember = useMemo(() => {
     if (user?.email === 'thethegalo@gmail.com') return true;
-    return subData?.some(sub => sub.planType === 'monthly' && sub.status === 'active');
+    return subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime_admin') && sub.status === 'active');
   }, [subData, user]);
 
   const handleSearch = () => {
@@ -77,7 +76,6 @@ export default function LeadsPage() {
       return;
     }
     setLoading(true);
-    // Simulação de busca
     const count = isProMember ? 15 : 5;
     setTimeout(() => {
       setLeads(generateMockLeads(niche, city, state, count));
@@ -95,7 +93,7 @@ export default function LeadsPage() {
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast({ title: "Copiado!", description: "Informação copiada para a área de transferência." });
+    toast({ title: "Copiado!", description: "Contato copiado com sucesso." });
   };
 
   const handleGenMessage = async (lead: any) => {
@@ -117,8 +115,11 @@ export default function LeadsPage() {
       navigator.clipboard.writeText(res.message);
       toast({ 
         title: "Mensagem Gerada!", 
-        description: "A abordagem personalizada foi copiada. Agora é só enviar!" 
+        description: "A abordagem estratégica foi copiada para sua área de transferência." 
       });
+      if (!approachedLeads.includes(lead.id)) {
+        setApproachedLeads(prev => [...prev, lead.id]);
+      }
     } catch (e) {
       toast({ variant: "destructive", title: "Erro", description: "Falha ao gerar mensagem com IA." });
     } finally {
@@ -225,7 +226,7 @@ export default function LeadsPage() {
               ) : (
                 <div className="grid gap-4">
                   {leads.map((lead) => (
-                    <Card key={lead.id} className={`glass-card border-white/10 transition-all duration-500 rounded-[2rem] overflow-hidden ${approachedLeads.includes(lead.id) ? 'opacity-40 grayscale scale-[0.98]' : ''}`}>
+                    <Card key={lead.id} className={`glass-card border-white/10 transition-all duration-500 rounded-[2rem] overflow-hidden ${approachedLeads.includes(lead.id) ? 'border-primary/40 shadow-[0_0_20px_rgba(139,92,246,0.1)]' : ''}`}>
                       <CardContent className="p-8">
                         <div className="flex flex-col lg:flex-row justify-between gap-8">
                           <div className="flex gap-6 items-start">
@@ -253,13 +254,13 @@ export default function LeadsPage() {
                             </Button>
                             
                             <Button 
-                              variant="outline" 
+                              variant="default" 
                               size="sm"
                               onClick={() => handleGenMessage(lead)}
                               disabled={generatingMsg === lead.id}
-                              className="flex-1 lg:flex-none h-12 border-primary/30 text-primary rounded-xl text-[9px] font-black uppercase tracking-widest gap-2 hover:bg-primary/10"
+                              className="flex-1 lg:flex-none h-12 bg-primary text-white rounded-xl text-[9px] font-black uppercase tracking-widest gap-2 shadow-lg shadow-primary/20 hover:scale-105 transition-all"
                             >
-                              {generatingMsg === lead.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <MessageSquare className="h-3.5 w-3.5" />}
+                              {generatingMsg === lead.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Zap className="h-3.5 w-3.5 fill-white" />}
                               Gerar Mensagem IA
                             </Button>
 
