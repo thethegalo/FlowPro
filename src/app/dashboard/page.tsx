@@ -38,13 +38,9 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { useToast } from '@/hooks/use-toast';
 import { 
-  LineChart, 
-  Line, 
   XAxis, 
   YAxis, 
   CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
   Area,
   AreaChart
 } from 'recharts';
@@ -89,13 +85,15 @@ export default function Dashboard() {
   useEffect(() => {
     async function fetchGoal() {
       if (!db || !user) return;
-      const quizDoc = await getDoc(doc(db, 'users', user.uid, 'quizResponses', 'initial'));
-      if (quizDoc.exists()) {
-        const target = quizDoc.data().responses?.target;
-        if (target) {
-          setUserGoal(Array.isArray(target) ? target[0] : target);
+      try {
+        const quizDoc = await getDoc(doc(db, 'users', user.uid, 'quizResponses', 'initial'));
+        if (quizDoc.exists()) {
+          const target = quizDoc.data().responses?.target;
+          if (target) {
+            setUserGoal(Number(Array.isArray(target) ? target[0] : target));
+          }
         }
-      }
+      } catch (e) {}
     }
     fetchGoal();
   }, [db, user]);
@@ -123,26 +121,32 @@ export default function Dashboard() {
     }
   }, [isJourneyFinished, isProMember, router, isUserDocLoading]);
 
+  // Lógica de Ganhos: Para o Admin soma ao valor base de destaque
   const rawEarnings = userData?.totalEarnings || 0;
-  const totalEarnings = isSpecialUser ? 28754 : rawEarnings;
-  const earningsProgress = (totalEarnings / (isSpecialUser ? 50000 : userGoal)) * 100;
+  const totalEarnings = isSpecialUser ? 28754 + rawEarnings : rawEarnings;
+  const displayGoal = isSpecialUser ? 50000 : userGoal;
+  const earningsProgress = (totalEarnings / displayGoal) * 100;
 
-  // Gerador de dados para o gráfico
+  // Gerador de dados para o gráfico (Série temporal contínua dos últimos 30 dias)
   const chartData = useMemo(() => {
     const days = 30;
     const data = [];
     const baseValue = totalEarnings;
     
+    // Inicia 30 dias atrás e vem até hoje
     for (let i = days; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
       const dayStr = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
       
-      // Simulação de curva de crescimento
+      // Simulação de curva de crescimento realista baseada no ganho atual
       let value = 0;
       if (baseValue > 0) {
-        const factor = (days - i) / days;
-        value = Math.floor(baseValue * factor * (0.8 + Math.random() * 0.4));
+        // Fator de crescimento: quanto mais perto de hoje, maior o valor acumulado simulado
+        const growthFactor = (days - i) / days;
+        // Adiciona uma variação aleatória para não ser uma linha reta perfeita
+        const variation = 0.85 + Math.random() * 0.3; 
+        value = Math.floor(baseValue * growthFactor * variation);
       }
       
       data.push({
@@ -170,17 +174,19 @@ export default function Dashboard() {
     if (!db || !user) return;
     setIsAddingEarning(true);
     try {
-      await updateDoc(doc(db, 'users', user.uid), {
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
         totalEarnings: increment(100),
         updatedAt: serverTimestamp(),
         lastActionAt: serverTimestamp()
       });
       toast({
-        title: rawEarnings === 0 ? "🔥 Boa! Você já saiu do zero" : "Venda Registrada!",
+        title: rawEarnings === 0 && !isSpecialUser ? "🔥 Boa! Você já saiu do zero" : "Venda Registrada!",
         description: "+ R$ 100,00 adicionados ao seu placar."
       });
-    } catch (e) {
-      toast({ variant: "destructive", title: "Erro ao atualizar ganhos" });
+    } catch (e: any) {
+      console.error("Erro ao adicionar ganho:", e);
+      toast({ variant: "destructive", title: "Erro ao atualizar ganhos", description: "Verifique sua conexão ou permissões." });
     } finally {
       setIsAddingEarning(false);
     }
@@ -281,7 +287,10 @@ export default function Dashboard() {
                 <ChartContainer config={{ 
                   ganhos: { label: "Ganhos", color: "hsl(var(--primary))" } 
                 }}>
-                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                  <AreaChart 
+                    data={chartData} 
+                    margin={{ top: 10, right: 0, left: -20, bottom: 0 }}
+                  >
                     <defs>
                       <linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
@@ -295,12 +304,14 @@ export default function Dashboard() {
                       tickLine={false} 
                       tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
                       dy={10}
+                      minTickGap={30}
                     />
                     <YAxis 
                       axisLine={false} 
                       tickLine={false} 
                       tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
-                      tickFormatter={(value) => `R$ ${value}`}
+                      tickFormatter={(value) => `R$ ${value >= 1000 ? value / 1000 + 'k' : value}`}
+                      domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.2 / 1000) * 1000]}
                     />
                     <ChartTooltip content={<ChartTooltipContent />} />
                     <Area 
@@ -310,6 +321,7 @@ export default function Dashboard() {
                       strokeWidth={3}
                       fillOpacity={1} 
                       fill="url(#colorGanhos)" 
+                      animationDuration={1500}
                     />
                   </AreaChart>
                 </ChartContainer>
@@ -321,7 +333,7 @@ export default function Dashboard() {
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-center">
                     <span className="text-[10px] font-black uppercase tracking-widest text-primary">Seus Ganhos</span>
-                    <Badge variant="outline" className="text-[8px] border-primary/20 text-primary">META: R$ {isSpecialUser ? 50000 : userGoal}</Badge>
+                    <Badge variant="outline" className="text-[8px] border-primary/20 text-primary">META: R$ {displayGoal.toLocaleString('pt-BR')}</Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
