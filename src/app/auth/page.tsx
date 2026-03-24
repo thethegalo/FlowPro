@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Zap, Loader2, ShieldCheck } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Zap, Loader2, ShieldCheck, Smartphone, Download } from 'lucide-react';
 import { useAuth, useFirestore } from '@/firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -84,7 +85,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050508] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#050508] flex flex-col items-center justify-center p-4">
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[140px]"></div>
       </div>
@@ -136,6 +137,14 @@ export default function AuthPage() {
                 required
               />
             </div>
+
+            <div className="flex items-center justify-between pb-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox id="remember" className="border-white/20" />
+                <label htmlFor="remember" className="text-[9px] font-black uppercase tracking-widest opacity-50 cursor-pointer">Lembrar acesso</label>
+              </div>
+              <button type="button" className="text-[9px] font-black uppercase tracking-widest text-primary/60 hover:text-primary transition-colors">Esqueci a senha</button>
+            </div>
             
             <Button className="w-full bg-primary hover:bg-primary/90 h-14 font-black uppercase tracking-widest rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98]" disabled={isLoading}>
               {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : isLogin ? 'ENTRAR' : 'SOLICITAR ACESSO'}
@@ -155,6 +164,13 @@ export default function AuthPage() {
             >
               {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Faça Login'}
             </button>
+          </div>
+
+          <div className="text-center mt-8 pt-6 border-t border-white/5">
+            <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-3">Versão Mobile Disponível</p>
+            <Button variant="outline" size="sm" className="h-10 rounded-xl border-white/10 text-[9px] font-black uppercase tracking-widest gap-2 w-full hover:bg-white/5">
+              <Smartphone className="h-3.5 w-3.5" /> BAIXAR FLOWPRO APP
+            </Button>
           </div>
         </CardContent>
       </Card>

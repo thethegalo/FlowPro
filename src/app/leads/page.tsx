@@ -22,7 +22,8 @@ import {
   AlertTriangle,
   ExternalLink,
   Send,
-  History
+  History,
+  Download
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { generateLeadMessage } from '@/ai/flows/generate-lead-message';
@@ -211,6 +212,24 @@ export default function LeadsPage() {
     }
   };
 
+  const handleExport = () => {
+    if (leads.length === 0) return;
+    
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + "Nome,Tipo,Cidade,Estado,Telefone,Endereco\n"
+      + leads.map(l => `"${l.name}","${l.type}","${l.city}","${l.state}","${l.phone}","${l.address}"`).join("\n");
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `leads_flowpro_${niche}_${state}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast({ title: "Download Iniciado", description: "Sua lista de leads foi exportada com sucesso." });
+  };
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-[#050508]">
@@ -231,6 +250,11 @@ export default function LeadsPage() {
                     {isUnlimited ? 'USO ILIMITADO' : `Créditos: ${userData?.dailyUsage?.leadsUsed || 0}/20`}
                   </span>
                </div>
+               {leads.length > 0 && (
+                 <Button onClick={handleExport} variant="outline" size="sm" className="h-8 rounded-lg border-primary/20 text-primary text-[8px] font-black uppercase px-3 gap-2 hover:bg-primary hover:text-white transition-all">
+                   <Download className="h-3 w-3" /> EXPORTAR
+                 </Button>
+               )}
                <Badge className={`bg-primary/20 text-primary border-primary/30 text-[8px] font-black uppercase px-2 md:px-3 py-1 ${isUnlimited ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' : ''}`}>
                  {userData?.plan?.toUpperCase() || 'FREE'}
                </Badge>
@@ -289,9 +313,16 @@ export default function LeadsPage() {
             </Card>
 
             <div className="space-y-6 pb-20">
-              <h2 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter">
-                {leads.length > 0 ? `Resultados (${leads.length})` : 'Aguardando Busca'}
-              </h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter">
+                  {leads.length > 0 ? `Resultados (${leads.length})` : 'Aguardando Busca'}
+                </h2>
+                {leads.length > 0 && (
+                  <Button onClick={handleExport} variant="ghost" size="sm" className="text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary gap-2">
+                    <Download className="h-3 w-3" /> Lembrar de Baixar Lista
+                  </Button>
+                )}
+              </div>
 
               {!isProMember && leads.length > 0 && (
                 <div className="p-4 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-between gap-4">
