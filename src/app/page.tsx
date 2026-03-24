@@ -43,7 +43,7 @@ const faqs = [
   { q: "Preciso aparecer nas redes sociais?", a: "Não. Ensinamos estratégias de bastidores onde você pode prospectar e vender sem nunca mostrar o rosto." },
   { q: "O acesso é vitalício?", a: "Oferecemos planos Vitalícios para a Fase 1 e planos Mensais para quem deseja escala ilimitada com IA avançada." },
   { q: "Como encontro os clientes?", a: "O Radar de Leads integrado busca empresas reais direto do Google com telefone e endereço, filtrando pelo seu nicho de escolha." },
-  { q: "Tenho suporte se tiver dúvidas?", a: "Sim. Além do Mentor IA 24h, você tem acesso aos scripts e materiais de apoio na biblioteca de recursos." },
+  { q: "Tenho suporte se tiver dúvidas?", a: "Sim. Além do Mentor IA 24h por dia para tirar qualquer dúvida técnica ou estratégica." },
   { q: "O que é o Método Flow?", a: "É um ecossistema de vendas que une prospecção fria, IA neural e automação para criar um fluxo constante de caixa." }
 ];
 
@@ -163,7 +163,7 @@ export default function Home() {
 
       <footer className="py-20 border-t border-white/5 bg-[#030305] text-center">
         <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.5em]">
-          © 2024 FLOWPRO NEURAL SYSTEMS
+          © 2026 FLOWPRO NEURAL SYSTEMS
         </p>
       </footer>
     </div>
