@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -21,11 +20,16 @@ import {
   History,
   Lightbulb,
   Search,
-  Settings2
+  Settings2,
+  Loader2,
+  ChevronRight,
+  ShieldCheck,
+  Cpu
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { useToast } from '@/hooks/use-toast';
+import { generateMasterPrompt } from '@/ai/flows/generate-master-prompt';
 
 const PROMPT_TEMPLATES = [
   {
@@ -34,16 +38,6 @@ const PROMPT_TEMPLATES = [
     icon: <Settings2 className="h-4 w-4" />,
     description: 'Crie um comando mestre para qualquer necessidade específica.',
     fields: ['niche', 'serviceType', 'goal', 'style'],
-    template: (data: any) => `Atue como um Especialista em Marketing Digital e Vendas de Alta Performance.
-CONTEXTO: Atuo no nicho de ${data.niche || '[Nicho]'} e ofereço o serviço de ${data.serviceType || '[Serviço]'}.
-MEU OBJETIVO COM ESTE PROMPT: ${data.goal || '[Objetivo]'}.
-${data.style ? `ESTILO E TOM DE VOZ: Utilize um estilo ${data.style}.` : ''}
-
-REQUISITOS DO OUTPUT:
-1. Forneça uma solução prática e direto ao ponto.
-2. Use gatilhos mentais adequados ao nicho mencionado.
-3. Foque 100% em conversão e ROI.
-Gere agora o conteúdo/estratégia solicitado.`
   },
   {
     id: 'sites',
@@ -51,18 +45,6 @@ Gere agora o conteúdo/estratégia solicitado.`
     icon: <Globe className="h-4 w-4" />,
     description: 'Crie o roteiro completo de uma Landing Page que vende.',
     fields: ['product', 'niche', 'target'],
-    template: (data: any) => `Atue como um Copywriter de Resposta Direta e Especialista em UX Design.
-Crie a estrutura completa de uma Landing Page focada em conversão para: ${data.product || '[Produto/Serviço]'}.
-O nicho é ${data.niche || '[Nicho]'} e o público-alvo são ${data.target || '[Público]'}.
-ESTRUTURA NECESSÁRIA:
-1. Headline Irresistível (Gancho + Benefício + Curiosidade).
-2. Subheadline explicativa.
-3. Seção de Dor (Liste 3 problemas comuns do público).
-4. Seção de Solução (Como meu produto resolve isso).
-5. Prova Social (Dicas de onde colocar depoimentos).
-6. Oferta e Garantia.
-7. CTA (Chamada para ação clara).
-Use gatilhos mentais de escassez e autoridade.`
   },
   {
     id: 'logo',
@@ -70,11 +52,6 @@ Use gatilhos mentais de escassez e autoridade.`
     icon: <Palette className="h-4 w-4" />,
     description: 'Gere instruções perfeitas para IAs de imagem.',
     fields: ['businessName', 'style', 'colors'],
-    template: (data: any) => `Generate a professional logo design prompt for "${data.businessName || '[Nome do Negócio]'}".
-Style: ${data.style || 'Minimalist, modern, and clean'}.
-Primary Colors: ${data.colors || 'Luxury gold and deep black'}.
-TECHNICAL SPECS: Vector style, flat design, high resolution, 8k, white background, symmetrical, professional typography, trending on Behance.
-Ensure the symbol represents growth and elite performance.`
   },
   {
     id: 'outreach',
@@ -82,12 +59,6 @@ Ensure the symbol represents growth and elite performance.`
     icon: <MessageSquare className="h-4 w-4" />,
     description: 'Para mensagens de WhatsApp/Direct que convertem.',
     fields: ['product', 'niche', 'tone'],
-    template: (data: any) => `Atue como um especialista em Cold Outreach e Psicologia de Vendas.
-Gere uma mensagem de abordagem curta e altamente personalizada para um dono de negócio do nicho de ${data.niche || '[Nicho]'}.
-O produto/serviço que estou oferecendo é: ${data.product || '[Produto/Serviço]'}.
-O tom da mensagem deve ser ${data.tone || 'amigável e profissional'}.
-FOCO: Começar com um elogio genuíno, citar um gargalo de mercado que ele provavelmente tem e terminar com uma pergunta aberta que desperte curiosidade.
-LIMITE: Máximo 300 caracteres.`
   },
   {
     id: 'closing',
@@ -95,10 +66,6 @@ LIMITE: Máximo 300 caracteres.`
     icon: <Target className="h-4 w-4" />,
     description: 'Para converter interessados em clientes pagantes.',
     fields: ['product', 'price', 'objection'],
-    template: (data: any) => `Sou um vendedor fechando um contrato de ${data.product || '[Produto]'} por R$ ${data.price || '[Preço]'}.
-O cliente apresentou a seguinte dúvida/objeção: "${data.objection || 'Vou pensar e te falo'}".
-Gere uma resposta estratégica que utilize a técnica de "Inversão de Risco" e foque no custo de oportunidade (o quanto ele perde por não fechar hoje).
-O tom deve ser confiante, escasso e direto ao ponto.`
   },
   {
     id: 'followup',
@@ -106,14 +73,6 @@ O tom deve ser confiante, escasso e direto ao ponto.`
     icon: <History className="h-4 w-4" />,
     description: 'Retome conversas paradas sem parecer chato.',
     fields: ['businessName', 'context'],
-    template: (data: any) => `Gere uma mensagem de follow-up estratégica para "${data.businessName || '[Negócio]'}".
-Contexto da última conversa: ${data.context || 'Mandei a proposta mas não respondeu'}.
-DIRETRIZES:
-1. Não peça desculpas por incomodar.
-2. Use o gancho: "Acredito que as coisas estejam corridas por aí...".
-3. Agregue um valor rápido (ex: "Vi uma atualização no seu nicho e lembrei de você").
-4. Termine com uma pergunta de sim ou não sobre o próximo passo.
-Máximo 200 caracteres.`
   },
   {
     id: 'offer',
@@ -121,13 +80,6 @@ Máximo 200 caracteres.`
     icon: <Lightbulb className="h-4 w-4" />,
     description: 'Transforme seu serviço em uma oferta irresistível.',
     fields: ['niche', 'mainProblem'],
-    template: (data: any) => `Atue como um Especialista em Estratégia de Produtos e Ofertas Irresistíveis.
-Meu nicho é ${data.niche || '[Nicho]'} e o maior problema que resolvo é ${data.mainProblem || '[Problema]'}.
-Crie 3 variações de ofertas "High Ticket":
-1. Oferta de Implementação (Você faz para ele).
-2. Oferta de Acompanhamento (Você ensina ele a fazer).
-3. Oferta Híbrida (Software + Consultoria).
-Para cada uma, defina um nome impactante, o que está incluso e por que ele não pode dizer não.`
   }
 ];
 
@@ -135,7 +87,7 @@ const FIELD_LABELS: Record<string, string> = {
   niche: 'Nicho do Negócio',
   serviceType: 'Tipo de Serviço',
   goal: 'Qual seu Objetivo?',
-  style: 'Estilo / Tom de Voz (Opcional)',
+  style: 'Estilo / Tom de Voz',
   product: 'Seu Produto/Serviço',
   target: 'Público Alvo',
   businessName: 'Nome da Empresa',
@@ -167,12 +119,27 @@ export default function PromptsPage() {
   const [activeTemplate, setActiveTemplate] = useState(PROMPT_TEMPLATES[0]);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [generatedPrompt, setGeneratedPrompt] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [complexity, setComplexity] = useState<'simple' | 'advanced'>('advanced');
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
-  const handleGenerate = () => {
-    const prompt = activeTemplate.template(formData);
-    setGeneratedPrompt(prompt);
+  const handleGenerate = async () => {
+    setIsLoading(true);
+    setGeneratedPrompt('');
+    try {
+      const res = await generateMasterPrompt({
+        category: activeTemplate.title,
+        variables: formData,
+        complexity: complexity
+      });
+      setGeneratedPrompt(res.prompt);
+      toast({ title: "Motor Neural Concluído", description: "O prompt foi gerado com sucesso." });
+    } catch (e) {
+      toast({ variant: "destructive", title: "Erro na Geração", description: "Ocorreu um problema ao conectar com a rede neural." });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCopy = () => {
@@ -206,24 +173,41 @@ export default function PromptsPage() {
           </header>
 
           <div className="flex-1 container max-w-5xl mx-auto p-4 md:p-8 space-y-8">
-            <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[8px] font-black uppercase tracking-widest">
-                <Sparkles className="h-3 w-3" /> Engenharia Neural Ativa
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+              <div className="space-y-2">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[8px] font-black uppercase tracking-widest">
+                  <Cpu className="h-3 w-3 animate-pulse" /> Engenharia Neural Ativa
+                </div>
+                <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white">Fábrica de Comandos</h2>
+                <p className="text-muted-foreground text-sm uppercase font-bold tracking-widest">Transforme variáveis em instruções de alta performance.</p>
               </div>
-              <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white">Fábrica de Comandos</h2>
-              <p className="text-muted-foreground text-sm uppercase font-bold tracking-widest">Transforme variáveis em instruções de alta performance para extrair o melhor da IA.</p>
+
+              <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
+                <button 
+                  onClick={() => setComplexity('simple')}
+                  className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${complexity === 'simple' ? 'bg-white text-black' : 'text-muted-foreground hover:text-white'}`}
+                >
+                  Simples
+                </button>
+                <button 
+                  onClick={() => setComplexity('advanced')}
+                  className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${complexity === 'advanced' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-muted-foreground hover:text-white'}`}
+                >
+                  Avançado
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               {/* Seleção de Templates */}
               <div className="lg:col-span-4 space-y-4">
-                <div className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Selecione o Objetivo</div>
+                <div className="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2 px-2">Selecione o Objetivo</div>
                 <div className="grid gap-3">
                   {PROMPT_TEMPLATES.map((t) => (
                     <button
                       key={t.id}
                       onClick={() => handleTemplateChange(t)}
-                      className={`p-4 rounded-2xl border text-left transition-all group ${
+                      className={`p-4 rounded-2xl border text-left transition-all group relative overflow-hidden ${
                         activeTemplate.id === t.id 
                         ? 'bg-primary/10 border-primary text-white shadow-[0_0_20px_rgba(139,92,246,0.1)]' 
                         : 'bg-white/[0.02] border-white/5 text-muted-foreground hover:bg-white/[0.05] hover:border-white/10'
@@ -236,6 +220,11 @@ export default function PromptsPage() {
                         <span className="text-xs font-black uppercase italic tracking-tight">{t.title}</span>
                       </div>
                       <p className="text-[10px] font-medium leading-relaxed opacity-60">{t.description}</p>
+                      {activeTemplate.id === t.id && (
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                          <ChevronRight className="h-4 w-4 text-primary animate-pulse" />
+                        </div>
+                      )}
                     </button>
                   ))}
                 </div>
@@ -258,7 +247,7 @@ export default function PromptsPage() {
                           </Label>
                           <Input 
                             placeholder={FIELD_PLACEHOLDERS[field] || 'Preencha aqui...'}
-                            className="bg-white/5 border-white/10 h-12 rounded-xl focus-visible:ring-primary"
+                            className="bg-white/5 border-white/10 h-12 rounded-xl focus-visible:ring-primary font-medium"
                             value={formData[field] || ''}
                             onChange={(e) => setFormData({...formData, [field]: e.target.value})}
                           />
@@ -268,38 +257,51 @@ export default function PromptsPage() {
 
                     <Button 
                       onClick={handleGenerate}
-                      className="w-full h-14 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-[0.98]"
+                      disabled={isLoading || Object.values(formData).filter(v => v.trim()).length === 0}
+                      className="w-full h-14 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-[0.98] group"
                     >
-                      GERAR PROMPT MESTRE <Zap className="ml-2 h-4 w-4 fill-white" />
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          ENGENHARIA NEURAL...
+                        </>
+                      ) : (
+                        <>
+                          GERAR COMANDO MESTRE <Zap className="ml-2 h-4 w-4 fill-white group-hover:scale-125 transition-transform" />
+                        </>
+                      )}
                     </Button>
                   </CardContent>
                 </Card>
 
                 {/* Resultado */}
                 {generatedPrompt && (
-                  <Card className="bg-primary/5 border border-primary/20 rounded-[2.5rem] overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <Card className="bg-primary/5 border border-primary/20 rounded-[2.5rem] overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700">
                     <CardHeader className="flex flex-row items-center justify-between p-6 border-b border-primary/10">
                       <div className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                        <Zap className="h-3 w-3 fill-primary" /> Prompt Gerado com Sucesso
+                        <ShieldCheck className="h-3 w-3 fill-primary" /> Comando Pronto para Operação
                       </div>
                       <Button 
                         size="sm" 
                         variant="ghost" 
                         onClick={handleCopy}
-                        className="text-[10px] font-black uppercase tracking-widest h-8 text-primary hover:bg-primary/10"
+                        className={`text-[10px] font-black uppercase tracking-widest h-8 transition-all ${copied ? 'text-green-500' : 'text-primary hover:bg-primary/10'}`}
                       >
                         {copied ? <Check className="h-3 w-3 mr-2" /> : <Copy className="h-3 w-3 mr-2" />}
                         {copied ? 'COPIADO' : 'COPIAR TUDO'}
                       </Button>
                     </CardHeader>
                     <CardContent className="p-8">
-                      <div className="bg-black/40 p-6 rounded-2xl border border-white/5">
+                      <div className="bg-black/40 p-6 rounded-2xl border border-white/5 group relative">
                         <pre className="text-sm font-medium text-white/80 leading-relaxed whitespace-pre-wrap italic">
-                          "{generatedPrompt}"
+                          {generatedPrompt}
                         </pre>
+                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                           <Sparkles className="h-4 w-4 text-primary/40" />
+                        </div>
                       </div>
                       <p className="text-[8px] text-center mt-6 text-muted-foreground uppercase font-black tracking-[0.3em]">
-                        Dica: Cole este comando no ChatGPT, Claude ou Midjourney para resultados imediatos.
+                        Dica: Cole este comando em uma nova conversa da sua IA favorita.
                       </p>
                     </CardContent>
                   </Card>
