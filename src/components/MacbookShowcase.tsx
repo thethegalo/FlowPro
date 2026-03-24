@@ -5,7 +5,7 @@ import React from 'react';
 
 export function MacbookShowcase() {
   return (
-    <div className="flex items-center justify-center w-full py-10 md:py-20 overflow-hidden bg-transparent">
+    <div className="flex items-center justify-center w-full py-12 md:py-32 overflow-hidden bg-transparent">
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 
@@ -15,21 +15,48 @@ export function MacbookShowcase() {
           align-items: center; 
           font-family: 'DM Sans', sans-serif;
           width: 100%;
+          min-height: 400px;
         }
 
         .scene {
           display: flex;
-          align-items: flex-end;
-          gap: 20px;
+          flex-direction: column;
+          align-items: center;
+          gap: 40px;
           position: relative;
-          transform: scale(0.25);
+          transform: scale(0.42);
           transform-origin: center;
         }
 
-        @media (min-width: 480px) { .scene { transform: scale(0.35); gap: 30px; } }
-        @media (min-width: 640px) { .scene { transform: scale(0.5); gap: 40px; } }
-        @media (min-width: 768px) { .scene { transform: scale(0.7); gap: 50px; } }
-        @media (min-width: 1024px) { .scene { transform: scale(1); gap: 60px; } }
+        @media (min-width: 480px) { 
+          .scene { 
+            transform: scale(0.55); 
+            gap: 50px; 
+          } 
+        }
+
+        @media (min-width: 768px) { 
+          .scene { 
+            flex-direction: row;
+            align-items: flex-end;
+            transform: scale(0.7); 
+            gap: 40px; 
+          } 
+        }
+
+        @media (min-width: 1024px) { 
+          .scene { 
+            transform: scale(0.85); 
+            gap: 50px; 
+          } 
+        }
+
+        @media (min-width: 1280px) { 
+          .scene { 
+            transform: scale(1); 
+            gap: 60px; 
+          } 
+        }
 
         /* ========== NOTEBOOK ========== */
         .notebook {
@@ -497,6 +524,11 @@ export function MacbookShowcase() {
           font-size: 14px;
         }
 
+        .di-1 { background: rgba(124,58,237,0.5); }
+        .di-2 { background: rgba(16,185,129,0.4); }
+        .di-3 { background: rgba(59,130,246,0.4); }
+        .di-4 { background: rgba(245,158,11,0.4); }
+
         .nb-glow {
           position: absolute;
           bottom: -30px;
@@ -526,7 +558,6 @@ export function MacbookShowcase() {
           <div className="notebook">
             <div className="nb-lid">
               <div className="nb-screen">
-                {/* Top bar */}
                 <div className="sc-topbar">
                   <div className="sc-topbar-dots">
                     <div className="sc-dot" style={{background:'#ff5f57'}}></div>
@@ -537,7 +568,6 @@ export function MacbookShowcase() {
                   <div className="sc-topbar-time">14:32</div>
                 </div>
 
-                {/* Main content */}
                 <div className="sc-content">
                   <div className="sc-title-row">
                     <div className="sc-title">Painel de Vendas</div>
