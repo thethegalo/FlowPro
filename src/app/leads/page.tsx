@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
-  ArrowLeft, 
   Search, 
   Check, 
   MapPin, 
@@ -17,7 +16,8 @@ import {
   Filter,
   Users,
   Lock,
-  Star
+  Star,
+  Copy
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { generateLeadMessage } from '@/ai/flows/generate-lead-message';
@@ -27,20 +27,18 @@ import { collection, query } from 'firebase/firestore';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 
-const BUSINESS_TYPES = [
-  "Barbearia", "Salão de Beleza", "Pizzaria", "Restaurante", "Loja de Roupas", "Academia", "Clínica"
-];
+const STATES = ["SP", "RJ", "MG", "PR", "SC", "RS", "BA", "CE", "PE", "GO"];
 
-const STATES = ["SP", "RJ", "MG", "PR", "SC", "RS", "BA", "CE"];
-
-const generateMockLeads = (type: string, city: string, count: number) => {
+const generateMockLeads = (niche: string, city: string, state: string, count: number) => {
+  const suffixes = ['Express', 'Master', 'Alpha', 'Flow', 'Prime', 'Inovação', 'Soluções'];
   return Array.from({ length: count }).map((_, i) => ({
-    id: `lead-${i}`,
-    name: `${type} ${['Express', 'Master', 'Alpha', 'Flow', 'Prime'][i % 5]} ${city}`,
-    type,
-    city,
-    instagram: `@${type.toLowerCase().replace(' ', '')}_${city.toLowerCase()}_${i}`,
-    phone: `(11) 9${Math.floor(10000000 + Math.random() * 90000000)}`,
+    id: `lead-${i}-${Date.now()}`,
+    name: `${niche.charAt(0).toUpperCase() + niche.slice(1)} ${suffixes[i % suffixes.length]} ${city || 'Central'}`,
+    type: niche,
+    city: city || 'Capital',
+    state: state,
+    instagram: `@${niche.toLowerCase().replace(/\s/g, '')}_${(city || 'lead').toLowerCase()}_${i}`,
+    phone: `(${Math.floor(10 + Math.random() * 80)}) 9${Math.floor(10000000 + Math.random() * 90000000)}`,
     status: 'new'
   }));
 };
@@ -52,8 +50,8 @@ export default function LeadsPage() {
   
   const [loading, setLoading] = useState(false);
   const [leads, setLeads] = useState<any[]>([]);
+  const [niche, setNiche] = useState('');
   const [city, setCity] = useState('');
-  const [type, setType] = useState('');
   const [state, setState] = useState('');
   const [generatingMsg, setGeneratingMsg] = useState<string | null>(null);
   const [approachedLeads, setApproachedLeads] = useState<string[]>([]);
@@ -70,24 +68,43 @@ export default function LeadsPage() {
   }, [subData, user]);
 
   const handleSearch = () => {
-    if (!type || !state) {
-      toast({ variant: "destructive", title: "Erro", description: "Selecione o tipo e o estado." });
+    if (!niche || !state) {
+      toast({ 
+        variant: "destructive", 
+        title: "Campos Obrigatórios", 
+        description: "Por favor, digite o nicho e selecione o estado." 
+      });
       return;
     }
     setLoading(true);
+    // Simulação de busca
     const count = isProMember ? 15 : 5;
     setTimeout(() => {
-      setLeads(generateMockLeads(type, city || 'Sua Cidade', count));
+      setLeads(generateMockLeads(niche, city, state, count));
       setLoading(false);
       if (!isProMember) {
-        toast({ title: "Limite Básico atingido", description: "Assine o Flow Pro para leads ilimitados." });
+        toast({ 
+          title: "Limite Básico", 
+          description: "Você está vendo 5 resultados. Assine o Pro para liberar centenas." 
+        });
+      } else {
+        toast({ title: "Busca Concluída", description: `Encontramos novos leads de ${niche} em ${state}.` });
       }
-    }, 1500);
+    }, 1200);
+  };
+
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({ title: "Copiado!", description: "Informação copiada para a área de transferência." });
   };
 
   const handleGenMessage = async (lead: any) => {
     if (!isProMember && approachedLeads.length >= 3) {
-      toast({ variant: "destructive", title: "Recurso Bloqueado", description: "IA avançada é exclusiva para membros Flow Pro." });
+      toast({ 
+        variant: "destructive", 
+        title: "Limite de IA atingido", 
+        description: "A geração de mensagens ilimitada é exclusiva para membros Flow Pro." 
+      });
       return;
     }
     setGeneratingMsg(lead.id);
@@ -98,7 +115,10 @@ export default function LeadsPage() {
         city: lead.city
       });
       navigator.clipboard.writeText(res.message);
-      toast({ title: "Mensagem Gerada!", description: "Abordagem copiada para a área de transferência." });
+      toast({ 
+        title: "Mensagem Gerada!", 
+        description: "A abordagem personalizada foi copiada. Agora é só enviar!" 
+      });
     } catch (e) {
       toast({ variant: "destructive", title: "Erro", description: "Falha ao gerar mensagem com IA." });
     } finally {
@@ -128,135 +148,128 @@ export default function LeadsPage() {
             </div>
             {isProMember ? (
               <Badge className="bg-primary/20 text-primary border-primary/30 text-[8px] font-black uppercase px-3 py-1">
-                <Star className="h-3 w-3 mr-1 fill-primary" /> UNLIMITED ACCESS
+                <Star className="h-3 w-3 mr-1 fill-primary" /> ACESSO ILIMITADO
               </Badge>
             ) : (
                <Button asChild size="sm" variant="outline" className="h-8 text-[9px] font-black uppercase tracking-widest border-primary/30 text-primary hover:bg-primary/10">
-                 <Link href="/paywall">UPGRADE TO PRO</Link>
+                 <Link href="/paywall">UPGRADE PRO</Link>
                </Button>
             )}
           </header>
 
           <div className="flex-1 container max-w-4xl mx-auto p-4 md:p-8 space-y-8">
-            {!isProMember && (
-              <Card className="bg-primary/5 border border-primary/20 p-4 rounded-2xl flex items-center justify-between gap-4">
-                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 bg-primary/20 rounded-xl flex items-center justify-center text-primary">
-                      <Lock className="h-5 w-5" />
-                    </div>
-                    <div>
-                       <p className="text-xs font-black uppercase tracking-widest">Limite da Fase 1</p>
-                       <p className="text-[10px] text-muted-foreground uppercase font-medium">Você está no plano básico. Resultados e recursos limitados.</p>
-                    </div>
-                 </div>
-                 <Button asChild size="sm" className="bg-primary hover:bg-primary/90 rounded-xl text-[9px] font-black uppercase tracking-widest px-6">
-                    <Link href="/paywall">LIBERAR ESCALA</Link>
-                 </Button>
-              </Card>
-            )}
-
-            <Card className="glass-card border-white/10 overflow-hidden">
-              <CardHeader className="bg-white/5 border-b border-white/5">
+            <Card className="glass-card border-white/10 overflow-hidden rounded-[2rem]">
+              <CardHeader className="bg-white/5 border-b border-white/5 p-6">
                 <CardTitle className="text-sm font-black uppercase tracking-widest italic flex items-center gap-2">
-                  <Filter className="h-4 w-4 text-primary" /> Filtros de Prospecção
+                  <Filter className="h-4 w-4 text-primary" /> Radar de Prospecção
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest opacity-50">Nicho</label>
-                    <Select onValueChange={setType}>
-                      <SelectTrigger className="bg-white/5 border-white/10 rounded-xl h-12">
+              <CardContent className="p-8">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                  <div className="md:col-span-5 space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest opacity-50">O que você quer vender?</label>
+                    <Input 
+                      placeholder="Ex: Barbearia, Dentista, Loja..." 
+                      className="bg-white/5 border-white/10 h-14 rounded-2xl focus-visible:ring-primary"
+                      value={niche}
+                      onChange={e => setNiche(e.target.value)}
+                    />
+                  </div>
+                  <div className="md:col-span-3 space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest opacity-50">Estado (UF)</label>
+                    <Select onValueChange={setState}>
+                      <SelectTrigger className="bg-white/5 border-white/10 rounded-2xl h-14">
                         <SelectValue placeholder="Selecione..." />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#050508] border-white/10">
-                        {BUSINESS_TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest opacity-50">Estado</label>
-                    <Select onValueChange={setState}>
-                      <SelectTrigger className="bg-white/5 border-white/10 rounded-xl h-12">
-                        <SelectValue placeholder="UF" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-[#050508] border-white/10">
+                      <SelectContent className="bg-[#0b0b14] border-white/10 text-white">
                         {STATES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2 md:col-span-1">
-                    <label className="text-[10px] font-black uppercase tracking-widest opacity-50">Cidade</label>
+                  <div className="md:col-span-4 space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest opacity-50">Cidade (Opcional)</label>
                     <Input 
                       placeholder="Ex: São Paulo" 
-                      className="bg-white/5 border-white/10 h-12 rounded-xl"
+                      className="bg-white/5 border-white/10 h-14 rounded-2xl focus-visible:ring-primary"
                       value={city}
                       onChange={e => setCity(e.target.value)}
                     />
                   </div>
-                  <div className="flex items-end">
+                  <div className="md:col-span-12">
                     <Button 
                       onClick={handleSearch} 
                       disabled={loading}
-                      className="w-full h-12 bg-primary rounded-xl font-black uppercase tracking-widest"
+                      className="w-full h-16 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-[0.98]"
                     >
-                      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Search className="h-4 w-4 mr-2" /> BUSCAR</>}
+                      {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><Search className="h-5 w-5 mr-2" /> BUSCAR LEADS AGORA</>}
                     </Button>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-black italic uppercase tracking-tighter">
-                  Resultados {leads.length > 0 && `(${leads.length})`}
+                <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3">
+                  Resultados Encontrados {leads.length > 0 && <Badge className="bg-white/5 text-white border-white/10 ml-2">{leads.length}</Badge>}
                 </h2>
               </div>
 
               {leads.length === 0 ? (
-                <div className="py-20 text-center glass-card rounded-[2rem] border-dashed">
-                  <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-20" />
-                  <p className="text-muted-foreground uppercase text-[10px] font-black tracking-widest">Nenhum lead buscado ainda</p>
+                <div className="py-24 text-center glass-card rounded-[3rem] border-dashed border-white/5">
+                  <div className="h-20 w-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 opacity-20">
+                    <Search className="h-10 w-10 text-white" />
+                  </div>
+                  <p className="text-muted-foreground uppercase text-[10px] font-black tracking-[0.3em]">Defina um nicho e inicie a busca</p>
                 </div>
               ) : (
                 <div className="grid gap-4">
                   {leads.map((lead) => (
-                    <Card key={lead.id} className={`glass-card border-white/10 transition-all ${approachedLeads.includes(lead.id) ? 'opacity-50 grayscale' : ''}`}>
-                      <CardContent className="p-6">
-                        <div className="flex flex-col md:flex-row justify-between gap-6">
-                          <div className="space-y-3">
-                            <div className="flex items-center gap-3">
-                              <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
-                                <MapPin className="h-5 w-5" />
-                              </div>
-                              <div>
-                                <h4 className="font-bold text-lg leading-tight">{lead.name}</h4>
-                                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                  {lead.type} • {lead.city}, {state}
-                                </p>
+                    <Card key={lead.id} className={`glass-card border-white/10 transition-all duration-500 rounded-[2rem] overflow-hidden ${approachedLeads.includes(lead.id) ? 'opacity-40 grayscale scale-[0.98]' : ''}`}>
+                      <CardContent className="p-8">
+                        <div className="flex flex-col lg:flex-row justify-between gap-8">
+                          <div className="flex gap-6 items-start">
+                            <div className="h-14 w-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shrink-0 border border-primary/20">
+                              <MapPin className="h-6 w-6" />
+                            </div>
+                            <div className="space-y-1">
+                              <h4 className="font-black text-xl italic leading-none text-white uppercase tracking-tight">{lead.name}</h4>
+                              <div className="flex flex-wrap gap-x-4 gap-y-1 items-center text-[10px] text-muted-foreground font-black uppercase tracking-widest">
+                                <span className="text-primary">{lead.type}</span>
+                                <span>•</span>
+                                <span>{lead.city}, {lead.state}</span>
                               </div>
                             </div>
                           </div>
 
-                          <div className="flex flex-wrap gap-2 md:flex-nowrap md:items-center">
+                          <div className="flex flex-wrap gap-3 items-center">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleCopy(lead.phone)}
+                              className="flex-1 lg:flex-none h-12 border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest gap-2 bg-white/5 hover:bg-white/10"
+                            >
+                              <Copy className="h-3.5 w-3.5" /> Copiar Contato
+                            </Button>
+                            
                             <Button 
                               variant="outline" 
                               size="sm"
                               onClick={() => handleGenMessage(lead)}
                               disabled={generatingMsg === lead.id}
-                              className="flex-1 md:flex-none h-10 border-white/10 rounded-xl text-[9px] font-black uppercase tracking-widest gap-2"
+                              className="flex-1 lg:flex-none h-12 border-primary/30 text-primary rounded-xl text-[9px] font-black uppercase tracking-widest gap-2 hover:bg-primary/10"
                             >
-                              {generatingMsg === lead.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <MessageSquare className="h-3 w-3 text-primary" />}
-                              IA de Abordagem
+                              {generatingMsg === lead.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <MessageSquare className="h-3.5 w-3.5" />}
+                              Gerar Mensagem IA
                             </Button>
+
                             <Button 
                               variant="ghost" 
                               size="sm"
                               onClick={() => toggleApproached(lead.id)}
-                              className={`flex-1 md:flex-none h-10 rounded-xl text-[9px] font-black uppercase tracking-widest ${approachedLeads.includes(lead.id) ? 'text-green-500' : ''}`}
+                              className={`flex-1 lg:flex-none h-12 rounded-xl text-[9px] font-black uppercase tracking-widest transition-colors ${approachedLeads.includes(lead.id) ? 'text-green-500 bg-green-500/5' : 'text-muted-foreground hover:text-white'}`}
                             >
-                              {approachedLeads.includes(lead.id) ? <Check className="h-3 w-3 mr-1" /> : <div className="h-3 w-3 mr-1 border border-white/30 rounded-full" />}
+                              {approachedLeads.includes(lead.id) ? <Check className="h-4 w-4 mr-2" /> : <div className="h-4 w-4 mr-2 border-2 border-current/30 rounded-full" />}
                               {approachedLeads.includes(lead.id) ? 'ABORDADO' : 'MARCAR'}
                             </Button>
                           </div>
@@ -264,11 +277,15 @@ export default function LeadsPage() {
                       </CardContent>
                     </Card>
                   ))}
+                  
                   {!isProMember && leads.length > 0 && (
-                     <div className="p-6 text-center border border-dashed border-white/10 rounded-2xl bg-white/[0.01]">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4">Mais 50+ leads ocultos no plano Pro</p>
-                        <Button asChild variant="outline" className="border-primary/40 text-primary uppercase font-black text-[10px] h-10 px-8 rounded-xl">
-                           <Link href="/paywall">REVELAR TODOS OS LEADS</Link>
+                     <div className="p-10 text-center border-2 border-dashed border-primary/20 rounded-[3rem] bg-primary/5 mt-8 space-y-6">
+                        <div className="space-y-2">
+                          <h3 className="text-xl font-black italic uppercase tracking-tighter">Quer mais 50+ leads agora?</h3>
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Você atingiu o limite do plano básico nesta busca.</p>
+                        </div>
+                        <Button asChild className="bg-primary hover:bg-primary/90 text-white font-black uppercase text-[11px] h-14 px-12 rounded-2xl shadow-lg shadow-primary/30">
+                           <Link href="/paywall">LIBERAR TODOS OS LEADS PRO</Link>
                         </Button>
                      </div>
                   )}
