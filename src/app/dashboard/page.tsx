@@ -84,6 +84,14 @@ export default function Dashboard() {
   }, [db, user]);
   const { data: userData, isLoading: isUserDocLoading } = useDoc(userDocRef);
 
+  // Nome formatado para exibição
+  const displayName = useMemo(() => {
+    if (userData?.name) return userData.name;
+    if (user?.displayName) return user.displayName;
+    if (user?.email) return user.email.split('@')[0];
+    return 'Usuário';
+  }, [userData?.name, user?.displayName, user?.email]);
+
   const subQuery = useMemoFirebase(() => {
     if (!db || !user) return null;
     return query(collection(db, 'users', user.uid, 'subscriptions'));
@@ -98,16 +106,14 @@ export default function Dashboard() {
     return hasActiveSub || hasPremiumPlan || isSpecialUser;
   }, [subData, isSpecialUser, userData]);
 
-  // Cálculo do dia atual da jornada (1 por dia)
   const currentJourneyDay = useMemo(() => {
     if (!userData?.createdAt) return 1;
-    // Se for admin, libera tudo para teste
     if (isSpecialUser) return 7;
     
     const created = userData.createdAt.toDate ? userData.createdAt.toDate() : new Date(userData.createdAt);
     const diffInMs = Date.now() - created.getTime();
     const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-    return diffInDays + 1; // Dia 1 começa no momento zero
+    return diffInDays + 1;
   }, [userData?.createdAt, isSpecialUser]);
 
   const earningsQuery = useMemoFirebase(() => {
@@ -289,7 +295,7 @@ export default function Dashboard() {
             <Badge className="bg-primary/20 text-primary border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5">Acesso Restrito</Badge>
             <h1 className="text-3xl font-black italic uppercase tracking-tighter">Cadastro em Análise</h1>
             <p className="text-muted-foreground text-sm font-medium leading-relaxed">
-              Olá, <span className="text-white">{userData?.name || 'Usuário'}</span>. <br />
+              Olá, <span className="text-white">{displayName}</span>. <br />
               Para garantir a qualidade da nossa rede neural, todos os novos acessos passam por uma validação de segurança manual.
             </p>
           </div>
@@ -355,7 +361,7 @@ export default function Dashboard() {
               <div className="space-y-3">
                 <div className="space-y-1">
                   <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter leading-none text-white">
-                    {userData?.name?.split(' ')[0] || 'Usuário'}
+                    {displayName.split(' ')[0]}
                   </h1>
                   <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full w-fit">
                     <div className={`${userLevel.color}`}>
@@ -372,7 +378,7 @@ export default function Dashboard() {
                       <span className="text-[8px] font-bold uppercase tracking-widest text-yellow-500/80">Plano mensal possui limites diários</span>
                     </div>
                   )}
-                  {userData?.plan === 'vitalicio' && (
+                  {(userData?.plan === 'vitalicio' || isSpecialUser) && (
                     <div className="flex items-center gap-2 px-3 py-1 bg-green-500/5 border border-green-500/20 rounded-full w-fit">
                       <ShieldCheck className="h-3 w-3 text-green-500" />
                       <span className="text-[8px] font-bold uppercase tracking-widest text-green-500/80">Acesso completo liberado</span>

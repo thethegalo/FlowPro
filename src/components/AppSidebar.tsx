@@ -21,11 +21,12 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useUser, useAuth } from "@/firebase";
+import { useUser, useAuth, useFirestore, useMemoFirebase, useDoc } from "@/firebase";
 import { signOut } from "firebase/auth";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { doc } from "firebase/firestore";
 
 import {
   Sidebar,
@@ -48,8 +49,22 @@ const ADMIN_EMAIL = "thethegalo@gmail.com";
 export function AppSidebar() {
   const { user } = useUser();
   const auth = useAuth();
+  const db = useFirestore();
   const router = useRouter();
   const pathname = usePathname();
+
+  const userDocRef = useMemoFirebase(() => {
+    if (!db || !user) return null;
+    return doc(db, 'users', user.uid);
+  }, [db, user]);
+  const { data: userData } = useDoc(userDocRef);
+
+  const formattedName = React.useMemo(() => {
+    if (userData?.name) return userData.name;
+    if (user?.displayName) return user.displayName;
+    if (user?.email) return user.email.split('@')[0];
+    return 'Usuário Flow';
+  }, [userData?.name, user?.displayName, user?.email]);
 
   const handleSignOut = () => {
     signOut(auth).then(() => router.push('/'));
@@ -129,7 +144,6 @@ export function AppSidebar() {
           </SidebarGroup>
         )}
 
-        {/* Card de Lembrete de Download */}
         <div className="mt-8 px-2">
           <Card className="bg-primary/5 border-primary/20 p-4 rounded-2xl relative overflow-hidden group hover:border-primary/40 transition-all">
             <div className="absolute -top-4 -right-4 h-12 w-12 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/20 transition-all"></div>
@@ -148,11 +162,11 @@ export function AppSidebar() {
         <div className="bg-white/5 rounded-2xl p-4 space-y-4">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black italic">
-              {user?.email?.charAt(0).toUpperCase()}
+              {formattedName.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 overflow-hidden">
               <p className="text-[10px] font-black uppercase truncate text-white">
-                {user?.displayName || "Usuário Flow"}
+                {formattedName}
               </p>
               <p className="text-[8px] font-bold uppercase text-muted-foreground truncate">
                 {user?.email}

@@ -8,9 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Zap, Loader2, ShieldCheck, Smartphone, Download } from 'lucide-react';
+import { Zap, Loader2, ShieldCheck, Smartphone } from 'lucide-react';
 import { useAuth, useFirestore } from '@/firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
@@ -36,6 +36,9 @@ export default function AuthPage() {
       } else {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
+
+        // Atualizar perfil do Auth para garantir que user.displayName funcione
+        await updateProfile(user, { displayName: name });
 
         // Recuperar dados do quiz temporários
         const tempQuiz = sessionStorage.getItem('temp_quiz');
