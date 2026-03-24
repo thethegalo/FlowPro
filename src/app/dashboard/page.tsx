@@ -41,9 +41,10 @@ import {
   XAxis, 
   YAxis, 
   CartesianGrid, 
-  Bar,
-  BarChart,
-  ResponsiveContainer
+  Area,
+  AreaChart,
+  ResponsiveContainer,
+  Tooltip
 } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 
@@ -127,23 +128,30 @@ export default function Dashboard() {
   const displayGoal = isSpecialUser ? 50000 : userGoal;
   const earningsProgress = (totalEarnings / displayGoal) * 100;
 
-  // Gráfico de Barras: Exibe os ganhos diários (comparativo)
+  // Gráfico de Área: Exibe a performance diária com linha e degradê
   const chartData = useMemo(() => {
-    const days = 15; // Reduzi para 15 para as barras ficarem mais visíveis e comparáveis
+    const days = 15;
     const data = [];
+    
+    // Seed fixa baseada no UID do usuário para manter o gráfico estável
+    const userSeed = user?.uid?.charCodeAt(0) || 1;
     
     for (let i = days; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
       const dayStr = date.toLocaleDateString('pt-BR', { day: '2-digit' });
       
-      // Simulação de ganhos diários variados para comparação
-      // Se for hoje (i=0), mostramos um valor baseado no que o usuário adicionou
+      // Simulação de performance diária
+      // Se for hoje (i=0), usamos uma base do que o usuário já adicionou
       let dailyValue = 0;
       if (totalEarnings > 0) {
         const average = totalEarnings / 20;
-        const variation = 0.4 + Math.random() * 1.6; 
+        // Pseudo-random estável
+        const variation = 0.5 + (( (i + userSeed) * 13 ) % 100) / 100;
         dailyValue = Math.floor(average * variation);
+      } else {
+        // Se estiver zerado, mostramos zeros
+        dailyValue = 0;
       }
       
       data.push({
@@ -152,7 +160,7 @@ export default function Dashboard() {
       });
     }
     return data;
-  }, [totalEarnings]);
+  }, [totalEarnings, user?.uid]);
 
   const userLevel = useMemo(() => {
     const missionsCount = completedMissionIds.length;
@@ -172,12 +180,14 @@ export default function Dashboard() {
     setIsAddingEarning(true);
     try {
       const userRef = doc(db, 'users', user.uid);
-      // Usando setDoc com merge para garantir que o documento exista ou seja atualizado
       await setDoc(userRef, {
         totalEarnings: increment(100),
-        totalActions: increment(1), // Registrar ganho também conta como ação
+        totalActions: increment(1),
         updatedAt: serverTimestamp(),
-        lastActionAt: serverTimestamp()
+        lastActionAt: serverTimestamp(),
+        // Se for o primeiro registro, garante que o nome e email existam
+        name: userData?.name || user.displayName || user.email?.split('@')[0],
+        email: userData?.email || user.email
       }, { merge: true });
 
       toast({
@@ -259,6 +269,7 @@ export default function Dashboard() {
               </div>
             </div>
 
+            {/* Gráfico de Performance Diária Estilo Linha/Área */}
             <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden p-6 md:p-10 space-y-8">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div className="space-y-1">
@@ -271,14 +282,20 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="h-[250px] w-full">
+              <div className="h-[300px] w-full">
                 <ChartContainer config={{ 
                   ganhos: { label: "Ganho do Dia", color: "hsl(var(--primary))" } 
                 }}>
-                  <BarChart 
+                  <AreaChart 
                     data={chartData} 
                     margin={{ top: 10, right: 0, left: -20, bottom: 0 }}
                   >
+                    <defs>
+                      <linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
                     <XAxis 
                       dataKey="date" 
@@ -295,13 +312,16 @@ export default function Dashboard() {
                       domain={[0, 'auto']}
                     />
                     <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar 
+                    <Area 
+                      type="monotone" 
                       dataKey="ganhos" 
-                      fill="hsl(var(--primary))" 
-                      radius={[4, 4, 0, 0]}
-                      barSize={24}
+                      stroke="hsl(var(--primary))" 
+                      strokeWidth={4}
+                      fillOpacity={1} 
+                      fill="url(#colorGanhos)" 
+                      animationDuration={1500}
                     />
-                  </BarChart>
+                  </AreaChart>
                 </ChartContainer>
               </div>
             </Card>
