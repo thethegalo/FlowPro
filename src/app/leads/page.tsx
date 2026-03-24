@@ -68,7 +68,6 @@ export default function LeadsPage() {
     setLeads([]);
 
     try {
-      // Chama o endpoint interno do backend para evitar CORS e proteger a API Key
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: {
@@ -77,27 +76,32 @@ export default function LeadsPage() {
         body: JSON.stringify({ niche, city, state }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Falha na busca de leads');
+      // Verifica se a resposta é um JSON válido antes de tentar ler
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("O servidor retornou uma resposta inválida. Verifique se o backend está configurado.");
       }
 
-      const results = await response.json();
-      
-      // Limita resultados para usuários free (Fase 1)
-      const finalLeads = isProMember ? results : results.slice(0, 5);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Falha na busca de leads');
+      }
+
+      // Limita resultados para usuários free
+      const finalLeads = isProMember ? data : data.slice(0, 5);
       setLeads(finalLeads);
 
       if (finalLeads.length === 0) {
         toast({ 
           variant: "destructive",
-          title: "Busca concluída", 
-          description: "Nenhum lead encontrado, tente outro nicho ou cidade." 
+          title: "Sem resultados", 
+          description: "Nenhum lead encontrado para este nicho nesta região." 
         });
       } else {
         toast({ 
-          title: "Leads Encontrados!", 
-          description: `Mostrando ${finalLeads.length} resultados reais de ${niche}.` 
+          title: "Radar Ativo!", 
+          description: `Encontramos ${finalLeads.length} leads reais.` 
         });
       }
     } catch (e: any) {
@@ -105,7 +109,7 @@ export default function LeadsPage() {
       toast({ 
         variant: "destructive", 
         title: "Erro na Busca", 
-        description: e.message || "Não foi possível conectar ao radar de leads." 
+        description: e.message || "Falha na conexão com o motor de leads." 
       });
     } finally {
       setLoading(false);
