@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -12,6 +13,7 @@ import {
   ChevronRight,
   Wrench,
   Target,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -52,6 +54,7 @@ export function AppSidebar() {
     { title: "Jornada 7 Dias", icon: () => <div className="relative h-5 w-5"><Image src={LOGO_ICON} alt="Icon" fill className="object-contain" /></div>, url: "/dashboard" },
     { title: "Captar Leads", icon: Search, url: "/leads" },
     { title: "Ferramentas", icon: Wrench, url: "/tools" },
+    { title: "Arsenal IA", icon: Sparkles, url: "/ai-tools" },
     { title: "Simulador IA", icon: Target, url: "/simulator" },
     { title: "Biblioteca", icon: FileText, url: "/resources" },
     { title: "IA Mentor", icon: MessageSquare, url: "/mentor" },
