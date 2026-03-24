@@ -97,7 +97,7 @@ export default function PaywallPage() {
       <section className="py-20 px-4 relative z-10">
         <div className="container max-w-5xl mx-auto space-y-16">
           <div className="text-center space-y-6">
-            <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5">Evolução Contínua</Badge>
+            <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5">Acesso Liberado</Badge>
             <h1 className="text-5xl md:text-8xl font-black italic uppercase tracking-tighter leading-[0.85]">
               DOMINE O MERCADO <br /><span className="text-primary shimmer-text">COM PODER IA.</span>
             </h1>
@@ -108,76 +108,78 @@ export default function PaywallPage() {
 
           <div className="grid md:grid-cols-2 gap-10 max-w-4xl mx-auto items-stretch">
             
-            {/* PLANO VITALÍCIO (ESQUERDA) */}
+            {/* PLANO PRO (ESQUERDA - AGORA SEM DESTAQUE PRINCIPAL) */}
             <Card className="glass-card p-10 flex flex-col justify-between border-white/10 relative overflow-hidden rounded-[2.5rem] bg-white/[0.04] hover:bg-white/[0.06] transition-all duration-500">
               <div className="space-y-8 relative z-10">
                 <div className="space-y-3">
                   <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 flex items-center gap-2">
-                    <Infinity className="h-4 w-4 text-white/30" /> Plano Vitalício (Base)
+                    <Zap className="h-4 w-4" /> Flow Pro (Assinatura)
                   </h3>
-                  <div className="space-y-1">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-muted-foreground line-through text-sm decoration-primary/50 opacity-50">R$ 497</span>
-                      <p className="text-6xl font-black italic text-white tracking-tighter">R$ 267</p>
-                    </div>
-                    <p className="text-primary text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
-                      <CalendarCheck className="h-3.5 w-3.5" /> EM ATÉ 12X NO CARTÃO
-                    </p>
+                  <div className="flex items-baseline gap-1">
+                    <p className="text-6xl font-black italic text-white tracking-tighter">R$ 147</p>
+                    <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/mês</span>
                   </div>
-                  <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest bg-white/5 inline-block px-3 py-1 rounded-full">Acesso Único • Sem mensalidade</p>
+                  <p className="text-[10px] font-black uppercase text-white/40 tracking-widest flex items-center gap-2">
+                    <TrendingUp className="h-3.5 w-3.5" /> FASE 2: ESCALA ILIMITADA
+                  </p>
                 </div>
 
                 <ul className="space-y-5">
                   {[
-                    'Jornada de 7 Dias Completa', 
-                    'Metodologia de Primeira Venda',
-                    'Scripts de Abordagem Flow', 
-                    'Radar de Leads (Acesso Base)', 
-                    'IA Mentor 24h Disponível'
+                    'Fase 2: Escala Flow Ativada',
+                    'Radar de Leads Ilimitado', 
+                    'IA de Prospecção Avançada', 
+                    'Metodologias de Elite',
+                    'Acesso ao Mentor IA Premium'
                   ].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white/80">
-                      <CheckCircle2 className="h-4 w-4 text-primary" /> {f}
+                      <CheckCircle2 className="h-4 w-4 text-white/20" /> {f}
                     </li>
                   ))}
                 </ul>
               </div>
               <Button 
-                onClick={() => handleSubscription('lifetime')}
+                onClick={() => handleSubscription('monthly')}
                 disabled={isLoading}
-                className="w-full h-16 mt-10 rounded-2xl bg-white text-black hover:bg-primary hover:text-white font-black uppercase tracking-widest transition-all shadow-xl hover:scale-[1.02]"
+                className="w-full h-16 mt-10 rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-white/10 font-black uppercase tracking-widest transition-all shadow-xl"
               >
-                ATIVAR MEU VITALÍCIO
+                ATIVAR ASSINATURA PRO
               </Button>
             </Card>
 
-            {/* PLANO PRO (DIREITA - DESTAQUE MAIOR) */}
+            {/* PLANO VITALÍCIO (DIREITA - DESTAQUE MÁXIMO / OFERTA PRINCIPAL) */}
             <div className="relative p-[2px] rounded-[2.5rem] overflow-hidden shadow-[0_0_60px_rgba(139,92,246,0.35)] group">
               <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-marquee bg-[length:200%_200%]"></div>
               <Card className="relative bg-[#050508] p-10 flex flex-col justify-between h-full border-none rounded-[calc(2.5rem-2px)]">
-                <div className="absolute top-5 right-5 bg-primary text-white text-[8px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg animate-pulse z-20">RECOMENDADO PARA ESCALA</div>
+                <div className="absolute top-5 right-5 bg-primary text-white text-[8px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg animate-pulse z-20">OFERTA PRINCIPAL</div>
                 
                 <div className="space-y-8 relative z-10">
                   <div className="space-y-3">
                     <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2">
-                      <Zap className="h-4 w-4 fill-primary" /> Flow Pro (Assinatura)
+                      <Infinity className="h-4 w-4 fill-primary" /> Plano Vitalício (Base)
                     </h3>
-                    <div className="flex items-baseline gap-1">
-                      <p className="text-7xl font-black italic text-white tracking-tighter">R$ 147</p>
-                      <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/mês</span>
+                    <div className="space-y-1">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-muted-foreground line-through text-sm decoration-primary/50 opacity-50">R$ 497</span>
+                        <p className="text-7xl font-black italic text-white tracking-tighter">R$ 267</p>
+                      </div>
+                      <div className="flex flex-col gap-1 p-3 bg-primary/10 border border-primary/20 rounded-xl">
+                        <p className="text-primary text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
+                          <CalendarCheck className="h-4 w-4" /> EM ATÉ 12X NO CARTÃO
+                        </p>
+                        <p className="text-[9px] font-bold text-white/60 uppercase">ACESSO ÚNICO • SEM MENSALIDADE</p>
+                      </div>
                     </div>
-                    <p className="text-[10px] font-black uppercase text-primary tracking-widest flex items-center gap-2">
-                      <TrendingUp className="h-3.5 w-3.5" /> FASE 2: ESCALA ILIMITADA
-                    </p>
                   </div>
 
                   <ul className="space-y-5">
                     {[
-                      'Fase 2: Escala Flow Ativada',
-                      'Radar de Leads Ilimitado', 
-                      'IA de Prospecção Avançada', 
-                      'Metodologias de Elite (Fase 2)',
-                      'Scripts de Fechamento Brutal',
-                      'Acesso ao Mentor IA Premium'
+                      'Jornada de 7 Dias Completa', 
+                      'Metodologia de Primeira Venda',
+                      'Scripts de Abordagem Flow', 
+                      'Radar de Leads (Acesso Base)', 
+                      'IA Mentor 24h Disponível',
+                      'Atualizações Vitalícias'
                     ].map((f, i) => (
                       <li key={i} className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-white">
                         <Star className="h-4 w-4 text-primary fill-primary" /> {f}
@@ -187,11 +189,11 @@ export default function PaywallPage() {
                 </div>
                 
                 <Button 
-                  onClick={() => handleSubscription('monthly')}
+                  onClick={() => handleSubscription('lifetime')}
                   disabled={isLoading}
                   className="w-full h-20 mt-10 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest shadow-[0_15px_40px_rgba(139,92,246,0.5)] transition-all hover:scale-[1.02]"
                 >
-                  DESBLOQUEAR FLOW PRO <ArrowRight className="ml-2 h-6 w-6" />
+                  DESBLOQUEAR MEU VITALÍCIO <ArrowRight className="ml-2 h-6 w-6" />
                 </Button>
               </Card>
             </div>
@@ -253,14 +255,14 @@ export default function PaywallPage() {
           </div>
           
           <div className="grid gap-8 md:grid-cols-2 mb-16">
-             <div className="p-8 rounded-[2rem] bg-white/5 border border-white/10 space-y-6 group hover:border-primary/30 transition-all">
-                <Badge className="bg-white/10 text-white border-white/10 font-black uppercase text-[9px]">FASE 1</Badge>
-                <h4 className="text-white font-black uppercase text-xl italic tracking-tight">PRIMEIRA VENDA</h4>
+             <div className="p-8 rounded-[2rem] bg-primary/5 border border-primary/20 space-y-6 group hover:border-primary/50 transition-all">
+                <Badge className="bg-primary/20 text-primary border-primary/30 font-black uppercase text-[9px]">FASE 1</Badge>
+                <h4 className="text-primary font-black uppercase text-xl italic tracking-tight">PRIMEIRA VENDA</h4>
                 <p className="text-sm text-muted-foreground leading-relaxed font-medium">Focada em quem quer sair do zero. Em 7 dias você aprende a estruturar sua oferta, encontrar seus primeiros 25 leads e fechar seu primeiro contrato de R$ 497+.</p>
              </div>
-             <div className="p-8 rounded-[2rem] bg-primary/5 border border-primary/20 space-y-6 group hover:border-primary/50 transition-all">
-                <Badge className="bg-primary/20 text-primary border-primary/30 font-black uppercase text-[9px]">FASE 2</Badge>
-                <h4 className="text-primary font-black uppercase text-xl italic tracking-tight">ESCALA FLOW</h4>
+             <div className="p-8 rounded-[2rem] bg-white/5 border border-white/10 space-y-6 group hover:border-white/30 transition-all opacity-60">
+                <Badge className="bg-white/10 text-white border-white/10 font-black uppercase text-[9px]">FASE 2</Badge>
+                <h4 className="text-white font-black uppercase text-xl italic tracking-tight">ESCALA FLOW</h4>
                 <p className="text-sm text-muted-foreground leading-relaxed font-medium">Para quem já validou o processo e quer faturar R$ 5k a R$ 15k por mês. IA de prospecção ilimitada, volume agressivo de leads e automação de fechamento.</p>
              </div>
           </div>
