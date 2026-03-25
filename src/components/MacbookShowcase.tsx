@@ -4,7 +4,7 @@ import React from 'react';
 
 export function MacbookShowcase() {
   return (
-    <div className="flex items-center justify-center w-full py-12 md:py-32 overflow-hidden bg-transparent">
+    <div className="flex items-center justify-center w-full py-12 md:py-32 overflow-visible bg-transparent pointer-events-none">
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -14,7 +14,8 @@ export function MacbookShowcase() {
           align-items: center; 
           font-family: 'Sora', sans-serif;
           width: 100%;
-          min-height: 500px;
+          min-height: 400px;
+          perspective: 1400px;
         }
 
         .scene {
@@ -25,11 +26,12 @@ export function MacbookShowcase() {
           position: relative;
           transform: scale(0.4);
           transform-origin: center;
+          pointer-events: none;
         }
 
         @media (min-width: 480px) { 
           .scene { 
-            transform: scale(0.55); 
+            transform: scale(0.5); 
             gap: 50px;
           } 
         }
@@ -38,14 +40,14 @@ export function MacbookShowcase() {
           .scene { 
             flex-direction: row;
             align-items: flex-end;
-            transform: scale(0.75); 
+            transform: scale(0.7); 
             gap: 80px; 
           } 
         }
 
         @media (min-width: 1024px) { 
           .scene { 
-            transform: scale(0.9); 
+            transform: scale(0.85); 
           } 
         }
 
@@ -55,7 +57,7 @@ export function MacbookShowcase() {
           } 
         }
 
-        /* ===================== NOTEBOOK 3D ===================== */
+        /* NOTEBOOK 3D */
         .notebook-wrap {
           position: relative;
           transform-style: preserve-3d;
@@ -214,7 +216,7 @@ export function MacbookShowcase() {
           border: 1px solid rgba(255,255,255,0.04);
         }
 
-        /* ===================== PHONE 3D ===================== */
+        /* PHONE 3D */
         .phone-wrap {
           position: relative;
           transform-style: preserve-3d;
@@ -257,31 +259,6 @@ export function MacbookShowcase() {
             14px 0 35px rgba(0,0,0,0.5),
             -6px 0 20px rgba(109,40,217,0.1),
             0 30px 50px rgba(0,0,0,0.4);
-        }
-
-        .ph-btn-r {
-          position: absolute; right: -5px; top: 90px;
-          width: 4px; height: 52px;
-          background: #1e1a38; border-radius: 0 3px 3px 0;
-          border: 1px solid rgba(255,255,255,0.06); border-left: none;
-        }
-        .ph-btn-l1 {
-          position: absolute; left: -5px; top: 72px;
-          width: 4px; height: 28px;
-          background: #1e1a38; border-radius: 3px 0 0 3px;
-          border: 1px solid rgba(255,255,255,0.06); border-right: none;
-        }
-        .ph-btn-l2 {
-          position: absolute; left: -5px; top: 112px;
-          width: 4px; height: 40px;
-          background: #1e1a38; border-radius: 3px 0 0 3px;
-          border: 1px solid rgba(255,255,255,0.06); border-right: none;
-        }
-        .ph-btn-l3 {
-          position: absolute; left: -5px; top: 164px;
-          width: 4px; height: 40px;
-          background: #1e1a38; border-radius: 3px 0 0 3px;
-          border: 1px solid rgba(255,255,255,0.06); border-right: none;
         }
 
         .ph-screen {
@@ -499,11 +476,6 @@ export function MacbookShowcase() {
             <div className="ph-shadow"></div>
 
             <div className="ph-body">
-              <div className="ph-btn-r"></div>
-              <div className="ph-btn-l1"></div>
-              <div className="ph-btn-l2"></div>
-              <div className="ph-btn-l3"></div>
-
               <div className="ph-screen">
                 <div className="ph-bg">
                   <div className="ph-blob pb1"></div>

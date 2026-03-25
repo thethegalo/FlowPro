@@ -6,7 +6,7 @@ import {
   Cpu,
   Layers,
   Search,
-  CheckCircle2
+  User
 } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -60,33 +60,37 @@ export default function Home() {
             <Image src={LOGO_URL} alt="FlowPro Logo" fill className="object-contain" priority />
           </div>
         </Link>
-        <div className="hidden md:flex items-center gap-10">
-          <Link href="#tecnologia" className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-all">Tecnologia</Link>
-          <Link href="/auth" className="text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-all">Área do Aluno</Link>
+        
+        <div className="flex items-center gap-4 md:gap-10">
+          <Link href="/auth" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-all text-white/70">
+            <User className="h-3 w-3 md:hidden" />
+            <span className="hidden md:inline">Área do Aluno</span>
+            <span className="md:hidden">Entrar</span>
+          </Link>
+          <Button asChild className="bg-white text-black hover:bg-primary hover:text-white font-black rounded-full px-4 md:px-8 h-9 md:h-10 transition-all duration-500 hover:scale-105 active:scale-95 shadow-xl text-[9px] md:text-sm">
+            <Link href="/quiz">COMEÇAR</Link>
+          </Button>
         </div>
-        <Button asChild className="bg-white text-black hover:bg-primary hover:text-white font-black rounded-full px-4 md:px-8 h-9 md:h-10 transition-all duration-500 hover:scale-105 active:scale-95 shadow-xl text-[10px] md:text-sm">
-          <Link href="/quiz">COMEÇAR JORNADA</Link>
-        </Button>
       </header>
 
       <main className="relative z-10">
-        <section className="relative pt-16 pb-20 md:pt-24 md:pb-32 lg:pt-32 lg:pb-56 overflow-hidden">
+        <section className="relative pt-12 pb-16 md:pt-32 md:pb-56 overflow-hidden">
           <div className="container px-6 mx-auto relative z-20">
-            <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-24">
+            <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
               <div className="flex-1 text-center lg:text-left">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] mb-6 md:mb-10">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] mb-6 md:mb-10 mx-auto lg:mx-0">
                   <div className="relative h-3 w-3">
                     <Image src={LOGO_ICON} alt="Icon" fill className="object-contain animate-pulse" />
                   </div>
                   Sincronia Flow Ativa
                 </div>
                 
-                <h1 className="text-4xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.85] mb-8 md:mb-12 uppercase">
+                <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.85] mb-8 md:mb-12 uppercase">
                   ESCALE <br />
                   <span className="shimmer-text italic pr-4">INFINITO</span>
                 </h1>
                 
-                <p className="text-muted-foreground text-base md:text-2xl max-w-2xl mx-auto lg:mx-0 mb-10 md:mb-16 font-medium leading-relaxed">
+                <p className="text-muted-foreground text-sm md:text-2xl max-w-2xl mx-auto lg:mx-0 mb-10 md:mb-16 font-medium leading-relaxed">
                   O ecossistema de <span className="text-white">vendas autônomas</span> que transforma seu faturamento em 7 dias com inteligência neural.
                 </p>
 
@@ -99,14 +103,14 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="flex-1 w-full max-w-[400px] lg:max-w-none relative aspect-square mx-auto">
+              <div className="flex-1 w-full max-w-[320px] md:max-w-none relative aspect-square mx-auto">
                 <Globe className="w-full h-full" speed={0.005} dark={1} />
               </div>
             </div>
           </div>
         </section>
 
-        <div className="bg-primary/5 border-y border-white/5 py-4 md:py-6 overflow-hidden whitespace-nowrap">
+        <div className="bg-primary/5 border-y border-white/5 py-4 md:py-6 overflow-hidden whitespace-nowrap pointer-events-none">
           <div className="flex animate-marquee gap-10 md:gap-16 items-center">
             {[...salesActivity, ...salesActivity].map((sale, i) => (
               <div key={i} className="flex items-center gap-3 md:gap-4 bg-white/[0.03] px-4 md:px-6 py-2 rounded-full border border-white/5">
@@ -139,7 +143,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="py-10 md:py-20 overflow-hidden">
+        <section className="py-10 md:py-20 relative overflow-visible">
           <MacbookShowcase />
         </section>
 
