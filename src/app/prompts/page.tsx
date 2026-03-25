@@ -191,36 +191,36 @@ export default function PromptsPage() {
         <AppSidebar />
         
         <main className="flex-1 flex flex-col min-w-0">
-          <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-50">
-            <div className="flex items-center gap-4">
+          <header className="h-16 border-b border-white/5 flex items-center justify-between px-4 md:px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-50">
+            <div className="flex items-center gap-2 md:gap-4">
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
               <div className="h-4 w-px bg-white/10 hidden md:block" />
-              <h1 className="text-sm font-black italic uppercase tracking-widest flex items-center gap-2">
-                <Terminal className="h-4 w-4 text-primary" /> Fábrica de Comandos
+              <h1 className="text-[10px] md:text-sm font-black italic uppercase tracking-widest flex items-center gap-2">
+                <Terminal className="h-3 w-3 md:h-4 md:w-4 text-primary" /> Fábrica de Comandos
               </h1>
             </div>
           </header>
 
-          <div className="flex-1 container max-w-5xl mx-auto p-4 md:p-8 space-y-12">
+          <div className="flex-1 container max-w-5xl mx-auto p-4 md:p-8 space-y-8 md:space-y-12">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
               <div className="space-y-2">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[8px] font-black uppercase tracking-widest">
-                  <Cpu className="h-3 w-3 animate-pulse" /> Engenharia de Alta Performance
+                  <Cpu className="h-3 w-3 animate-pulse" /> Engenharia Neural Ativa
                 </div>
-                <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white leading-none">Motor de Prompts</h2>
-                <p className="text-muted-foreground text-sm uppercase font-bold tracking-widest">Gere instruções perfeitas para extrair o máximo das IAs.</p>
+                <h2 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter text-white leading-tight">Motor de Prompts</h2>
+                <p className="text-muted-foreground text-xs md:text-sm uppercase font-bold tracking-widest">Extraia o máximo das IAs com comandos perfeitos.</p>
               </div>
 
-              <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
+              <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 w-full md:w-auto">
                 <button 
                   onClick={() => setComplexity('simple')}
-                  className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${complexity === 'simple' ? 'bg-white text-black shadow-lg' : 'text-muted-foreground hover:text-white'}`}
+                  className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${complexity === 'simple' ? 'bg-white text-black shadow-lg' : 'text-muted-foreground hover:text-white'}`}
                 >
                   Simples
                 </button>
                 <button 
                   onClick={() => setComplexity('advanced')}
-                  className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${complexity === 'advanced' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-muted-foreground hover:text-white'}`}
+                  className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${complexity === 'advanced' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-muted-foreground hover:text-white'}`}
                 >
                   Avançado
                 </button>
@@ -231,12 +231,12 @@ export default function PromptsPage() {
               {/* Navegação de Objetivos */}
               <div className="lg:col-span-4 space-y-4">
                 <p className="text-[10px] font-black uppercase tracking-widest text-primary/60 px-2">Escolha seu Objetivo</p>
-                <div className="grid gap-2">
+                <div className="flex overflow-x-auto lg:grid gap-2 no-scrollbar pb-4 lg:pb-0 px-1 md:px-0">
                   {PROMPT_TEMPLATES.map((t) => (
                     <button
                       key={t.id}
                       onClick={() => handleTemplateChange(t)}
-                      className={`p-4 rounded-2xl border text-left transition-all group relative overflow-hidden ${
+                      className={`p-4 rounded-2xl border text-left transition-all group relative overflow-hidden shrink-0 lg:shrink-1 w-[200px] lg:w-full ${
                         activeTemplate.id === t.id 
                         ? 'bg-primary/10 border-primary text-white shadow-[0_0_30px_rgba(139,92,246,0.1)]' 
                         : 'bg-white/[0.02] border-white/5 text-muted-foreground hover:bg-white/[0.05] hover:border-white/10'
@@ -247,12 +247,12 @@ export default function PromptsPage() {
                           {t.icon}
                         </div>
                         <div className="min-w-0">
-                          <span className="text-xs font-black uppercase italic truncate block">{t.title}</span>
-                          <p className="text-[9px] font-medium opacity-50 line-clamp-1">{t.description}</p>
+                          <span className="text-[10px] md:text-xs font-black uppercase italic truncate block">{t.title}</span>
+                          <p className="text-[8px] md:text-[9px] font-medium opacity-50 line-clamp-1">{t.description}</p>
                         </div>
                       </div>
                       {activeTemplate.id === t.id && (
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 hidden lg:block">
                           <ChevronRight className="h-4 w-4 text-primary animate-pulse" />
                         </div>
                       )}
@@ -263,22 +263,22 @@ export default function PromptsPage() {
 
               {/* Editor de Variáveis */}
               <div className="lg:col-span-8 space-y-8">
-                <Card className="glass-card border-white/10 rounded-[2.5rem] overflow-hidden">
-                  <CardHeader className="bg-white/5 border-b border-white/5 p-8">
-                    <CardTitle className="text-xs font-black uppercase tracking-widest italic flex items-center gap-2">
-                      <Settings2 className="h-4 w-4 text-primary" /> Personalizar Comando: {activeTemplate.title}
+                <Card className="glass-card border-white/10 rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden">
+                  <CardHeader className="bg-white/5 border-b border-white/5 p-6 md:p-8">
+                    <CardTitle className="text-[10px] md:text-xs font-black uppercase tracking-widest italic flex items-center gap-2 leading-tight">
+                      <Settings2 className="h-4 w-4 text-primary shrink-0" /> {activeTemplate.title}
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="p-8 md:p-10 space-y-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <CardContent className="p-6 md:p-10 space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                       {activeTemplate.fields.map((field) => (
                         <div key={field} className="space-y-2">
-                          <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">
+                          <Label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50">
                             {FIELD_LABELS[field] || field}
                           </Label>
                           <Input 
                             placeholder={FIELD_PLACEHOLDERS[field] || 'Preencha...'}
-                            className="bg-white/5 border-white/10 h-14 rounded-2xl focus-visible:ring-primary font-medium"
+                            className="bg-white/5 border-white/10 h-12 md:h-14 rounded-2xl focus-visible:ring-primary font-medium text-sm"
                             value={formData[field] || ''}
                             onChange={(e) => setFormData({...formData, [field]: e.target.value})}
                           />
@@ -289,16 +289,16 @@ export default function PromptsPage() {
                     <Button 
                       onClick={handleGenerate}
                       disabled={isLoading || Object.values(formData).filter(v => v.trim()).length === 0}
-                      className="w-full h-16 md:h-20 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-primary/20 transition-all active:scale-[0.98] group"
+                      className="w-full h-14 md:h-20 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] md:text-xs shadow-xl shadow-primary/20 transition-all active:scale-[0.98] group"
                     >
                       {isLoading ? (
                         <>
-                          <Loader2 className="mr-3 h-6 w-6 animate-spin" />
-                          SINCRONIZANDO REDE NEURAL...
+                          <Loader2 className="mr-3 h-5 w-5 md:h-6 md:w-6 animate-spin" />
+                          SINCRONIZANDO...
                         </>
                       ) : (
                         <>
-                          ATIVAR ENGENHARIA NEURAL <Zap className="ml-3 h-5 w-5 fill-white group-hover:scale-125 transition-transform" />
+                          ATIVAR ENGENHARIA <Zap className="ml-2 h-4 w-4 md:h-5 md:w-5 fill-white group-hover:scale-125 transition-transform" />
                         </>
                       )}
                     </Button>
@@ -307,46 +307,46 @@ export default function PromptsPage() {
 
                 {/* Exibição do Resultado */}
                 {generatedPrompt && (
-                  <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
-                    <div className="relative p-[2px] rounded-[3rem] overflow-hidden bg-gradient-to-br from-primary via-accent/50 to-primary/30 shadow-2xl shadow-primary/20">
+                  <div className="space-y-8 md:space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                    <div className="relative p-[2px] rounded-[2rem] md:rounded-[3rem] overflow-hidden bg-gradient-to-br from-primary via-accent/50 to-primary/30 shadow-2xl shadow-primary/20">
                       <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent animate-pulse"></div>
-                      <Card className="relative bg-[#0b0b14] border-none rounded-[calc(3rem-2px)] overflow-hidden">
-                        <CardHeader className="flex flex-row items-center justify-between p-8 border-b border-white/5">
+                      <Card className="relative bg-[#0b0b14] border-none rounded-[calc(2rem-2px)] md:rounded-[calc(3rem-2px)] overflow-hidden">
+                        <CardHeader className="flex flex-row items-center justify-between p-6 md:p-8 border-b border-white/5">
                           <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-2xl bg-primary/20 flex items-center justify-center text-primary border border-primary/20">
-                              <ShieldCheck className="h-6 w-6" />
+                            <div className="h-8 w-8 md:h-10 md:w-10 rounded-xl md:rounded-2xl bg-primary/20 flex items-center justify-center text-primary border border-primary/20">
+                              <ShieldCheck className="h-5 w-5 md:h-6 md:w-6" />
                             </div>
                             <div>
-                              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Comando Mestre Gerado</p>
-                              <p className="text-[8px] font-bold text-muted-foreground uppercase">Pronto para execução em larga escala</p>
+                              <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-primary leading-none mb-1">Comando Gerado</p>
+                              <p className="text-[7px] md:text-[8px] font-bold text-muted-foreground uppercase leading-none">Pronto para execução</p>
                             </div>
                           </div>
-                          <Badge variant="outline" className="border-primary/30 text-primary text-[8px] font-black uppercase">
-                            {complexity.toUpperCase()} ENGINE
+                          <Badge variant="outline" className="border-primary/30 text-primary text-[7px] md:text-[8px] font-black uppercase">
+                            {complexity.toUpperCase()}
                           </Badge>
                         </CardHeader>
                         
-                        <CardContent className="p-8 md:p-10 space-y-8">
-                          <div className="bg-black/40 p-8 rounded-3xl border border-white/5 relative group">
-                            <pre className="text-sm md:text-base font-medium text-white/90 leading-relaxed whitespace-pre-wrap italic font-body">
+                        <CardContent className="p-6 md:p-10 space-y-6 md:space-y-8">
+                          <div className="bg-black/40 p-5 md:p-8 rounded-2xl md:rounded-3xl border border-white/5 relative group">
+                            <pre className="text-xs md:text-base font-medium text-white/90 leading-relaxed whitespace-pre-wrap italic font-body">
                               {generatedPrompt}
                             </pre>
                             <div className="absolute top-4 right-4 opacity-20 group-hover:opacity-100 transition-opacity">
-                               <Sparkles className="h-5 w-5 text-primary" />
+                               <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                             </div>
                           </div>
                           
                           <Button 
                             onClick={handleCopy} 
-                            className={`w-full h-20 md:h-24 rounded-[2rem] text-lg md:text-xl font-black uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95 group relative overflow-hidden ${
+                            className={`w-full h-16 md:h-24 rounded-[1.5rem] md:rounded-[2rem] text-sm md:text-xl font-black uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95 group relative overflow-hidden ${
                               copied ? 'bg-green-500' : 'bg-white text-black hover:bg-white/90'
                             }`}
                           >
-                            <div className="flex items-center justify-center gap-4 relative z-10">
+                            <div className="flex items-center justify-center gap-3 md:gap-4 relative z-10">
                               {copied ? (
-                                <><Check className="h-8 w-8" /> COMANDO COPIADO!</>
+                                <><Check className="h-6 w-6 md:h-8 md:w-8" /> COMANDO COPIADO!</>
                               ) : (
-                                <><Copy className="h-7 w-7" /> PRONTO PARA COLAR!</>
+                                <><Copy className="h-5 w-5 md:h-7 md:w-7" /> PRONTO PARA COLAR!</>
                               )}
                             </div>
                           </Button>
@@ -357,26 +357,26 @@ export default function PromptsPage() {
                     {/* Guia de Próximos Passos */}
                     <div className="space-y-6">
                       <div className="flex items-center gap-3 px-2">
-                        <MousePointerClick className="h-5 w-5 text-primary" />
-                        <h3 className="text-xl font-black italic uppercase tracking-tighter text-white">Onde usar este comando?</h3>
+                        <MousePointerClick className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+                        <h3 className="text-lg md:text-xl font-black italic uppercase tracking-tighter text-white">Onde usar este comando?</h3>
                       </div>
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {currentTools.map((tool, i) => (
-                          <Card key={i} className="glass-card border-white/5 rounded-3xl overflow-hidden group hover:border-primary/40 transition-all duration-500">
-                            <CardContent className="p-6 flex items-center justify-between gap-4">
-                              <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 bg-white/5 rounded-2xl flex items-center justify-center text-white border border-white/10 group-hover:bg-primary/10 group-hover:border-primary/20 transition-all shrink-0">
-                                  {i === 0 ? <Zap className="h-6 w-6 text-primary fill-primary" /> : <Sparkles className="h-6 w-6 text-accent" />}
+                          <Card key={i} className="glass-card border-white/5 rounded-2xl md:rounded-3xl overflow-hidden group hover:border-primary/40 transition-all duration-500">
+                            <CardContent className="p-5 md:p-6 flex items-center justify-between gap-4">
+                              <div className="flex items-center gap-3 md:gap-4 min-w-0">
+                                <div className="h-10 w-10 md:h-12 md:w-12 bg-white/5 rounded-xl flex items-center justify-center text-white border border-white/10 group-hover:bg-primary/10 group-hover:border-primary/20 transition-all shrink-0">
+                                  {i === 0 ? <Zap className="h-5 w-5 md:h-6 md:w-6 text-primary fill-primary" /> : <Sparkles className="h-5 w-5 md:h-6 md:w-6 text-accent" />}
                                 </div>
                                 <div className="space-y-0.5 min-w-0">
-                                  <p className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground">Recomendação</p>
-                                  <h4 className="font-black italic uppercase tracking-tight text-lg text-white truncate">{tool.name}</h4>
+                                  <p className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground">Recomendação</p>
+                                  <h4 className="font-black italic uppercase tracking-tight text-base md:text-lg text-white truncate">{tool.name}</h4>
                                 </div>
                               </div>
-                              <Button asChild size="sm" variant="outline" className="rounded-xl border-white/10 h-12 px-6 text-[10px] font-black uppercase hover:bg-primary hover:text-white transition-all shadow-lg active:scale-95 shrink-0">
+                              <Button asChild size="sm" variant="outline" className="rounded-xl border-white/10 h-10 md:h-12 px-4 md:px-6 text-[9px] md:text-[10px] font-black uppercase hover:bg-primary hover:text-white transition-all shadow-lg shrink-0">
                                 <a href={tool.url} target="_blank" rel="noopener noreferrer">
-                                  ABRIR <ExternalLink className="ml-2 h-3.5 w-3.5" />
+                                  ABRIR <ExternalLink className="ml-1.5 h-3 w-3" />
                                 </a>
                               </Button>
                             </CardContent>
@@ -384,10 +384,10 @@ export default function PromptsPage() {
                         ))}
                       </div>
 
-                      <div className="p-6 rounded-3xl bg-primary/5 border border-dashed border-primary/20 flex items-start gap-4">
-                        <Info className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                        <p className="text-[10px] font-bold text-white/60 leading-relaxed uppercase">
-                          DICA FLOW: Se estiver usando para <span className="text-white">SITES</span>, cole o comando na <span className="text-white">Lovable</span> e peça para ela criar a estrutura visual primeiro. Depois que ela terminar, peça para ajustar os textos usando os gatilhos mentais do prompt.
+                      <div className="p-5 md:p-6 rounded-2xl md:rounded-3xl bg-primary/5 border border-dashed border-primary/20 flex items-start gap-4">
+                        <Info className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0 mt-0.5" />
+                        <p className="text-[9px] md:text-[10px] font-bold text-white/60 leading-relaxed uppercase">
+                          DICA FLOW: Se estiver usando para <span className="text-white">SITES</span>, cole o comando na <span className="text-white">Lovable</span> e peça para ela criar a estrutura visual primeiro.
                         </p>
                       </div>
                     </div>

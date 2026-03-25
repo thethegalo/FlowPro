@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -22,15 +21,16 @@ export function MacbookShowcase() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 60px;
+          gap: 40px;
           position: relative;
-          transform: scale(0.45);
+          transform: scale(0.4);
           transform-origin: center;
         }
 
         @media (min-width: 480px) { 
           .scene { 
-            transform: scale(0.6); 
+            transform: scale(0.55); 
+            gap: 50px;
           } 
         }
 

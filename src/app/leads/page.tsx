@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -63,10 +62,8 @@ export default function LeadsPage() {
   const checkLimitAndTrack = async (type: 'leadsUsed' | 'messagesUsed', limitValue: number) => {
     if (!db || !user || !userData) return false;
     
-    // Se for Vitalício ou Admin, permite tudo sem rastrear limite
     if (isUnlimited) return true;
 
-    // Se não tiver plano, bloqueia e manda pro paywall
     if (userData.plan === 'nenhum') {
       toast({ 
         variant: "destructive", 
@@ -77,7 +74,6 @@ export default function LeadsPage() {
       return false;
     }
 
-    // Se for mensal, verifica limite
     if (userData.plan === 'mensal') {
       const lastAction = userData.lastActionAt;
       const today = new Date().toDateString();
@@ -230,51 +226,51 @@ export default function LeadsPage() {
         <AppSidebar />
         
         <main className="flex-1 flex flex-col min-w-0">
-          <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-50">
-            <div className="flex items-center gap-4">
+          <header className="h-16 border-b border-white/5 flex items-center justify-between px-4 md:px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-50">
+            <div className="flex items-center gap-2 md:gap-4">
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
               <div className="h-4 w-px bg-white/10 hidden md:block" />
-              <h1 className="text-sm font-black italic uppercase tracking-widest flex items-center gap-2">
-                <Users className="h-4 w-4 text-primary" /> Radar de Leads
+              <h1 className="text-[10px] md:text-sm font-black italic uppercase tracking-widest flex items-center gap-2">
+                <Users className="h-3 w-3 md:h-4 md:w-4 text-primary" /> Radar de Leads
               </h1>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3">
                <div className="hidden sm:flex items-center gap-2 bg-white/5 px-3 py-1 rounded-full border border-white/10">
                   <span className="text-[8px] font-black uppercase text-muted-foreground tracking-widest">
                     {isUnlimited ? 'USO ILIMITADO' : `Créditos: ${userData?.dailyUsage?.leadsUsed || 0}/20`}
                   </span>
                </div>
                {leads.length > 0 && (
-                 <Button onClick={handleExport} variant="outline" size="sm" className="h-8 rounded-lg border-primary/20 text-primary text-[8px] font-black uppercase px-3 gap-2 hover:bg-primary hover:text-white transition-all">
-                   <Download className="h-3 w-3" /> EXPORTAR LISTA
+                 <Button onClick={handleExport} variant="outline" size="sm" className="h-8 rounded-lg border-primary/20 text-primary text-[7px] md:text-[8px] font-black uppercase px-2 md:px-3 gap-1 md:gap-2 hover:bg-primary hover:text-white transition-all">
+                   <Download className="h-3 w-3" /> EXPORTAR
                  </Button>
                )}
-               <Badge className={`bg-primary/20 text-primary border-primary/30 text-[8px] font-black uppercase px-2 md:px-3 py-1 ${isUnlimited ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' : ''}`}>
-                 {userData?.plan?.toUpperCase() || 'FREE'}
+               <Badge className={`bg-primary/20 text-primary border-primary/30 text-[7px] md:text-[8px] font-black uppercase px-2 md:px-3 py-1 ${isUnlimited ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' : ''}`}>
+                 {userData?.plan?.toUpperCase() || 'BLOQUEADO'}
                </Badge>
             </div>
           </header>
 
-          <div className="flex-1 container max-w-4xl mx-auto p-4 md:p-8 space-y-8">
-            <Card className="glass-card border-white/10 overflow-hidden rounded-[2rem]">
-              <CardHeader className="bg-white/5 border-b border-white/5 p-6">
-                <CardTitle className="text-sm font-black uppercase tracking-widest italic flex items-center gap-2">
+          <div className="flex-1 container max-w-4xl mx-auto p-4 md:p-8 space-y-6 md:space-y-8">
+            <Card className="glass-card border-white/10 overflow-hidden rounded-[1.5rem] md:rounded-[2rem]">
+              <CardHeader className="bg-white/5 border-b border-white/5 p-5 md:p-6">
+                <CardTitle className="text-xs md:text-sm font-black uppercase tracking-widest italic flex items-center gap-2">
                   <Filter className="h-4 w-4 text-primary" /> Filtro de Prospecção
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6 md:p-8">
+              <CardContent className="p-5 md:p-8">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
                   <div className="md:col-span-5 space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest opacity-50">O que você quer vender?</label>
+                    <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50">O que você quer vender?</label>
                     <Input 
                       placeholder="Ex: Barbearia, Dentista..." 
-                      className="bg-white/5 border-white/10 h-12 md:h-14 rounded-2xl focus-visible:ring-primary"
+                      className="bg-white/5 border-white/10 h-12 md:h-14 rounded-2xl focus-visible:ring-primary text-sm"
                       value={niche}
                       onChange={e => setNiche(e.target.value)}
                     />
                   </div>
                   <div className="md:col-span-3 space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest opacity-50">Estado (UF)</label>
+                    <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50">Estado (UF)</label>
                     <Select onValueChange={setState}>
                       <SelectTrigger className="bg-white/5 border-white/10 rounded-2xl h-12 md:h-14">
                         <SelectValue placeholder="UF" />
@@ -285,19 +281,19 @@ export default function LeadsPage() {
                     </Select>
                   </div>
                   <div className="md:col-span-4 space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest opacity-50">Cidade (Opcional)</label>
+                    <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50">Cidade (Opcional)</label>
                     <Input 
                       placeholder="Ex: São Paulo" 
-                      className="bg-white/5 border-white/10 h-12 md:h-14 rounded-2xl focus-visible:ring-primary"
+                      className="bg-white/5 border-white/10 h-12 md:h-14 rounded-2xl focus-visible:ring-primary text-sm"
                       value={city}
                       onChange={e => setCity(e.target.value)}
                     />
                   </div>
-                  <div className="md:col-span-12">
+                  <div className="md:col-span-12 pt-2">
                     <Button 
                       onClick={handleSearch} 
                       disabled={loading}
-                      className="w-full h-14 md:h-16 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-[0.98]"
+                      className="w-full h-14 md:h-16 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-[0.98] text-[10px] md:text-sm"
                     >
                       {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><Search className="h-5 w-5 mr-2" /> BUSCAR LEADS REAIS</>}
                     </Button>
@@ -312,20 +308,20 @@ export default function LeadsPage() {
               </h2>
 
               {!isProMember && leads.length > 0 && (
-                <div className="p-4 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-between gap-4">
+                <div className="p-4 bg-primary/10 border border-primary/20 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
                   <p className="text-[10px] font-bold text-primary uppercase">Assine o Pro para ver todos os resultados e ter acesso ilimitado.</p>
-                  <Button asChild size="sm" className="bg-primary text-white text-[8px] font-black h-8 px-4 rounded-xl">
+                  <Button asChild size="sm" className="bg-primary text-white text-[8px] font-black h-8 px-4 rounded-xl w-full sm:w-auto">
                     <Link href="/paywall">UPGRADE PRO</Link>
                   </Button>
                 </div>
               )}
 
               {leads.length === 0 && !loading ? (
-                <div className="py-16 md:py-24 text-center glass-card rounded-[3rem] border-dashed border-white/5">
+                <div className="py-16 md:py-24 text-center glass-card rounded-[2rem] md:rounded-[3rem] border-dashed border-white/5">
                   <div className="h-16 w-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 opacity-20">
                     <Search className="h-8 w-8 text-white" />
                   </div>
-                  <p className="text-muted-foreground uppercase text-[10px] font-black tracking-[0.3em] px-6">Defina o nicho para captar seus leads</p>
+                  <p className="text-muted-foreground uppercase text-[10px] font-black tracking-[0.3em] px-6 leading-relaxed">Defina o nicho e estado para captar seus leads estratégicos</p>
                 </div>
               ) : loading ? (
                 <div className="py-24 text-center">
@@ -335,16 +331,16 @@ export default function LeadsPage() {
               ) : (
                 <div className="grid gap-4">
                   {leads.map((lead) => (
-                    <Card key={lead.id} className={`glass-card border-white/10 transition-all duration-500 rounded-[2rem] overflow-hidden ${approachedLeads.includes(lead.id) ? 'border-primary/40' : ''}`}>
-                      <CardContent className="p-6 md:p-8">
-                        <div className="flex flex-col lg:flex-row justify-between gap-6">
+                    <Card key={lead.id} className={`glass-card border-white/10 transition-all duration-500 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden ${approachedLeads.includes(lead.id) ? 'border-primary/40' : ''}`}>
+                      <CardContent className="p-5 md:p-8">
+                        <div className="flex flex-col xl:flex-row justify-between gap-6">
                           <div className="flex gap-4 items-start">
-                            <div className="h-12 w-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shrink-0 border border-primary/20">
+                            <div className="h-10 w-10 md:h-12 md:w-12 bg-primary/10 rounded-xl md:rounded-2xl flex items-center justify-center text-primary shrink-0 border border-primary/20">
                               <MapPin className="h-5 w-5" />
                             </div>
                             <div className="space-y-1 min-w-0">
-                              <h4 className="font-black text-lg italic leading-none text-white uppercase truncate">{lead.name}</h4>
-                              <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-black uppercase tracking-widest">
+                              <h4 className="font-black text-base md:text-lg italic leading-tight text-white uppercase truncate">{lead.name}</h4>
+                              <div className="flex flex-wrap items-center gap-2 text-[9px] md:text-[10px] text-muted-foreground font-black uppercase tracking-widest">
                                 <span className="text-primary">{lead.type}</span>
                                 <span>•</span>
                                 <span>{lead.city}, {lead.state}</span>
@@ -355,16 +351,16 @@ export default function LeadsPage() {
                             </div>
                           </div>
 
-                          <div className="flex flex-wrap gap-2 items-center">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:flex flex-wrap gap-2 items-center">
                             <Button 
                               variant="default" 
                               size="sm"
                               onClick={() => handleGenMessage(lead)}
                               disabled={generatingMsg === lead.id}
-                              className="h-12 bg-primary text-white rounded-xl text-[9px] font-black uppercase tracking-widest gap-2 shadow-lg"
+                              className="h-11 md:h-12 bg-primary text-white rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest gap-2 shadow-lg w-full xl:w-auto"
                             >
                               {generatingMsg === lead.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
-                              ENVIAR MENSAGEM IA
+                              MENSAGEM IA
                             </Button>
 
                             <Button 
@@ -372,10 +368,10 @@ export default function LeadsPage() {
                               size="sm"
                               onClick={() => handleFollowUp(lead)}
                               disabled={generatingMsg === `follow-${lead.id}`}
-                              className="h-12 border-accent/20 bg-accent/5 text-accent rounded-xl text-[9px] font-black uppercase tracking-widest gap-2 hover:bg-accent/10"
+                              className="h-11 md:h-12 border-accent/20 bg-accent/5 text-accent rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest gap-2 hover:bg-accent/10 w-full xl:w-auto"
                             >
                               {generatingMsg === `follow-${lead.id}` ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <History className="h-3.5 w-3.5" />}
-                              GERAR FOLLOW-UP
+                              FOLLOW-UP
                             </Button>
 
                             <Button 
@@ -386,10 +382,10 @@ export default function LeadsPage() {
                                   setApproachedLeads(prev => [...prev, lead.id]);
                                 }
                               }}
-                              className={`h-12 rounded-xl text-[9px] font-black uppercase tracking-widest ${approachedLeads.includes(lead.id) ? 'text-green-500 bg-green-500/5' : 'text-muted-foreground'}`}
+                              className={`h-11 md:h-12 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest w-full xl:w-auto ${approachedLeads.includes(lead.id) ? 'text-green-500 bg-green-500/5' : 'text-muted-foreground'}`}
                             >
                               {approachedLeads.includes(lead.id) ? <Check className="h-4 w-4 mr-2" /> : <div className="h-4 w-4 mr-2 border-2 border-current/30 rounded-full" />}
-                              {approachedLeads.includes(lead.id) ? 'ABORDADO' : 'MARCAR ABORDADO'}
+                              {approachedLeads.includes(lead.id) ? 'ABORDADO' : 'MARCAR'}
                             </Button>
                           </div>
                         </div>

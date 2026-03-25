@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useEffect, useState } from 'react';
@@ -199,13 +198,9 @@ export default function Dashboard() {
       let dailyValue = earningsByDate[dateKey] || 0;
       
       if (isSpecialUser && dailyValue === 0) {
-        // Lucas vende todos os dias - Visualização de alta performance
         const seed = (i * 1234.5) + (user?.uid?.charCodeAt(0) || 1);
         const rand = Math.abs(Math.sin(seed) * 10000) % 1;
-        
-        // Garante que cada dia tenha uma venda para Lucas, simulando fluxo constante
         const avgDaily = 28754 / 30;
-        // Flutuação dinâmica entre R$ 300 e R$ 1700 aproximadamente
         dailyValue = Math.floor(avgDaily * (0.3 + rand * 1.5));
       }
       
@@ -286,35 +281,35 @@ export default function Dashboard() {
           <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[140px]"></div>
         </div>
         
-        <Card className="w-full max-w-lg glass-card border-white/10 p-12 space-y-8 rounded-[3rem] relative z-10">
-          <div className="h-24 w-24 bg-white/5 rounded-full flex items-center justify-center mx-auto border border-white/10">
-            <ShieldAlert className="h-12 w-12 text-primary animate-pulse" />
+        <Card className="w-full max-w-lg glass-card border-white/10 p-8 md:p-12 space-y-8 rounded-[2.5rem] md:rounded-[3rem] relative z-10">
+          <div className="h-20 w-24 md:h-24 md:w-24 bg-white/5 rounded-full flex items-center justify-center mx-auto border border-white/10">
+            <ShieldAlert className="h-10 w-10 md:h-12 md:w-12 text-primary animate-pulse" />
           </div>
           
           <div className="space-y-4">
-            <Badge className="bg-primary/20 text-primary border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5">Acesso Sob Análise</Badge>
-            <h1 className="text-3xl font-black italic uppercase tracking-tighter">Olá, {displayName}</h1>
-            <p className="text-muted-foreground text-sm font-medium leading-relaxed">
+            <Badge className="bg-primary/20 text-primary border-primary/30 uppercase tracking-[0.3em] text-[8px] md:text-[10px] px-4 py-1.5">Acesso Sob Análise</Badge>
+            <h1 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter">Olá, {displayName}</h1>
+            <p className="text-muted-foreground text-xs md:text-sm font-medium leading-relaxed">
               O FlowPro é um ecossistema fechado de elite. Sua solicitação de acesso foi enviada e está na fila para validação manual.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/5 space-y-4 text-left">
+          <div className="p-5 md:p-6 rounded-2xl bg-white/5 border border-white/5 space-y-4 text-left">
             <div className="flex items-center gap-3">
               <div className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]"></div>
-              <p className="text-[10px] font-black uppercase text-white/80">Cadastro Criado</p>
+              <p className="text-[9px] md:text-[10px] font-black uppercase text-white/80">Cadastro Criado</p>
             </div>
             <div className="flex items-center gap-3">
               <div className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse shadow-[0_0_10px_#eab308]"></div>
-              <p className="text-[10px] font-black uppercase text-white/80">Aguardando Aprovação do Administrador</p>
+              <p className="text-[9px] md:text-[10px] font-black uppercase text-white/80">Aguardando Aprovação do Administrador</p>
             </div>
             <div className="flex items-center gap-3 opacity-30">
               <div className="h-2 w-2 rounded-full bg-white"></div>
-              <p className="text-[10px] font-black uppercase text-white/80">Liberação do Arsenal Neural</p>
+              <p className="text-[9px] md:text-[10px] font-black uppercase text-white/80">Liberação do Arsenal Neural</p>
             </div>
           </div>
 
-          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest italic">
+          <p className="text-[9px] md:text-[10px] font-bold text-muted-foreground uppercase tracking-widest italic px-4">
             Você será notificado via e-mail assim que seu acesso for liberado.
           </p>
 
@@ -336,28 +331,28 @@ export default function Dashboard() {
         <AppSidebar />
         
         <main className="flex-1 flex flex-col min-w-0">
-          <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-40">
-            <div className="flex items-center gap-4">
+          <header className="h-16 border-b border-white/5 flex items-center justify-between px-4 md:px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-40">
+            <div className="flex items-center gap-2 md:gap-4">
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
               <div className="h-4 w-px bg-white/10 hidden md:block" />
-              <h2 className="text-sm font-black italic uppercase tracking-widest hidden md:flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-primary" /> Painel de Comando
+              <h2 className="text-[10px] md:text-sm font-black italic uppercase tracking-widest flex items-center gap-2">
+                <Sparkles className="h-3 w-3 md:h-4 md:w-4 text-primary" /> Painel de Comando
               </h2>
             </div>
             
-            <div className="flex items-center gap-3">
-              <Badge variant="outline" className={`${isProMember ? 'bg-purple-500/10 border-purple-500/30 text-purple-400' : 'bg-white/5 border-white/10 text-muted-foreground'} text-[8px] font-black uppercase px-3 py-1`}>
-                {userData?.plan?.toUpperCase() === 'NENHUM' ? 'SEM PLANO ATIVO' : userData?.plan?.toUpperCase()}
+            <div className="flex items-center gap-2 md:gap-3">
+              <Badge variant="outline" className={`${isProMember ? 'bg-purple-500/10 border-purple-500/30 text-purple-400' : 'bg-white/5 border-white/10 text-muted-foreground'} text-[7px] md:text-[8px] font-black uppercase px-2 md:px-3 py-1`}>
+                {userData?.plan?.toUpperCase() === 'NENHUM' ? 'BLOQUEADO' : userData?.plan?.toUpperCase()}
               </Badge>
-              <Badge variant="secondary" className="bg-primary/10 text-primary gap-1 px-3 py-1 text-[10px] font-black uppercase">
-                <Flame className="h-3 w-3" /> {completedMissionIds.length}D
+              <Badge variant="secondary" className="bg-primary/10 text-primary gap-1 px-2 md:px-3 py-1 text-[8px] md:text-[10px] font-black uppercase">
+                <Flame className="h-2.5 w-2.5 md:h-3 md:w-3" /> {completedMissionIds.length}D
               </Badge>
             </div>
           </header>
 
-          <div className="flex-1 p-4 md:p-8 space-y-8 max-w-5xl mx-auto w-full">
+          <div className="flex-1 p-4 md:p-8 space-y-6 md:space-y-8 max-w-5xl mx-auto w-full">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-              <div className="space-y-3">
+              <div className="space-y-3 w-full md:w-auto">
                 <div className="space-y-1">
                   <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter leading-none text-white">
                     {displayName.split(' ')[0]}
@@ -366,55 +361,55 @@ export default function Dashboard() {
                     <div className={`${userLevel.color}`}>
                       {userLevel.icon}
                     </div>
-                    <span className={`text-[10px] font-black uppercase tracking-widest ${userLevel.color}`}>Patente {userLevel.name}</span>
+                    <span className={`text-[9px] md:text-[10px] font-black uppercase tracking-widest ${userLevel.color}`}>Patente {userLevel.name}</span>
                   </div>
                 </div>
 
-                <div className="space-y-2">
+                <div className="flex flex-wrap gap-2">
                   {userData?.plan === 'mensal' && (
                     <div className="flex items-center gap-2 px-3 py-1 bg-yellow-500/5 border border-yellow-500/20 rounded-full w-fit">
-                      <AlertCircle className="h-3 w-3 text-yellow-500" />
-                      <span className="text-[8px] font-bold uppercase tracking-widest text-yellow-500/80">Uso diário limitado</span>
+                      <AlertCircle className="h-2.5 w-2.5 text-yellow-500" />
+                      <span className="text-[7px] md:text-[8px] font-bold uppercase tracking-widest text-yellow-500/80">Uso diário limitado</span>
                     </div>
                   )}
                   {(userData?.plan === 'vitalicio' || isSpecialUser) && (
                     <div className="flex items-center gap-2 px-3 py-1 bg-green-500/5 border border-green-500/20 rounded-full w-fit">
-                      <ShieldCheck className="h-3 w-3 text-green-500" />
-                      <span className="text-[8px] font-bold uppercase tracking-widest text-green-500/80">Acesso ilimitado vitalício</span>
+                      <ShieldCheck className="h-2.5 w-2.5 text-green-500" />
+                      <span className="text-[7px] md:text-[8px] font-bold uppercase tracking-widest text-green-500/80">Acesso ilimitado vitalício</span>
                     </div>
                   )}
                   {userData?.plan === 'nenhum' && (
                     <div className="flex items-center gap-2 px-3 py-1 bg-destructive/5 border border-destructive/20 rounded-full w-fit">
-                      <Lock className="h-3 w-3 text-destructive" />
-                      <span className="text-[8px] font-bold uppercase tracking-widest text-destructive/80">Assinatura necessária</span>
+                      <Lock className="h-2.5 w-2.5 text-destructive" />
+                      <span className="text-[7px] md:text-[8px] font-bold uppercase tracking-widest text-destructive/80">Assinatura necessária</span>
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 max-w-xs animate-in slide-in-from-right-10 duration-700">
+              <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 w-full md:max-w-xs animate-in slide-in-from-right-10 duration-700">
                 <div className="flex gap-3 items-start">
                   <AlertCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                  <p className="text-[10px] font-bold text-white/80 leading-relaxed uppercase">
+                  <p className="text-[9px] md:text-[10px] font-bold text-white/80 leading-relaxed uppercase">
                     {!isProMember ? "Libere seu plano para ativar o motor neural." : "Você está em modo de operação. Continue acelerando!"}
                   </p>
                 </div>
               </div>
             </div>
 
-            <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden p-6 md:p-10 space-y-10">
+            <Card className="bg-white/[0.02] border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden p-5 md:p-10 space-y-6 md:space-y-10">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div className="space-y-1">
-                  <h3 className="text-2xl font-black italic uppercase tracking-tight text-white">Ganhos Diários</h3>
-                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-60">Visualização de performance 30 dias.</p>
+                  <h3 className="text-xl md:text-2xl font-black italic uppercase tracking-tight text-white">Ganhos Diários</h3>
+                  <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-60">Visualização de performance 30 dias.</p>
                 </div>
-                <div className="text-right">
-                  <p className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1">Ganhos Totais</p>
-                  <div className="text-4xl font-black italic tracking-tighter text-white">R$ {totalEarnings.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+                <div className="text-left md:text-right w-full md:w-auto">
+                  <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-50 mb-1">Ganhos Totais</p>
+                  <div className="text-3xl md:text-4xl font-black italic tracking-tighter text-white leading-none">R$ {totalEarnings.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
                 </div>
               </div>
 
-              <div className="h-[280px] w-full">
+              <div className="h-[200px] md:h-[280px] w-full">
                 <ChartContainer config={{ 
                   ganhos: { label: "Valor do Dia", color: "hsl(var(--primary))" } 
                 }}>
@@ -433,14 +428,14 @@ export default function Dashboard() {
                       dataKey="date" 
                       axisLine={false} 
                       tickLine={false} 
-                      tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
+                      tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
                       dy={10}
-                      interval={2}
+                      interval={window.innerWidth < 768 ? 4 : 2}
                     />
                     <YAxis 
                       axisLine={false} 
                       tickLine={false} 
-                      tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
+                      tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
                       tickFormatter={(value) => `R$ ${value}`}
                       domain={[0, 'auto']}
                     />
@@ -453,7 +448,7 @@ export default function Dashboard() {
                       fillOpacity={1} 
                       fill="url(#colorGanhos)" 
                       animationDuration={2000}
-                      dot={{ r: 3, fill: 'hsl(var(--primary))', strokeWidth: 1, stroke: '#fff', opacity: 0.8 }}
+                      dot={window.innerWidth > 768 ? { r: 3, fill: 'hsl(var(--primary))', strokeWidth: 1, stroke: '#fff', opacity: 0.8 } : false}
                       activeDot={{ r: 6, fill: 'hsl(var(--primary))', stroke: '#fff', strokeWidth: 2 }}
                     />
                   </AreaChart>
@@ -461,35 +456,35 @@ export default function Dashboard() {
               </div>
             </Card>
 
-            <div className="grid gap-6 md:grid-cols-2">
-              <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden">
-                <CardHeader className="pb-2">
+            <div className="grid gap-4 md:gap-6 md:grid-cols-2">
+              <Card className="bg-white/[0.02] border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden">
+                <CardHeader className="pb-2 p-5">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-primary">Placar de Caixa</span>
-                    <Badge variant="outline" className="text-[8px] border-primary/20 text-primary">META: R$ {displayGoal.toLocaleString('pt-BR')}</Badge>
+                    <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-primary">Placar de Caixa</span>
+                    <Badge variant="outline" className="text-[7px] md:text-[8px] border-primary/20 text-primary">META: R$ {displayGoal.toLocaleString('pt-BR')}</Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="flex items-end justify-between">
-                    <div className="text-5xl font-black italic tracking-tighter">R$ {totalEarnings.toLocaleString('pt-BR')}</div>
+                <CardContent className="space-y-6 p-5 pt-0">
+                  <div className="flex flex-col gap-4">
+                    <div className="text-4xl md:text-5xl font-black italic tracking-tighter">R$ {totalEarnings.toLocaleString('pt-BR')}</div>
                     
                     <Dialog open={showEarningModal} onOpenChange={setShowEarningModal}>
                       <DialogTrigger asChild>
                         <Button 
                           size="sm" 
-                          className="bg-white text-black hover:bg-primary hover:text-white rounded-xl font-black uppercase text-[10px] h-10 px-4 transition-all active:scale-95"
+                          className="bg-white text-black hover:bg-primary hover:text-white rounded-xl font-black uppercase text-[9px] md:text-[10px] h-10 px-4 transition-all active:scale-95 w-full sm:w-fit"
                         >
                           <Plus className="h-3 w-3 mr-1" /> ADICIONAR GANHO
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="bg-[#0b0b14] border-white/10 text-white rounded-[2rem]">
+                      <DialogContent className="bg-[#0b0b14] border-white/10 text-white rounded-[2rem] w-[95vw] max-w-md p-6">
                         <DialogHeader>
-                          <DialogTitle className="text-xl font-black italic uppercase tracking-widest">Registrar Venda</DialogTitle>
-                          <DialogDescription className="text-muted-foreground uppercase text-[10px] font-bold">Informe o valor para atualizar seu placar.</DialogDescription>
+                          <DialogTitle className="text-lg md:text-xl font-black italic uppercase tracking-widest">Registrar Venda</DialogTitle>
+                          <DialogDescription className="text-muted-foreground uppercase text-[9px] md:text-[10px] font-bold">Informe o valor para atualizar seu placar.</DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-6 py-4">
                           <div className="space-y-2">
-                            <Label htmlFor="amount" className="text-[10px] font-black uppercase tracking-widest opacity-70">Valor da Venda (R$)</Label>
+                            <Label htmlFor="amount" className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-70">Valor da Venda (R$)</Label>
                             <Input
                               id="amount"
                               type="number"
@@ -513,32 +508,32 @@ export default function Dashboard() {
                     </Dialog>
                   </div>
                   <div className="space-y-2">
-                    <div className="flex justify-between text-[8px] font-black uppercase opacity-50 tracking-widest">
+                    <div className="flex justify-between text-[7px] md:text-[8px] font-black uppercase opacity-50 tracking-widest">
                       <span>Progresso do Alvo</span>
                       <span>{Math.min(100, Math.round(earningsProgress))}%</span>
                     </div>
-                    <Progress value={earningsProgress} className="h-2 bg-white/5" />
+                    <Progress value={earningsProgress} className="h-1.5 md:h-2 bg-white/5" />
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] overflow-hidden">
-                <CardHeader className="pb-2">
+              <Card className="bg-white/[0.02] border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden">
+                <CardHeader className="pb-2 p-5">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-accent">Execução Diária</span>
-                    <Badge variant="outline" className="text-[8px] border-accent/20 text-accent">ROTINA DE ATAQUE</Badge>
+                    <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-accent">Execução Diária</span>
+                    <Badge variant="outline" className="text-[7px] md:text-[8px] border-accent/20 text-accent">ROTINA DE ATAQUE</Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-6 p-5 pt-0">
                   <div className="flex items-center justify-between">
                     <div className="space-y-1">
-                      <div className="text-4xl font-black italic tracking-tighter">
+                      <div className="text-3xl md:text-4xl font-black italic tracking-tighter">
                         {dailyActions}/{dailyGoal}
                       </div>
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase">Ações Concluídas Hoje</p>
+                      <p className="text-[9px] md:text-[10px] font-bold text-muted-foreground uppercase">Ações Concluídas Hoje</p>
                     </div>
-                    <div className={`h-16 w-16 rounded-full flex items-center justify-center border-4 transition-all duration-1000 ${dailyActions >= dailyGoal ? 'border-green-500 bg-green-500/10 shadow-[0_0_20px_rgba(34,197,94,0.3)]' : 'border-white/5 bg-white/5'}`}>
-                      {dailyActions >= dailyGoal ? <Flame className="h-8 w-8 text-green-500 animate-pulse" /> : <Target className="h-8 w-8 text-muted-foreground opacity-20" />}
+                    <div className={`h-14 w-14 md:h-16 md:w-16 rounded-full flex items-center justify-center border-4 transition-all duration-1000 ${dailyActions >= dailyGoal ? 'border-green-500 bg-green-500/10 shadow-[0_0_20px_rgba(34,197,94,0.3)]' : 'border-white/5 bg-white/5'}`}>
+                      {dailyActions >= dailyGoal ? <Flame className="h-7 w-7 md:h-8 md:w-8 text-green-500 animate-pulse" /> : <Target className="h-7 w-7 md:h-8 md:w-8 text-muted-foreground opacity-20" />}
                     </div>
                   </div>
                 </CardContent>
@@ -546,27 +541,27 @@ export default function Dashboard() {
             </div>
 
             <div className="space-y-6 pt-4 pb-20">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div className="space-y-1">
-                  <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2 text-white">
-                    <div className="relative h-6 w-6">
+                  <h2 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2 text-white leading-tight">
+                    <div className="relative h-5 w-5 md:h-6 md:w-6 shrink-0">
                       <Image src={LOGO_ICON} alt="Icon" fill className="object-contain" />
                     </div>
                     Trilha de Missão: 7 Dias
                   </h2>
-                  <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest">Execute para desbloquear a Fase de Escala.</p>
+                  <p className="text-muted-foreground text-[9px] md:text-[10px] uppercase font-bold tracking-widest">Execute para desbloquear a Fase de Escala.</p>
                 </div>
                 
-                <div className="flex items-center gap-4 bg-white/5 px-6 py-3 rounded-2xl border border-white/10">
-                  <div className="space-y-1 flex-1 min-w-[120px]">
-                    <div className="flex justify-between text-[8px] font-black uppercase tracking-widest mb-1">
-                      <span>Seu Progresso</span>
+                <div className="flex items-center gap-4 bg-white/5 px-4 md:px-6 py-3 rounded-2xl border border-white/10">
+                  <div className="space-y-1 flex-1 min-w-[100px] md:min-w-[120px]">
+                    <div className="flex justify-between text-[7px] md:text-[8px] font-black uppercase tracking-widest mb-1">
+                      <span>Progresso</span>
                       <span>{completedMissionIds.length}/7</span>
                     </div>
-                    <Progress value={journeyProgress} className="h-1.5 bg-white/10" />
+                    <Progress value={journeyProgress} className="h-1 bg-white/10" />
                   </div>
                   {isJourneyFinished && (
-                    <Badge className="bg-green-500/20 text-green-500 border-green-500/30 text-[8px] font-black uppercase">JORNADA COMPLETA</Badge>
+                    <Badge className="bg-green-500/20 text-green-500 border-green-500/30 text-[7px] md:text-[8px] font-black uppercase shrink-0">COMPLETA</Badge>
                   )}
                 </div>
               </div>
@@ -582,7 +577,7 @@ export default function Dashboard() {
                   return (
                     <div 
                       key={mission.id} 
-                      className={`group relative overflow-hidden p-4 md:p-6 rounded-[1.5rem] border transition-all duration-500 ${
+                      className={`group relative overflow-hidden p-4 md:p-6 rounded-[1.25rem] md:rounded-[1.5rem] border transition-all duration-500 ${
                         isLocked 
                         ? 'bg-white/[0.01] border-white/5 opacity-40 grayscale pointer-events-none' 
                         : isCurrent 
@@ -590,21 +585,21 @@ export default function Dashboard() {
                         : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.05]'
                       }`}
                     >
-                      <div className="flex items-center justify-between gap-4 relative z-10">
-                        <div className="flex items-center gap-4 md:gap-5">
+                      <div className="flex items-center justify-between gap-3 md:gap-4 relative z-10">
+                        <div className="flex items-center gap-3 md:gap-5 min-w-0">
                           <div className={`h-10 w-10 md:h-14 md:w-14 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ${
                             isCompleted ? 'bg-green-500/10 text-green-500 border border-green-500/20' : isLocked ? 'bg-white/5 text-muted-foreground' : 'bg-primary text-white shadow-xl shadow-primary/40'
                           }`}>
-                            {isCompleted ? <CheckCircle2 className="h-5 w-5 md:h-7 md:w-7" /> : isLocked ? <Lock className="h-4 w-4 md:h-6 md:w-6" /> : <span className="font-black italic text-lg md:text-xl leading-none">{index + 1}</span>}
+                            {isCompleted ? <CheckCircle2 className="h-5 w-5 md:h-7 md:w-7" /> : isLocked ? <Lock className="h-4 w-4 md:h-6 md:w-6" /> : <span className="font-black italic text-base md:text-xl leading-none">{index + 1}</span>}
                           </div>
                           <div className="space-y-0.5 md:space-y-1 text-left min-w-0">
-                            <h4 className={`font-black italic uppercase tracking-tight text-base md:text-xl truncate ${isCompleted ? 'text-muted-foreground' : 'text-white'}`}>
+                            <h4 className={`font-black italic uppercase tracking-tight text-sm md:text-xl truncate ${isCompleted ? 'text-muted-foreground' : 'text-white'}`}>
                               {mission.title}
                             </h4>
-                            <p className="text-xs text-muted-foreground line-clamp-1 opacity-70 group-hover:opacity-100 transition-opacity">
+                            <p className="text-[10px] md:text-xs text-muted-foreground truncate opacity-70 group-hover:opacity-100 transition-opacity">
                               {isTimeLocked ? (
                                 <span className="flex items-center gap-1 text-yellow-500/80 font-bold">
-                                  <Timer className="h-3 w-3" /> LIBERA EM {mission.order - currentJourneyDay} DIA(S)
+                                  <Timer className="h-2.5 w-2.5" /> LIBERA EM {mission.order - currentJourneyDay} D
                                 </span>
                               ) : mission.desc}
                             </p>
@@ -612,9 +607,9 @@ export default function Dashboard() {
                         </div>
                         
                         {!isLocked && (
-                          <Button asChild variant={isCurrent ? "default" : "ghost"} className="rounded-xl font-black uppercase text-[8px] md:text-[10px] tracking-widest h-10 md:h-12 px-4 md:px-8">
+                          <Button asChild variant={isCurrent ? "default" : "ghost"} className="rounded-xl font-black uppercase text-[7px] md:text-[10px] tracking-widest h-9 md:h-12 px-3 md:px-8 shrink-0">
                             <Link href={`/missions/${mission.id}`}>
-                              {isCompleted ? 'REVISAR' : 'EXECUTAR'} <ArrowUpRight className="ml-1 md:ml-2 h-3 w-3 md:h-4 w-4" />
+                              {isCompleted ? 'REVISAR' : 'EXECUTAR'}
                             </Link>
                           </Button>
                         )}
