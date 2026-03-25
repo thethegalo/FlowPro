@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Zap, Loader2, ShieldCheck } from 'lucide-react';
+import { Zap, Loader2, ShieldCheck, Lock } from 'lucide-react';
 import { useAuth, useFirestore } from '@/firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -37,14 +37,9 @@ export default function AuthPage() {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Atualizar perfil do Auth para garantir que user.displayName funcione
         await updateProfile(user, { displayName: name });
 
-        // Recuperar dados do quiz temporários
-        const tempQuiz = sessionStorage.getItem('temp_quiz');
-        const tempPlan = sessionStorage.getItem('temp_plan');
-
-        // Criar perfil do usuário como PENDENTE e plano inicial
+        // Criar perfil do usuário como PENDENTE e SEM PLANO
         await setDoc(doc(db, 'users', user.uid), {
           id: user.uid,
           email: user.email,
@@ -56,28 +51,13 @@ export default function AuthPage() {
             messagesUsed: 0
           },
           createdAt: serverTimestamp(),
-          isOnboarded: !!tempQuiz
+          isOnboarded: false
         });
 
-        if (tempQuiz && tempPlan) {
-          const answers = JSON.parse(tempQuiz);
-          const plan = JSON.parse(tempPlan);
-
-          await setDoc(doc(db, 'users', user.uid, 'quizResponses', 'initial'), {
-            userId: user.uid,
-            responses: answers,
-            completedAt: serverTimestamp()
-          });
-
-          await setDoc(doc(db, 'users', user.uid, 'personalizedPlans', 'active'), {
-            userId: user.uid,
-            strategy: plan?.[0]?.title || "Estratégia Flow",
-            fullPlan: plan || [],
-            generatedAt: serverTimestamp()
-          });
-        }
-
-        toast({ title: "Conta Criada!", description: "Sua solicitação de acesso foi enviada para análise." });
+        toast({ 
+          title: "Solicitação Enviada!", 
+          description: "Seu cadastro foi enviado para análise manual do mestre." 
+        });
         router.push('/dashboard');
       }
     } catch (error: any) {
@@ -99,19 +79,19 @@ export default function AuthPage() {
             <Zap className="h-10 w-10 text-primary animate-pulse" />
           </div>
           <CardTitle className="text-2xl font-black italic uppercase tracking-tighter">
-            {isLogin ? 'Bem-vindo ao FlowPro' : 'Finalizar seu Cadastro'}
+            {isLogin ? 'Bem-vindo ao FlowPro' : 'Solicitar Acesso'}
           </CardTitle>
           <CardDescription className="text-muted-foreground uppercase text-[10px] font-bold tracking-[0.2em]">
-            {isLogin ? 'O seu futuro nas vendas continua aqui' : 'Crie sua conta para solicitar acesso'}
+            {isLogin ? 'Acesse sua conta de operador' : 'O acesso é restrito e sujeito a aprovação'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 p-8">
           <form onSubmit={handleAuth} className="space-y-4">
             {!isLogin && (
               <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest opacity-70">Nome Completo</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest opacity-70">Seu Nome</Label>
                 <Input 
-                  placeholder="Seu nome" 
+                  placeholder="Como quer ser chamado" 
                   className="bg-white/5 border-white/10 rounded-xl h-12"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -120,10 +100,10 @@ export default function AuthPage() {
               </div>
             )}
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest opacity-70">Email</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest opacity-70">Email Profissional</Label>
               <Input 
                 type="email" 
-                placeholder="nome@exemplo.com" 
+                placeholder="seu@email.com" 
                 className="bg-white/5 border-white/10 rounded-xl h-12"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -141,22 +121,28 @@ export default function AuthPage() {
               />
             </div>
 
-            <div className="flex items-center justify-between pb-2">
-              <div className="flex items-center space-x-2">
-                <Checkbox id="remember" className="border-white/20" />
-                <label htmlFor="remember" className="text-[9px] font-black uppercase tracking-widest opacity-50 cursor-pointer">Lembrar acesso</label>
+            {isLogin && (
+              <div className="flex items-center justify-between pb-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox id="remember" className="border-white/20" />
+                  <label htmlFor="remember" className="text-[9px] font-black uppercase tracking-widest opacity-50 cursor-pointer">Lembrar acesso</label>
+                </div>
+                <button type="button" className="text-[9px] font-black uppercase tracking-widest text-primary/60 hover:text-primary transition-colors">Esqueci a senha</button>
               </div>
-              <button type="button" className="text-[9px] font-black uppercase tracking-widest text-primary/60 hover:text-primary transition-colors">Esqueci a senha</button>
-            </div>
+            )}
             
             <Button className="w-full bg-primary hover:bg-primary/90 h-14 font-black uppercase tracking-widest rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98]" disabled={isLoading}>
               {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : isLogin ? 'ENTRAR' : 'SOLICITAR ACESSO'}
             </Button>
           </form>
 
-          {!isLogin && (
+          {!isLogin ? (
             <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/5 border border-primary/10 text-[10px] font-bold text-primary uppercase text-center justify-center">
-              <ShieldCheck className="h-3 w-3" /> Acesso sujeito a aprovação manual
+              <ShieldCheck className="h-3 w-3" /> Liberação manual em até 24h
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-white/5 border border-white/10 text-[9px] font-bold text-muted-foreground uppercase text-center justify-center">
+              <Lock className="h-3 w-3" /> Acesso restrito a membros aprovados
             </div>
           )}
 
@@ -165,7 +151,7 @@ export default function AuthPage() {
               onClick={() => setIsLogin(!isLogin)}
               className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline transition-all"
             >
-              {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Faça Login'}
+              {isLogin ? 'Não tem conta? Peça acesso' : 'Já tem conta? Faça Login'}
             </button>
           </div>
         </CardContent>

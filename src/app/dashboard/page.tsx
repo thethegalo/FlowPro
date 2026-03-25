@@ -84,7 +84,7 @@ export default function Dashboard() {
   }, [db, user]);
   const { data: userData, isLoading: isUserDocLoading } = useDoc(userDocRef);
 
-  // Nome formatado para exibição
+  // Nome formatado para exibição - PERSONALIZAÇÃO LUCAS
   const displayName = useMemo(() => {
     if (user?.email === ADMIN_EMAIL) return 'Lucas';
     if (userData?.name) return userData.name;
@@ -280,6 +280,7 @@ export default function Dashboard() {
     );
   }
 
+  // TRAVA DE SEGURANÇA: SÓ LUCAS OU APROVADOS PASSAM
   if (userData?.status !== 'approved' && !isSpecialUser) {
     return (
       <div className="min-h-screen bg-[#050508] flex items-center justify-center p-6 text-center">
@@ -293,31 +294,30 @@ export default function Dashboard() {
           </div>
           
           <div className="space-y-4">
-            <Badge className="bg-primary/20 text-primary border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5">Acesso Restrito</Badge>
-            <h1 className="text-3xl font-black italic uppercase tracking-tighter">Cadastro em Análise</h1>
+            <Badge className="bg-primary/20 text-primary border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5">Acesso Sob Análise</Badge>
+            <h1 className="text-3xl font-black italic uppercase tracking-tighter">Olá, {displayName}</h1>
             <p className="text-muted-foreground text-sm font-medium leading-relaxed">
-              Olá, <span className="text-white">{displayName}</span>. <br />
-              Para garantir a qualidade da nossa rede neural, todos os novos acessos passam por uma validação de segurança manual.
+              O FlowPro é um ecossistema fechado de elite. Sua solicitação de acesso foi enviada e está na fila para validação manual.
             </p>
           </div>
 
           <div className="p-6 rounded-2xl bg-white/5 border border-white/5 space-y-4 text-left">
             <div className="flex items-center gap-3">
               <div className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]"></div>
-              <p className="text-[10px] font-black uppercase text-white/80">Identidade confirmada</p>
+              <p className="text-[10px] font-black uppercase text-white/80">Cadastro Criado</p>
             </div>
             <div className="flex items-center gap-3">
               <div className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse shadow-[0_0_10px_#eab308]"></div>
-              <p className="text-[10px] font-black uppercase text-white/80">Validação estratégica em curso</p>
+              <p className="text-[10px] font-black uppercase text-white/80">Aguardando Aprovação do Administrador</p>
             </div>
             <div className="flex items-center gap-3 opacity-30">
               <div className="h-2 w-2 rounded-full bg-white"></div>
-              <p className="text-[10px] font-black uppercase text-white/80">Liberação de arsenal</p>
+              <p className="text-[10px] font-black uppercase text-white/80">Liberação do Arsenal Neural</p>
             </div>
           </div>
 
           <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest italic">
-            O acesso será liberado em até 24 horas úteis após a aprovação manual.
+            Você será notificado via e-mail assim que seu acesso for liberado.
           </p>
 
           <Button 
@@ -349,7 +349,7 @@ export default function Dashboard() {
             
             <div className="flex items-center gap-3">
               <Badge variant="outline" className={`${isProMember ? 'bg-purple-500/10 border-purple-500/30 text-purple-400' : 'bg-white/5 border-white/10 text-muted-foreground'} text-[8px] font-black uppercase px-3 py-1`}>
-                {userData?.plan?.toUpperCase() || 'FREE PLAN'}
+                {userData?.plan?.toUpperCase() === 'NENHUM' ? 'SEM PLANO ATIVO' : userData?.plan?.toUpperCase()}
               </Badge>
               <Badge variant="secondary" className="bg-primary/10 text-primary gap-1 px-3 py-1 text-[10px] font-black uppercase">
                 <Flame className="h-3 w-3" /> {completedMissionIds.length}D
@@ -376,13 +376,19 @@ export default function Dashboard() {
                   {userData?.plan === 'mensal' && (
                     <div className="flex items-center gap-2 px-3 py-1 bg-yellow-500/5 border border-yellow-500/20 rounded-full w-fit">
                       <AlertCircle className="h-3 w-3 text-yellow-500" />
-                      <span className="text-[8px] font-bold uppercase tracking-widest text-yellow-500/80">Plano mensal possui limites diários</span>
+                      <span className="text-[8px] font-bold uppercase tracking-widest text-yellow-500/80">Uso diário limitado</span>
                     </div>
                   )}
                   {(userData?.plan === 'vitalicio' || isSpecialUser) && (
                     <div className="flex items-center gap-2 px-3 py-1 bg-green-500/5 border border-green-500/20 rounded-full w-fit">
                       <ShieldCheck className="h-3 w-3 text-green-500" />
-                      <span className="text-[8px] font-bold uppercase tracking-widest text-green-500/80">Acesso completo liberado</span>
+                      <span className="text-[8px] font-bold uppercase tracking-widest text-green-500/80">Acesso ilimitado vitalício</span>
+                    </div>
+                  )}
+                  {userData?.plan === 'nenhum' && (
+                    <div className="flex items-center gap-2 px-3 py-1 bg-destructive/5 border border-destructive/20 rounded-full w-fit">
+                      <Lock className="h-3 w-3 text-destructive" />
+                      <span className="text-[8px] font-bold uppercase tracking-widest text-destructive/80">Assinatura necessária</span>
                     </div>
                   )}
                 </div>
@@ -392,11 +398,7 @@ export default function Dashboard() {
                 <div className="flex gap-3 items-start">
                   <AlertCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                   <p className="text-[10px] font-bold text-white/80 leading-relaxed uppercase">
-                    {completedMissionIds.length === 0 
-                      ? "Você está a 1 passo da sua primeira venda. Não pare agora." 
-                      : isJourneyFinished
-                      ? "Você já provou que é um executor. A escala é o próximo passo."
-                      : "Agora é a etapa onde a maioria desiste. Continue acelerando!"}
+                    {!isProMember ? "Libere seu plano para ativar o motor neural." : "Você está em modo de operação. Continue acelerando!"}
                   </p>
                 </div>
               </div>

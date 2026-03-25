@@ -55,12 +55,13 @@ export function AppSidebar() {
   }, [db, user]);
   const { data: userData } = useDoc(userDocRef);
 
+  // PERSONALIZAÇÃO LUCAS
   const formattedName = React.useMemo(() => {
     if (user?.email === ADMIN_EMAIL) return 'Lucas';
     if (userData?.name) return userData.name;
     if (user?.displayName) return user.displayName;
     if (user?.email) return user.email.split('@')[0];
-    return 'Usuário Flow';
+    return 'Usuário';
   }, [userData?.name, user?.displayName, user?.email]);
 
   const handleSignOut = () => {
@@ -81,6 +82,7 @@ export function AppSidebar() {
   ];
 
   const isAdmin = user?.email === ADMIN_EMAIL;
+  const isApproved = userData?.status === 'approved' || isAdmin;
 
   return (
     <Sidebar className="border-r border-white/5 bg-[#050508]">
@@ -107,9 +109,10 @@ export function AppSidebar() {
                   <SidebarMenuButton 
                     asChild 
                     isActive={pathname === item.url}
-                    className={`h-12 rounded-xl transition-all ${pathname === item.url ? 'bg-primary/10 text-primary border border-primary/20' : 'hover:bg-white/5'}`}
+                    disabled={!isApproved}
+                    className={`h-12 rounded-xl transition-all ${!isApproved ? 'opacity-30' : ''} ${pathname === item.url ? 'bg-primary/10 text-primary border border-primary/20' : 'hover:bg-white/5'}`}
                   >
-                    <Link href={item.url} className="flex items-center gap-3">
+                    <Link href={isApproved ? item.url : "#"} className="flex items-center gap-3">
                       {typeof item.icon === 'function' ? <item.icon /> : <item.icon className={`h-5 w-5 ${pathname === item.url ? 'text-primary' : 'text-muted-foreground'}`} />}
                       <span className="text-xs font-bold uppercase tracking-widest">{item.title}</span>
                       {pathname === item.url && <ChevronRight className="ml-auto h-4 w-4 text-primary" />}
@@ -153,7 +156,7 @@ export function AppSidebar() {
                 {formattedName}
               </p>
               <p className="text-[8px] font-bold uppercase text-muted-foreground truncate">
-                {user?.email}
+                PLANO: {userData?.plan?.toUpperCase() === 'NENHUM' ? 'BLOQUEADO' : userData?.plan?.toUpperCase()}
               </p>
             </div>
           </div>
