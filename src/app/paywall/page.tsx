@@ -21,7 +21,8 @@ import {
   CalendarCheck,
   MessageSquare,
   Quote,
-  Sparkles
+  Sparkles,
+  AlertCircle
 } from 'lucide-react';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
@@ -124,10 +125,14 @@ export default function PaywallPage() {
           {/* Pricing Grid */}
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto items-stretch">
             
-            {/* PLANO PRO (MENSAL) */}
+            {/* PLANO PRO (MENSAL) - LIMITADO */}
             <Card className="glass-card p-10 flex flex-col justify-between border-white/10 relative overflow-hidden rounded-[2.5rem] bg-white/[0.04] hover:bg-white/[0.06] transition-all duration-500">
               <div className="space-y-8 relative z-10">
                 <div className="space-y-3">
+                  <div className="flex items-center gap-2 px-3 py-1 bg-yellow-500/10 border border-yellow-500/20 rounded-full w-fit">
+                    <AlertCircle className="h-3 w-3 text-yellow-500" />
+                    <span className="text-[8px] font-black uppercase tracking-widest text-yellow-500">Uso Diário Limitado</span>
+                  </div>
                   <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 flex items-center gap-2">
                     <Zap className="h-4 w-4" /> Flow Pro (Mensal)
                   </h3>
@@ -135,21 +140,18 @@ export default function PaywallPage() {
                     <p className="text-6xl font-black italic text-white tracking-tighter">R$ 147</p>
                     <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/mês</span>
                   </div>
-                  <p className="text-[10px] font-black uppercase text-white/40 tracking-widest flex items-center gap-2">
-                    <TrendingUp className="h-3.5 w-3.5" /> RECORRÊNCIA E ESCALA
-                  </p>
                 </div>
 
                 <ul className="space-y-5">
                   {[
-                    'Radar de Leads Ilimitado', 
-                    'IA de Prospecção Avançada', 
+                    'Radar: 20 Buscas/Dia', 
+                    'IA Mentor: 10 Perguntas/Dia', 
+                    'IA Prospecção: 10 Mensagens/Dia', 
                     'Scripts de Elite (Volume)', 
-                    'Atualizações Semanais', 
-                    'Comunidade de Alunos'
+                    'Acesso à Fase de Escala'
                   ].map((f, i) => (
-                    <li key={i} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white/80">
-                      <CheckCircle2 className="h-4 w-4 text-white/20" /> {f}
+                    <li key={i} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white/60">
+                      <CheckCircle2 className="h-4 w-4 text-white/10" /> {f}
                     </li>
                   ))}
                 </ul>
@@ -160,11 +162,11 @@ export default function PaywallPage() {
                 variant="outline"
                 className="w-full h-16 mt-10 rounded-2xl border-white/10 text-white hover:bg-white/5 font-black uppercase tracking-widest transition-all"
               >
-                ATIVAR ASSINATURA PRO
+                ATIVAR PLANO LIMITADO
               </Button>
             </Card>
 
-            {/* PLANO VITALÍCIO - DESTAQUE MÁXIMO */}
+            {/* PLANO VITALÍCIO - ILIMITADO */}
             <div className="relative p-[2px] rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(139,92,246,0.5)] scale-105 md:scale-110 z-20">
               <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-pulse"></div>
               <Card className="relative bg-[#050508] p-10 flex flex-col justify-between h-full border-none rounded-[calc(2.5rem-2px)]">
@@ -174,8 +176,12 @@ export default function PaywallPage() {
                 
                 <div className="space-y-8 relative z-10">
                   <div className="space-y-4">
+                    <div className="flex items-center gap-2 px-3 py-1 bg-primary/20 border border-primary/30 rounded-full w-fit">
+                      <Sparkles className="h-3 w-3 text-primary" />
+                      <span className="text-[8px] font-black uppercase tracking-widest text-primary">Acesso Vitalício ILIMITADO</span>
+                    </div>
                     <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2">
-                      <Infinity className="h-4 w-4 fill-primary" /> Acesso Vitalício (Pagamento Único)
+                      <Infinity className="h-4 w-4 fill-primary" /> Pagamento Único
                     </h3>
                     
                     <div className="space-y-1">
@@ -183,24 +189,22 @@ export default function PaywallPage() {
                         <p className="text-7xl md:text-8xl font-black italic text-white tracking-tighter">R$ 267</p>
                       </div>
                       
-                      {/* ÁREA DE PARCELAMENTO EM DESTAQUE */}
                       <div className="bg-primary/10 border border-primary/30 rounded-2xl px-5 py-3 w-full animate-in fade-in zoom-in duration-1000 delay-500">
                         <p className="text-[11px] md:text-sm font-black uppercase text-primary tracking-widest flex items-center gap-2">
                           <CalendarCheck className="h-5 w-5 fill-primary text-[#050508]" /> 
                           OU EM ATÉ 12X DE R$ 26,80
                         </p>
-                        <p className="text-[8px] font-bold text-primary/60 uppercase tracking-widest mt-1 ml-7">NO CARTÃO DE CRÉDITO</p>
                       </div>
                     </div>
                   </div>
 
                   <ul className="space-y-5">
                     {[
-                      'Jornada de 7 Dias Vitalícia', 
-                      'Radar de Leads (Acesso Base)', 
-                      'Biblioteca de Scripts de Elite', 
-                      'IA Mentor 24h Ilimitado',
-                      'Sem Taxas de Renovação',
+                      'Radar de Leads ILIMITADO', 
+                      'IA Mentor 24h ILIMITADO', 
+                      'IA de Prospecção ILIMITADA', 
+                      'Jornada de 7 Dias Vitalícia',
+                      'Sem Mensalidades ou Taxas',
                       'Garantia Blindada de 7 Dias'
                     ].map((f, i) => (
                       <li key={i} className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-white">
@@ -215,7 +219,7 @@ export default function PaywallPage() {
                   disabled={isLoading}
                   className="w-full h-24 mt-10 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest shadow-[0_15px_40px_rgba(139,92,246,0.5)] transition-all hover:scale-[1.02] group text-lg"
                 >
-                  GARANTIR ACESSO VITALÍCIO <ArrowRight className="ml-2 h-7 w-7 group-hover:translate-x-1 transition-transform" />
+                  GARANTIR ACESSO ILIMITADO <ArrowRight className="ml-2 h-7 w-7 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Card>
             </div>
