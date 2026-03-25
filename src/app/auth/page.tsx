@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Zap, Loader2, ShieldCheck, Smartphone } from 'lucide-react';
+import { Zap, Loader2, ShieldCheck } from 'lucide-react';
 import { useAuth, useFirestore } from '@/firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -167,13 +167,6 @@ export default function AuthPage() {
             >
               {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Faça Login'}
             </button>
-          </div>
-
-          <div className="text-center mt-8 pt-6 border-t border-white/5">
-            <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-3">Versão Mobile Disponível</p>
-            <Button variant="outline" size="sm" className="h-10 rounded-xl border-white/10 text-[9px] font-black uppercase tracking-widest gap-2 w-full hover:bg-white/5">
-              <Smartphone className="h-3.5 w-3.5" /> BAIXAR FLOWPRO APP
-            </Button>
           </div>
         </CardContent>
       </Card>

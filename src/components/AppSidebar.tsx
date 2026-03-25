@@ -16,16 +16,12 @@ import {
   Sparkles,
   Terminal,
   CreditCard,
-  Download,
-  Smartphone,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser, useAuth, useFirestore, useMemoFirebase, useDoc } from "@/firebase";
 import { signOut } from "firebase/auth";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { doc } from "firebase/firestore";
 
 import {
@@ -144,19 +140,6 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroup>
         )}
-
-        <div className="mt-8 px-2">
-          <Card className="bg-primary/5 border-primary/20 p-4 rounded-2xl relative overflow-hidden group hover:border-primary/40 transition-all">
-            <div className="absolute -top-4 -right-4 h-12 w-12 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/20 transition-all"></div>
-            <p className="text-[9px] font-black uppercase text-primary tracking-widest mb-2 flex items-center gap-2">
-              <Smartphone className="h-3 w-3" /> Acesso Rápido
-            </p>
-            <p className="text-[10px] font-bold text-white/60 mb-4 leading-tight uppercase">Instale o FlowPro no seu celular ou desktop.</p>
-            <Button className="w-full h-10 bg-primary hover:bg-primary/90 text-white text-[9px] font-black uppercase rounded-xl gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-all">
-              <Download className="h-3.5 w-3.5" /> BAIXAR APP
-            </Button>
-          </Card>
-        </div>
       </SidebarContent>
 
       <SidebarFooter className="p-6">
