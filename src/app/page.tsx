@@ -74,7 +74,7 @@ export default function Home() {
       </header>
 
       <main className="relative z-10">
-        <section className="relative pt-12 pb-16 md:pt-32 md:pb-56 overflow-hidden">
+        <section className="relative pt-12 pb-16 md:pt-32 md:pb-40 lg:pb-56 overflow-hidden">
           <div className="container px-6 mx-auto relative z-20">
             <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
               <div className="flex-1 text-center lg:text-left">
@@ -103,7 +103,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="flex-1 w-full max-w-[320px] md:max-w-none relative aspect-square mx-auto">
+              <div className="hidden lg:block flex-1 w-full max-w-[320px] md:max-w-none relative aspect-square mx-auto">
                 <Globe className="w-full h-full" speed={0.005} dark={1} />
               </div>
             </div>
@@ -143,7 +143,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="py-10 md:py-20 relative overflow-visible">
+        <section className="hidden md:block py-10 md:py-20 relative overflow-visible">
           <MacbookShowcase />
         </section>
 
