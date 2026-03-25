@@ -84,7 +84,6 @@ export default function Dashboard() {
   }, [db, user]);
   const { data: userData, isLoading: isUserDocLoading } = useDoc(userDocRef);
 
-  // Nome formatado para exibição - PERSONALIZAÇÃO LUCAS
   const displayName = useMemo(() => {
     if (user?.email === ADMIN_EMAIL) return 'Lucas';
     if (userData?.name) return userData.name;
@@ -200,14 +199,14 @@ export default function Dashboard() {
       let dailyValue = earningsByDate[dateKey] || 0;
       
       if (isSpecialUser && dailyValue === 0) {
+        // Lucas vende todos os dias - Visualização de alta performance
         const seed = (i * 1234.5) + (user?.uid?.charCodeAt(0) || 1);
         const rand = Math.abs(Math.sin(seed) * 10000) % 1;
-        const hasSale = (Math.abs(Math.cos(seed * 0.8) * 100) % 1) > 0.55; 
         
-        if (hasSale) {
-          const base = 28754 / 22; 
-          dailyValue = Math.floor(base * (0.4 + rand * 1.2));
-        }
+        // Garante que cada dia tenha uma venda para Lucas, simulando fluxo constante
+        const avgDaily = 28754 / 30;
+        // Flutuação dinâmica entre R$ 300 e R$ 1700 aproximadamente
+        dailyValue = Math.floor(avgDaily * (0.3 + rand * 1.5));
       }
       
       data.push({
@@ -280,7 +279,6 @@ export default function Dashboard() {
     );
   }
 
-  // TRAVA DE SEGURANÇA: SÓ LUCAS OU APROVADOS PASSAM
   if (userData?.status !== 'approved' && !isSpecialUser) {
     return (
       <div className="min-h-screen bg-[#050508] flex items-center justify-center p-6 text-center">

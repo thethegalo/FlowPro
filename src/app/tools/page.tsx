@@ -218,6 +218,7 @@ export default function ToolsPage() {
   const [ticket, setTicket] = useState("500");
   const [activeCategory, setActiveCategory] = useState('all');
 
+  // Calcula potencial tratando strings vazias como zero para não quebrar o layout
   const potentialEarnings = (Number(messagesPerDay || 0) * 30 * (Number(convRate || 0) / 100) * Number(ticket || 0));
 
   const filteredTools = activeCategory === 'all' 
@@ -225,7 +226,7 @@ export default function ToolsPage() {
     : TOOLS.filter(t => t.category === activeCategory);
 
   const handleInputChange = (setter: (v: string) => void, value: string) => {
-    // Permite apenas números e limpa zeros à esquerda
+    // Permite apenas números e permite campo vazio (blank)
     const cleaned = value.replace(/\D/g, '').replace(/^0+/, '');
     setter(cleaned);
   };
