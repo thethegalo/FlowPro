@@ -25,7 +25,6 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useUser, useFirestore } from '@/firebase';
-import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import {
@@ -65,35 +64,10 @@ const PAYWALL_FAQ = [
 
 export default function PaywallPage() {
   const { user } = useUser();
-  const db = useFirestore();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubscription = async (plan: string) => {
-    if (!user || !db) return;
-    setIsLoading(true);
-    try {
-      // Registrar subcoleção de assinatura
-      const subRef = doc(db, 'users', user.uid, 'subscriptions', 'active');
-      await setDoc(subRef, {
-        userId: user.uid,
-        planType: plan,
-        status: 'active',
-        startDate: serverTimestamp()
-      }, { merge: true });
-
-      // Atualizar plano principal no documento do usuário
-      const userRef = doc(db, 'users', user.uid);
-      await updateDoc(userRef, {
-        plan: plan === 'monthly' ? 'mensal' : 'vitalicio',
-        updatedAt: serverTimestamp()
-      });
-
-      router.push('/dashboard');
-    } catch (error) {
-      setIsLoading(false);
-    }
-  };
+  const CHECKOUT_MENSAL = "https://checkout.flowproia.shop/pay/PPU38CQ9FQU";
+  const CHECKOUT_VITALICIO = "https://checkout.flowproia.shop/pay/PPU38CQ9FCP";
 
   return (
     <div className="min-h-screen bg-[#050508] text-white overflow-x-hidden">
@@ -157,12 +131,13 @@ export default function PaywallPage() {
                 </ul>
               </div>
               <Button 
-                onClick={() => handleSubscription('monthly')}
-                disabled={isLoading}
+                asChild
                 variant="outline"
                 className="w-full h-16 mt-10 rounded-2xl border-white/10 text-white hover:bg-white/5 font-black uppercase tracking-widest transition-all"
               >
-                ATIVAR PLANO LIMITADO
+                <a href={CHECKOUT_MENSAL} target="_blank" rel="noopener noreferrer">
+                  ATIVAR PLANO LIMITADO
+                </a>
               </Button>
             </Card>
 
@@ -215,11 +190,12 @@ export default function PaywallPage() {
                 </div>
                 
                 <Button 
-                  onClick={() => handleSubscription('lifetime')}
-                  disabled={isLoading}
+                  asChild
                   className="w-full h-24 mt-10 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest shadow-[0_15px_40px_rgba(139,92,246,0.5)] transition-all hover:scale-[1.02] group text-lg"
                 >
-                  GARANTIR ACESSO ILIMITADO <ArrowRight className="ml-2 h-7 w-7 group-hover:translate-x-1 transition-transform" />
+                  <a href={CHECKOUT_VITALICIO} target="_blank" rel="noopener noreferrer">
+                    GARANTIR ACESSO ILIMITADO <ArrowRight className="ml-2 h-7 w-7 group-hover:translate-x-1 transition-transform" />
+                  </a>
                 </Button>
               </Card>
             </div>
