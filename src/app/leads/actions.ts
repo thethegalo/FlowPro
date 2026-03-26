@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -5,10 +6,10 @@
  */
 
 export async function searchRealLeads(niche: string, city: string, state: string) {
-  const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
   
   if (!apiKey) {
-    console.error('GOOGLE_PLACES_API_KEY não configurada no ambiente.');
+    console.error('NEXT_PUBLIC_GOOGLE_PLACES_API_KEY não configurada no ambiente.');
     throw new Error('Configuração de busca indisponível.');
   }
 

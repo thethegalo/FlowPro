@@ -1,3 +1,4 @@
+
 import { NextResponse } from 'next/server';
 
 /**
@@ -9,8 +10,8 @@ export async function POST(req: Request) {
   try {
     const { niche, city, state } = await req.json();
     
-    // Prioriza GOOGLE_PLACES_API_KEY, mas aceita GEMINI_API_KEY como fallback se for a mesma
-    const apiKey = process.env.GOOGLE_PLACES_API_KEY || process.env.GEMINI_API_KEY;
+    // Prioriza NEXT_PUBLIC_GOOGLE_PLACES_API_KEY, mas aceita NEXT_PUBLIC_GEMINI_API_KEY como fallback
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
     if (!apiKey || apiKey.includes('sua_chave')) {
       console.error('ERRO: API Key não detectada no ambiente.');
