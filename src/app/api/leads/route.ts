@@ -3,35 +3,33 @@ import { NextResponse } from 'next/server';
 
 /**
  * @fileOverview Endpoint de backend para buscar leads reais via Google Places API.
- * EXCLUSIVAMENTE SERVER-SIDE.
+ * Refatorado para usar o padrão NEXT_PUBLIC_ e garantir compatibilidade em produção.
  */
 
 export async function POST(req: Request) {
   try {
     const { niche, city, state } = await req.json();
     
-    // Prioriza NEXT_PUBLIC_GOOGLE_PLACES_API_KEY, mas aceita NEXT_PUBLIC_GEMINI_API_KEY como fallback
+    // Padronizado para NEXT_PUBLIC_ para consistência em todo o projeto
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
-    if (!apiKey || apiKey.includes('sua_chave')) {
-      console.error('ERRO: API Key não detectada no ambiente.');
+    if (!apiKey || apiKey === 'sua_chave_aqui' || apiKey === '') {
+      console.error('[ERRO CRÍTICO] API Key não detectada. Verifique o arquivo .env ou as Secret Vars do deploy.');
       return NextResponse.json(
-        { error: 'A busca requer uma Google API Key configurada no arquivo .env.' },
+        { error: 'Configuração de API pendente. O administrador precisa configurar a NEXT_PUBLIC_GOOGLE_PLACES_API_KEY.' },
         { status: 500 }
       );
     }
 
-    // Monta a query de busca estratégica
     const query = `${niche} em ${city || ''} ${state}`.trim();
     
-    console.log(`[BACKEND] Iniciando busca real no Google para: "${query}"`);
+    console.log(`[BACKEND FLOWPRO] Iniciando busca estratégica: "${query}"`);
 
     const response = await fetch('https://places.googleapis.com/v1/places:searchText', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': apiKey,
-        // Máscara de campos para retornar exatamente o que o FlowPro precisa
         'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.rating',
       },
       body: JSON.stringify({
@@ -42,17 +40,17 @@ export async function POST(req: Request) {
 
     if (!response.ok) {
       const errorData = await response.text();
-      console.error(`[GOOGLE ERROR] Status ${response.status}:`, errorData);
+      console.error(`[GOOGLE PLACES ERROR] Status ${response.status}:`, errorData);
       
       if (response.status === 403) {
         return NextResponse.json(
-          { error: 'Chave de API sem permissão para "Places API". Ative-a no Google Cloud Console.' },
+          { error: 'Acesso Negado. Verifique se a "Places API" está ativada no seu console Google Cloud.' },
           { status: 403 }
         );
       }
       
       return NextResponse.json(
-        { error: 'O Google recusou a requisição. Verifique sua cota e permissões.' },
+        { error: 'Falha na comunicação com a base neural do Google.' },
         { status: response.status }
       );
     }
@@ -60,15 +58,12 @@ export async function POST(req: Request) {
     const data = await response.json();
     
     if (!data.places || data.places.length === 0) {
-      console.log('[BACKEND] Nenhum local encontrado para esta busca.');
       return NextResponse.json([]);
     }
 
-    console.log(`[BACKEND] Sucesso: ${data.places.length} leads encontrados.`);
-
     const leads = data.places.map((place: any) => ({
       id: place.id,
-      name: place.displayName?.text || 'Negócio sem nome',
+      name: place.displayName?.text || 'Negócio local',
       type: niche,
       city: city || 'Local',
       state: state,
@@ -80,9 +75,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json(leads);
   } catch (error: any) {
-    console.error('[CRITICAL BACKEND ERROR]:', error);
+    console.error('[SERVER ERROR]:', error);
     return NextResponse.json(
-      { error: 'Erro interno ao processar busca de leads.' },
+      { error: 'Erro interno ao processar inteligência de leads.' },
       { status: 500 }
     );
   }
