@@ -86,24 +86,27 @@ export default function PaywallPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
             
-            {/* PLANO MENSAL (AMBER) */}
-            <Card className="glass-card p-8 flex flex-col justify-between border-amber-500/20 relative overflow-hidden rounded-[2.5rem] bg-amber-500/[0.02] hover:bg-amber-500/[0.04] transition-all duration-500 group">
+            {/* PLANO MENSAL (AMBER - VIBRANTE) */}
+            <Card className="glass-card p-8 flex flex-col justify-between border-amber-500/40 relative overflow-hidden rounded-[2.5rem] bg-amber-500/[0.05] hover:bg-amber-500/[0.08] transition-all duration-500 group shadow-[0_0_30px_rgba(245,158,11,0.1)]">
               <div className="space-y-8 relative z-10">
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full w-fit">
+                  <div className="flex items-center gap-2 px-3 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full w-fit">
                     <AlertCircle className="h-3 w-3 text-amber-500" />
                     <span className="text-[8px] font-black uppercase tracking-widest text-amber-500">Uso Diário Limitado</span>
                   </div>
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-amber-500" /> Flow Mensal
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70 flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-amber-500 fill-amber-500" /> Flow Mensal
                   </h3>
                   <div className="flex items-baseline gap-1">
                     <p className="text-5xl md:text-6xl font-black italic text-white tracking-tighter">R$ 97</p>
                     <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/mês</span>
                   </div>
-                  <p className="text-[9px] font-black uppercase text-amber-500/70 tracking-widest flex items-center gap-1">
-                    <CreditCard className="h-3 w-3" /> OU 12x DE R$ 9,74 no cartão
-                  </p>
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center gap-3">
+                    <CreditCard className="h-4 w-4 text-amber-500" />
+                    <p className="text-[10px] font-black uppercase text-amber-500 tracking-widest">
+                      OU 12x DE R$ 9,74
+                    </p>
+                  </div>
                 </div>
 
                 <ul className="space-y-4">
@@ -114,15 +117,15 @@ export default function PaywallPage() {
                     'Scripts de Elite', 
                     'Acesso à Fase de Escala'
                   ].map((f, i) => (
-                    <li key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white/60">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-amber-500/30" /> {f}
+                    <li key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white/80">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" /> {f}
                     </li>
                   ))}
                 </ul>
               </div>
               <Button 
                 asChild
-                className="w-full h-14 mt-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 hover:bg-amber-500 hover:text-black font-black uppercase tracking-widest transition-all"
+                className="w-full h-16 mt-10 rounded-2xl bg-amber-500 text-black hover:bg-amber-400 font-black uppercase tracking-widest transition-all shadow-lg shadow-amber-500/20"
               >
                 <a href={CHECKOUT_MENSAL} target="_blank" rel="noopener noreferrer">
                   ATIVAR MENSAL
@@ -130,24 +133,30 @@ export default function PaywallPage() {
               </Button>
             </Card>
 
-            {/* PLANO TRIMESTRAL (CYAN) */}
-            <Card className="glass-card p-8 flex flex-col justify-between border-cyan-500/30 relative overflow-hidden rounded-[2.5rem] bg-cyan-500/[0.03] hover:bg-cyan-500/[0.06] transition-all duration-500 group shadow-[0_0_40px_rgba(6,182,212,0.1)]">
+            {/* PLANO TRIMESTRAL (CYAN - VIBRANTE) */}
+            <Card className="glass-card p-8 flex flex-col justify-between border-cyan-500/50 relative overflow-hidden rounded-[2.5rem] bg-cyan-500/[0.06] hover:bg-cyan-500/[0.1] transition-all duration-500 group shadow-[0_0_50px_rgba(6,182,212,0.15)]">
+              <div className="absolute top-0 right-0 p-4">
+                <Badge className="bg-cyan-500 text-black font-black text-[8px] uppercase px-3 py-1">POPULAR</Badge>
+              </div>
               <div className="space-y-8 relative z-10">
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-full w-fit">
+                  <div className="flex items-center gap-2 px-3 py-1 bg-cyan-500/20 border border-cyan-500/30 rounded-full w-fit">
                     <Timer className="h-3 w-3 text-cyan-500" />
                     <span className="text-[8px] font-black uppercase tracking-widest text-cyan-500">Melhor Custo-Benefício</span>
                   </div>
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-cyan-500" /> Flow Trimestral
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70 flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-cyan-500 fill-cyan-500" /> Flow Trimestral
                   </h3>
                   <div className="flex items-baseline gap-1">
                     <p className="text-5xl md:text-6xl font-black italic text-white tracking-tighter">R$ 197</p>
-                    <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/trimestre</span>
+                    <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/tri</span>
                   </div>
-                  <p className="text-[9px] font-black uppercase text-cyan-500/70 tracking-widest flex items-center gap-1">
-                    <CreditCard className="h-3 w-3" /> OU 12x DE R$ 19,78 no cartão
-                  </p>
+                  <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center gap-3">
+                    <CreditCard className="h-4 w-4 text-cyan-500" />
+                    <p className="text-[10px] font-black uppercase text-cyan-500 tracking-widest">
+                      OU 12x DE R$ 19,78
+                    </p>
+                  </div>
                 </div>
 
                 <ul className="space-y-4">
@@ -159,7 +168,7 @@ export default function PaywallPage() {
                     'Acesso à Fase de Escala',
                     '3 Meses de Acesso Pro'
                   ].map((f, i) => (
-                    <li key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white/80">
+                    <li key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white">
                       <CheckCircle2 className="h-3.5 w-3.5 text-cyan-500" /> {f}
                     </li>
                   ))}
@@ -167,7 +176,7 @@ export default function PaywallPage() {
               </div>
               <Button 
                 asChild
-                className="w-full h-14 mt-10 rounded-2xl bg-cyan-500 text-black hover:bg-cyan-400 font-black uppercase tracking-widest transition-all shadow-lg shadow-cyan-500/20"
+                className="w-full h-16 mt-10 rounded-2xl bg-cyan-500 text-black hover:bg-cyan-400 font-black uppercase tracking-widest transition-all shadow-lg shadow-cyan-500/20"
               >
                 <a href={CHECKOUT_TRIMESTRAL} target="_blank" rel="noopener noreferrer">
                   ATIVAR TRIMESTRAL
@@ -175,7 +184,7 @@ export default function PaywallPage() {
               </Button>
             </Card>
 
-            {/* PLANO VITALÍCIO (PURPLE) */}
+            {/* PLANO VITALÍCIO (PURPLE - ELITE) */}
             <div className="relative p-[2px] rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(139,92,246,0.4)] z-20">
               <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-pulse"></div>
               <Card className="relative bg-[#050508] p-8 flex flex-col justify-between h-full border-none rounded-[calc(2.5rem-2px)]">
@@ -197,11 +206,19 @@ export default function PaywallPage() {
                       <p className="text-6xl md:text-7xl font-black italic text-white tracking-tighter">R$ 287</p>
                     </div>
                     
-                    <div className="bg-primary/10 border border-primary/20 rounded-xl px-4 py-3 border-dashed">
-                      <p className="text-[10px] font-black uppercase text-primary tracking-widest flex items-center gap-2">
-                        <CreditCard className="h-4 w-4" /> 
-                        OU EM 12x DE R$ 28,82
-                      </p>
+                    <div className="bg-primary/10 border border-primary/20 rounded-xl px-4 py-4 border-dashed relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors"></div>
+                      <div className="relative flex items-center gap-3">
+                        <CreditCard className="h-5 w-5 text-primary" /> 
+                        <div>
+                          <p className="text-[10px] font-black uppercase text-primary tracking-widest leading-none mb-1">
+                            Parcelamento no Cartão
+                          </p>
+                          <p className="text-[14px] font-black text-white italic tracking-tight">
+                            Até 12x de R$ 28,82
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -250,6 +267,7 @@ export default function PaywallPage() {
             </div>
           </div>
 
+          {/* TESTEMUNHOS E FAQ MANTIDOS IGUAIS */}
           <div className="space-y-12 pt-20">
             <div className="text-center space-y-2">
               <h2 className="text-3xl font-black italic uppercase tracking-tighter">Resultados de Quem Executa</h2>
