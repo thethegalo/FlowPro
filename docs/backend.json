@@ -13,7 +13,7 @@
         "createdAt": { "type": "string", "format": "date-time" },
         "status": { "type": "string", "enum": ["pending", "approved", "blocked"] },
         "isOnboarded": { "type": "boolean" },
-        "plan": { "type": "string", "enum": ["nenhum", "mensal", "vitalicio"], "default": "nenhum" },
+        "plan": { "type": "string", "enum": ["nenhum", "mensal", "trimestral", "vitalicio"], "default": "nenhum" },
         "totalEarnings": { "type": "number", "default": 0 },
         "dailyActions": { "type": "number", "default": 0 },
         "totalActions": { "type": "number", "default": 0 },
@@ -33,7 +33,7 @@
       "type": "object",
       "properties": {
         "userId": { "type": "string" },
-        "planType": { "type": "string", "enum": ["monthly", "lifetime", "lifetime_admin"] },
+        "planType": { "type": "string", "enum": ["monthly", "quarterly", "lifetime", "lifetime_admin"] },
         "status": { "type": "string" },
         "startDate": { "type": "string", "format": "date-time" }
       }

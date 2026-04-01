@@ -2,12 +2,11 @@
 "use client";
 
 import { useState, useMemo } from 'react';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Zap, Send, User, Bot, ArrowLeft, Loader2, AlertCircle } from 'lucide-react';
+import { Send, User, Bot, Loader2, AlertCircle } from 'lucide-react';
 import { salesMentorChat } from '@/ai/flows/sales-mentor-chatbot';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -49,10 +48,8 @@ export default function MentorPage() {
   const checkLimitAndTrack = async () => {
     if (!db || !user || !userData) return false;
     
-    // Admin e Vitalício = Ilimitado
     if (isUnlimited) return true;
 
-    // Se não tiver plano, bloqueia e manda pro paywall
     if (userData.plan === 'nenhum') {
       toast({ 
         variant: "destructive", 
@@ -63,8 +60,7 @@ export default function MentorPage() {
       return false;
     }
 
-    // Se for mensal, aplica limite de 10 mensagens
-    if (userData.plan === 'mensal') {
+    if (userData.plan === 'mensal' || userData.plan === 'trimestral') {
       const lastAction = userData.lastActionAt;
       const today = new Date().toDateString();
       const lastDate = lastAction ? (lastAction.toDate ? lastAction.toDate().toDateString() : new Date(lastAction).toDateString()) : '';
@@ -76,7 +72,7 @@ export default function MentorPage() {
         toast({ 
           variant: "destructive", 
           title: "Limite Atingido", 
-          description: "Você atingiu o limite diário de mensagens do plano mensal." 
+          description: "Você atingiu o limite diário de mensagens do seu plano." 
         });
         return false;
       }
@@ -124,7 +120,7 @@ export default function MentorPage() {
 
   const messagesRemaining = useMemo(() => {
     if (isUnlimited) return null;
-    if (userData?.plan !== 'mensal') return 0;
+    if (userData?.plan !== 'mensal' && userData?.plan !== 'trimestral') return 0;
     const lastAction = userData.lastActionAt;
     const today = new Date().toDateString();
     const lastDate = lastAction ? (lastAction.toDate ? lastAction.toDate().toDateString() : new Date(lastAction).toDateString()) : '';

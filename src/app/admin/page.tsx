@@ -9,20 +9,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { 
-  Users, 
   Loader2, 
   CheckCircle2, 
-  XCircle,
-  Activity,
   UserCheck,
   Shield,
-  Zap,
-  Search,
-  AlertCircle,
   Ban,
   Save,
   Infinity,
-  CalendarDays
+  CalendarDays,
+  Calendar
 } from 'lucide-react';
 import { collection, query, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
@@ -184,13 +179,16 @@ export default function AdminPage() {
                                 defaultValue={u.plan || 'nenhum'} 
                                 onValueChange={(val) => setPlansToUpdate(prev => ({ ...prev, [u.id]: val }))}
                               >
-                                <SelectTrigger className="h-8 w-[120px] bg-white/5 border-white/10 text-[9px] font-black uppercase">
+                                <SelectTrigger className="h-8 w-[130px] bg-white/5 border-white/10 text-[9px] font-black uppercase">
                                   <SelectValue placeholder="Plano" />
                                 </SelectTrigger>
                                 <SelectContent className="bg-[#0b0b14] border-white/10 text-white">
                                   <SelectItem value="nenhum" className="text-[10px] font-black uppercase">Nenhum</SelectItem>
                                   <SelectItem value="mensal" className="text-[10px] font-black uppercase flex items-center gap-2">
-                                    <CalendarDays className="h-3 w-3 inline mr-1" /> Mensal
+                                    <CalendarDays className="h-3 w-3 inline mr-1 text-amber-500" /> Mensal
+                                  </SelectItem>
+                                  <SelectItem value="trimestral" className="text-[10px] font-black uppercase flex items-center gap-2">
+                                    <Calendar className="h-3 w-3 inline mr-1 text-cyan-500" /> Trimestral
                                   </SelectItem>
                                   <SelectItem value="vitalicio" className="text-[10px] font-black uppercase flex items-center gap-2">
                                     <Infinity className="h-3 w-3 inline mr-1 text-primary" /> Vitalício
@@ -233,17 +231,6 @@ export default function AdminPage() {
                               >
                                 {updatingId === u.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Ban className="h-3 w-3 mr-1" />}
                                 BLOQUEAR
-                              </Button>
-                            )}
-                            {u.status === 'blocked' && (
-                              <Button 
-                                size="sm" 
-                                variant="outline" 
-                                disabled={updatingId === u.id}
-                                onClick={() => updateStatus(u.id, 'pending')}
-                                className="h-8 px-3 rounded-lg text-[9px] font-black uppercase tracking-widest text-yellow-500 hover:bg-yellow-500/10 border-yellow-500/20"
-                              >
-                                REVERTER
                               </Button>
                             )}
                           </TableCell>

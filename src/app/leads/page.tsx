@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -56,7 +57,7 @@ export default function LeadsPage() {
   }, [user, userData]);
 
   const isProMember = useMemo(() => {
-    return isUnlimited || userData?.plan === 'mensal';
+    return isUnlimited || userData?.plan === 'mensal' || userData?.plan === 'trimestral';
   }, [isUnlimited, userData]);
 
   const checkLimitAndTrack = async (type: 'leadsUsed' | 'messagesUsed', limitValue: number) => {
@@ -74,7 +75,7 @@ export default function LeadsPage() {
       return false;
     }
 
-    if (userData.plan === 'mensal') {
+    if (userData.plan === 'mensal' || userData.plan === 'trimestral') {
       const lastAction = userData.lastActionAt;
       const today = new Date().toDateString();
       const lastDate = lastAction ? (lastAction.toDate ? lastAction.toDate().toDateString() : new Date(lastAction).toDateString()) : '';

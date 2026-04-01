@@ -3,30 +3,21 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   Zap, 
   Star, 
   ShieldCheck, 
   CheckCircle2, 
-  Clock, 
-  ShieldAlert, 
   CreditCard,
   Infinity,
   ArrowRight,
-  Target,
-  TrendingUp,
-  Lock,
-  CalendarCheck,
-  MessageSquare,
   Quote,
   Sparkles,
-  AlertCircle
+  AlertCircle,
+  Timer
 } from 'lucide-react';
-import { useUser, useFirestore } from '@/firebase';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import {
   Accordion,
   AccordionContent,
@@ -63,10 +54,8 @@ const PAYWALL_FAQ = [
 ];
 
 export default function PaywallPage() {
-  const { user } = useUser();
-  const router = useRouter();
-
   const CHECKOUT_MENSAL = "https://checkout.flowproia.shop/pay/PPU38CQ9FQU";
+  const CHECKOUT_TRIMESTRAL = "https://checkout.flowproia.shop/pay/PPU38CQ9N8O";
   const CHECKOUT_VITALICIO = "https://checkout.flowproia.shop/pay/PPU38CQ9FCP";
 
   return (
@@ -82,98 +71,141 @@ export default function PaywallPage() {
         </Link>
       </header>
 
-      <section className="py-20 px-4 relative z-10">
-        <div className="container max-w-6xl mx-auto space-y-24">
+      <section className="py-12 md:py-20 px-4 relative z-10">
+        <div className="container max-w-6xl mx-auto space-y-16 md:space-y-24">
           
-          {/* Hero Section */}
           <div className="text-center space-y-6 max-w-4xl mx-auto">
             <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5">Escolha sua Rota de Escala</Badge>
-            <h1 className="text-5xl md:text-8xl font-black italic uppercase tracking-tighter leading-[0.85]">
+            <h1 className="text-4xl md:text-7xl lg:text-8xl font-black italic uppercase tracking-tighter leading-[0.85]">
               DOMINE O MERCADO <br /><span className="text-primary shimmer-text">COM PODER IA.</span>
             </h1>
-            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto font-medium uppercase tracking-tight">
-              A jornada de 7 dias foi apenas o começo. Libere o arsenal completo e comece a faturar em escala.
+            <p className="text-muted-foreground text-base md:text-xl max-w-2xl mx-auto font-medium uppercase tracking-tight">
+              Libere o arsenal completo e comece a faturar em escala agora mesmo.
             </p>
           </div>
 
-          {/* Pricing Grid */}
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
             
-            {/* PLANO PRO (MENSAL) - LIMITADO */}
-            <Card className="glass-card p-10 flex flex-col justify-between border-white/10 relative overflow-hidden rounded-[2.5rem] bg-white/[0.04] hover:bg-white/[0.06] transition-all duration-500">
+            {/* PLANO MENSAL (AMBER) */}
+            <Card className="glass-card p-8 flex flex-col justify-between border-amber-500/20 relative overflow-hidden rounded-[2.5rem] bg-amber-500/[0.02] hover:bg-amber-500/[0.04] transition-all duration-500 group">
               <div className="space-y-8 relative z-10">
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 px-3 py-1 bg-yellow-500/10 border border-yellow-500/20 rounded-full w-fit">
-                    <AlertCircle className="h-3 w-3 text-yellow-500" />
-                    <span className="text-[8px] font-black uppercase tracking-widest text-yellow-500">Uso Diário Limitado</span>
+                  <div className="flex items-center gap-2 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full w-fit">
+                    <AlertCircle className="h-3 w-3 text-amber-500" />
+                    <span className="text-[8px] font-black uppercase tracking-widest text-amber-500">Uso Diário Limitado</span>
                   </div>
                   <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 flex items-center gap-2">
-                    <Zap className="h-4 w-4" /> Flow Pro (Mensal)
+                    <Zap className="h-4 w-4 text-amber-500" /> Flow Mensal
                   </h3>
                   <div className="flex items-baseline gap-1">
-                    <p className="text-6xl font-black italic text-white tracking-tighter">R$ 147</p>
+                    <p className="text-5xl md:text-6xl font-black italic text-white tracking-tighter">R$ 97</p>
                     <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/mês</span>
                   </div>
+                  <p className="text-[9px] font-black uppercase text-amber-500/70 tracking-widest flex items-center gap-1">
+                    <CreditCard className="h-3 w-3" /> OU 12x DE R$ 9,74 no cartão
+                  </p>
                 </div>
 
-                <ul className="space-y-5">
+                <ul className="space-y-4">
                   {[
                     'Radar: 20 Buscas/Dia', 
                     'IA Mentor: 10 Perguntas/Dia', 
                     'IA Prospecção: 10 Mensagens/Dia', 
-                    'Scripts de Elite (Volume)', 
+                    'Scripts de Elite', 
                     'Acesso à Fase de Escala'
                   ].map((f, i) => (
-                    <li key={i} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white/60">
-                      <CheckCircle2 className="h-4 w-4 text-white/10" /> {f}
+                    <li key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white/60">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-amber-500/30" /> {f}
                     </li>
                   ))}
                 </ul>
               </div>
               <Button 
                 asChild
-                variant="outline"
-                className="w-full h-16 mt-10 rounded-2xl border-white/10 text-white hover:bg-white/5 font-black uppercase tracking-widest transition-all"
+                className="w-full h-14 mt-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 hover:bg-amber-500 hover:text-black font-black uppercase tracking-widest transition-all"
               >
                 <a href={CHECKOUT_MENSAL} target="_blank" rel="noopener noreferrer">
-                  ATIVAR PLANO LIMITADO
+                  ATIVAR MENSAL
                 </a>
               </Button>
             </Card>
 
-            {/* PLANO VITALÍCIO - ILIMITADO */}
-            <div className="relative p-[2px] rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(139,92,246,0.5)] scale-105 md:scale-110 z-20">
+            {/* PLANO TRIMESTRAL (CYAN) */}
+            <Card className="glass-card p-8 flex flex-col justify-between border-cyan-500/30 relative overflow-hidden rounded-[2.5rem] bg-cyan-500/[0.03] hover:bg-cyan-500/[0.06] transition-all duration-500 group shadow-[0_0_40px_rgba(6,182,212,0.1)]">
+              <div className="space-y-8 relative z-10">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 px-3 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-full w-fit">
+                    <Timer className="h-3 w-3 text-cyan-500" />
+                    <span className="text-[8px] font-black uppercase tracking-widest text-cyan-500">Melhor Custo-Benefício</span>
+                  </div>
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-cyan-500" /> Flow Trimestral
+                  </h3>
+                  <div className="flex items-baseline gap-1">
+                    <p className="text-5xl md:text-6xl font-black italic text-white tracking-tighter">R$ 197</p>
+                    <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/trimestre</span>
+                  </div>
+                  <p className="text-[9px] font-black uppercase text-cyan-500/70 tracking-widest flex items-center gap-1">
+                    <CreditCard className="h-3 w-3" /> OU 12x DE R$ 19,78 no cartão
+                  </p>
+                </div>
+
+                <ul className="space-y-4">
+                  {[
+                    'Radar: 20 Buscas/Dia', 
+                    'IA Mentor: 10 Perguntas/Dia', 
+                    'IA Prospecção: 10 Mensagens/Dia', 
+                    'Scripts de Elite (Volume)', 
+                    'Acesso à Fase de Escala',
+                    '3 Meses de Acesso Pro'
+                  ].map((f, i) => (
+                    <li key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white/80">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-cyan-500" /> {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <Button 
+                asChild
+                className="w-full h-14 mt-10 rounded-2xl bg-cyan-500 text-black hover:bg-cyan-400 font-black uppercase tracking-widest transition-all shadow-lg shadow-cyan-500/20"
+              >
+                <a href={CHECKOUT_TRIMESTRAL} target="_blank" rel="noopener noreferrer">
+                  ATIVAR TRIMESTRAL
+                </a>
+              </Button>
+            </Card>
+
+            {/* PLANO VITALÍCIO (PURPLE) */}
+            <div className="relative p-[2px] rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(139,92,246,0.4)] z-20">
               <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-pulse"></div>
-              <Card className="relative bg-[#050508] p-10 flex flex-col justify-between h-full border-none rounded-[calc(2.5rem-2px)]">
+              <Card className="relative bg-[#050508] p-8 flex flex-col justify-between h-full border-none rounded-[calc(2.5rem-2px)]">
                 <div className="absolute top-5 right-5 bg-primary text-white text-[8px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg flex items-center gap-1">
-                  <Star className="h-2.5 w-2.5 fill-white" /> OFERTA RECOMENDADA
+                  <Star className="h-2.5 w-2.5 fill-white" /> RECOMENDADO
                 </div>
                 
                 <div className="space-y-8 relative z-10">
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     <div className="flex items-center gap-2 px-3 py-1 bg-primary/20 border border-primary/30 rounded-full w-fit">
                       <Sparkles className="h-3 w-3 text-primary" />
-                      <span className="text-[8px] font-black uppercase tracking-widest text-primary">Acesso Vitalício ILIMITADO</span>
+                      <span className="text-[8px] font-black uppercase tracking-widest text-primary">Acesso Vitalício Ilimitado</span>
                     </div>
                     <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2">
-                      <Infinity className="h-4 w-4 fill-primary" /> Pagamento Único
+                      <Infinity className="h-4 w-4 fill-primary text-black" /> Pagamento Único
                     </h3>
                     
-                    <div className="space-y-1">
-                      <div className="flex items-baseline gap-1">
-                        <p className="text-7xl md:text-8xl font-black italic text-white tracking-tighter">R$ 267</p>
-                      </div>
-                      
-                      <div className="bg-primary/10 border border-primary/30 rounded-2xl px-5 py-3 w-full animate-in fade-in zoom-in duration-1000 delay-500">
-                        <p className="text-[11px] md:text-sm font-black uppercase text-primary tracking-widest flex items-center gap-2">
-                          <CalendarCheck className="h-5 w-5 fill-primary text-[#050508]" /> 
-                          OU EM ATÉ 12X DE R$ 26,80
-                        </p>
-                      </div>
+                    <div className="flex items-baseline gap-1">
+                      <p className="text-6xl md:text-7xl font-black italic text-white tracking-tighter">R$ 287</p>
+                    </div>
+                    
+                    <div className="bg-primary/10 border border-primary/20 rounded-xl px-4 py-3 border-dashed">
+                      <p className="text-[10px] font-black uppercase text-primary tracking-widest flex items-center gap-2">
+                        <CreditCard className="h-4 w-4" /> 
+                        OU EM 12x DE R$ 28,82
+                      </p>
                     </div>
                   </div>
 
-                  <ul className="space-y-5">
+                  <ul className="space-y-4">
                     {[
                       'Radar de Leads ILIMITADO', 
                       'IA Mentor 24h ILIMITADO', 
@@ -182,7 +214,7 @@ export default function PaywallPage() {
                       'Sem Mensalidades ou Taxas',
                       'Garantia Blindada de 7 Dias'
                     ].map((f, i) => (
-                      <li key={i} className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-white">
+                      <li key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white">
                         <CheckCircle2 className="h-4 w-4 text-primary fill-primary" /> {f}
                       </li>
                     ))}
@@ -191,10 +223,10 @@ export default function PaywallPage() {
                 
                 <Button 
                   asChild
-                  className="w-full h-24 mt-10 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest shadow-[0_15px_40px_rgba(139,92,246,0.5)] transition-all hover:scale-[1.02] group text-lg"
+                  className="w-full h-16 md:h-20 mt-10 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest shadow-[0_15px_40px_rgba(139,92,246,0.5)] transition-all hover:scale-[1.02] group text-sm md:text-base"
                 >
                   <a href={CHECKOUT_VITALICIO} target="_blank" rel="noopener noreferrer">
-                    GARANTIR ACESSO ILIMITADO <ArrowRight className="ml-2 h-7 w-7 group-hover:translate-x-1 transition-transform" />
+                    GARANTIR ILIMITADO <ArrowRight className="ml-2 h-5 w-5 md:h-6 md:w-6 group-hover:translate-x-1 transition-transform" />
                   </a>
                 </Button>
               </Card>
@@ -202,7 +234,6 @@ export default function PaywallPage() {
 
           </div>
 
-          {/* Trust Badges */}
           <div className="flex flex-col items-center gap-8 pt-8">
             <div className="flex flex-col md:flex-row items-center gap-6 md:gap-12 px-10 py-5 bg-white/5 border border-white/10 rounded-[2rem] backdrop-blur-md">
               <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-white/60">
@@ -210,22 +241,21 @@ export default function PaywallPage() {
               </div>
               <div className="hidden md:block w-px h-6 bg-white/10"></div>
               <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-white/60">
-                <ShieldAlert className="h-5 w-5 text-primary" /> Pagamento 100% Seguro
+                <Sparkles className="h-5 w-5 text-primary" /> Pagamento Seguro
               </div>
               <div className="hidden md:block w-px h-6 bg-white/10"></div>
               <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-white/60">
-                <CreditCard className="h-5 w-5 text-accent" /> Parcelamento em 12x
+                <CreditCard className="h-5 w-5 text-accent" /> Até 12x no Cartão
               </div>
             </div>
           </div>
 
-          {/* Testimonials Section */}
           <div className="space-y-12 pt-20">
             <div className="text-center space-y-2">
               <h2 className="text-3xl font-black italic uppercase tracking-tighter">Resultados de Quem Executa</h2>
               <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest">Alunos que já estão operando no Flow.</p>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {TESTIMONIALS.map((t, i) => (
                 <Card key={i} className="glass-card border-white/5 p-8 rounded-[2rem] space-y-6">
                   <Quote className="h-8 w-8 text-primary opacity-30" />
@@ -244,7 +274,6 @@ export default function PaywallPage() {
             </div>
           </div>
 
-          {/* FAQ Section */}
           <div className="max-w-3xl mx-auto space-y-12 pt-20 pb-32">
             <div className="text-center space-y-2">
               <h2 className="text-3xl font-black italic uppercase tracking-tighter">Dúvidas Frequentes</h2>
