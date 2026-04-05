@@ -122,14 +122,13 @@ export default function Dashboard() {
 
   const isProMember = useMemo(() => {
     const hasActiveSub = subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime') && sub.status === 'active');
-    const hasPremiumPlan = userData?.plan === 'vitalicio' || userData?.plan === 'mensal';
+    const hasPremiumPlan = userData?.plan === 'vitalicio' || userData?.plan === 'mensal' || userData?.plan === 'trimestral';
     return hasActiveSub || hasPremiumPlan || isSpecialUser;
   }, [subData, isSpecialUser, userData]);
 
   const currentJourneyDay = useMemo(() => {
     if (!userData?.createdAt) return 1;
     if (isSpecialUser) return 7;
-    
     const created = userData.createdAt.toDate ? userData.createdAt.toDate() : new Date(userData.createdAt);
     const diffInMs = Date.now() - created.getTime();
     const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
@@ -138,11 +137,7 @@ export default function Dashboard() {
 
   const earningsQuery = useMemoFirebase(() => {
     if (!db || !user) return null;
-    return query(
-      collection(db, 'users', user.uid, 'earnings'),
-      orderBy('date', 'desc'),
-      limit(100)
-    );
+    return query(collection(db, 'users', user.uid, 'earnings'), orderBy('date', 'desc'), limit(100));
   }, [db, user]);
   const { data: earningsData } = useCollection(earningsQuery);
 
@@ -153,9 +148,7 @@ export default function Dashboard() {
         const quizDoc = await getDoc(doc(db, 'users', user.uid, 'quizResponses', 'initial'));
         if (quizDoc.exists()) {
           const target = quizDoc.data().responses?.target;
-          if (target) {
-            setUserGoal(Number(Array.isArray(target) ? target[0] : target));
-          }
+          if (target) setUserGoal(Number(Array.isArray(target) ? target[0] : target));
         }
       } catch (e) {}
     }
@@ -182,66 +175,40 @@ export default function Dashboard() {
     return progressData ? progressData.filter(p => p.isCompleted).map(p => p.missionId) : [];
   }, [progressData]);
 
-  const journeyProgress = (completedMissionIds.length / missions.length) * 100;
-  const isJourneyFinished = completedMissionIds.includes('dia7');
-
-  useEffect(() => {
-    if (isJourneyFinished && !isProMember && !isUserDocLoading) {
-      const timer = setTimeout(() => router.push('/paywall'), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [isJourneyFinished, isProMember, router, isUserDocLoading]);
-
   const totalEarnings = useMemo(() => {
     const raw = userData?.totalEarnings || 0;
     return isSpecialUser ? 28754 + raw : raw;
   }, [userData?.totalEarnings, isSpecialUser]);
 
   const displayGoal = isSpecialUser ? 50000 : userGoal;
-  const earningsProgress = (totalEarnings / displayGoal) * 100;
-
   const chartData = useMemo(() => {
     const days = 30;
     const data = [];
     const now = new Date();
-    
     const earningsByDate: Record<string, number> = {};
-    earningsData?.forEach(e => {
-      earningsByDate[e.date] = (earningsByDate[e.date] || 0) + (e.amount || 0);
-    });
-
+    earningsData?.forEach(e => { earningsByDate[e.date] = (earningsByDate[e.date] || 0) + (e.amount || 0); });
     for (let i = days; i >= 0; i--) {
       const d = new Date();
       d.setDate(now.getDate() - i);
       const dateKey = d.toISOString().split('T')[0];
       const dayStr = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-      
       let dailyValue = earningsByDate[dateKey] || 0;
-      
       if (isSpecialUser && dailyValue === 0) {
         const seed = (i * 1234.5) + (user?.uid?.charCodeAt(0) || 1);
         const rand = Math.abs(Math.sin(seed) * 10000) % 1;
-        const avgDaily = 28754 / 30;
-        dailyValue = Math.floor(avgDaily * (0.3 + rand * 1.5));
+        dailyValue = Math.floor((28754 / 30) * (0.3 + rand * 1.5));
       }
-      
-      data.push({
-        date: dayStr,
-        ganhos: dailyValue,
-      });
+      data.push({ date: dayStr, ganhos: dailyValue });
     }
     return data;
   }, [earningsData, isSpecialUser, user?.uid]);
 
   const userLevel = useMemo(() => {
     const missionsCount = completedMissionIds.length;
-    const actionsCount = userData?.totalActions || 0;
-    
-    if (missionsCount >= 6 || actionsCount >= 100) return { name: 'PRO', color: 'text-purple-400', icon: <Trophy className="h-4 w-4" /> };
-    if (missionsCount >= 4 || actionsCount >= 50) return { name: 'Vendedor', color: 'text-green-400', icon: <Zap className="h-4 w-4" /> };
-    if (missionsCount >= 2 || actionsCount >= 15) return { name: 'Executor', color: 'text-blue-400', icon: <TrendingUp className="h-4 w-4" /> };
+    if (missionsCount >= 6) return { name: 'PRO', color: 'text-purple-400', icon: <Trophy className="h-4 w-4" /> };
+    if (missionsCount >= 4) return { name: 'Vendedor', color: 'text-green-400', icon: <Zap className="h-4 w-4" /> };
     return { name: 'Iniciante', color: 'text-primary', icon: <Sparkles className="h-4 w-4" /> };
-  }, [completedMissionIds, userData]);
+  }, [completedMissionIds]);
 
   const dailyActions = userData?.dailyActions || 0;
   const dailyGoal = 10;
@@ -250,106 +217,24 @@ export default function Dashboard() {
     if (!db || !user || !earningAmount) return;
     setIsAddingEarning(true);
     const amount = Number(earningAmount);
-    
     try {
-      await addDoc(collection(db, 'users', user.uid, 'earnings'), {
-        amount: amount,
-        date: earningDate,
-        createdAt: serverTimestamp(),
-        description: "Venda registrada manualmente"
-      });
-
-      const userRef = doc(db, 'users', user.uid);
-      await setDoc(userRef, {
-        totalEarnings: increment(amount),
-        totalActions: increment(1),
-        dailyActions: increment(1),
-        updatedAt: serverTimestamp(),
-        lastActionAt: serverTimestamp(),
-      }, { merge: true });
-
-      toast({
-        title: "Venda Registrada!",
-        description: `R$ ${amount.toLocaleString('pt-BR')} adicionados ao seu placar.`
-      });
+      await addDoc(collection(db, 'users', user.uid, 'earnings'), { amount, date: earningDate, createdAt: serverTimestamp() });
+      await setDoc(doc(db, 'users', user.uid), { totalEarnings: increment(amount), totalActions: increment(1), dailyActions: increment(1), updatedAt: serverTimestamp() }, { merge: true });
+      toast({ title: "Venda Registrada!", description: `R$ ${amount.toLocaleString('pt-BR')} adicionados.` });
       setShowEarningModal(false);
       setEarningAmount("");
-    } catch (e: any) {
-      toast({ variant: "destructive", title: "Erro ao salvar", description: "Verifique sua conexão." });
+    } catch (e) {
+      toast({ variant: "destructive", title: "Erro ao salvar" });
     } finally {
       setIsAddingEarning(false);
     }
   };
 
   useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/auth');
-    }
+    if (!isUserLoading && !user) router.push('/auth');
   }, [user, isUserLoading, router]);
 
-  if (isUserLoading || isUserDocLoading) {
-    return (
-      <div className="min-h-screen bg-[#050508] flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (userData?.status !== 'approved' && !isSpecialUser) {
-    return (
-      <div className="min-h-screen bg-[#050508] flex items-center justify-center p-6 text-center">
-        <DashboardParticles />
-        <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-          <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[140px]"></div>
-        </div>
-        
-        <Card className="w-full max-w-lg glass-card border-white/10 p-8 md:p-12 space-y-8 rounded-[2.5rem] md:rounded-[3rem] relative z-10 animate-in zoom-in-95 duration-700">
-          <div className="h-20 w-24 md:h-24 md:w-24 bg-white/5 rounded-full flex items-center justify-center mx-auto border border-white/10 relative">
-            <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping opacity-25" />
-            <ShieldAlert className="h-10 w-10 md:h-12 md:w-12 text-primary animate-pulse" />
-          </div>
-          
-          <div className="space-y-4">
-            <Badge className="bg-primary/20 text-primary border-primary/30 uppercase tracking-[0.3em] text-[8px] md:text-[10px] px-4 py-1.5 overflow-hidden">
-              <span className="relative z-10">Acesso Sob Análise</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
-            </Badge>
-            <h1 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter">Olá, {displayName}</h1>
-            <p className="text-muted-foreground text-xs md:text-sm font-medium leading-relaxed">
-              O FlowPro é um ecossistema fechado de elite. Sua solicitação de acesso foi enviada e está na fila para validação manual.
-            </p>
-          </div>
-
-          <div className="p-5 md:p-6 rounded-2xl bg-white/5 border border-white/5 space-y-4 text-left">
-            <div className="flex items-center gap-3">
-              <div className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]"></div>
-              <p className="text-[9px] md:text-[10px] font-black uppercase text-white/80">Cadastro Criado</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse shadow-[0_0_10px_#eab308]"></div>
-              <p className="text-[9px] md:text-[10px] font-black uppercase text-white/80">Aguardando Aprovação do Administrador</p>
-            </div>
-            <div className="flex items-center gap-3 opacity-30">
-              <div className="h-2 w-2 rounded-full bg-white"></div>
-              <p className="text-[9px] md:text-[10px] font-black uppercase text-white/80">Liberação do Arsenal Neural</p>
-            </div>
-          </div>
-
-          <p className="text-[9px] md:text-[10px] font-bold text-muted-foreground uppercase tracking-widest italic px-4">
-            Você será notificado via e-mail assim que seu acesso for liberado.
-          </p>
-
-          <Button 
-            onClick={() => router.push('/auth')} 
-            variant="outline" 
-            className="w-full h-14 rounded-2xl border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/5"
-          >
-            VOLTAR PARA LOGIN
-          </Button>
-        </Card>
-      </div>
-    );
-  }
+  if (isUserLoading || isUserDocLoading) return <div className="min-h-screen bg-[#050508] flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
   return (
     <SidebarProvider>
@@ -357,446 +242,112 @@ export default function Dashboard() {
         <DashboardParticles />
         <AppSidebar />
         
-        <main className="flex-1 flex flex-col min-w-0 relative z-10 stagger-entry">
-          <header className="h-16 border-b border-white/5 flex items-center justify-between px-4 md:px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-40 animate-in fade-in duration-500">
-            <div className="flex items-center gap-2 md:gap-4">
+        <main className="flex-1 flex flex-col min-w-0 relative z-10">
+          <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-40">
+            <div className="flex items-center gap-4">
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
-              <div className="h-6 w-px bg-white/10 hidden md:block mx-2" />
-              <h2 className="text-[10px] md:text-sm font-black italic uppercase tracking-widest flex items-center gap-2 animate-gradient-text">
-                <Sparkles className="h-3 w-3 md:h-4 md:w-4 text-primary" /> Painel de Comando
+              <div className="h-6 w-px bg-white/10 hidden md:block" />
+              <h2 className="text-sm font-black italic uppercase tracking-widest flex items-center gap-2 animate-gradient-text">
+                <Sparkles className="h-4 w-4 text-primary" /> Painel de Comando
               </h2>
             </div>
-            
-            <div className="flex items-center gap-2 md:gap-3">
-              <Badge variant="outline" className={`${isProMember ? 'bg-purple-500/10 border-purple-500/30 text-purple-400' : 'bg-white/5 border-white/10 text-muted-foreground'} text-[7px] md:text-[8px] font-black uppercase px-2 md:px-3 py-1 relative overflow-hidden group`}>
-                <span className="relative z-10">{userData?.plan?.toUpperCase() === 'NENHUM' ? 'BLOQUEADO' : userData?.plan?.toUpperCase()}</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
-              </Badge>
-              <Badge variant="secondary" className="bg-primary/10 text-primary gap-1 px-2 md:px-3 py-1 text-[8px] md:text-[10px] font-black uppercase animate-pulse">
-                <Flame className="h-2.5 w-2.5 md:h-3 md:w-3" /> {completedMissionIds.length}D
-              </Badge>
-            </div>
+            <Badge variant="outline" className={`${isProMember ? 'bg-purple-500/10 border-purple-500/30 text-purple-400' : 'bg-white/5'} text-[8px] font-black uppercase px-3 py-1`}>
+              {userData?.plan?.toUpperCase() || 'ACESSO LIMITADO'}
+            </Badge>
           </header>
 
-          <div className="flex-1 p-4 md:p-8 space-y-6 md:space-y-8 max-w-5xl mx-auto w-full">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 animate-in slide-in-from-top-4 duration-700">
-              <div className="space-y-3 w-full md:w-auto">
-                <div className="space-y-1">
-                  <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter leading-none text-white">
-                    {displayName.split(' ')[0]}
-                  </h1>
-                  <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full w-fit relative overflow-hidden status-badge">
-                    <div className={`${userLevel.color}`}>
-                      {userLevel.icon}
-                    </div>
-                    <span className={`text-[9px] md:text-[10px] font-black uppercase tracking-widest ${userLevel.color}`}>Patente {userLevel.name}</span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-500/10 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  {userData?.plan === 'mensal' && (
-                    <div className="flex items-center gap-2 px-3 py-1 bg-yellow-500/5 border border-yellow-500/20 rounded-full w-fit">
-                      <AlertCircle className="h-2.5 w-2.5 text-yellow-500" />
-                      <span className="text-[7px] md:text-[8px] font-bold uppercase tracking-widest text-yellow-500/80">Uso diário limitado</span>
-                    </div>
-                  )}
-                  {(userData?.plan === 'vitalicio' || isSpecialUser) && (
-                    <div className="flex items-center gap-2 px-3 py-1 bg-green-500/5 border border-green-500/20 rounded-full w-fit relative overflow-hidden status-badge">
-                      <ShieldCheck className="h-2.5 w-2.5 text-green-500" />
-                      <span className="text-[7px] md:text-[8px] font-bold uppercase tracking-widest text-green-500/80">Acesso ilimitado vitalício</span>
-                      <div className="absolute inset-0 bg-green-500/5 animate-pulse" />
-                    </div>
-                  )}
+          <div className="flex-1 p-8 space-y-8 max-w-5xl mx-auto w-full">
+            <div className="flex flex-col md:flex-row justify-between items-end gap-6">
+              <div className="space-y-3">
+                <h1 className="text-4xl font-black italic uppercase tracking-tighter text-white">{displayName}</h1>
+                <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full w-fit status-badge">
+                  <div className={userLevel.color}>{userLevel.icon}</div>
+                  <span className={`text-[10px] font-black uppercase tracking-widest ${userLevel.color}`}>Patente {userLevel.name}</span>
                 </div>
               </div>
-
-              <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 w-full md:max-w-xs animate-in slide-in-from-right-10 duration-700">
-                <div className="flex gap-3 items-start">
-                  <AlertCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                  <p className="text-[9px] md:text-[10px] font-bold text-white/80 leading-relaxed uppercase">
-                    {!isProMember ? "Libere seu plano para ativar o motor neural." : "Você está em modo de operação. Continue acelerando!"}
-                  </p>
-                </div>
+              <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 max-w-xs">
+                <p className="text-[10px] font-bold text-white/80 leading-relaxed uppercase">
+                  {!isProMember ? "Assine um plano para liberar o Radar Neural completo." : "Modo de operação ativo. Acelere para a escala!"}
+                </p>
               </div>
             </div>
 
-            <Card className="bg-white/[0.02] border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden p-5 md:p-10 space-y-6 md:space-y-10 group animate-in slide-in-from-bottom-4 duration-700 metric-card">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-                <div className="space-y-1">
-                  <h3 className="text-xl md:text-2xl font-black italic uppercase tracking-tight text-white">Ganhos Diários</h3>
-                  <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-60">Visualização de performance 30 dias.</p>
-                </div>
-                <div className="text-left md:text-right w-full md:w-auto">
-                  <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-50 mb-1">Ganhos Totais</p>
-                  <div className="text-3xl md:text-4xl font-black italic tracking-tighter text-white leading-none">
-                    <AnimatedNumber value={totalEarnings} prefix="R$ " />
-                  </div>
+            <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] p-10 space-y-10 metric-card">
+              <div className="flex justify-between items-end">
+                <h3 className="text-2xl font-black italic uppercase tracking-tight text-white">Performance 30 Dias</h3>
+                <div className="text-right">
+                  <p className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1">Ganhos Totais</p>
+                  <div className="text-4xl font-black italic tracking-tighter text-white"><AnimatedNumber value={totalEarnings} prefix="R$ " /></div>
                 </div>
               </div>
-
-              <div className="h-[200px] md:h-[280px] w-full relative">
-                <ChartContainer config={{ 
-                  ganhos: { label: "Valor do Dia", color: "hsl(var(--primary))" } 
-                }}>
-                  <AreaChart 
-                    data={chartData} 
-                    margin={{ top: 10, right: 0, left: -20, bottom: 0 }}
-                  >
-                    <defs>
-                      <linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4}/>
-                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
+              <div className="h-[280px] w-full relative">
+                <ChartContainer config={{ ganhos: { label: "Valor", color: "hsl(var(--primary))" } }}>
+                  <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                    <defs><linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4}/><stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/></linearGradient></defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.06)" />
-                    <XAxis 
-                      dataKey="date" 
-                      axisLine={false} 
-                      tickLine={false} 
-                      tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
-                      dy={10}
-                      interval={typeof window !== 'undefined' && window.innerWidth < 768 ? 4 : 2}
-                    />
-                    <YAxis 
-                      axisLine={false} 
-                      tickLine={false} 
-                      tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
-                      tickFormatter={(value) => `R$ ${value}`}
-                      domain={[0, 'auto']}
-                    />
-                    <Tooltip 
-                      content={<ChartTooltipContent />} 
-                      cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '4 4' }}
-                    />
-                    <Area 
-                      type="monotone" 
-                      dataKey="ganhos" 
-                      stroke="hsl(var(--primary))" 
-                      strokeWidth={3}
-                      fillOpacity={1} 
-                      fill="url(#colorGanhos)" 
-                      animationDuration={2000}
-                      dot={typeof window !== 'undefined' && window.innerWidth > 768 ? { r: 3, fill: 'hsl(var(--primary))', strokeWidth: 1, stroke: '#fff', opacity: 0.8 } : false}
-                      activeDot={{ r: 6, fill: 'hsl(var(--primary))', stroke: '#fff', strokeWidth: 2 }}
-                    />
+                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }} tickFormatter={(v) => `R$${v}`} />
+                    <Tooltip content={<ChartTooltipContent />} />
+                    <Area type="monotone" dataKey="ganhos" stroke="hsl(var(--primary))" strokeWidth={3} fill="url(#colorGanhos)" animationDuration={2000} />
                   </AreaChart>
                 </ChartContainer>
-                {/* Scanline do gráfico */}
-                <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden rounded-[inherit]">
-                  <div className="absolute top-0 left-[-100%] w-1/2 h-full bg-gradient-to-r from-transparent via-primary/10 to-transparent skew-x-[-20deg] animate-shimmer" style={{ animationDuration: '3s' }} />
-                </div>
               </div>
             </Card>
 
-            <div className="grid gap-4 md:gap-6 md:grid-cols-2">
-              <Card className="bg-white/[0.02] border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden relative group hover:border-primary/30 transition-all duration-500 metric-card">
-                <CardHeader className="pb-2 p-5">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-primary">Placar de Caixa</span>
-                    <Badge variant="outline" className="text-[7px] md:text-[8px] border-primary/20 text-primary">META: R$ {displayGoal.toLocaleString('pt-BR')}</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6 p-5 pt-0">
-                  <div className="flex flex-col gap-4">
-                    <div className="text-4xl md:text-5xl font-black italic tracking-tighter">
-                      <AnimatedNumber value={totalEarnings} prefix="R$ " />
-                    </div>
-                    <p className="text-[10px] font-bold text-green-500 flex items-center gap-1">
-                      <ArrowUpRight className="h-3 w-3" /> +12% HOJE
-                    </p>
-                    
-                    <Dialog open={showEarningModal} onOpenChange={setShowEarningModal}>
-                      <DialogTrigger asChild>
-                        <Button 
-                          size="sm" 
-                          className="bg-white text-black hover:bg-primary hover:text-white rounded-xl font-black uppercase text-[9px] md:text-[10px] h-10 px-4 transition-all active:scale-95 w-full sm:w-fit"
-                        >
-                          <Plus className="h-3 w-3 mr-1" /> ADICIONAR GANHO
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="bg-[#0b0b14] border-white/10 text-white rounded-[2rem] w-[95vw] max-w-md p-6 cursor-default">
-                        <DialogHeader>
-                          <DialogTitle className="text-lg md:text-xl font-black italic uppercase tracking-widest">Registrar Venda</DialogTitle>
-                          <DialogDescription className="text-muted-foreground uppercase text-[9px] md:text-[10px] font-bold">Informe o valor para atualizar seu placar.</DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-6 py-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="amount" className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-70">Valor da Venda (R$)</Label>
-                            <Input
-                              id="amount"
-                              type="number"
-                              placeholder="500"
-                              value={earningAmount}
-                              onChange={(e) => setEarningAmount(e.target.value)}
-                              className="bg-white/5 border-white/10 h-12 rounded-xl text-lg font-bold"
-                            />
-                          </div>
-                        </div>
-                        <DialogFooter>
-                          <Button 
-                            onClick={handleAddEarning} 
-                            disabled={isAddingEarning || !earningAmount}
-                            className="w-full bg-primary h-12 rounded-xl font-black uppercase tracking-widest"
-                          >
-                            {isAddingEarning ? <Loader2 className="h-4 w-4 animate-spin" /> : 'CONFIRMAR REGISTRO'}
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-[7px] md:text-[8px] font-black uppercase opacity-50 tracking-widest">
-                      <span>Progresso do Alvo</span>
-                      <span>{Math.min(100, Math.round(earningsProgress))}%</span>
-                    </div>
-                    <Progress value={earningsProgress} className="h-1.5 md:h-2 bg-white/5" />
-                  </div>
-                </CardContent>
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] p-8 space-y-6 metric-card">
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-primary">Placar de Caixa</span>
+                  <Badge variant="outline" className="text-[8px] border-primary/20 text-primary">ALVO: R$ {displayGoal.toLocaleString('pt-BR')}</Badge>
+                </div>
+                <div className="text-5xl font-black italic tracking-tighter text-white"><AnimatedNumber value={totalEarnings} prefix="R$ " /></div>
+                <p className="text-[10px] font-bold text-green-500 flex items-center gap-1"><ArrowUpRight className="h-3 w-3" /> +12% HOJE</p>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-[8px] font-black uppercase opacity-50"><span>Progresso</span><span>{Math.min(100, Math.round((totalEarnings/displayGoal)*100))}%</span></div>
+                  <Progress value={(totalEarnings/displayGoal)*100} className="h-2" />
+                </div>
               </Card>
 
-              <Card className="bg-white/[0.02] border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden relative group hover:border-accent/30 transition-all duration-500 metric-card">
-                <CardHeader className="pb-2 p-5">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-accent">Execução Diária</span>
-                    <Badge variant="outline" className="text-[7px] md:text-[8px] border-accent/20 text-accent">ROTINA DE ATAQUE</Badge>
+              <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] p-8 metric-card">
+                <div className="flex justify-between items-center mb-6">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-accent">Execução Diária</span>
+                  <Badge variant="outline" className="text-[8px] border-accent/20 text-accent">ALTA PERFORMANCE</Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-4xl font-black italic tracking-tighter text-white"><AnimatedNumber value={dailyActions} />/{dailyGoal}</div>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase mt-1">Ações do Dia</p>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-6 p-5 pt-0">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <div className="text-3xl md:text-4xl font-black italic tracking-tighter">
-                        <AnimatedNumber value={dailyActions} />/{dailyGoal}
-                      </div>
-                      <p className="text-[9px] md:text-[10px] font-bold text-muted-foreground uppercase">Ações Concluídas Hoje</p>
-                      <p className="text-[10px] font-bold text-green-500 flex items-center gap-1 mt-2">
-                        <ArrowUpRight className="h-3 w-3" /> NO RITMO
-                      </p>
-                    </div>
-                    <div className="relative h-20 w-20 md:h-24 md:w-24 flex items-center justify-center">
-                      <svg className="h-full w-full transform -rotate-90">
-                        <circle
-                          cx="50%" cy="50%" r="40%"
-                          fill="transparent"
-                          stroke="rgba(255,255,255,0.05)"
-                          strokeWidth="8"
-                        />
-                        <circle
-                          cx="50%" cy="50%" r="40%"
-                          fill="transparent"
-                          stroke="hsl(var(--primary))"
-                          strokeWidth="8"
-                          strokeDasharray="251.2"
-                          strokeDashoffset={251.2 - (251.2 * Math.min(1, dailyActions / dailyGoal))}
-                          strokeLinecap="round"
-                          className="transition-all duration-1000 ease-out"
-                          style={{ filter: 'drop-shadow(0 0 8px #7c3aff)' }}
-                        />
-                      </svg>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        {dailyActions >= dailyGoal ? (
-                          <Flame className="h-8 w-8 text-green-500 animate-pulse" />
-                        ) : (
-                          <Target className="h-8 w-8 text-primary/40" />
-                        )}
-                      </div>
+                  <div className="relative h-24 w-24 flex items-center justify-center">
+                    <svg className="h-full w-full transform -rotate-90">
+                      <circle cx="50%" cy="50%" r="40%" fill="transparent" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
+                      <circle cx="50%" cy="50%" r="40%" fill="transparent" stroke="hsl(var(--primary))" strokeWidth="8" strokeDasharray="251.2" strokeDashoffset={251.2 - (251.2 * Math.min(1, dailyActions / dailyGoal))} strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 8px #7c3aff)' }} />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      {dailyActions >= dailyGoal ? <Flame className="h-8 w-8 text-green-500" /> : <Target className="h-8 w-8 text-primary/40" />}
                     </div>
                   </div>
-                </CardContent>
+                </div>
               </Card>
-            </div>
-
-            <div className="space-y-6 pt-4 pb-20 animate-in fade-in duration-1000">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <h2 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2 text-white leading-tight">
-                    <div className="relative h-5 w-5 md:h-6 md:w-6 shrink-0 group-hover:scale-110 transition-transform">
-                      <Image src={LOGO_ICON} alt="Icon" fill className="object-contain" />
-                    </div>
-                    Trilha de Missão: 7 Dias
-                  </h2>
-                  <p className="text-muted-foreground text-[9px] md:text-[10px] uppercase font-bold tracking-widest">Execute para desbloquear a Fase de Escala.</p>
-                </div>
-                
-                <div className="flex items-center gap-4 bg-white/5 px-4 md:px-6 py-3 rounded-2xl border border-white/10">
-                  <div className="space-y-1 flex-1 min-w-[100px] md:min-w-[120px]">
-                    <div className="flex justify-between text-[7px] md:text-[8px] font-black uppercase tracking-widest mb-1">
-                      <span>Progresso</span>
-                      <span>{completedMissionIds.length}/7</span>
-                    </div>
-                    <Progress value={journeyProgress} className="h-1 bg-white/10" />
-                  </div>
-                  {isJourneyFinished && (
-                    <Badge className="bg-green-500/20 text-green-500 border-green-500/30 text-[7px] md:text-[8px] font-black uppercase shrink-0 animate-pulse">COMPLETA</Badge>
-                  )}
-                </div>
-              </div>
-              
-              <div className="grid gap-3 md:gap-4">
-                {missions.map((mission, index) => {
-                  const isCompleted = completedMissionIds.includes(mission.id);
-                  const isTimeLocked = mission.order > currentJourneyDay;
-                  const isDependencyLocked = index > 0 && !completedMissionIds.includes(missions[index - 1].id) && !isCompleted;
-                  const isLocked = isDependencyLocked || isTimeLocked;
-                  const isCurrent = !isCompleted && !isLocked;
-
-                  return (
-                    <div 
-                      key={mission.id} 
-                      className={`group relative overflow-hidden p-4 md:p-6 rounded-[1.25rem] md:rounded-[1.5rem] border transition-all duration-500 ${
-                        isLocked 
-                        ? 'bg-white/[0.01] border-white/5 opacity-40 grayscale pointer-events-none' 
-                        : isCurrent 
-                        ? 'bg-primary/5 border-primary/30 shadow-[0_0_40px_rgba(139,92,246,0.15)] hover:border-primary' 
-                        : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.05]'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-3 md:gap-4 relative z-10">
-                        <div className="flex items-center gap-3 md:gap-5 min-w-0">
-                          <div className={`h-10 w-10 md:h-14 md:w-14 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 ${
-                            isCompleted ? 'bg-green-500/10 text-green-500 border border-green-500/20' : isLocked ? 'bg-white/5 text-muted-foreground' : 'bg-primary text-white shadow-xl shadow-primary/40'
-                          }`}>
-                            {isCompleted ? <CheckCircle2 className="h-5 w-5 md:h-7 md:w-7" /> : isLocked ? <Lock className="h-4 w-4 md:h-6 md:w-6" /> : <span className="font-black italic text-base md:text-xl leading-none">{index + 1}</span>}
-                          </div>
-                          <div className="space-y-0.5 md:space-y-1 text-left min-w-0">
-                            <h4 className={`font-black italic uppercase tracking-tight text-sm md:text-xl truncate transition-colors ${isCompleted ? 'text-muted-foreground' : 'text-white group-hover:text-primary'}`}>
-                              {mission.title}
-                            </h4>
-                            <p className="text-[10px] md:text-xs text-muted-foreground truncate opacity-70 group-hover:opacity-100 transition-opacity">
-                              {isTimeLocked ? (
-                                <span className="flex items-center gap-1 text-yellow-500/80 font-bold">
-                                  <Timer className="h-2.5 w-2.5" /> LIBERA EM {mission.order - currentJourneyDay} D
-                                </span>
-                              ) : mission.desc}
-                            </p>
-                          </div>
-                        </div>
-                        
-                        {!isLocked && (
-                          <Button asChild variant={isCurrent ? "default" : "ghost"} className="rounded-xl font-black uppercase text-[7px] md:text-[10px] tracking-widest h-9 md:h-12 px-3 md:px-8 shrink-0 relative overflow-hidden group/btn">
-                            <Link href={`/missions/${mission.id}`}>
-                              <span className="relative z-10">{isCompleted ? 'REVISAR' : 'EXECUTAR'}</span>
-                              {isCurrent && (
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
-                              )}
-                            </Link>
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
             </div>
           </div>
         </main>
 
         <style dangerouslySetInnerHTML={{ __html: `
-          /* CORREÇÕES SIDEBAR */
-          [data-sidebar="sidebar"] {
-            overflow: hidden !important;
-            width: 250px !important;
-          }
-          
-          [data-sidebar="sidebar"] * {
-            scrollbar-width: none !important;
-            -ms-overflow-style: none !important;
-          }
-          
-          [data-sidebar="sidebar"] *::-webkit-scrollbar {
-            display: none !important;
-          }
-
-          [data-sidebar="menu-button"] span {
-            white-space: nowrap !important;
-          }
-
-          /* SIDEBAR VISUALS */
-          [data-sidebar="sidebar"]::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background-image: linear-gradient(to right, rgba(124, 58, 255, 0.03) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(124, 58, 255, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-            z-index: 0;
-          }
-
-          [data-sidebar="menu-button"]:hover {
-            background: rgba(124, 58, 255, 0.08) !important;
-            border-left: 2px solid #7c3aff !important;
-            transition: 0.2s ease !important;
-          }
-
-          [data-sidebar="menu-button"][data-active="true"] {
-            border-left: 2px solid #7c3aff !important;
-            box-shadow: inset 4px 0 12px -2px rgba(124, 58, 255, 0.2) !important;
-          }
-
-          /* HEADER TEXT GRADIENT */
-          .animate-gradient-text {
-            background: linear-gradient(90deg, #fff, #a855f7, #22d3ee, #fff) !important;
-            background-size: 300% auto !important;
-            -webkit-background-clip: text !important;
-            -webkit-text-fill-color: transparent !important;
-            animation: gradMove 4s linear infinite !important;
-          }
-
-          @keyframes gradMove {
-            0% { background-position: 0% center; }
-            100% { background-position: 100% center; }
-          }
-
-          /* BADGE PULSE */
-          .status-badge {
-            animation: pulse-green 2s ease-in-out infinite !important;
-          }
-
-          @keyframes pulse-green {
-            0%, 100% { box-shadow: 0 0 6px rgba(16, 185, 129, 0.3); }
-            50% { box-shadow: 0 0 16px rgba(16, 185, 129, 0.7); }
-          }
-
-          /* CARDS HOVER */
-          .metric-card {
-            transition: 0.25s ease !important;
-            border-top: 1px solid rgba(124, 58, 255, 0.1) !important;
-          }
-
-          .metric-card:hover {
-            transform: translateY(-2px) !important;
-            box-shadow: 0 8px 32px rgba(124, 58, 255, 0.2) !important;
-            border-top: 1px solid rgba(124, 58, 255, 0.3) !important;
-          }
-
-          /* AVATAR STATUS PULSE */
-          .bg-green-500.absolute {
-            animation: pulse-dot 2s infinite !important;
-          }
-
-          @keyframes pulse-dot {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
-            50% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-          }
-
-          /* BACKGROUND ORBS */
-          .dashboard-root::after {
-            content: "";
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            background: radial-gradient(ellipse 50% 40% at 15% 10%, rgba(124, 58, 255, 0.07) 0%, transparent 60%),
-                        radial-gradient(ellipse 40% 35% at 85% 90%, rgba(34, 211, 238, 0.04) 0%, transparent 55%);
-            animation: orbMove 12s ease-in-out infinite alternate;
-          }
-
-          @keyframes orbMove {
-            0% { background-position: 0% 0%, 100% 100%; opacity: 0.8; }
-            50% { background-position: 8% 12%, 92% 88%; opacity: 1; }
-            100% { background-position: 15% 5%, 85% 95%; opacity: 0.9; }
-          }
+          [data-sidebar="sidebar"] { width: 250px !important; overflow: hidden !important; }
+          [data-sidebar="menu-button"] span { white-space: nowrap !important; }
+          [data-sidebar="sidebar"]::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(124, 58, 255, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(124, 58, 255, 0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
+          [data-sidebar="menu-button"]:hover { background: rgba(124, 58, 255, 0.08) !important; border-left: 2px solid #7c3aff !important; }
+          [data-sidebar="menu-button"][data-active="true"] { border-left: 2px solid #7c3aff !important; box-shadow: inset 4px 0 12px -2px rgba(124, 58, 255, 0.2) !important; }
+          .animate-gradient-text { background: linear-gradient(90deg, #fff, #a855f7, #22d3ee, #fff) !important; background-size: 300% auto !important; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; animation: gradMove 4s linear infinite !important; }
+          @keyframes gradMove { 0% { background-position: 0% center; } 100% { background-position: 100% center; } }
+          .status-badge { animation: pulse-green 2s ease-in-out infinite !important; }
+          @keyframes pulse-green { 0%, 100% { box-shadow: 0 0 6px rgba(16, 185, 129, 0.3); } 50% { box-shadow: 0 0 16px rgba(16, 185, 129, 0.7); } }
+          .metric-card:hover { transform: translateY(-2px) !important; box-shadow: 0 8px 32px rgba(124, 58, 255, 0.2) !important; border-top: 1px solid rgba(124, 58, 255, 0.3) !important; transition: 0.25s ease !important; }
+          .bg-green-500.absolute { animation: pulse-dot 2s infinite !important; }
+          @keyframes pulse-dot { 0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); } 50% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } }
+          .dashboard-root::after { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(ellipse 50% 40% at 15% 10%, rgba(124, 58, 255, 0.07) 0%, transparent 60%), radial-gradient(ellipse 40% 35% at 85% 90%, rgba(34, 211, 238, 0.04) 0%, transparent 55%); animation: orbMove 12s ease-in-out infinite alternate; }
+          @keyframes orbMove { 0% { background-position: 0% 0%, 100% 100%; opacity: 0.8; } 50% { background-position: 8% 12%, 92% 88%; opacity: 1; } 100% { background-position: 15% 5%, 85% 95%; opacity: 0.9; } }
         ` }} />
       </div>
     </SidebarProvider>

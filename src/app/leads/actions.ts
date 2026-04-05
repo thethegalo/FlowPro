@@ -3,15 +3,18 @@
 
 /**
  * @fileOverview Server Action para buscar leads reais via Google Places API.
- * Refatorado para o padrão NEXT_PUBLIC_.
+ * Refatorado para garantir que a busca funcione com qualquer configuração de ENV.
  */
 
 export async function searchRealLeads(niche: string, city: string, state: string) {
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
+  const apiKey = 
+    process.env.GOOGLE_PLACES_API_KEY || 
+    process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY || 
+    process.env.GEMINI_API_KEY || 
+    process.env.NEXT_PUBLIC_GEMINI_API_KEY;
   
   if (!apiKey) {
-    console.error('Configuração NEXT_PUBLIC_GOOGLE_PLACES_API_KEY ausente.');
-    throw new Error('Serviço de busca temporariamente indisponível.');
+    throw new Error('Serviço de busca temporariamente indisponível (API Key missing).');
   }
 
   const query = `${niche} em ${city} ${state}`;

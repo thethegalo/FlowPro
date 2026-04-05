@@ -3,28 +3,30 @@ import { NextResponse } from 'next/server';
 
 /**
  * @fileOverview Endpoint de backend para buscar leads reais via Google Places API.
- * Refatorado para usar o padrão NEXT_PUBLIC_ e garantir compatibilidade em produção.
+ * Refatorado para máxima resiliência com chaves de ambiente.
  */
 
 export async function POST(req: Request) {
   try {
     const { niche, city, state } = await req.json();
     
-    // Padronizado para NEXT_PUBLIC_ para consistência em todo o projeto
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    // Busca exaustiva pela chave de API para garantir funcionamento
+    const apiKey = 
+      process.env.GOOGLE_PLACES_API_KEY || 
+      process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY || 
+      process.env.GEMINI_API_KEY || 
+      process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
     if (!apiKey || apiKey === 'sua_chave_aqui' || apiKey === '') {
-      console.error('[ERRO CRÍTICO] API Key não detectada. Verifique o arquivo .env ou as Secret Vars do deploy.');
+      console.error('[ERRO CRÍTICO] Nenhuma API Key detectada.');
       return NextResponse.json(
-        { error: 'Configuração de API pendente. O administrador precisa configurar a NEXT_PUBLIC_GOOGLE_PLACES_API_KEY.' },
+        { error: 'Configuração de API pendente no servidor.' },
         { status: 500 }
       );
     }
 
     const query = `${niche} em ${city || ''} ${state}`.trim();
     
-    console.log(`[BACKEND FLOWPRO] Iniciando busca estratégica: "${query}"`);
-
     const response = await fetch('https://places.googleapis.com/v1/places:searchText', {
       method: 'POST',
       headers: {
@@ -41,16 +43,8 @@ export async function POST(req: Request) {
     if (!response.ok) {
       const errorData = await response.text();
       console.error(`[GOOGLE PLACES ERROR] Status ${response.status}:`, errorData);
-      
-      if (response.status === 403) {
-        return NextResponse.json(
-          { error: 'Acesso Negado. Verifique se a "Places API" está ativada no seu console Google Cloud.' },
-          { status: 403 }
-        );
-      }
-      
       return NextResponse.json(
-        { error: 'Falha na comunicação com a base neural do Google.' },
+        { error: 'Falha na comunicação com a base do Google.' },
         { status: response.status }
       );
     }
@@ -77,7 +71,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error('[SERVER ERROR]:', error);
     return NextResponse.json(
-      { error: 'Erro interno ao processar inteligência de leads.' },
+      { error: 'Erro interno ao processar leads.' },
       { status: 500 }
     );
   }
