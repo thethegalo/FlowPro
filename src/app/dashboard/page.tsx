@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useEffect, useState } from 'react';
@@ -352,7 +353,7 @@ export default function Dashboard() {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-[#050508] relative">
+      <div className="flex min-h-screen w-full bg-[#050508] relative dashboard-root">
         <DashboardParticles />
         <AppSidebar />
         
@@ -384,7 +385,7 @@ export default function Dashboard() {
                   <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter leading-none text-white">
                     {displayName.split(' ')[0]}
                   </h1>
-                  <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full w-fit relative overflow-hidden">
+                  <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full w-fit relative overflow-hidden status-badge">
                     <div className={`${userLevel.color}`}>
                       {userLevel.icon}
                     </div>
@@ -401,7 +402,7 @@ export default function Dashboard() {
                     </div>
                   )}
                   {(userData?.plan === 'vitalicio' || isSpecialUser) && (
-                    <div className="flex items-center gap-2 px-3 py-1 bg-green-500/5 border border-green-500/20 rounded-full w-fit relative overflow-hidden">
+                    <div className="flex items-center gap-2 px-3 py-1 bg-green-500/5 border border-green-500/20 rounded-full w-fit relative overflow-hidden status-badge">
                       <ShieldCheck className="h-2.5 w-2.5 text-green-500" />
                       <span className="text-[7px] md:text-[8px] font-bold uppercase tracking-widest text-green-500/80">Acesso ilimitado vitalício</span>
                       <div className="absolute inset-0 bg-green-500/5 animate-pulse" />
@@ -420,7 +421,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <Card className="bg-white/[0.02] border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden p-5 md:p-10 space-y-6 md:space-y-10 group animate-in slide-in-from-bottom-4 duration-700">
+            <Card className="bg-white/[0.02] border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden p-5 md:p-10 space-y-6 md:space-y-10 group animate-in slide-in-from-bottom-4 duration-700 metric-card">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div className="space-y-1">
                   <h3 className="text-xl md:text-2xl font-black italic uppercase tracking-tight text-white">Ganhos Diários</h3>
@@ -455,7 +456,7 @@ export default function Dashboard() {
                       tickLine={false} 
                       tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
                       dy={10}
-                      interval={window.innerWidth < 768 ? 4 : 2}
+                      interval={typeof window !== 'undefined' && window.innerWidth < 768 ? 4 : 2}
                     />
                     <YAxis 
                       axisLine={false} 
@@ -476,7 +477,7 @@ export default function Dashboard() {
                       fillOpacity={1} 
                       fill="url(#colorGanhos)" 
                       animationDuration={2000}
-                      dot={window.innerWidth > 768 ? { r: 3, fill: 'hsl(var(--primary))', strokeWidth: 1, stroke: '#fff', opacity: 0.8 } : false}
+                      dot={typeof window !== 'undefined' && window.innerWidth > 768 ? { r: 3, fill: 'hsl(var(--primary))', strokeWidth: 1, stroke: '#fff', opacity: 0.8 } : false}
                       activeDot={{ r: 6, fill: 'hsl(var(--primary))', stroke: '#fff', strokeWidth: 2 }}
                     />
                   </AreaChart>
@@ -489,7 +490,7 @@ export default function Dashboard() {
             </Card>
 
             <div className="grid gap-4 md:gap-6 md:grid-cols-2">
-              <Card className="bg-white/[0.02] border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden relative group hover:border-primary/30 transition-all duration-500">
+              <Card className="bg-white/[0.02] border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden relative group hover:border-primary/30 transition-all duration-500 metric-card">
                 <CardHeader className="pb-2 p-5">
                   <div className="flex justify-between items-center">
                     <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-primary">Placar de Caixa</span>
@@ -554,7 +555,7 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/[0.02] border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden relative group hover:border-accent/30 transition-all duration-500">
+              <Card className="bg-white/[0.02] border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden relative group hover:border-accent/30 transition-all duration-500 metric-card">
                 <CardHeader className="pb-2 p-5">
                   <div className="flex justify-between items-center">
                     <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-accent">Execução Diária</span>
@@ -689,6 +690,114 @@ export default function Dashboard() {
             </div>
           </div>
         </main>
+
+        <style dangerouslySetInnerHTML={{ __html: `
+          /* CORREÇÕES SIDEBAR */
+          [data-sidebar="sidebar"] {
+            overflow: hidden !important;
+            width: 250px !important;
+          }
+          
+          [data-sidebar="sidebar"] * {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+          }
+          
+          [data-sidebar="sidebar"] *::-webkit-scrollbar {
+            display: none !important;
+          }
+
+          [data-sidebar="menu-button"] span {
+            white-space: nowrap !important;
+          }
+
+          /* SIDEBAR VISUALS */
+          [data-sidebar="sidebar"]::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(to right, rgba(124, 58, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(124, 58, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+          }
+
+          [data-sidebar="menu-button"]:hover {
+            background: rgba(124, 58, 255, 0.08) !important;
+            border-left: 2px solid #7c3aff !important;
+            transition: 0.2s ease !important;
+          }
+
+          [data-sidebar="menu-button"][data-active="true"] {
+            border-left: 2px solid #7c3aff !important;
+            box-shadow: inset 4px 0 12px -2px rgba(124, 58, 255, 0.2) !important;
+          }
+
+          /* HEADER TEXT GRADIENT */
+          .animate-gradient-text {
+            background: linear-gradient(90deg, #fff, #a855f7, #22d3ee, #fff) !important;
+            background-size: 300% auto !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            animation: gradMove 4s linear infinite !important;
+          }
+
+          @keyframes gradMove {
+            0% { background-position: 0% center; }
+            100% { background-position: 100% center; }
+          }
+
+          /* BADGE PULSE */
+          .status-badge {
+            animation: pulse-green 2s ease-in-out infinite !important;
+          }
+
+          @keyframes pulse-green {
+            0%, 100% { box-shadow: 0 0 6px rgba(16, 185, 129, 0.3); }
+            50% { box-shadow: 0 0 16px rgba(16, 185, 129, 0.7); }
+          }
+
+          /* CARDS HOVER */
+          .metric-card {
+            transition: 0.25s ease !important;
+            border-top: 1px solid rgba(124, 58, 255, 0.1) !important;
+          }
+
+          .metric-card:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 32px rgba(124, 58, 255, 0.2) !important;
+            border-top: 1px solid rgba(124, 58, 255, 0.3) !important;
+          }
+
+          /* AVATAR STATUS PULSE */
+          .bg-green-500.absolute {
+            animation: pulse-dot 2s infinite !important;
+          }
+
+          @keyframes pulse-dot {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+            50% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+          }
+
+          /* BACKGROUND ORBS */
+          .dashboard-root::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse 50% 40% at 15% 10%, rgba(124, 58, 255, 0.07) 0%, transparent 60%),
+                        radial-gradient(ellipse 40% 35% at 85% 90%, rgba(34, 211, 238, 0.04) 0%, transparent 55%);
+            animation: orbMove 12s ease-in-out infinite alternate;
+          }
+
+          @keyframes orbMove {
+            0% { background-position: 0% 0%, 100% 100%; opacity: 0.8; }
+            50% { background-position: 8% 12%, 92% 88%; opacity: 1; }
+            100% { background-position: 15% 5%, 85% 95%; opacity: 0.9; }
+          }
+        ` }} />
       </div>
     </SidebarProvider>
   );
