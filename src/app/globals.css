@@ -33,6 +33,8 @@
   }
   body {
     @apply bg-[#080810] text-foreground font-body overflow-x-hidden;
+    /* Cursor customizado será aplicado via componente mas removemos o padrão aqui */
+    cursor: none;
   }
 }
 
@@ -103,9 +105,16 @@
   100% { opacity: 0; transform: translate(var(--tw-translate-x), var(--tw-translate-y)) scale(0); }
 }
 
-@keyframes toast-slide-in {
-  from { transform: translateX(100%) scale(0.9); opacity: 0; }
-  to { transform: translateX(0) scale(1); opacity: 1; }
+@keyframes gradient-text {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  50% { transform: scale(1.2); opacity: 0.3; }
+  100% { transform: scale(0.8); opacity: 0.5; }
 }
 
 .animate-float {
@@ -118,6 +127,14 @@
 
 .animate-marquee {
   animation: marquee 40s linear infinite;
+}
+
+.animate-gradient-text {
+  background: linear-gradient(90deg, #7c3aff, #22d3ee, #7c3aff);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-text 4s linear infinite;
 }
 
 .glass-card {
@@ -140,10 +157,6 @@
   text-shadow: 0 0 15px hsl(var(--primary) / 0.6);
 }
 
-.hero-gradient {
-  background: radial-gradient(circle at 50% 50%, hsl(var(--primary) / 0.18) 0%, transparent 65%);
-}
-
 .shimmer-text {
   background: linear-gradient(90deg, #fff 0%, #8b5cf6 50%, #fff 100%);
   background-size: 200% auto;
@@ -163,15 +176,24 @@
   border-color: rgba(124, 58, 255, 0.5);
 }
 
-.particle {
+.cursor-glow {
   position: fixed;
-  width: 4px;
-  height: 4px;
+  width: 20px;
+  height: 20px;
   background: #7c3aff;
   border-radius: 50%;
   pointer-events: none;
-  z-index: 1000;
-  animation: particle-fade-out 0.8s ease-out forwards;
+  z-index: 9999;
+  mix-blend-mode: normal;
+  transition: transform 0.1s ease-out, width 0.3s ease, height 0.3s ease, background 0.3s ease;
+  box-shadow: 0 0 20px #7c3aff, 0 0 40px rgba(124, 58, 255, 0.4);
+}
+
+.cursor-glow.active {
+  width: 40px;
+  height: 40px;
+  background: rgba(124, 58, 255, 0.3);
+  border: 2px solid #7c3aff;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -182,22 +204,21 @@
   scrollbar-width: none;
 }
 
-.device-mockup {
-  @apply bg-[#0b0b14] border-4 border-white/10 rounded-[2rem] overflow-hidden shadow-2xl relative;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+.stagger-entry > * {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slide-up-fade 0.6s ease forwards;
 }
 
-.device-mockup::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at 50% 0%, rgba(124, 58, 255, 0.15) 0%, transparent 70%);
-  pointer-events: none;
+@keyframes slide-up-fade {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.wireframe-block {
-  @apply bg-white/5 rounded-lg border border-white/5 animate-pulse;
+.sidebar-separator-gradient {
+  height: 1px;
+  background: linear-gradient(90deg, #7c3aff 0%, transparent 100%);
+  opacity: 0.3;
 }

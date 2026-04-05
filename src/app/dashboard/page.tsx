@@ -61,9 +61,29 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DashboardParticles } from '@/components/DashboardParticles';
 
 const LOGO_ICON = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/d5tqr6czngeukjb8r6whrs5s?v=1774318273085";
 const ADMIN_EMAIL = "thethegalo@gmail.com";
+
+function AnimatedNumber({ value, duration = 2000, prefix = "", suffix = "" }: { value: number, duration?: number, prefix?: string, suffix?: string }) {
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    let startTimestamp: number | null = null;
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      setDisplayValue(Math.floor(progress * value));
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      }
+    };
+    window.requestAnimationFrame(step);
+  }, [value, duration]);
+
+  return <span>{prefix}{displayValue.toLocaleString('pt-BR')}{suffix}</span>;
+}
 
 export default function Dashboard() {
   const { user, isUserLoading } = useUser();
@@ -277,17 +297,22 @@ export default function Dashboard() {
   if (userData?.status !== 'approved' && !isSpecialUser) {
     return (
       <div className="min-h-screen bg-[#050508] flex items-center justify-center p-6 text-center">
+        <DashboardParticles />
         <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
           <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[140px]"></div>
         </div>
         
-        <Card className="w-full max-w-lg glass-card border-white/10 p-8 md:p-12 space-y-8 rounded-[2.5rem] md:rounded-[3rem] relative z-10">
-          <div className="h-20 w-24 md:h-24 md:w-24 bg-white/5 rounded-full flex items-center justify-center mx-auto border border-white/10">
+        <Card className="w-full max-w-lg glass-card border-white/10 p-8 md:p-12 space-y-8 rounded-[2.5rem] md:rounded-[3rem] relative z-10 animate-in zoom-in-95 duration-700">
+          <div className="h-20 w-24 md:h-24 md:w-24 bg-white/5 rounded-full flex items-center justify-center mx-auto border border-white/10 relative">
+            <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping opacity-25" />
             <ShieldAlert className="h-10 w-10 md:h-12 md:w-12 text-primary animate-pulse" />
           </div>
           
           <div className="space-y-4">
-            <Badge className="bg-primary/20 text-primary border-primary/30 uppercase tracking-[0.3em] text-[8px] md:text-[10px] px-4 py-1.5">Acesso Sob Análise</Badge>
+            <Badge className="bg-primary/20 text-primary border-primary/30 uppercase tracking-[0.3em] text-[8px] md:text-[10px] px-4 py-1.5 overflow-hidden">
+              <span className="relative z-10">Acesso Sob Análise</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+            </Badge>
             <h1 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter">Olá, {displayName}</h1>
             <p className="text-muted-foreground text-xs md:text-sm font-medium leading-relaxed">
               O FlowPro é um ecossistema fechado de elite. Sua solicitação de acesso foi enviada e está na fila para validação manual.
@@ -316,7 +341,7 @@ export default function Dashboard() {
           <Button 
             onClick={() => router.push('/auth')} 
             variant="outline" 
-            className="w-full h-14 rounded-2xl border-white/10 text-[10px] font-black uppercase tracking-widest"
+            className="w-full h-14 rounded-2xl border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/5"
           >
             VOLTAR PARA LOGIN
           </Button>
@@ -327,41 +352,44 @@ export default function Dashboard() {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-[#050508]">
+      <div className="flex min-h-screen w-full bg-[#050508] relative">
+        <DashboardParticles />
         <AppSidebar />
         
-        <main className="flex-1 flex flex-col min-w-0">
-          <header className="h-16 border-b border-white/5 flex items-center justify-between px-4 md:px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-40">
+        <main className="flex-1 flex flex-col min-w-0 relative z-10 stagger-entry">
+          <header className="h-16 border-b border-white/5 flex items-center justify-between px-4 md:px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-40 animate-in fade-in duration-500">
             <div className="flex items-center gap-2 md:gap-4">
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
-              <div className="h-4 w-px bg-white/10 hidden md:block" />
-              <h2 className="text-[10px] md:text-sm font-black italic uppercase tracking-widest flex items-center gap-2">
+              <div className="h-6 w-px bg-white/10 hidden md:block mx-2" />
+              <h2 className="text-[10px] md:text-sm font-black italic uppercase tracking-widest flex items-center gap-2 animate-gradient-text">
                 <Sparkles className="h-3 w-3 md:h-4 md:w-4 text-primary" /> Painel de Comando
               </h2>
             </div>
             
             <div className="flex items-center gap-2 md:gap-3">
-              <Badge variant="outline" className={`${isProMember ? 'bg-purple-500/10 border-purple-500/30 text-purple-400' : 'bg-white/5 border-white/10 text-muted-foreground'} text-[7px] md:text-[8px] font-black uppercase px-2 md:px-3 py-1`}>
-                {userData?.plan?.toUpperCase() === 'NENHUM' ? 'BLOQUEADO' : userData?.plan?.toUpperCase()}
+              <Badge variant="outline" className={`${isProMember ? 'bg-purple-500/10 border-purple-500/30 text-purple-400' : 'bg-white/5 border-white/10 text-muted-foreground'} text-[7px] md:text-[8px] font-black uppercase px-2 md:px-3 py-1 relative overflow-hidden group`}>
+                <span className="relative z-10">{userData?.plan?.toUpperCase() === 'NENHUM' ? 'BLOQUEADO' : userData?.plan?.toUpperCase()}</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
               </Badge>
-              <Badge variant="secondary" className="bg-primary/10 text-primary gap-1 px-2 md:px-3 py-1 text-[8px] md:text-[10px] font-black uppercase">
+              <Badge variant="secondary" className="bg-primary/10 text-primary gap-1 px-2 md:px-3 py-1 text-[8px] md:text-[10px] font-black uppercase animate-pulse">
                 <Flame className="h-2.5 w-2.5 md:h-3 md:w-3" /> {completedMissionIds.length}D
               </Badge>
             </div>
           </header>
 
           <div className="flex-1 p-4 md:p-8 space-y-6 md:space-y-8 max-w-5xl mx-auto w-full">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 animate-in slide-in-from-top-4 duration-700">
               <div className="space-y-3 w-full md:w-auto">
                 <div className="space-y-1">
                   <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter leading-none text-white">
                     {displayName.split(' ')[0]}
                   </h1>
-                  <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full w-fit">
+                  <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full w-fit relative overflow-hidden">
                     <div className={`${userLevel.color}`}>
                       {userLevel.icon}
                     </div>
                     <span className={`text-[9px] md:text-[10px] font-black uppercase tracking-widest ${userLevel.color}`}>Patente {userLevel.name}</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-500/10 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
                   </div>
                 </div>
 
@@ -373,15 +401,10 @@ export default function Dashboard() {
                     </div>
                   )}
                   {(userData?.plan === 'vitalicio' || isSpecialUser) && (
-                    <div className="flex items-center gap-2 px-3 py-1 bg-green-500/5 border border-green-500/20 rounded-full w-fit">
+                    <div className="flex items-center gap-2 px-3 py-1 bg-green-500/5 border border-green-500/20 rounded-full w-fit relative overflow-hidden">
                       <ShieldCheck className="h-2.5 w-2.5 text-green-500" />
                       <span className="text-[7px] md:text-[8px] font-bold uppercase tracking-widest text-green-500/80">Acesso ilimitado vitalício</span>
-                    </div>
-                  )}
-                  {userData?.plan === 'nenhum' && (
-                    <div className="flex items-center gap-2 px-3 py-1 bg-destructive/5 border border-destructive/20 rounded-full w-fit">
-                      <Lock className="h-2.5 w-2.5 text-destructive" />
-                      <span className="text-[7px] md:text-[8px] font-bold uppercase tracking-widest text-destructive/80">Assinatura necessária</span>
+                      <div className="absolute inset-0 bg-green-500/5 animate-pulse" />
                     </div>
                   )}
                 </div>
@@ -397,7 +420,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <Card className="bg-white/[0.02] border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden p-5 md:p-10 space-y-6 md:space-y-10">
+            <Card className="bg-white/[0.02] border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden p-5 md:p-10 space-y-6 md:space-y-10 group animate-in slide-in-from-bottom-4 duration-700">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div className="space-y-1">
                   <h3 className="text-xl md:text-2xl font-black italic uppercase tracking-tight text-white">Ganhos Diários</h3>
@@ -405,11 +428,13 @@ export default function Dashboard() {
                 </div>
                 <div className="text-left md:text-right w-full md:w-auto">
                   <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-50 mb-1">Ganhos Totais</p>
-                  <div className="text-3xl md:text-4xl font-black italic tracking-tighter text-white leading-none">R$ {totalEarnings.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+                  <div className="text-3xl md:text-4xl font-black italic tracking-tighter text-white leading-none">
+                    <AnimatedNumber value={totalEarnings} prefix="R$ " />
+                  </div>
                 </div>
               </div>
 
-              <div className="h-[200px] md:h-[280px] w-full">
+              <div className="h-[200px] md:h-[280px] w-full relative">
                 <ChartContainer config={{ 
                   ganhos: { label: "Valor do Dia", color: "hsl(var(--primary))" } 
                 }}>
@@ -423,7 +448,7 @@ export default function Dashboard() {
                         <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.06)" />
                     <XAxis 
                       dataKey="date" 
                       axisLine={false} 
@@ -439,7 +464,10 @@ export default function Dashboard() {
                       tickFormatter={(value) => `R$ ${value}`}
                       domain={[0, 'auto']}
                     />
-                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Tooltip 
+                      content={<ChartTooltipContent />} 
+                      cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '4 4' }}
+                    />
                     <Area 
                       type="monotone" 
                       dataKey="ganhos" 
@@ -453,11 +481,15 @@ export default function Dashboard() {
                     />
                   </AreaChart>
                 </ChartContainer>
+                {/* Scanline do gráfico */}
+                <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden rounded-[inherit]">
+                  <div className="absolute top-0 left-[-100%] w-1/2 h-full bg-gradient-to-r from-transparent via-primary/10 to-transparent skew-x-[-20deg] animate-shimmer" style={{ animationDuration: '3s' }} />
+                </div>
               </div>
             </Card>
 
             <div className="grid gap-4 md:gap-6 md:grid-cols-2">
-              <Card className="bg-white/[0.02] border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden">
+              <Card className="bg-white/[0.02] border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden relative group hover:border-primary/30 transition-all duration-500">
                 <CardHeader className="pb-2 p-5">
                   <div className="flex justify-between items-center">
                     <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-primary">Placar de Caixa</span>
@@ -466,7 +498,12 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent className="space-y-6 p-5 pt-0">
                   <div className="flex flex-col gap-4">
-                    <div className="text-4xl md:text-5xl font-black italic tracking-tighter">R$ {totalEarnings.toLocaleString('pt-BR')}</div>
+                    <div className="text-4xl md:text-5xl font-black italic tracking-tighter">
+                      <AnimatedNumber value={totalEarnings} prefix="R$ " />
+                    </div>
+                    <p className="text-[10px] font-bold text-green-500 flex items-center gap-1">
+                      <ArrowUpRight className="h-3 w-3" /> +12% HOJE
+                    </p>
                     
                     <Dialog open={showEarningModal} onOpenChange={setShowEarningModal}>
                       <DialogTrigger asChild>
@@ -477,7 +514,7 @@ export default function Dashboard() {
                           <Plus className="h-3 w-3 mr-1" /> ADICIONAR GANHO
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="bg-[#0b0b14] border-white/10 text-white rounded-[2rem] w-[95vw] max-w-md p-6">
+                      <DialogContent className="bg-[#0b0b14] border-white/10 text-white rounded-[2rem] w-[95vw] max-w-md p-6 cursor-default">
                         <DialogHeader>
                           <DialogTitle className="text-lg md:text-xl font-black italic uppercase tracking-widest">Registrar Venda</DialogTitle>
                           <DialogDescription className="text-muted-foreground uppercase text-[9px] md:text-[10px] font-bold">Informe o valor para atualizar seu placar.</DialogDescription>
@@ -517,7 +554,7 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/[0.02] border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden">
+              <Card className="bg-white/[0.02] border-white/5 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden relative group hover:border-accent/30 transition-all duration-500">
                 <CardHeader className="pb-2 p-5">
                   <div className="flex justify-between items-center">
                     <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-accent">Execução Diária</span>
@@ -528,23 +565,51 @@ export default function Dashboard() {
                   <div className="flex items-center justify-between">
                     <div className="space-y-1">
                       <div className="text-3xl md:text-4xl font-black italic tracking-tighter">
-                        {dailyActions}/{dailyGoal}
+                        <AnimatedNumber value={dailyActions} />/{dailyGoal}
                       </div>
                       <p className="text-[9px] md:text-[10px] font-bold text-muted-foreground uppercase">Ações Concluídas Hoje</p>
+                      <p className="text-[10px] font-bold text-green-500 flex items-center gap-1 mt-2">
+                        <ArrowUpRight className="h-3 w-3" /> NO RITMO
+                      </p>
                     </div>
-                    <div className={`h-14 w-14 md:h-16 md:w-16 rounded-full flex items-center justify-center border-4 transition-all duration-1000 ${dailyActions >= dailyGoal ? 'border-green-500 bg-green-500/10 shadow-[0_0_20px_rgba(34,197,94,0.3)]' : 'border-white/5 bg-white/5'}`}>
-                      {dailyActions >= dailyGoal ? <Flame className="h-7 w-7 md:h-8 md:w-8 text-green-500 animate-pulse" /> : <Target className="h-7 w-7 md:h-8 md:w-8 text-muted-foreground opacity-20" />}
+                    <div className="relative h-20 w-20 md:h-24 md:w-24 flex items-center justify-center">
+                      <svg className="h-full w-full transform -rotate-90">
+                        <circle
+                          cx="50%" cy="50%" r="40%"
+                          fill="transparent"
+                          stroke="rgba(255,255,255,0.05)"
+                          strokeWidth="8"
+                        />
+                        <circle
+                          cx="50%" cy="50%" r="40%"
+                          fill="transparent"
+                          stroke="hsl(var(--primary))"
+                          strokeWidth="8"
+                          strokeDasharray="251.2"
+                          strokeDashoffset={251.2 - (251.2 * Math.min(1, dailyActions / dailyGoal))}
+                          strokeLinecap="round"
+                          className="transition-all duration-1000 ease-out"
+                          style={{ filter: 'drop-shadow(0 0 8px #7c3aff)' }}
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        {dailyActions >= dailyGoal ? (
+                          <Flame className="h-8 w-8 text-green-500 animate-pulse" />
+                        ) : (
+                          <Target className="h-8 w-8 text-primary/40" />
+                        )}
+                      </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            <div className="space-y-6 pt-4 pb-20">
+            <div className="space-y-6 pt-4 pb-20 animate-in fade-in duration-1000">
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <h2 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2 text-white leading-tight">
-                    <div className="relative h-5 w-5 md:h-6 md:w-6 shrink-0">
+                    <div className="relative h-5 w-5 md:h-6 md:w-6 shrink-0 group-hover:scale-110 transition-transform">
                       <Image src={LOGO_ICON} alt="Icon" fill className="object-contain" />
                     </div>
                     Trilha de Missão: 7 Dias
@@ -561,7 +626,7 @@ export default function Dashboard() {
                     <Progress value={journeyProgress} className="h-1 bg-white/10" />
                   </div>
                   {isJourneyFinished && (
-                    <Badge className="bg-green-500/20 text-green-500 border-green-500/30 text-[7px] md:text-[8px] font-black uppercase shrink-0">COMPLETA</Badge>
+                    <Badge className="bg-green-500/20 text-green-500 border-green-500/30 text-[7px] md:text-[8px] font-black uppercase shrink-0 animate-pulse">COMPLETA</Badge>
                   )}
                 </div>
               </div>
@@ -587,13 +652,13 @@ export default function Dashboard() {
                     >
                       <div className="flex items-center justify-between gap-3 md:gap-4 relative z-10">
                         <div className="flex items-center gap-3 md:gap-5 min-w-0">
-                          <div className={`h-10 w-10 md:h-14 md:w-14 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110 ${
+                          <div className={`h-10 w-10 md:h-14 md:w-14 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 ${
                             isCompleted ? 'bg-green-500/10 text-green-500 border border-green-500/20' : isLocked ? 'bg-white/5 text-muted-foreground' : 'bg-primary text-white shadow-xl shadow-primary/40'
                           }`}>
                             {isCompleted ? <CheckCircle2 className="h-5 w-5 md:h-7 md:w-7" /> : isLocked ? <Lock className="h-4 w-4 md:h-6 md:w-6" /> : <span className="font-black italic text-base md:text-xl leading-none">{index + 1}</span>}
                           </div>
                           <div className="space-y-0.5 md:space-y-1 text-left min-w-0">
-                            <h4 className={`font-black italic uppercase tracking-tight text-sm md:text-xl truncate ${isCompleted ? 'text-muted-foreground' : 'text-white'}`}>
+                            <h4 className={`font-black italic uppercase tracking-tight text-sm md:text-xl truncate transition-colors ${isCompleted ? 'text-muted-foreground' : 'text-white group-hover:text-primary'}`}>
                               {mission.title}
                             </h4>
                             <p className="text-[10px] md:text-xs text-muted-foreground truncate opacity-70 group-hover:opacity-100 transition-opacity">
@@ -607,9 +672,12 @@ export default function Dashboard() {
                         </div>
                         
                         {!isLocked && (
-                          <Button asChild variant={isCurrent ? "default" : "ghost"} className="rounded-xl font-black uppercase text-[7px] md:text-[10px] tracking-widest h-9 md:h-12 px-3 md:px-8 shrink-0">
+                          <Button asChild variant={isCurrent ? "default" : "ghost"} className="rounded-xl font-black uppercase text-[7px] md:text-[10px] tracking-widest h-9 md:h-12 px-3 md:px-8 shrink-0 relative overflow-hidden group/btn">
                             <Link href={`/missions/${mission.id}`}>
-                              {isCompleted ? 'REVISAR' : 'EXECUTAR'}
+                              <span className="relative z-10">{isCompleted ? 'REVISAR' : 'EXECUTAR'}</span>
+                              {isCurrent && (
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+                              )}
                             </Link>
                           </Button>
                         )}

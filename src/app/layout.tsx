@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from '@/firebase';
+import { CustomCursor } from '@/components/CustomCursor';
 
 export const metadata: Metadata = {
   title: 'PromptForge | AI Sales Companion',
@@ -27,6 +28,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased min-h-screen bg-background">
         <FirebaseClientProvider>
+          <CustomCursor />
           {children}
           <Toaster />
         </FirebaseClientProvider>
