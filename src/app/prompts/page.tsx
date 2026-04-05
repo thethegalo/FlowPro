@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,17 +26,106 @@ import {
   ExternalLink,
   MousePointerClick,
   Info,
-  Rocket
+  Rocket,
+  Smartphone,
+  Monitor,
+  RotateCcw
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { useToast } from '@/hooks/use-toast';
 import { generateMasterPrompt } from '@/ai/flows/generate-master-prompt';
 
+// --- COMPONENTES AUXILIARES ---
+
+const AnimatedCounter = ({ value }: { value: number }) => {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    let start = 0;
+    const end = value;
+    if (start === end) return;
+    let timer = setInterval(() => {
+      start += Math.ceil(end / 20);
+      if (start >= end) {
+        setCount(end);
+        clearInterval(timer);
+      } else {
+        setCount(start);
+      }
+    }, 30);
+    return () => clearInterval(timer);
+  }, [value]);
+  return <span>{count}</span>;
+};
+
+const DevicePreview = ({ type }: { type: 'sites' | string }) => {
+  const [activeDevice, setActiveDevice] = useState<'desktop' | 'mobile'>('desktop');
+
+  if (type !== 'Sites/LP') return null;
+
+  return (
+    <div className="space-y-6 pt-10">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Monitor className="h-4 w-4 text-primary" />
+          <h3 className="text-lg font-black italic uppercase text-white font-headline">Mockup Preview</h3>
+        </div>
+        <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
+          <button 
+            onClick={() => setActiveDevice('desktop')}
+            className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase flex items-center gap-2 transition-all ${activeDevice === 'desktop' ? 'bg-primary text-white' : 'text-muted-foreground'}`}
+          >
+            <Monitor className="h-3 w-3" /> Desktop
+          </button>
+          <button 
+            onClick={() => setActiveDevice('mobile')}
+            className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase flex items-center gap-2 transition-all ${activeDevice === 'mobile' ? 'bg-primary text-white' : 'text-muted-foreground'}`}
+          >
+            <Smartphone className="h-3 w-3" /> Mobile
+          </button>
+        </div>
+      </div>
+
+      <div className="relative flex justify-center items-center py-10 bg-white/[0.02] border border-dashed border-white/10 rounded-[3rem] overflow-hidden">
+        <div className="absolute inset-0 grid-background opacity-10"></div>
+        
+        <div className={`device-mockup ${activeDevice === 'desktop' ? 'w-full max-w-2xl h-[300px]' : 'w-[240px] h-[480px]'}`}>
+          <div className="p-4 space-y-4">
+            {/* Nav */}
+            <div className="flex justify-between items-center mb-6">
+              <div className="w-16 h-4 wireframe-block"></div>
+              <div className="flex gap-2">
+                <div className="w-8 h-4 wireframe-block"></div>
+                <div className="w-8 h-4 wireframe-block"></div>
+              </div>
+            </div>
+            {/* Hero */}
+            <div className="space-y-2">
+              <div className="w-3/4 h-8 wireframe-block mx-auto"></div>
+              <div className="w-1/2 h-4 wireframe-block mx-auto"></div>
+            </div>
+            {/* Image Placeholder */}
+            <div className={`w-full wireframe-block ${activeDevice === 'desktop' ? 'h-32' : 'h-48'}`}></div>
+            {/* Content Blocks */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="h-12 wireframe-block"></div>
+              <div className="h-12 wireframe-block"></div>
+            </div>
+            {/* CTA */}
+            <div className="w-full h-10 bg-primary/20 border border-primary/30 rounded-lg animate-pulse mt-4"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- CONFIGURAÇÕES ---
+
 const PROMPT_TEMPLATES = [
   {
     id: 'sites',
-    title: 'Estrutura de Site/LP',
+    title: 'Sites/LP',
     icon: <Globe className="h-4 w-4" />,
     description: 'Comando técnico para Lovable/Bolt criar sua página de vendas.',
     fields: ['product', 'niche', 'style', 'colors'],
@@ -142,18 +231,59 @@ const SUGGESTED_TOOLS: Record<string, { name: string, url: string }[]> = {
   ]
 };
 
+// --- PÁGINA PRINCIPAL ---
+
 export default function PromptsPage() {
   const [activeTemplate, setActiveTemplate] = useState(PROMPT_TEMPLATES[0]);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [complexity, setComplexity] = useState<'simple' | 'advanced'>('advanced');
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
+  const mainBtnRef = useRef<HTMLButtonElement>(null);
 
-  const handleGenerate = async () => {
+  const createParticles = (e: React.MouseEvent) => {
+    const btn = mainBtnRef.current;
+    if (!btn) return;
+    const rect = btn.getBoundingClientRect();
+    const x = e.clientX;
+    const y = e.clientY;
+
+    for (let i = 0; i < 15; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = `${x}px`;
+      particle.style.top = `${y}px`;
+      
+      const tx = (Math.random() - 0.5) * 200;
+      const ty = (Math.random() - 0.5) * 200;
+      particle.style.setProperty('--tw-translate-x', `${tx}px`);
+      particle.style.setProperty('--tw-translate-y', `${ty}px`);
+      
+      document.body.appendChild(particle);
+      setTimeout(() => particle.remove(), 800);
+    }
+  };
+
+  const handleGenerate = async (e: React.MouseEvent) => {
+    createParticles(e);
     setIsLoading(true);
     setGeneratedPrompt('');
+    setProgress(0);
+
+    // Simulação de progresso neural (1.2s)
+    const interval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 5;
+      });
+    }, 60);
+
     try {
       const res = await generateMasterPrompt({
         category: activeTemplate.title,
@@ -166,6 +296,8 @@ export default function PromptsPage() {
       toast({ variant: "destructive", title: "Erro na Rede", description: "Verifique sua conexão e tente novamente." });
     } finally {
       setIsLoading(false);
+      clearInterval(interval);
+      setProgress(100);
     }
   };
 
@@ -173,7 +305,14 @@ export default function PromptsPage() {
     if (!generatedPrompt) return;
     navigator.clipboard.writeText(generatedPrompt);
     setCopied(true);
-    toast({ title: "Copiado para o Flow!", description: "Cole agora na ferramenta recomendada." });
+    
+    // Custom Toast Animation
+    toast({ 
+      title: "Pronto para o Flow!", 
+      description: "Comando copiado para sua área de transferência.",
+      className: "animate-in slide-in-from-right-full duration-500 border-primary/50"
+    });
+    
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -181,22 +320,23 @@ export default function PromptsPage() {
     setActiveTemplate(template);
     setGeneratedPrompt('');
     setFormData({}); 
+    setProgress(0);
   };
 
   const currentTools = SUGGESTED_TOOLS[activeTemplate.id] || SUGGESTED_TOOLS.custom;
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-[#050508]">
+      <div className="flex min-h-screen w-full bg-[#080810]">
         <AppSidebar />
         
         <main className="flex-1 flex flex-col min-w-0">
-          <header className="h-16 border-b border-white/5 flex items-center justify-between px-4 md:px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-50">
+          <header className="h-16 border-b border-white/5 flex items-center justify-between px-4 md:px-6 bg-[#080810]/80 backdrop-blur-md sticky top-0 z-50">
             <div className="flex items-center gap-2 md:gap-4">
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
               <div className="h-4 w-px bg-white/10 hidden md:block" />
-              <h1 className="text-[10px] md:text-sm font-black italic uppercase tracking-widest flex items-center gap-2">
-                <Terminal className="h-3 w-3 md:h-4 md:w-4 text-primary" /> Fábrica de Comandos
+              <h1 className="text-[10px] md:text-sm font-black italic uppercase tracking-widest flex items-center gap-2 font-headline">
+                <Terminal className="h-3 w-3 md:h-4 md:w-4 text-primary" /> PromptForge
               </h1>
             </div>
           </header>
@@ -207,8 +347,10 @@ export default function PromptsPage() {
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-[8px] font-black uppercase tracking-widest">
                   <Cpu className="h-3 w-3 animate-pulse" /> Engenharia Neural Ativa
                 </div>
-                <h2 className="text-2xl md:text-3xl font-black italic uppercase tracking-tighter text-white leading-tight">Motor de Prompts</h2>
-                <p className="text-muted-foreground text-xs md:text-sm uppercase font-bold tracking-widest">Extraia o máximo das IAs com comandos perfeitos.</p>
+                <h2 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter text-white leading-tight font-headline">Fábrica de Comandos</h2>
+                <p className="text-muted-foreground text-xs md:text-sm uppercase font-bold tracking-widest flex items-center gap-2">
+                  <AnimatedCounter value={1420} /> Prompts Otimizados Hoje
+                </p>
               </div>
 
               <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 w-full md:w-auto">
@@ -230,7 +372,7 @@ export default function PromptsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
               {/* Navegação de Objetivos */}
               <div className="lg:col-span-4 space-y-4">
-                <p className="text-[10px] font-black uppercase tracking-widest text-primary/60 px-2">Escolha seu Objetivo</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-primary/60 px-2 font-headline">Escolha seu Objetivo</p>
                 <div className="flex overflow-x-auto lg:grid gap-2 no-scrollbar pb-4 lg:pb-0 px-1 md:px-0">
                   {PROMPT_TEMPLATES.map((t) => (
                     <button
@@ -238,7 +380,7 @@ export default function PromptsPage() {
                       onClick={() => handleTemplateChange(t)}
                       className={`p-4 rounded-2xl border text-left transition-all group relative overflow-hidden shrink-0 lg:shrink-1 w-[200px] lg:w-full ${
                         activeTemplate.id === t.id 
-                        ? 'bg-primary/10 border-primary text-white shadow-[0_0_30px_rgba(139,92,246,0.1)]' 
+                        ? 'bg-primary/10 border-primary text-white shadow-[0_0_30px_rgba(139,92,246,0.15)]' 
                         : 'bg-white/[0.02] border-white/5 text-muted-foreground hover:bg-white/[0.05] hover:border-white/10'
                       }`}
                     >
@@ -247,8 +389,8 @@ export default function PromptsPage() {
                           {t.icon}
                         </div>
                         <div className="min-w-0">
-                          <span className="text-[10px] md:text-xs font-black uppercase italic truncate block">{t.title}</span>
-                          <p className="text-[8px] md:text-[9px] font-medium opacity-50 line-clamp-1">{t.description}</p>
+                          <span className="text-[10px] md:text-xs font-black uppercase italic truncate block font-headline">{t.title}</span>
+                          <p className="text-[8px] md:text-[9px] font-medium opacity-50 line-clamp-1 font-body">{t.description}</p>
                         </div>
                       </div>
                       {activeTemplate.id === t.id && (
@@ -265,20 +407,20 @@ export default function PromptsPage() {
               <div className="lg:col-span-8 space-y-8">
                 <Card className="glass-card border-white/10 rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden">
                   <CardHeader className="bg-white/5 border-b border-white/5 p-6 md:p-8">
-                    <CardTitle className="text-[10px] md:text-xs font-black uppercase tracking-widest italic flex items-center gap-2 leading-tight">
+                    <CardTitle className="text-[10px] md:text-xs font-black uppercase tracking-widest italic flex items-center gap-2 leading-tight font-headline">
                       <Settings2 className="h-4 w-4 text-primary shrink-0" /> {activeTemplate.title}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-6 md:p-10 space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                       {activeTemplate.fields.map((field) => (
-                        <div key={field} className="space-y-2">
-                          <Label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50">
+                        <div key={field} className="space-y-2 group input-glow">
+                          <Label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50 group-focus-within:opacity-100 group-focus-within:text-primary transition-all">
                             {FIELD_LABELS[field] || field}
                           </Label>
                           <Input 
                             placeholder={FIELD_PLACEHOLDERS[field] || 'Preencha...'}
-                            className="bg-white/5 border-white/10 h-12 md:h-14 rounded-2xl focus-visible:ring-primary font-medium text-sm"
+                            className="bg-white/5 border-white/10 h-12 md:h-14 rounded-2xl focus-visible:ring-primary font-medium text-sm transition-all focus:shadow-[0_0_15px_rgba(124,58,255,0.2)]"
                             value={formData[field] || ''}
                             onChange={(e) => setFormData({...formData, [field]: e.target.value})}
                           />
@@ -286,22 +428,40 @@ export default function PromptsPage() {
                       ))}
                     </div>
 
-                    <Button 
-                      onClick={handleGenerate}
-                      disabled={isLoading || Object.values(formData).filter(v => v.trim()).length === 0}
-                      className="w-full h-14 md:h-20 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] md:text-xs shadow-xl shadow-primary/20 transition-all active:scale-[0.98] group"
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="mr-3 h-5 w-5 md:h-6 md:w-6 animate-spin" />
-                          SINCRONIZANDO...
-                        </>
-                      ) : (
-                        <>
-                          ATIVAR ENGENHARIA <Zap className="ml-2 h-4 w-4 md:h-5 md:w-5 fill-white group-hover:scale-125 transition-transform" />
-                        </>
+                    <div className="space-y-4">
+                      {isLoading && (
+                        <div className="space-y-2 animate-in fade-in duration-500">
+                          <div className="flex justify-between text-[8px] font-black uppercase text-primary">
+                            <span>Sincronizando Neurônios...</span>
+                            <span>{progress}%</span>
+                          </div>
+                          <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-primary transition-all duration-300 shadow-[0_0_10px_#7c3aff]"
+                              style={{ width: `${progress}%` }}
+                            ></div>
+                          </div>
+                        </div>
                       )}
-                    </Button>
+
+                      <Button 
+                        ref={mainBtnRef}
+                        onClick={handleGenerate}
+                        disabled={isLoading || Object.values(formData).filter(v => v.trim()).length === 0}
+                        className="w-full h-14 md:h-20 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] md:text-xs shadow-xl shadow-primary/20 transition-all active:scale-[0.98] group relative overflow-hidden"
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="mr-3 h-5 w-5 md:h-6 md:w-6 animate-spin" />
+                            PROCESSANDO...
+                          </>
+                        ) : (
+                          <>
+                            ATIVAR ENGENHARIA <Zap className="ml-2 h-4 w-4 md:h-5 md:w-5 fill-white group-hover:scale-125 transition-transform" />
+                          </>
+                        )}
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
 
@@ -317,18 +477,18 @@ export default function PromptsPage() {
                               <ShieldCheck className="h-5 w-5 md:h-6 md:w-6" />
                             </div>
                             <div>
-                              <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-primary leading-none mb-1">Comando Gerado</p>
-                              <p className="text-[7px] md:text-[8px] font-bold text-muted-foreground uppercase leading-none">Pronto para execução</p>
+                              <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-primary leading-none mb-1 font-headline">Comando Gerado</p>
+                              <p className="text-[7px] md:text-[8px] font-bold text-muted-foreground uppercase leading-none font-body">Pronto para execução</p>
                             </div>
                           </div>
-                          <Badge variant="outline" className="border-primary/30 text-primary text-[7px] md:text-[8px] font-black uppercase">
+                          <Badge variant="outline" className="border-primary/30 text-primary text-[7px] md:text-[8px] font-black uppercase font-body">
                             {complexity.toUpperCase()}
                           </Badge>
                         </CardHeader>
                         
                         <CardContent className="p-6 md:p-10 space-y-6 md:space-y-8">
                           <div className="bg-black/40 p-5 md:p-8 rounded-2xl md:rounded-3xl border border-white/5 relative group">
-                            <pre className="text-xs md:text-base font-medium text-white/90 leading-relaxed whitespace-pre-wrap italic font-body">
+                            <pre className="text-xs md:text-base font-medium text-white/90 leading-relaxed whitespace-pre-wrap italic font-code">
                               {generatedPrompt}
                             </pre>
                             <div className="absolute top-4 right-4 opacity-20 group-hover:opacity-100 transition-opacity">
@@ -336,29 +496,42 @@ export default function PromptsPage() {
                             </div>
                           </div>
                           
-                          <Button 
-                            onClick={handleCopy} 
-                            className={`w-full h-16 md:h-24 rounded-[1.5rem] md:rounded-[2rem] text-sm md:text-xl font-black uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95 group relative overflow-hidden ${
-                              copied ? 'bg-green-500' : 'bg-white text-black hover:bg-white/90'
-                            }`}
-                          >
-                            <div className="flex items-center justify-center gap-3 md:gap-4 relative z-10">
-                              {copied ? (
-                                <><Check className="h-6 w-6 md:h-8 md:w-8" /> COMANDO COPIADO!</>
-                              ) : (
-                                <><Copy className="h-5 w-5 md:h-7 md:w-7" /> PRONTO PARA COLAR!</>
-                              )}
-                            </div>
-                          </Button>
+                          <div className="flex flex-col sm:flex-row gap-3">
+                            <Button 
+                              onClick={handleCopy} 
+                              className={`flex-1 h-16 md:h-20 rounded-2xl text-sm md:text-lg font-black uppercase tracking-[0.2em] shadow-2xl transition-all active:scale-95 group relative overflow-hidden ${
+                                copied ? 'bg-green-500' : 'bg-white text-black hover:bg-white/90'
+                              }`}
+                            >
+                              <div className="flex items-center justify-center gap-3 md:gap-4 relative z-10">
+                                {copied ? (
+                                  <><Check className="h-6 w-6 md:h-7 md:w-7" /> COPIADO!</>
+                                ) : (
+                                  <><Copy className="h-5 w-5 md:h-6 md:w-6" /> COPIAR COMANDO</>
+                                )}
+                              </div>
+                            </Button>
+                            
+                            <Button 
+                              onClick={handleGenerate}
+                              variant="outline"
+                              className="h-16 md:h-20 px-8 rounded-2xl border-white/10 hover:bg-white/5 text-white/70 font-black uppercase text-[10px] tracking-widest gap-2"
+                            >
+                              <RotateCcw className="h-5 w-5" /> REGENERAR
+                            </Button>
+                          </div>
                         </CardContent>
                       </Card>
                     </div>
+
+                    {/* Preview de Dispositivo (Apenas Sites) */}
+                    <DevicePreview type={activeTemplate.title} />
 
                     {/* Guia de Próximos Passos */}
                     <div className="space-y-6">
                       <div className="flex items-center gap-3 px-2">
                         <MousePointerClick className="h-4 w-4 md:h-5 md:w-5 text-primary" />
-                        <h3 className="text-lg md:text-xl font-black italic uppercase tracking-tighter text-white">Onde usar este comando?</h3>
+                        <h3 className="text-lg md:text-xl font-black italic uppercase tracking-tighter text-white font-headline">Onde usar este comando?</h3>
                       </div>
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -370,11 +543,11 @@ export default function PromptsPage() {
                                   {i === 0 ? <Zap className="h-5 w-5 md:h-6 md:w-6 text-primary fill-primary" /> : <Sparkles className="h-5 w-5 md:h-6 md:w-6 text-accent" />}
                                 </div>
                                 <div className="space-y-0.5 min-w-0">
-                                  <p className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground">Recomendação</p>
-                                  <h4 className="font-black italic uppercase tracking-tight text-base md:text-lg text-white truncate">{tool.name}</h4>
+                                  <p className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground font-body">Recomendação</p>
+                                  <h4 className="font-black italic uppercase tracking-tight text-base md:text-lg text-white truncate font-headline">{tool.name}</h4>
                                 </div>
                               </div>
-                              <Button asChild size="sm" variant="outline" className="rounded-xl border-white/10 h-10 md:h-12 px-4 md:px-6 text-[9px] md:text-[10px] font-black uppercase hover:bg-primary hover:text-white transition-all shadow-lg shrink-0">
+                              <Button asChild size="sm" variant="outline" className="rounded-xl border-white/10 h-10 md:h-12 px-4 md:px-6 text-[9px] md:text-[10px] font-black uppercase hover:bg-primary hover:text-white transition-all shadow-lg shrink-0 font-body">
                                 <a href={tool.url} target="_blank" rel="noopener noreferrer">
                                   ABRIR <ExternalLink className="ml-1.5 h-3 w-3" />
                                 </a>
@@ -386,8 +559,8 @@ export default function PromptsPage() {
 
                       <div className="p-5 md:p-6 rounded-2xl md:rounded-3xl bg-primary/5 border border-dashed border-primary/20 flex items-start gap-4">
                         <Info className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0 mt-0.5" />
-                        <p className="text-[9px] md:text-[10px] font-bold text-white/60 leading-relaxed uppercase">
-                          DICA FLOW: Se estiver usando para <span className="text-white">SITES</span>, cole o comando na <span className="text-white">Lovable</span> e peça para ela criar a estrutura visual primeiro.
+                        <p className="text-[9px] md:text-[10px] font-bold text-white/60 leading-relaxed uppercase font-body">
+                          DICA PRO: Se estiver usando para <span className="text-white">SITES</span>, cole o comando na <span className="text-white">Lovable</span> e peça para ela criar a estrutura visual primeiro.
                         </p>
                       </div>
                     </div>
