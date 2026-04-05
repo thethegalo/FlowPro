@@ -102,13 +102,43 @@ const AnimatedCounter = ({ value }: { value: number }) => {
   return <span>{count}</span>;
 };
 
-const DevicePreview = ({ type }: { type: 'Sites/LP' | string }) => {
+const DevicePreview = ({ type, formData }: { type: string, formData: Record<string, any> }) => {
   const [activeDevice, setActiveDevice] = useState<'desktop' | 'mobile'>('desktop');
 
   if (type !== 'Sites/LP') return null;
 
+  const sections = Array.isArray(formData.sections) ? formData.sections : [];
+  const activeStyle = formData.style || 'Moderno';
+  const colorInput = (formData.colors || '').toLowerCase();
+  
+  // Lógica de cores dinâmica para o preview
+  let primaryColor = '#7c3aff';
+  let deviceBg = '#0e0e1a';
+
+  if (colorInput.includes('roxo')) primaryColor = '#7c3aff';
+  else if (colorInput.includes('azul') || colorInput.includes('ciano')) primaryColor = '#22d3ee';
+  else if (colorInput.includes('verde')) primaryColor = '#10b981';
+  else if (colorInput.includes('rosa')) primaryColor = '#f472b6';
+  else if (colorInput.includes('laranja')) primaryColor = '#f59e0b';
+  
+  if (colorInput.includes('branco') || colorInput.includes('white') || colorInput === '#ffffff') {
+    deviceBg = '#f8f9fa';
+  } else if (colorInput.includes('preto') || colorInput.includes('dark')) {
+    deviceBg = '#050508';
+  }
+
+  // Se for um hex vindo dos swatches, usar direto
+  if (formData.colors?.startsWith('#')) {
+    primaryColor = formData.colors;
+    if (primaryColor === '#ffffff') deviceBg = '#f8f9fa';
+  }
+
+  const isMinimal = activeStyle === 'Minimalista';
+  const isBold = activeStyle === 'Bold';
+  const isLight = deviceBg === '#f8f9fa';
+
   return (
-    <div className="space-y-6 pt-10">
+    <div className="space-y-6 pt-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Monitor className="h-4 w-4 text-primary" />
@@ -130,30 +160,82 @@ const DevicePreview = ({ type }: { type: 'Sites/LP' | string }) => {
         </div>
       </div>
 
-      <div className="relative flex justify-center items-center py-10 bg-white/[0.02] border border-dashed border-white/10 rounded-[3rem] overflow-hidden">
+      <div className="relative flex justify-center items-center py-10 bg-white/[0.02] border border-dashed border-white/10 rounded-[3rem] overflow-hidden min-h-[450px]">
         <div className="absolute inset-0 grid-background opacity-10"></div>
         
-        <div className={`device-mockup ${activeDevice === 'desktop' ? 'w-full max-w-2xl h-[300px]' : 'w-[240px] h-[480px]'}`}>
-          <div className="p-4 space-y-4">
-            <div className="flex justify-between items-center mb-6">
-              <div className="w-16 h-4 wireframe-block"></div>
-              <div className="flex gap-2">
-                <div className="w-8 h-4 wireframe-block"></div>
-                <div className="w-8 h-4 wireframe-block"></div>
+        <div className={`device-mockup transition-all duration-700 ease-in-out shadow-2xl border-4 border-white/10 relative ${activeDevice === 'desktop' ? 'w-full max-w-2xl aspect-video rounded-t-3xl border-b-0' : 'w-[260px] h-[520px] rounded-[3rem]'}`} style={{ backgroundColor: deviceBg }}>
+          <div className="h-full flex flex-col">
+            {/* Header Device Specific */}
+            {activeDevice === 'desktop' ? (
+              <div className="h-6 bg-white/5 border-b border-white/10 flex items-center px-3 gap-1.5 shrink-0">
+                <div className="w-1.5 h-1.5 rounded-full bg-red-500/40"></div>
+                <div className="w-1.5 h-1.5 rounded-full bg-yellow-500/40"></div>
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500/40"></div>
+              </div>
+            ) : (
+              <div className="h-8 flex justify-center items-start pt-2 shrink-0">
+                <div className="w-20 h-5 bg-black rounded-full"></div>
+              </div>
+            )}
+
+            {/* Simulated Website Content */}
+            <div className={`flex-1 overflow-y-auto p-4 no-scrollbar ${isMinimal ? 'space-y-8' : 'space-y-3'}`}>
+              {/* Header Wireframe */}
+              <div className="flex justify-between items-center mb-6">
+                <div className="w-16 h-4 rounded-md" style={{ backgroundColor: primaryColor, opacity: 0.3 }}></div>
+                <div className="flex gap-3">
+                  <div className="w-8 h-2 bg-white/10 rounded-full"></div>
+                  <div className="w-8 h-2 bg-white/10 rounded-full"></div>
+                </div>
+              </div>
+
+              {/* Dynamic Content Sections */}
+              {sections.length > 0 ? (
+                sections.map((sec, idx) => (
+                  <div 
+                    key={idx}
+                    className={`w-full rounded-2xl border flex flex-col items-center justify-center p-4 transition-all duration-500 hover:scale-[1.02] ${isBold ? 'min-h-[100px]' : 'min-h-[60px]'}`}
+                    style={{ 
+                      backgroundColor: primaryColor, 
+                      opacity: isMinimal ? 0.05 + (idx * 0.02) : 0.12 + (idx * 0.03),
+                      borderColor: primaryColor,
+                      borderWidth: isBold ? '2px' : '1px'
+                    }}
+                  >
+                    <span className={`text-[8px] font-black uppercase tracking-widest ${isLight ? 'text-black/60' : 'text-white/50'}`}>
+                      {sec}
+                    </span>
+                    <div className="w-1/2 h-1 mt-2 rounded-full bg-current opacity-10"></div>
+                    {isBold && <div className="w-1/3 h-1 mt-1 rounded-full bg-current opacity-10"></div>}
+                  </div>
+                ))
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full opacity-20 space-y-4">
+                  <Rocket className="h-10 w-10 text-white animate-bounce" />
+                  <p className="text-[10px] font-black uppercase tracking-widest">Aguardando Estrutura</p>
+                </div>
+              )}
+
+              {/* Footer Mock */}
+              <div className="mt-12 py-6 border-t border-white/5 space-y-3">
+                <div className="w-full h-3 bg-white/5 rounded-full"></div>
+                <div className="w-2/3 h-3 bg-white/5 rounded-full"></div>
               </div>
             </div>
-            <div className="space-y-2">
-              <div className="w-3/4 h-8 wireframe-block mx-auto"></div>
-              <div className="w-1/2 h-4 wireframe-block mx-auto"></div>
-            </div>
-            <div className={`w-full wireframe-block ${activeDevice === 'desktop' ? 'h-32' : 'h-48'}`}></div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="h-12 wireframe-block"></div>
-              <div className="h-12 wireframe-block"></div>
-            </div>
-            <div className="w-full h-10 bg-primary/20 border border-primary/30 rounded-lg animate-pulse mt-4"></div>
+
+            {/* Bottom UI Specific */}
+            {activeDevice === 'mobile' && (
+              <div className="h-6 flex justify-center items-center shrink-0">
+                <div className="w-16 h-1 bg-white/20 rounded-full mb-1"></div>
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Notebook Base */}
+        {activeDevice === 'desktop' && (
+          <div className="absolute bottom-[20px] left-1/2 -translate-x-1/2 w-full max-w-2xl h-4 bg-[#1a1a2e] rounded-b-2xl border-x-4 border-b-4 border-white/10 shadow-2xl"></div>
+        )}
       </div>
     </div>
   );
@@ -696,7 +778,7 @@ export default function PromptsPage() {
                       </Card>
                     </div>
 
-                    <DevicePreview type={activeTemplate.title} />
+                    <DevicePreview type={activeTemplate.title} formData={formData} />
 
                     <div className="space-y-6">
                       <div className="flex items-center gap-3 px-2">
