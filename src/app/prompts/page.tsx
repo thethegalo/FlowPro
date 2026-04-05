@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
@@ -6,6 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
   Terminal, 
   Copy, 
@@ -29,12 +38,47 @@ import {
   Rocket,
   Smartphone,
   Monitor,
-  RotateCcw
+  RotateCcw,
+  CheckCircle2
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { useToast } from '@/hooks/use-toast';
 import { generateMasterPrompt } from '@/ai/flows/generate-master-prompt';
+
+// --- CONSTANTES DE OPÇÕES ---
+
+const NICHE_OPTIONS = [
+  "Educação/Cursos", "Saúde & Bem-estar", "Moda & Beleza", "Tecnologia/SaaS", 
+  "Finanças", "Gastronomia", "Esporte/Fitness", "E-commerce", "Imóveis", 
+  "Marketing/Agências", "Jurídico", "Outro"
+];
+
+const GOAL_OPTIONS = ["Capturar Leads", "Vender Direto", "Agendar Consulta", "Mostrar Portfólio", "Divulgar Evento"];
+
+const STYLE_OPTIONS = ["Minimalista", "Moderno", "Corporativo", "Futurista", "Elegante", "Bold", "Natural"];
+
+const COLOR_SWATCHES = [
+  { name: "Deep Purple", hex: "#7c3aff" },
+  { name: "Cyan Neon", hex: "#22d3ee" },
+  { name: "Soft Lilac", hex: "#a855f7" },
+  { name: "Midnight Blue", hex: "#1e1b4b" },
+  { name: "Electric Green", hex: "#10b981" },
+  { name: "Sunset Orange", hex: "#f59e0b" },
+  { name: "Rose Pink", hex: "#f472b6" },
+  { name: "Classic White", hex: "#ffffff" }
+];
+
+const TONE_OPTIONS = [
+  { label: "Profissional", emoji: "👔", id: "prof" },
+  { label: "Dinâmico", emoji: "⚡", id: "dyn" },
+  { label: "Empático", emoji: "🤝", id: "emp" },
+  { label: "Luxuoso", emoji: "💎", id: "lux" },
+  { label: "Descontraído", emoji: "🎯", id: "chill" },
+  { label: "Urgente", emoji: "🔥", id: "urg" }
+];
+
+const SECTION_OPTIONS = ["Hero", "Benefícios", "Depoimentos", "Preços", "FAQ", "CTA Final", "Sobre", "Portfólio", "Contato", "Vídeo"];
 
 // --- COMPONENTES AUXILIARES ---
 
@@ -58,7 +102,7 @@ const AnimatedCounter = ({ value }: { value: number }) => {
   return <span>{count}</span>;
 };
 
-const DevicePreview = ({ type }: { type: 'sites' | string }) => {
+const DevicePreview = ({ type }: { type: 'Sites/LP' | string }) => {
   const [activeDevice, setActiveDevice] = useState<'desktop' | 'mobile'>('desktop');
 
   if (type !== 'Sites/LP') return null;
@@ -91,7 +135,6 @@ const DevicePreview = ({ type }: { type: 'sites' | string }) => {
         
         <div className={`device-mockup ${activeDevice === 'desktop' ? 'w-full max-w-2xl h-[300px]' : 'w-[240px] h-[480px]'}`}>
           <div className="p-4 space-y-4">
-            {/* Nav */}
             <div className="flex justify-between items-center mb-6">
               <div className="w-16 h-4 wireframe-block"></div>
               <div className="flex gap-2">
@@ -99,19 +142,15 @@ const DevicePreview = ({ type }: { type: 'sites' | string }) => {
                 <div className="w-8 h-4 wireframe-block"></div>
               </div>
             </div>
-            {/* Hero */}
             <div className="space-y-2">
               <div className="w-3/4 h-8 wireframe-block mx-auto"></div>
               <div className="w-1/2 h-4 wireframe-block mx-auto"></div>
             </div>
-            {/* Image Placeholder */}
             <div className={`w-full wireframe-block ${activeDevice === 'desktop' ? 'h-32' : 'h-48'}`}></div>
-            {/* Content Blocks */}
             <div className="grid grid-cols-2 gap-2">
               <div className="h-12 wireframe-block"></div>
               <div className="h-12 wireframe-block"></div>
             </div>
-            {/* CTA */}
             <div className="w-full h-10 bg-primary/20 border border-primary/30 rounded-lg animate-pulse mt-4"></div>
           </div>
         </div>
@@ -128,7 +167,7 @@ const PROMPT_TEMPLATES = [
     title: 'Sites/LP',
     icon: <Globe className="h-4 w-4" />,
     description: 'Comando técnico para Lovable/Bolt criar sua página de vendas.',
-    fields: ['product', 'niche', 'style', 'colors'],
+    fields: ['product', 'niche', 'goal', 'style', 'colors', 'target_audience', 'tone', 'sections', 'differentiator', 'extra_info'],
   },
   {
     id: 'outreach',
@@ -150,58 +189,33 @@ const PROMPT_TEMPLATES = [
     icon: <Palette className="h-4 w-4" />,
     description: 'Instruções visuais para Midjourney e DALL-E 3.',
     fields: ['businessName', 'style', 'colors'],
-  },
-  {
-    id: 'offer',
-    title: 'Criação de Oferta',
-    icon: <Rocket className="h-4 w-4" />,
-    description: 'Transforme seu serviço em um pacote impossível de recusar.',
-    fields: ['niche', 'mainProblem', 'serviceType'],
-  },
-  {
-    id: 'followup',
-    title: 'Follow-up Estratégico',
-    icon: <History className="h-4 w-4" />,
-    description: 'Comando para recuperar leads que pararam de responder.',
-    fields: ['businessName', 'context'],
-  },
-  {
-    id: 'custom',
-    title: 'Prompt Customizado',
-    icon: <Settings2 className="h-4 w-4" />,
-    description: 'Crie um comando mestre para qualquer outra necessidade.',
-    fields: ['niche', 'serviceType', 'goal', 'style'],
   }
 ];
 
 const FIELD_LABELS: Record<string, string> = {
-  niche: 'Nicho do Negócio',
-  serviceType: 'Tipo de Serviço',
-  goal: 'Qual seu Objetivo?',
-  style: 'Estilo Visual (Ex: High-Tech, Clean)',
   product: 'O que você vende?',
+  niche: 'Nicho do negócio',
+  goal: 'Objetivo da página',
+  style: 'Estilo visual',
+  colors: 'Paleta de cores',
+  target_audience: 'Público-alvo',
+  tone: 'Tom de voz',
+  sections: 'Seções do site',
+  differentiator: 'Diferencial da marca',
+  extra_info: 'Informações extras',
   businessName: 'Nome da Empresa',
-  colors: 'Cores (Ex: Roxo e Preto)',
-  tone: 'Tom de Voz (Ex: Agressivo, Educado)',
   price: 'Preço da Oferta',
-  objection: 'Objeção do Cliente (Ex: Tá caro)',
-  context: 'Onde a conversa parou?',
-  mainProblem: 'Maior Dor do Cliente'
+  objection: 'Objeção do Cliente'
 };
 
 const FIELD_PLACEHOLDERS: Record<string, string> = {
-  niche: 'Ex: Clínicas de Estética, E-commerce...',
-  serviceType: 'Ex: Gestão de Tráfego, Automação...',
-  goal: 'Ex: Criar um carrossel de 7 slides...',
-  style: 'Ex: Minimalista Dark, Estilo Apple...',
   product: 'Ex: Consultoria de Vendas Flow',
+  target_audience: 'Descreva seu cliente ideal...',
+  differentiator: 'O que te diferencia dos concorrentes?',
+  extra_info: 'Qualquer detalhe adicional...',
   businessName: 'Ex: FlowPro Systems',
-  colors: 'Ex: Azul Marinho e Branco',
-  tone: 'Ex: Persuasivo mas sem parecer spam',
   price: 'Ex: 12x de 197,00',
-  objection: 'Ex: Ele disse que não tem tempo agora',
-  context: 'Ex: Visualizou a proposta e sumiu há 2 dias',
-  mainProblem: 'Ex: Gastam muito em anúncio e não vendem'
+  objection: 'Ex: Ele disse que não tem tempo agora'
 };
 
 const SUGGESTED_TOOLS: Record<string, { name: string, url: string }[]> = {
@@ -220,14 +234,6 @@ const SUGGESTED_TOOLS: Record<string, { name: string, url: string }[]> = {
   closing: [
     { name: 'IA Mentor', url: '/mentor' },
     { name: 'ChatGPT', url: 'https://chatgpt.com' }
-  ],
-  offer: [
-    { name: 'ChatGPT', url: 'https://chatgpt.com' },
-    { name: 'Claude', url: 'https://claude.ai' }
-  ],
-  custom: [
-    { name: 'ChatGPT', url: 'https://chatgpt.com' },
-    { name: 'Claude', url: 'https://claude.ai' }
   ]
 };
 
@@ -235,7 +241,7 @@ const SUGGESTED_TOOLS: Record<string, { name: string, url: string }[]> = {
 
 export default function PromptsPage() {
   const [activeTemplate, setActiveTemplate] = useState(PROMPT_TEMPLATES[0]);
-  const [formData, setFormData] = useState<Record<string, string>>({});
+  const [formData, setFormData] = useState<Record<string, any>>({});
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -247,7 +253,6 @@ export default function PromptsPage() {
   const createParticles = (e: React.MouseEvent) => {
     const btn = mainBtnRef.current;
     if (!btn) return;
-    const rect = btn.getBoundingClientRect();
     const x = e.clientX;
     const y = e.clientY;
 
@@ -273,7 +278,6 @@ export default function PromptsPage() {
     setGeneratedPrompt('');
     setProgress(0);
 
-    // Simulação de progresso neural (1.2s)
     const interval = setInterval(() => {
       setProgress(prev => {
         if (prev >= 100) {
@@ -285,9 +289,16 @@ export default function PromptsPage() {
     }, 60);
 
     try {
+      // Transformar arrays do formulário em strings para a API
+      const processedData: Record<string, string> = {};
+      Object.keys(formData).forEach(key => {
+        const val = formData[key];
+        processedData[key] = Array.isArray(val) ? val.join(", ") : String(val);
+      });
+
       const res = await generateMasterPrompt({
         category: activeTemplate.title,
-        variables: formData,
+        variables: processedData,
         complexity: complexity
       });
       setGeneratedPrompt(res.prompt);
@@ -305,15 +316,24 @@ export default function PromptsPage() {
     if (!generatedPrompt) return;
     navigator.clipboard.writeText(generatedPrompt);
     setCopied(true);
-    
-    // Custom Toast Animation
     toast({ 
       title: "Pronto para o Flow!", 
       description: "Comando copiado para sua área de transferência.",
       className: "animate-in slide-in-from-right-full duration-500 border-primary/50"
     });
-    
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const toggleMultiSelect = (field: string, value: string) => {
+    const current = formData[field] || [];
+    const updated = current.includes(value)
+      ? current.filter((v: string) => v !== value)
+      : [...current, value];
+    setFormData({ ...formData, [field]: updated });
+  };
+
+  const updateField = (field: string, value: any) => {
+    setFormData({ ...formData, [field]: value });
   };
 
   const handleTemplateChange = (template: typeof PROMPT_TEMPLATES[0]) => {
@@ -323,7 +343,7 @@ export default function PromptsPage() {
     setProgress(0);
   };
 
-  const currentTools = SUGGESTED_TOOLS[activeTemplate.id] || SUGGESTED_TOOLS.custom;
+  const currentTools = SUGGESTED_TOOLS[activeTemplate.id] || SUGGESTED_TOOLS.outreach;
 
   return (
     <SidebarProvider>
@@ -370,7 +390,6 @@ export default function PromptsPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
-              {/* Navegação de Objetivos */}
               <div className="lg:col-span-4 space-y-4">
                 <p className="text-[10px] font-black uppercase tracking-widest text-primary/60 px-2 font-headline">Escolha seu Objetivo</p>
                 <div className="flex overflow-x-auto lg:grid gap-2 no-scrollbar pb-4 lg:pb-0 px-1 md:px-0">
@@ -403,32 +422,186 @@ export default function PromptsPage() {
                 </div>
               </div>
 
-              {/* Editor de Variáveis */}
               <div className="lg:col-span-8 space-y-8">
-                <Card className="glass-card border-white/10 rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden">
+                <Card className="glass-card border-white/10 rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden bg-[#0e0e1a]">
                   <CardHeader className="bg-white/5 border-b border-white/5 p-6 md:p-8">
                     <CardTitle className="text-[10px] md:text-xs font-black uppercase tracking-widest italic flex items-center gap-2 leading-tight font-headline">
                       <Settings2 className="h-4 w-4 text-primary shrink-0" /> {activeTemplate.title}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-6 md:p-10 space-y-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                      {activeTemplate.fields.map((field) => (
-                        <div key={field} className="space-y-2 group input-glow">
-                          <Label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50 group-focus-within:opacity-100 group-focus-within:text-primary transition-all">
-                            {FIELD_LABELS[field] || field}
-                          </Label>
-                          <Input 
-                            placeholder={FIELD_PLACEHOLDERS[field] || 'Preencha...'}
-                            className="bg-white/5 border-white/10 h-12 md:h-14 rounded-2xl focus-visible:ring-primary font-medium text-sm transition-all focus:shadow-[0_0_15px_rgba(124,58,255,0.2)]"
-                            value={formData[field] || ''}
-                            onChange={(e) => setFormData({...formData, [field]: e.target.value})}
-                          />
+                    
+                    <div className="grid grid-cols-1 gap-8">
+                      {/* Campo: O que você vende */}
+                      <div className="space-y-3 group input-glow">
+                        <Label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50 group-focus-within:opacity-100 group-focus-within:text-primary transition-all">
+                          {FIELD_LABELS.product}
+                        </Label>
+                        <Input 
+                          placeholder={FIELD_PLACEHOLDERS.product}
+                          className="bg-white/5 border-white/10 h-12 md:h-14 rounded-2xl focus-visible:ring-primary font-medium text-sm transition-all"
+                          value={formData.product || ''}
+                          onChange={(e) => updateField('product', e.target.value)}
+                        />
+                      </div>
+
+                      {/* Lógica condicional para SITES/LP */}
+                      {activeTemplate.id === 'sites' ? (
+                        <div className="space-y-10">
+                          {/* Nicho - Select */}
+                          <div className="space-y-3">
+                            <Label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50">Nicho do Negócio</Label>
+                            <Select onValueChange={(val) => updateField('niche', val)} value={formData.niche}>
+                              <SelectTrigger className="bg-white/5 border-white/10 h-14 rounded-2xl focus:ring-primary text-sm font-medium">
+                                <SelectValue placeholder="Selecione o Nicho" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-[#0e0e1a] border-white/10">
+                                {NICHE_OPTIONS.map(opt => (
+                                  <SelectItem key={opt} value={opt} className="text-xs uppercase font-bold">{opt}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {/* Objetivo - Chips */}
+                          <div className="space-y-3">
+                            <Label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50">Objetivo da Página</Label>
+                            <div className="flex flex-wrap gap-2">
+                              {GOAL_OPTIONS.map(opt => (
+                                <button
+                                  key={opt}
+                                  onClick={() => updateField('goal', opt)}
+                                  className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${formData.goal === opt ? 'bg-primary/20 border-primary text-white' : 'bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10'}`}
+                                >
+                                  {opt}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Estilo Visual - Chips */}
+                          <div className="space-y-3">
+                            <Label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50">Estilo Visual</Label>
+                            <div className="flex flex-wrap gap-2">
+                              {STYLE_OPTIONS.map(opt => (
+                                <button
+                                  key={opt}
+                                  onClick={() => updateField('style', opt)}
+                                  className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${formData.style === opt ? 'bg-primary/20 border-primary text-white' : 'bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10'}`}
+                                >
+                                  {opt}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Paleta de Cores - Swatches */}
+                          <div className="space-y-4">
+                            <Label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50">Paleta de Cores</Label>
+                            <div className="flex flex-wrap gap-3">
+                              {COLOR_SWATCHES.map(swatch => (
+                                <button
+                                  key={swatch.name}
+                                  onClick={() => updateField('colors', swatch.hex)}
+                                  className={`h-8 w-8 rounded-full border-2 transition-all hover:scale-110 ${formData.colors === swatch.hex ? 'border-white scale-110 shadow-[0_0_10px_rgba(255,255,255,0.3)]' : 'border-transparent'}`}
+                                  style={{ backgroundColor: swatch.hex }}
+                                  title={swatch.name}
+                                />
+                              ))}
+                            </div>
+                            <Input 
+                              placeholder="Ou digite cores personalizadas..."
+                              className="bg-white/5 border-white/10 h-12 rounded-xl text-xs"
+                              value={formData.colors || ''}
+                              onChange={(e) => updateField('colors', e.target.value)}
+                            />
+                          </div>
+
+                          {/* Público Alvo */}
+                          <div className="space-y-3">
+                            <Label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50">Público-Alvo</Label>
+                            <Input 
+                              placeholder={FIELD_PLACEHOLDERS.target_audience}
+                              className="bg-white/5 border-white/10 h-14 rounded-2xl focus-visible:ring-primary font-medium text-sm"
+                              value={formData.target_audience || ''}
+                              onChange={(e) => updateField('target_audience', e.target.value)}
+                            />
+                          </div>
+
+                          {/* Tom de Voz - Cards */}
+                          <div className="space-y-3">
+                            <Label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50">Tom de Voz</Label>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                              {TONE_OPTIONS.map(opt => (
+                                <button
+                                  key={opt.id}
+                                  onClick={() => updateField('tone', opt.label)}
+                                  className={`p-3 rounded-2xl border text-left flex items-center gap-3 transition-all ${formData.tone === opt.label ? 'bg-primary/20 border-primary' : 'bg-white/5 border-white/10'}`}
+                                >
+                                  <span className="text-lg">{opt.emoji}</span>
+                                  <span className="text-[9px] font-black uppercase tracking-widest text-white/80">{opt.label}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Seções - Multi Chips */}
+                          <div className="space-y-3">
+                            <Label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50">Seções do Site (Múltipla)</Label>
+                            <div className="flex flex-wrap gap-2">
+                              {SECTION_OPTIONS.map(opt => (
+                                <button
+                                  key={opt}
+                                  onClick={() => toggleMultiSelect('sections', opt)}
+                                  className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${formData.sections?.includes(opt) ? 'bg-primary/20 border-primary text-white' : 'bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10'}`}
+                                >
+                                  {opt}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Diferencial */}
+                          <div className="space-y-3">
+                            <Label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50">Diferencial da Marca</Label>
+                            <Input 
+                              placeholder={FIELD_PLACEHOLDERS.differentiator}
+                              className="bg-white/5 border-white/10 h-14 rounded-2xl focus-visible:ring-primary font-medium text-sm"
+                              value={formData.differentiator || ''}
+                              onChange={(e) => updateField('differentiator', e.target.value)}
+                            />
+                          </div>
+
+                          {/* Info Extras */}
+                          <div className="space-y-3">
+                            <Label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50">Informações Extras</Label>
+                            <Textarea 
+                              placeholder={FIELD_PLACEHOLDERS.extra_info}
+                              className="bg-white/5 border-white/10 rounded-2xl min-h-[100px] focus-visible:ring-primary font-medium text-sm"
+                              value={formData.extra_info || ''}
+                              onChange={(e) => updateField('extra_info', e.target.value)}
+                            />
+                          </div>
                         </div>
-                      ))}
+                      ) : (
+                        // Renderização padrão para outros templates
+                        activeTemplate.fields.filter(f => f !== 'product').map((field) => (
+                          <div key={field} className="space-y-3 group input-glow">
+                            <Label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50 group-focus-within:opacity-100 group-focus-within:text-primary transition-all">
+                              {FIELD_LABELS[field] || field}
+                            </Label>
+                            <Input 
+                              placeholder={FIELD_PLACEHOLDERS[field] || 'Preencha...'}
+                              className="bg-white/5 border-white/10 h-12 md:h-14 rounded-2xl focus-visible:ring-primary font-medium text-sm transition-all"
+                              value={formData[field] || ''}
+                              onChange={(e) => updateField(field, e.target.value)}
+                            />
+                          </div>
+                        ))
+                      )}
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="space-y-4 pt-6">
                       {isLoading && (
                         <div className="space-y-2 animate-in fade-in duration-500">
                           <div className="flex justify-between text-[8px] font-black uppercase text-primary">
@@ -447,7 +620,7 @@ export default function PromptsPage() {
                       <Button 
                         ref={mainBtnRef}
                         onClick={handleGenerate}
-                        disabled={isLoading || Object.values(formData).filter(v => v.trim()).length === 0}
+                        disabled={isLoading || !formData.product}
                         className="w-full h-14 md:h-20 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] md:text-xs shadow-xl shadow-primary/20 transition-all active:scale-[0.98] group relative overflow-hidden"
                       >
                         {isLoading ? (
@@ -465,7 +638,6 @@ export default function PromptsPage() {
                   </CardContent>
                 </Card>
 
-                {/* Exibição do Resultado */}
                 {generatedPrompt && (
                   <div className="space-y-8 md:space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
                     <div className="relative p-[2px] rounded-[2rem] md:rounded-[3rem] overflow-hidden bg-gradient-to-br from-primary via-accent/50 to-primary/30 shadow-2xl shadow-primary/20">
@@ -474,7 +646,7 @@ export default function PromptsPage() {
                         <CardHeader className="flex flex-row items-center justify-between p-6 md:p-8 border-b border-white/5">
                           <div className="flex items-center gap-3">
                             <div className="h-8 w-8 md:h-10 md:w-10 rounded-xl md:rounded-2xl bg-primary/20 flex items-center justify-center text-primary border border-primary/20">
-                              <ShieldCheck className="h-5 w-5 md:h-6 md:w-6" />
+                              <ShieldCheck className="h-5 w-5 text-green-500" />
                             </div>
                             <div>
                               <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-primary leading-none mb-1 font-headline">Comando Gerado</p>
@@ -524,10 +696,8 @@ export default function PromptsPage() {
                       </Card>
                     </div>
 
-                    {/* Preview de Dispositivo (Apenas Sites) */}
                     <DevicePreview type={activeTemplate.title} />
 
-                    {/* Guia de Próximos Passos */}
                     <div className="space-y-6">
                       <div className="flex items-center gap-3 px-2">
                         <MousePointerClick className="h-4 w-4 md:h-5 md:w-5 text-primary" />
@@ -555,13 +725,6 @@ export default function PromptsPage() {
                             </CardContent>
                           </Card>
                         ))}
-                      </div>
-
-                      <div className="p-5 md:p-6 rounded-2xl md:rounded-3xl bg-primary/5 border border-dashed border-primary/20 flex items-start gap-4">
-                        <Info className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0 mt-0.5" />
-                        <p className="text-[9px] md:text-[10px] font-bold text-white/60 leading-relaxed uppercase font-body">
-                          DICA PRO: Se estiver usando para <span className="text-white">SITES</span>, cole o comando na <span className="text-white">Lovable</span> e peça para ela criar a estrutura visual primeiro.
-                        </p>
                       </div>
                     </div>
                   </div>
