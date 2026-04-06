@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -44,6 +43,7 @@ import {
 import { Label } from "@/components/ui/label";
 
 const STATES = ["SP", "RJ", "MG", "PR", "SC", "RS", "BA", "CE", "PE", "GO"];
+const ADMIN_EMAIL = "thethegalo@gmail.com";
 
 export default function LeadsPage() {
   const { user } = useUser();
@@ -77,8 +77,8 @@ export default function LeadsPage() {
 
   const isProMember = useMemo(() => {
     const p = userData?.plan;
-    return p === 'vitalicio' || p === 'mensal' || p === 'trimestral';
-  }, [userData]);
+    return p === 'vitalicio' || p === 'mensal' || p === 'trimestral' || user?.email === ADMIN_EMAIL;
+  }, [userData, user]);
 
   const handleSearch = async () => {
     if (!niche || !state) {
@@ -149,7 +149,7 @@ export default function LeadsPage() {
       toast({ title: "Lead Cadastrado!", description: "Dados salvos na sua base neural." });
       setManualLead({ name: '', email: '', phone: '', businessType: '' });
       setIsDialogOpen(false);
-    } catch (e) {
+    } catch (error) {
       toast({ variant: "destructive", title: "Erro", description: "Não foi possível salvar o lead manual." });
     } finally {
       setIsManualSaving(false);
@@ -273,7 +273,7 @@ export default function LeadsPage() {
               </Dialog>
 
               <Badge className={`bg-primary/20 text-primary border-primary/30 text-[8px] font-black uppercase px-3 py-1`}>
-                {userData?.plan?.toUpperCase() || 'MODO FREE'}
+                {user?.email === ADMIN_EMAIL ? 'VITALÍCIO' : (userData?.plan?.toUpperCase() || 'MODO FREE')}
               </Badge>
             </div>
           </header>

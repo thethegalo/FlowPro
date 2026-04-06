@@ -103,21 +103,21 @@ export default function Dashboard() {
   }, [db, user]);
   const { data: userData, isLoading: isUserDocLoading } = useDoc(userDocRef);
 
+  const isSpecialUser = useMemo(() => user?.email === ADMIN_EMAIL, [user]);
+
   const displayName = useMemo(() => {
-    if (user?.email === ADMIN_EMAIL) return 'Lucas';
+    if (isSpecialUser) return 'Lucas';
     if (userData?.name) return userData.name;
     if (user?.displayName) return user.displayName;
     if (user?.email) return user.email.split('@')[0];
     return 'Usuário';
-  }, [userData?.name, user?.displayName, user?.email]);
+  }, [userData?.name, user?.displayName, user?.email, isSpecialUser]);
 
   const subQuery = useMemoFirebase(() => {
     if (!db || !user) return null;
     return query(collection(db, 'users', user.uid, 'subscriptions'));
   }, [db, user]);
   const { data: subData } = useCollection(subQuery);
-
-  const isSpecialUser = user?.email === ADMIN_EMAIL;
 
   const isProMember = useMemo(() => {
     const hasActiveSub = subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime') && sub.status === 'active');
@@ -251,7 +251,7 @@ export default function Dashboard() {
               </h2>
             </div>
             <Badge variant="outline" className={`${isProMember ? 'bg-purple-500/10 border-purple-500/30 text-purple-400' : 'bg-white/5'} text-[8px] font-black uppercase px-3 py-1 relative z-50`}>
-              {userData?.plan?.toUpperCase() || 'ACESSO LIMITADO'}
+              {isSpecialUser ? 'VITALÍCIO' : (userData?.plan?.toUpperCase() || 'ACESSO LIMITADO')}
             </Badge>
           </header>
 
@@ -266,7 +266,7 @@ export default function Dashboard() {
               </div>
               <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 max-w-xs">
                 <p className="text-[10px] font-bold text-white/80 leading-relaxed uppercase">
-                  {!isProMember ? "Assine um plano para liberar o Radar Neural completo." : "Modo de operação ativo. Acelere para a escala!"}
+                  {isSpecialUser ? "Modo de operação ativa. Acelere para a escala!" : !isProMember ? "Assine um plano para liberar o Radar Neural completo." : "Modo de operação ativo. Acelere para a escala!"}
                 </p>
               </div>
             </div>

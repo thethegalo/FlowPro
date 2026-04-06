@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -49,6 +48,8 @@ export function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
 
+  const isAdmin = React.useMemo(() => user?.email === ADMIN_EMAIL, [user]);
+
   const userDocRef = useMemoFirebase(() => {
     if (!db || !user) return null;
     return doc(db, 'users', user.uid);
@@ -56,12 +57,12 @@ export function AppSidebar() {
   const { data: userData } = useDoc(userDocRef);
 
   const formattedName = React.useMemo(() => {
-    if (user?.email === ADMIN_EMAIL) return 'Lucas';
+    if (isAdmin) return 'Lucas';
     if (userData?.name) return userData.name;
     if (user?.displayName) return user.displayName;
     if (user?.email) return user.email.split('@')[0];
     return 'Usuário';
-  }, [userData?.name, user?.displayName, user?.email]);
+  }, [userData?.name, user?.displayName, user?.email, isAdmin]);
 
   const handleSignOut = () => {
     signOut(auth).then(() => router.push('/'));
@@ -81,7 +82,6 @@ export function AppSidebar() {
     { title: "IA Mentor", icon: MessageSquare, url: "/mentor" },
   ];
 
-  const isAdmin = user?.email === ADMIN_EMAIL;
   const isApproved = userData?.status === 'approved' || isAdmin;
 
   return (
@@ -163,7 +163,7 @@ export function AppSidebar() {
                 {formattedName}
               </p>
               <p className="text-[8px] font-bold uppercase text-muted-foreground truncate">
-                PLANO: {userData?.plan ? (userData.plan.toUpperCase() === 'NENHUM' ? 'BLOQUEADO' : userData.plan.toUpperCase()) : 'BUSCANDO...'}
+                PLANO: {isAdmin ? 'VITALÍCIO' : (userData?.plan ? (userData.plan.toUpperCase() === 'NENHUM' ? 'BLOQUEADO' : userData.plan.toUpperCase()) : 'BUSCANDO...')}
               </p>
             </div>
           </div>
