@@ -1,11 +1,10 @@
-
 "use client";
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   Search, 
@@ -17,26 +16,35 @@ import {
   Phone,
   Download,
   Send,
-  History
+  History,
+  Plus,
+  Mail,
+  Briefcase,
+  UserPlus
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { generateLeadMessage } from '@/ai/flows/generate-lead-message';
-import { generateFollowUp } from '@/ai/flows/generate-follow-up';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
-import { doc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
+import { doc, updateDoc, increment, serverTimestamp, collection, addDoc } from 'firebase/firestore';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
-import { useRouter } from 'next/navigation';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 const STATES = ["SP", "RJ", "MG", "PR", "SC", "RS", "BA", "CE", "PE", "GO"];
-const ADMIN_EMAIL = "thethegalo@gmail.com";
 
 export default function LeadsPage() {
   const { user } = useUser();
   const db = useFirestore();
   const { toast } = useToast();
-  const router = useRouter();
   
   const [loading, setLoading] = useState(false);
   const [leads, setLeads] = useState<any[]>([]);
@@ -46,83 +54,31 @@ export default function LeadsPage() {
   const [generatingMsg, setGeneratingMsg] = useState<string | null>(null);
   const [approachedLeads, setApproachedLeads] = useState<string[]>([]);
 
+  // Manual Capture Form State
+  const [manualLead, setManualLead] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    businessType: ''
+  });
+  const [isSavingManual, setIsManualSaving] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const userDocRef = useMemoFirebase(() => {
     if (!db || !user) return null;
     return doc(db, 'users', user.uid);
   }, [db, user]);
   const { data: userData } = useDoc(userDocRef);
 
-  const isUnlimited = useMemo(() => {
-    return true; // acesso liberado
-  }, [user, userData]);
-
   const isProMember = useMemo(() => {
-    return isUnlimited || userData?.plan === 'mensal' || userData?.plan === 'trimestral';
-  }, [isUnlimited, userData]);
-
-  const checkLimitAndTrack = async (type: 'leadsUsed' | 'messagesUsed', limitValue: number) => {
-    if (isUnlimited) return true;
-    if (!db || !user || !userData) return false;
-    
-    if (isUnlimited) return true;
-
-    if (userData.plan === 'nenhum') {
-      toast({ 
-        variant: "destructive", 
-        title: "Plano Necessário", 
-        description: "Assine um plano para liberar o Radar de Leads." 
-      });
-      router.push('/paywall');
-      return false;
-    }
-
-    if (userData.plan === 'mensal' || userData.plan === 'trimestral') {
-      const lastAction = userData.lastActionAt;
-      const today = new Date().toDateString();
-      const lastDate = lastAction ? (lastAction.toDate ? lastAction.toDate().toDateString() : new Date(lastAction).toDateString()) : '';
-      
-      const isNewDay = today !== lastDate;
-      const currentUsage = isNewDay ? 0 : (userData.dailyUsage?.[type] || 0);
-
-      if (currentUsage >= limitValue) {
-        toast({ 
-          variant: "destructive", 
-          title: "Limite Atingido", 
-          description: `Você atingiu o limite diário de ${type === 'leadsUsed' ? 'leads' : 'mensagens'} do seu plano.` 
-        });
-        return false;
-      }
-
-      try {
-        const userRef = doc(db, 'users', user.uid);
-        const updates: any = {
-          lastActionAt: serverTimestamp(),
-          [`dailyUsage.${type}`]: isNewDay ? 1 : increment(1),
-        };
-        
-        if (isNewDay) {
-          const otherType = type === 'leadsUsed' ? 'messagesUsed' : 'leadsUsed';
-          updates[`dailyUsage.${otherType}`] = 0;
-        }
-
-        await updateDoc(userRef, updates);
-        return true;
-      } catch (e) {
-        return true;
-      }
-    }
-
-    return true;
-  };
+    return userData?.plan === 'vitalicio' || userData?.plan === 'mensal' || userData?.plan === 'trimestral';
+  }, [userData]);
 
   const handleSearch = async () => {
     if (!niche || !state) {
       toast({ variant: "destructive", title: "Campos Obrigatórios", description: "Por favor, digite o nicho e selecione o estado." });
       return;
     }
-
-    const canProceed = await checkLimitAndTrack('leadsUsed', 20);
-    if (!canProceed) return;
     
     setLoading(true);
     setLeads([]);
@@ -148,6 +104,43 @@ export default function LeadsPage() {
     }
   };
 
+  const handleSaveLead = async (lead: any) => {
+    if (!db || !user) return;
+    
+    try {
+      await addDoc(collection(db, 'users', user.uid, 'capturedLeads'), {
+        ...lead,
+        capturedAt: serverTimestamp(),
+        source: 'radar'
+      });
+      toast({ title: "Lead Salvo!", description: "Adicionado à sua base neural." });
+    } catch (e) {
+      toast({ variant: "destructive", title: "Erro ao salvar", description: "Tente novamente." });
+    }
+  };
+
+  const handleManualSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!db || !user) return;
+    
+    setIsManualSaving(true);
+    try {
+      await addDoc(collection(db, 'users', user.uid, 'capturedLeads'), {
+        ...manualLead,
+        capturedAt: serverTimestamp(),
+        source: 'manual'
+      });
+      
+      toast({ title: "Lead Cadastrado!", description: "Dados salvos com sucesso." });
+      setManualLead({ name: '', email: '', phone: '', businessType: '' });
+      setIsDialogOpen(false);
+    } catch (e) {
+      toast({ variant: "destructive", title: "Erro", description: "Não foi possível salvar o lead." });
+    } finally {
+      setIsManualSaving(false);
+    }
+  };
+
   const handleWhatsApp = (phone: string, message?: string) => {
     if (!phone || phone === 'Telefone não listado') {
       toast({ variant: "destructive", title: "Ops!", description: "Contato não disponível." });
@@ -161,19 +154,16 @@ export default function LeadsPage() {
   };
 
   const handleGenMessage = async (lead: any) => {
-    const canProceed = await checkLimitAndTrack('messagesUsed', 10);
-    if (!canProceed) return;
-
     setGeneratingMsg(lead.id);
     try {
       const res = await generateLeadMessage({
         businessName: lead.name,
-        businessType: lead.type,
-        city: lead.city
+        businessType: lead.type || lead.businessType,
+        city: lead.city || 'Sua região'
       });
       
       handleWhatsApp(lead.phone, res.message);
-      toast({ title: "WhatsApp Aberto!", description: "Mensagem enviada para o aplicativo." });
+      toast({ title: "WhatsApp Aberto!", description: "Mensagem personalizada gerada." });
       
       if (!approachedLeads.includes(lead.id)) {
         setApproachedLeads(prev => [...prev, lead.id]);
@@ -185,96 +175,115 @@ export default function LeadsPage() {
     }
   };
 
-  const handleFollowUp = async (lead: any) => {
-    const canProceed = await checkLimitAndTrack('messagesUsed', 10);
-    if (!canProceed) return;
-
-    setGeneratingMsg(`follow-${lead.id}`);
-    try {
-      const res = await generateFollowUp({
-        businessName: lead.name
-      });
-      
-      handleWhatsApp(lead.phone, res.message);
-      toast({ title: "Follow-up Gerado!", description: "Mensagem de retomada enviada." });
-    } catch (e) {
-      toast({ variant: "destructive", title: "Erro", description: "Falha ao gerar follow-up." });
-    } finally {
-      setGeneratingMsg(null);
-    }
-  };
-
-  const handleExport = () => {
-    if (leads.length === 0) return;
-    
-    const csvContent = "data:text/csv;charset=utf-8," 
-      + "Nome,Tipo,Cidade,Estado,Telefone,Endereco\n"
-      + leads.map(l => `"${l.name}","${l.type}","${l.city}","${l.state}","${l.phone}","${l.address}"`).join("\n");
-    
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `leads_flowpro_${niche}_${state}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    toast({ title: "Download Iniciado", description: "Sua lista de leads foi exportada com sucesso." });
-  };
-
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-[#050508]">
         <AppSidebar />
         
         <main className="flex-1 flex flex-col min-w-0">
-          <header className="h-16 border-b border-white/5 flex items-center justify-between px-4 md:px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-50">
-            <div className="flex items-center gap-2 md:gap-4">
+          <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-50">
+            <div className="flex items-center gap-4">
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
               <div className="h-4 w-px bg-white/10 hidden md:block" />
-              <h1 className="text-[10px] md:text-sm font-black italic uppercase tracking-widest flex items-center gap-2">
-                <Users className="h-3 w-3 md:h-4 md:w-4 text-primary" /> Radar de Leads
+              <h1 className="text-sm font-black italic uppercase tracking-widest flex items-center gap-2">
+                <Users className="h-4 w-4 text-primary" /> Radar de Leads
               </h1>
             </div>
-            <div className="flex items-center gap-2 md:gap-3">
-               <div className="hidden sm:flex items-center gap-2 bg-white/5 px-3 py-1 rounded-full border border-white/10">
-                  <span className="text-[8px] font-black uppercase text-muted-foreground tracking-widest">
-                    {isUnlimited ? 'USO ILIMITADO' : `Créditos: ${userData?.dailyUsage?.leadsUsed || 0}/20`}
-                  </span>
-               </div>
-               {leads.length > 0 && (
-                 <Button onClick={handleExport} variant="outline" size="sm" className="h-8 rounded-lg border-primary/20 text-primary text-[7px] md:text-[8px] font-black uppercase px-2 md:px-3 gap-1 md:gap-2 hover:bg-primary hover:text-white transition-all">
-                   <Download className="h-3 w-3" /> EXPORTAR
-                 </Button>
-               )}
-               <Badge className={`bg-primary/20 text-primary border-primary/30 text-[7px] md:text-[8px] font-black uppercase px-2 md:px-3 py-1 ${isUnlimited ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' : ''}`}>
-                 {userData?.plan?.toUpperCase() || 'BLOQUEADO'}
-               </Badge>
+            
+            <div className="flex items-center gap-3">
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-9 rounded-xl border-primary/30 text-primary text-[9px] font-black uppercase px-4 gap-2 hover:bg-primary hover:text-white transition-all">
+                    <UserPlus className="h-3.5 w-3.5" /> NOVO LEAD
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-[#0e0e1a] border-white/10 text-white rounded-[2rem] sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl font-black italic uppercase tracking-tighter">Capturar Lead Manual</DialogTitle>
+                    <DialogDescription className="text-[10px] uppercase font-bold text-muted-foreground">
+                      Insira os dados do lead para salvar na sua base neural.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleManualSave} className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase opacity-50">Nome do Lead</Label>
+                      <Input 
+                        placeholder="Ex: João da Silva" 
+                        className="bg-white/5 border-white/10 rounded-xl"
+                        value={manualLead.name}
+                        onChange={e => setManualLead({...manualLead, name: e.target.value})}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase opacity-50">Email Profissional</Label>
+                      <Input 
+                        type="email"
+                        placeholder="lead@empresa.com" 
+                        className="bg-white/5 border-white/10 rounded-xl"
+                        value={manualLead.email}
+                        onChange={e => setManualLead({...manualLead, email: e.target.value})}
+                        required
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase opacity-50">WhatsApp</Label>
+                        <Input 
+                          placeholder="(00) 00000-0000" 
+                          className="bg-white/5 border-white/10 rounded-xl"
+                          value={manualLead.phone}
+                          onChange={e => setManualLead({...manualLead, phone: e.target.value})}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase opacity-50">Segmento</Label>
+                        <Input 
+                          placeholder="Ex: Tecnologia" 
+                          className="bg-white/5 border-white/10 rounded-xl"
+                          value={manualLead.businessType}
+                          onChange={e => setManualLead({...manualLead, businessType: e.target.value})}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <Button type="submit" disabled={isSavingManual} className="w-full h-14 bg-primary hover:bg-primary/90 font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-primary/20">
+                      {isSavingManual ? <Loader2 className="h-5 w-5 animate-spin" /> : "CAPTURAR LEAD AGORA"}
+                    </Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
+
+              <Badge className={`bg-primary/20 text-primary border-primary/30 text-[8px] font-black uppercase px-3 py-1`}>
+                {userData?.plan?.toUpperCase() || 'MODO FREE'}
+              </Badge>
             </div>
           </header>
 
-          <div className="flex-1 container max-w-4xl mx-auto p-4 md:p-8 space-y-6 md:space-y-8">
-            <Card className="glass-card border-white/10 overflow-hidden rounded-[1.5rem] md:rounded-[2rem]">
-              <CardHeader className="bg-white/5 border-b border-white/5 p-5 md:p-6">
-                <CardTitle className="text-xs md:text-sm font-black uppercase tracking-widest italic flex items-center gap-2">
-                  <Filter className="h-4 w-4 text-primary" /> Filtro de Prospecção
+          <div className="flex-1 container max-w-4xl mx-auto p-4 md:p-8 space-y-8">
+            {/* SEARCH FILTERS */}
+            <Card className="glass-card border-white/10 overflow-hidden rounded-[2rem]">
+              <CardHeader className="bg-white/5 border-b border-white/5 p-6">
+                <CardTitle className="text-sm font-black uppercase tracking-widest italic flex items-center gap-2">
+                  <Filter className="h-4 w-4 text-primary" /> Parâmetros do Radar Neural
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-5 md:p-8">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
+              <CardContent className="p-8">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                   <div className="md:col-span-5 space-y-2">
-                    <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50">O que você quer vender?</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest opacity-50">O que você quer vender?</label>
                     <Input 
                       placeholder="Ex: Barbearia, Dentista..." 
-                      className="bg-white/5 border-white/10 h-12 md:h-14 rounded-2xl focus-visible:ring-primary text-sm"
+                      className="bg-white/5 border-white/10 h-14 rounded-2xl focus-visible:ring-primary text-sm"
                       value={niche}
                       onChange={e => setNiche(e.target.value)}
                     />
                   </div>
                   <div className="md:col-span-3 space-y-2">
-                    <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50">Estado (UF)</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest opacity-50">Estado (UF)</label>
                     <Select onValueChange={setState}>
-                      <SelectTrigger className="bg-white/5 border-white/10 rounded-2xl h-12 md:h-14">
+                      <SelectTrigger className="bg-white/5 border-white/10 rounded-2xl h-14">
                         <SelectValue placeholder="UF" />
                       </SelectTrigger>
                       <SelectContent className="bg-[#0b0b14] border-white/10 text-white">
@@ -283,10 +292,10 @@ export default function LeadsPage() {
                     </Select>
                   </div>
                   <div className="md:col-span-4 space-y-2">
-                    <label className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-50">Cidade (Opcional)</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest opacity-50">Cidade (Opcional)</label>
                     <Input 
                       placeholder="Ex: São Paulo" 
-                      className="bg-white/5 border-white/10 h-12 md:h-14 rounded-2xl focus-visible:ring-primary text-sm"
+                      className="bg-white/5 border-white/10 h-14 rounded-2xl focus-visible:ring-primary text-sm"
                       value={city}
                       onChange={e => setCity(e.target.value)}
                     />
@@ -295,9 +304,9 @@ export default function LeadsPage() {
                     <Button 
                       onClick={handleSearch} 
                       disabled={loading}
-                      className="w-full h-14 md:h-16 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-[0.98] text-[10px] md:text-sm"
+                      className="w-full h-16 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-[0.98]"
                     >
-                      {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><Search className="h-5 w-5 mr-2" /> BUSCAR LEADS REAIS</>}
+                      {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <><Search className="h-5 w-5 mr-2" /> ATIVAR BUSCA NEURAL</>}
                     </Button>
                   </div>
                 </div>
@@ -305,75 +314,97 @@ export default function LeadsPage() {
             </Card>
 
             <div className="space-y-6 pb-20">
-              <h2 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter">
-                {leads.length > 0 ? `Resultados (${leads.length})` : 'Aguardando Busca'}
-              </h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-black italic uppercase tracking-tighter">
+                  {leads.length > 0 ? `Resultados Encontrados (${leads.length})` : 'Aguardando Operação'}
+                </h2>
+                {leads.length > 0 && (
+                  <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-50 hover:opacity-100">
+                    Limpar Tudo
+                  </Button>
+                )}
+              </div>
 
               {!isProMember && leads.length > 0 && (
-                <div className="p-4 bg-primary/10 border border-primary/20 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-                  <p className="text-[10px] font-bold text-primary uppercase">Assine o Pro para ver todos os resultados e ter acesso ilimitado.</p>
-                  <Button asChild size="sm" className="bg-primary text-white text-[8px] font-black h-8 px-4 rounded-xl w-full sm:w-auto">
+                <div className="p-6 bg-primary/10 border border-primary/20 rounded-3xl flex items-center justify-between gap-6">
+                  <div className="space-y-1">
+                    <p className="text-xs font-black uppercase text-primary tracking-widest flex items-center gap-2">
+                      <Zap className="h-4 w-4" /> MODO LIMITADO ATIVO
+                    </p>
+                    <p className="text-xs text-white/70 font-medium">Assine o Pro para liberar acesso ilimitado aos leads e ferramentas.</p>
+                  </div>
+                  <Button asChild size="sm" className="bg-primary text-white text-[9px] font-black h-10 px-6 rounded-xl">
                     <Link href="/paywall">UPGRADE PRO</Link>
                   </Button>
                 </div>
               )}
 
               {leads.length === 0 && !loading ? (
-                <div className="py-16 md:py-24 text-center glass-card rounded-[2rem] md:rounded-[3rem] border-dashed border-white/5">
-                  <div className="h-16 w-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 opacity-20">
-                    <Search className="h-8 w-8 text-white" />
+                <div className="py-24 text-center glass-card rounded-[3rem] border-dashed border-white/10">
+                  <div className="h-20 w-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 opacity-30">
+                    <Search className="h-10 w-10 text-white" />
                   </div>
-                  <p className="text-muted-foreground uppercase text-[10px] font-black tracking-[0.3em] px-6 leading-relaxed">Defina o nicho e estado para captar seus leads estratégicos</p>
+                  <p className="text-muted-foreground uppercase text-[10px] font-black tracking-[0.4em] px-8 leading-relaxed">
+                    Utilize os filtros acima para escanear <br />o mercado em busca de novos clientes
+                  </p>
                 </div>
               ) : loading ? (
-                <div className="py-24 text-center">
-                  <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
-                  <p className="text-muted-foreground uppercase text-[10px] font-black tracking-[0.3em]">Varrendo base neural do Google...</p>
+                <div className="py-24 text-center space-y-6">
+                  <div className="relative h-20 w-20 mx-auto">
+                    <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl animate-pulse"></div>
+                    <Loader2 className="h-20 w-20 animate-spin text-primary relative z-10" />
+                  </div>
+                  <p className="text-muted-foreground uppercase text-[10px] font-black tracking-[0.4em] animate-pulse">Neural Engine Processando...</p>
                 </div>
               ) : (
                 <div className="grid gap-4">
                   {leads.map((lead) => (
-                    <Card key={lead.id} className={`glass-card border-white/10 transition-all duration-500 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden ${approachedLeads.includes(lead.id) ? 'border-primary/40' : ''}`}>
-                      <CardContent className="p-5 md:p-8">
-                        <div className="flex flex-col xl:flex-row justify-between gap-6">
-                          <div className="flex gap-4 items-start">
-                            <div className="h-10 w-10 md:h-12 md:w-12 bg-primary/10 rounded-xl md:rounded-2xl flex items-center justify-center text-primary shrink-0 border border-primary/20">
-                              <MapPin className="h-5 w-5" />
+                    <Card key={lead.id} className={`glass-card border-white/10 transition-all duration-500 rounded-[2rem] overflow-hidden ${approachedLeads.includes(lead.id) ? 'border-primary/40 opacity-80' : ''}`}>
+                      <CardContent className="p-8">
+                        <div className="flex flex-col xl:flex-row justify-between gap-8">
+                          <div className="flex gap-6 items-start">
+                            <div className="h-14 w-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shrink-0 border border-primary/20 shadow-lg group-hover:scale-110 transition-transform">
+                              <MapPin className="h-6 w-6" />
                             </div>
-                            <div className="space-y-1 min-w-0">
-                              <h4 className="font-black text-base md:text-lg italic leading-tight text-white uppercase truncate">{lead.name}</h4>
-                              <div className="flex flex-wrap items-center gap-2 text-[9px] md:text-[10px] text-muted-foreground font-black uppercase tracking-widest">
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-3">
+                                <h4 className="font-black text-xl italic leading-none text-white uppercase">{lead.name}</h4>
+                                {lead.rating && lead.rating !== '0' && (
+                                  <Badge variant="outline" className="bg-yellow-500/10 border-yellow-500/20 text-yellow-500 text-[10px] font-black">
+                                    ★ {lead.rating}
+                                  </Badge>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-black uppercase tracking-widest">
                                 <span className="text-primary">{lead.type}</span>
-                                <span>•</span>
+                                <span className="opacity-20">•</span>
                                 <span>{lead.city}, {lead.state}</span>
                               </div>
-                              <div className="flex items-center gap-2 text-xs font-bold text-white/60 mt-2">
-                                <Phone className="h-3.5 w-3.5" /> {lead.phone}
+                              <div className="flex items-center gap-3 text-sm font-bold text-white/60">
+                                <Phone className="h-4 w-4 text-primary/60" /> {lead.phone}
                               </div>
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:flex flex-wrap gap-2 items-center">
+                          <div className="flex flex-wrap gap-3 items-center">
                             <Button 
                               variant="default" 
                               size="sm"
                               onClick={() => handleGenMessage(lead)}
                               disabled={generatingMsg === lead.id}
-                              className="h-11 md:h-12 bg-primary text-white rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest gap-2 shadow-lg w-full xl:w-auto"
+                              className="h-12 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest gap-2 shadow-lg hover:scale-105 active:scale-95 transition-all"
                             >
-                              {generatingMsg === lead.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
-                              MENSAGEM IA
+                              {generatingMsg === lead.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                              SCRIPT IA
                             </Button>
 
                             <Button 
                               variant="outline" 
                               size="sm"
-                              onClick={() => handleFollowUp(lead)}
-                              disabled={generatingMsg === `follow-${lead.id}`}
-                              className="h-11 md:h-12 border-accent/20 bg-accent/5 text-accent rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest gap-2 hover:bg-accent/10 w-full xl:w-auto"
+                              onClick={() => handleSaveLead(lead)}
+                              className="h-12 border-white/10 bg-white/5 text-white rounded-xl text-[10px] font-black uppercase tracking-widest gap-2 hover:bg-white/10 transition-all"
                             >
-                              {generatingMsg === `follow-${lead.id}` ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <History className="h-3.5 w-3.5" />}
-                              FOLLOW-UP
+                              <Plus className="h-4 w-4" /> CAPTURAR
                             </Button>
 
                             <Button 
@@ -384,9 +415,9 @@ export default function LeadsPage() {
                                   setApproachedLeads(prev => [...prev, lead.id]);
                                 }
                               }}
-                              className={`h-11 md:h-12 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-widest w-full xl:w-auto ${approachedLeads.includes(lead.id) ? 'text-green-500 bg-green-500/5' : 'text-muted-foreground'}`}
+                              className={`h-12 rounded-xl text-[10px] font-black uppercase tracking-widest ${approachedLeads.includes(lead.id) ? 'text-green-500 bg-green-500/5' : 'text-muted-foreground'}`}
                             >
-                              {approachedLeads.includes(lead.id) ? <Check className="h-4 w-4 mr-2" /> : <div className="h-4 w-4 mr-2 border-2 border-current/30 rounded-full" />}
+                              {approachedLeads.includes(lead.id) ? <Check className="h-5 w-5 mr-2" /> : <div className="h-5 w-5 mr-2 border-2 border-current/20 rounded-full" />}
                               {approachedLeads.includes(lead.id) ? 'ABORDADO' : 'MARCAR'}
                             </Button>
                           </div>

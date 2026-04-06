@@ -33,47 +33,25 @@
   }
   body {
     @apply bg-[#080810] text-foreground font-body overflow-x-hidden;
-    /* Cursor customizado será aplicado via componente mas removemos o padrão aqui */
-    cursor: none;
   }
 }
 
-/* ─── MACBOOK ANIMATIONS ─── */
-@keyframes sceneIn {
-  0%   { opacity:0; transform: perspective(1400px) rotateX(12deg) translateY(60px) scale(0.88); }
-  100% { opacity:1; transform: perspective(1400px) rotateX(0deg)  translateY(0)    scale(1); }
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 255, 0.2);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 58, 255, 0.4);
 }
 
-@keyframes blobMove { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-20px)} }
-
-@keyframes fadeD { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:none} }
-
-@keyframes fadeU { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
-
-@keyframes pls { 0%,100%{opacity:0.35;transform:scale(0.8)} 50%{opacity:1;transform:scale(1.15)} }
-
-@keyframes grow { from { width: 0%; } to { width: 18%; } }
-
-@keyframes mac-shim { 0%{opacity:0}60%{opacity:1}100%{opacity:0} }
-
-@keyframes slideIn { from{opacity:0;transform:translateX(-18px)} to{opacity:1;transform:none} }
-
-@keyframes drawPath { to { stroke-dashoffset: 0; } }
-
-@keyframes mac-fadeIn { to { opacity: 1; } }
-
-.animate-sceneIn { animation: sceneIn 1.2s cubic-bezier(0.16,1,0.3,1) both; }
-.animate-blobMove { animation: blobMove 8s ease-in-out infinite; }
-.animate-blobMoveRev { animation: blobMove 10s ease-in-out infinite reverse; }
-.animate-fadeD { animation: fadeD 0.7s ease 0.5s both; }
-.animate-fadeU { animation: fadeU 0.7s ease 0.65s both; }
-.animate-grow { animation: grow 2.2s cubic-bezier(0.22,1,0.36,1) 1.3s forwards; }
-.animate-mac-shim { animation: mac-shim 2.2s ease 1.3s forwards; }
-.animate-slideIn-1 { animation: slideIn 0.55s ease 1.2s both; }
-.animate-slideIn-2 { animation: slideIn 0.55s ease 1.38s both; }
-.animate-slideIn-3 { animation: slideIn 0.55s ease 1.56s both; }
-
-/* ─── GLOBAL UI ANIMATIONS ─── */
+/* Animations */
 @keyframes float {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
   50% { transform: translateY(-15px) rotate(1deg); }
@@ -82,11 +60,6 @@
 @keyframes pulse-glow {
   0%, 100% { opacity: 0.3; filter: blur(60px); transform: scale(1); }
   50% { opacity: 0.6; filter: blur(90px); transform: scale(1.1); }
-}
-
-@keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
 }
 
 @keyframes shimmer {
@@ -100,21 +73,10 @@
   100% { transform: translateY(400%); opacity: 0; }
 }
 
-@keyframes particle-fade-out {
-  0% { opacity: 1; transform: translate(0, 0) scale(1); }
-  100% { opacity: 0; transform: translate(var(--tw-translate-x), var(--tw-translate-y)) scale(0); }
-}
-
 @keyframes gradient-text {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
-}
-
-@keyframes pulse-ring {
-  0% { transform: scale(0.8); opacity: 0.5; }
-  50% { transform: scale(1.2); opacity: 0.3; }
-  100% { transform: scale(0.8); opacity: 0.5; }
 }
 
 .animate-float {
@@ -123,10 +85,6 @@
 
 .animate-pulse-glow {
   animation: pulse-glow 10s ease-in-out infinite;
-}
-
-.animate-marquee {
-  animation: marquee 40s linear infinite;
 }
 
 .animate-gradient-text {
@@ -176,49 +134,10 @@
   border-color: rgba(124, 58, 255, 0.5);
 }
 
-.cursor-glow {
-  position: fixed;
-  width: 20px;
-  height: 20px;
-  background: #7c3aff;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9999;
-  mix-blend-mode: normal;
-  transition: transform 0.1s ease-out, width 0.3s ease, height 0.3s ease, background 0.3s ease;
-  box-shadow: 0 0 20px #7c3aff, 0 0 40px rgba(124, 58, 255, 0.4);
-}
-
-.cursor-glow.active {
-  width: 40px;
-  height: 40px;
-  background: rgba(124, 58, 255, 0.3);
-  border: 2px solid #7c3aff;
-}
-
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
-
-.stagger-entry > * {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: slide-up-fade 0.6s ease forwards;
-}
-
-@keyframes slide-up-fade {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.sidebar-separator-gradient {
-  height: 1px;
-  background: linear-gradient(90deg, #7c3aff 0%, transparent 100%);
-  opacity: 0.3;
 }
