@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -21,7 +22,9 @@ import {
   Mail,
   Briefcase,
   UserPlus,
-  Zap
+  Zap,
+  Globe,
+  Star
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { generateLeadMessage } from '@/ai/flows/generate-lead-message';
@@ -53,6 +56,7 @@ export default function LeadsPage() {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [generatingMsg, setGeneratingMsg] = useState<string | null>(null);
+  const [capturingId, setCapturingId] = useState<string | null>(null);
   const [approachedLeads, setApproachedLeads] = useState<string[]>([]);
 
   // Manual Capture Form State
@@ -72,7 +76,8 @@ export default function LeadsPage() {
   const { data: userData } = useDoc(userDocRef);
 
   const isProMember = useMemo(() => {
-    return userData?.plan === 'vitalicio' || userData?.plan === 'mensal' || userData?.plan === 'trimestral';
+    const p = userData?.plan;
+    return p === 'vitalicio' || p === 'mensal' || p === 'trimestral';
   }, [userData]);
 
   const handleSearch = async () => {
@@ -94,12 +99,18 @@ export default function LeadsPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Falha na busca de leads');
 
-      const finalLeads = isProMember ? data : data.slice(0, 5);
+      // Limite de 20 para PRO e 5 para Free
+      const finalLeads = isProMember ? (data.length > 20 ? data.slice(0, 20) : data) : data.slice(0, 5);
       setLeads(finalLeads);
 
-      toast({ title: "Radar Ativo!", description: `Encontramos ${finalLeads.length} leads reais.` });
+      toast({ 
+        title: "Radar Ativo!", 
+        description: isProMember 
+          ? `Encontramos ${finalLeads.length} leads de elite para você.` 
+          : "Encontramos vários leads! Assine o PRO para ver a lista completa de 20+."
+      });
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Erro na Busca", description: e.message || "Falha na conexão." });
+      toast({ variant: "destructive", title: "Erro na Busca", description: e.message || "Falha na conexão neural." });
     } finally {
       setLoading(false);
     }
@@ -108,15 +119,18 @@ export default function LeadsPage() {
   const handleSaveLead = async (lead: any) => {
     if (!db || !user) return;
     
+    setCapturingId(lead.id);
     try {
       await addDoc(collection(db, 'users', user.uid, 'capturedLeads'), {
         ...lead,
         capturedAt: serverTimestamp(),
         source: 'radar'
       });
-      toast({ title: "Lead Salvo!", description: "Adicionado à sua base neural." });
-    } catch (e) {
-      toast({ variant: "destructive", title: "Erro ao salvar", description: "Tente novamente." });
+      toast({ title: "Lead Salvo!", description: "Adicionado à sua base de dados com sucesso." });
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Erro ao Salvar", description: "Verifique suas permissões de acesso." });
+    } finally {
+      setCapturingId(null);
     }
   };
 
@@ -132,11 +146,11 @@ export default function LeadsPage() {
         source: 'manual'
       });
       
-      toast({ title: "Lead Cadastrado!", description: "Dados salvos com sucesso." });
+      toast({ title: "Lead Cadastrado!", description: "Dados salvos na sua base neural." });
       setManualLead({ name: '', email: '', phone: '', businessType: '' });
       setIsDialogOpen(false);
     } catch (e) {
-      toast({ variant: "destructive", title: "Erro", description: "Não foi possível salvar o lead." });
+      toast({ variant: "destructive", title: "Erro", description: "Não foi possível salvar o lead manual." });
     } finally {
       setIsManualSaving(false);
     }
@@ -144,7 +158,7 @@ export default function LeadsPage() {
 
   const handleWhatsApp = (phone: string, message?: string) => {
     if (!phone || phone === 'Telefone não listado') {
-      toast({ variant: "destructive", title: "Ops!", description: "Contato não disponível." });
+      toast({ variant: "destructive", title: "Contato Indisponível", description: "Este lead não possui um número válido." });
       return;
     }
     const cleanPhone = phone.replace(/\D/g, '');
@@ -158,19 +172,21 @@ export default function LeadsPage() {
     setGeneratingMsg(lead.id);
     try {
       const res = await generateLeadMessage({
-        businessName: lead.name,
-        businessType: lead.type || lead.businessType,
-        city: lead.city || 'Sua região'
+        businessName: lead.name || 'Dono do Negócio',
+        businessType: lead.type || 'Serviços',
+        city: lead.city || 'Sua cidade'
       });
       
-      handleWhatsApp(lead.phone, res.message);
-      toast({ title: "WhatsApp Aberto!", description: "Mensagem personalizada gerada." });
-      
-      if (!approachedLeads.includes(lead.id)) {
-        setApproachedLeads(prev => [...prev, lead.id]);
+      if (res && res.message) {
+        handleWhatsApp(lead.phone, res.message);
+        toast({ title: "WhatsApp Conectado!", description: "Mensagem estratégica gerada pela IA." });
+        
+        if (!approachedLeads.includes(lead.id)) {
+          setApproachedLeads(prev => [...prev, lead.id]);
+        }
       }
     } catch (e) {
-      toast({ variant: "destructive", title: "Erro", description: "Falha ao gerar mensagem." });
+      toast({ variant: "destructive", title: "Erro de IA", description: "O motor neural falhou ao gerar o script. Tente novamente." });
     } finally {
       setGeneratingMsg(null);
     }
@@ -317,11 +333,11 @@ export default function LeadsPage() {
             <div className="space-y-6 pb-20">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-black italic uppercase tracking-tighter">
-                  {leads.length > 0 ? `Resultados Encontrados (${leads.length})` : 'Aguardando Operação'}
+                  {leads.length > 0 ? `Resultados (${leads.length}${!isProMember ? '/20+' : ''})` : 'Aguardando Operação'}
                 </h2>
                 {leads.length > 0 && (
-                  <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest opacity-50 hover:opacity-100">
-                    Limpar Tudo
+                  <Button variant="ghost" onClick={() => setLeads([])} className="text-[10px] font-black uppercase tracking-widest opacity-50 hover:opacity-100">
+                    Limpar Resultados
                   </Button>
                 )}
               </div>
@@ -332,7 +348,7 @@ export default function LeadsPage() {
                     <p className="text-xs font-black uppercase text-primary tracking-widest flex items-center gap-2">
                       <Zap className="h-4 w-4" /> MODO LIMITADO ATIVO
                     </p>
-                    <p className="text-xs text-white/70 font-medium">Assine o Pro para liberar acesso ilimitado aos leads e ferramentas.</p>
+                    <p className="text-xs text-white/70 font-medium">Você está vendo apenas os 5 primeiros leads. Assine o Pro para liberar 20+ por busca.</p>
                   </div>
                   <Button asChild size="sm" className="bg-primary text-white text-[9px] font-black h-10 px-6 rounded-xl">
                     <Link href="/paywall">UPGRADE PRO</Link>
@@ -403,9 +419,11 @@ export default function LeadsPage() {
                               variant="outline" 
                               size="sm"
                               onClick={() => handleSaveLead(lead)}
+                              disabled={capturingId === lead.id}
                               className="h-12 border-white/10 bg-white/5 text-white rounded-xl text-[10px] font-black uppercase tracking-widest gap-2 hover:bg-white/10 transition-all"
                             >
-                              <Plus className="h-4 w-4" /> CAPTURAR
+                              {capturingId === lead.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                              CAPTURAR
                             </Button>
 
                             <Button 

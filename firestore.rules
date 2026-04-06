@@ -17,6 +17,7 @@ service cloud.firestore {
       match /missionProgress/{id} { allow read, write: if isOwner(userId) || isAdmin(); }
       match /subscriptions/{id} { allow read, write: if isOwner(userId) || isAdmin(); }
       match /earnings/{id} { allow read, write: if isOwner(userId) || isAdmin(); }
+      match /capturedLeads/{id} { allow read, write: if isOwner(userId) || isAdmin(); }
     }
     
     match /missions/{missionId} { 
