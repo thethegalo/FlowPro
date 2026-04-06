@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from '@/firebase';
 import { CustomCursor } from '@/components/CustomCursor';
+import { FloatingMentor } from '@/components/FloatingMentor';
 
 export const metadata: Metadata = {
   title: 'PromptForge | AI Sales Companion',
@@ -30,6 +31,7 @@ export default function RootLayout({
         <FirebaseClientProvider>
           <CustomCursor />
           {children}
+          <FloatingMentor />
           <Toaster />
         </FirebaseClientProvider>
       </body>

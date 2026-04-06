@@ -79,7 +79,6 @@ export function AppSidebar() {
     { title: "Ferramentas", icon: Wrench, url: "/tools" },
     { title: "Simulador IA", icon: Target, url: "/simulator" },
     { title: "Biblioteca", icon: FileText, url: "/resources" },
-    { title: "IA Mentor", icon: MessageSquare, url: "/mentor" },
   ];
 
   const isApproved = userData?.status === 'approved' || isAdmin;
@@ -114,7 +113,7 @@ export function AppSidebar() {
                   >
                     <Link href={isApproved ? item.url : "#"} className="flex items-center gap-3">
                       {typeof item.icon === 'function' ? <item.icon /> : <item.icon className={`h-5 w-5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 ${pathname === item.url ? 'text-primary' : 'text-muted-foreground'}`} />}
-                      <span className="text-[11px] font-bold uppercase tracking-widest">{item.title}</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest whitespace-nowrap">{item.title}</span>
                       {pathname === item.url && <ChevronRight className="ml-auto h-4 w-4 text-primary animate-pulse" />}
                     </Link>
                   </SidebarMenuButton>
