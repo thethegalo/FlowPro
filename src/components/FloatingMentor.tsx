@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
@@ -53,7 +54,17 @@ export function FloatingMentor() {
     return user?.email === ADMIN_EMAIL || userData?.plan === 'vitalicio';
   }, [user, userData]);
 
-  // Não mostrar mentor em rotas de auth ou landing principal
+  const messagesRemaining = useMemo(() => {
+    if (isUnlimited) return null;
+    const lastAction = userData?.lastActionAt;
+    const today = new Date().toDateString();
+    const lastDate = lastAction ? (lastAction.toDate ? lastAction.toDate().toDateString() : new Date(lastAction).toDateString()) : '';
+    const used = today === lastDate ? (userData?.dailyUsage?.messagesUsed || 0) : 0;
+    return Math.max(0, 10 - used);
+  }, [userData, isUnlimited]);
+
+  // Early return for paths where mentor shouldn't appear
+  // Moved AFTER all hooks to follow Rules of Hooks
   if (['/', '/auth', '/quiz'].includes(pathname)) return null;
 
   const checkLimitAndTrack = async () => {
@@ -105,15 +116,6 @@ export function FloatingMentor() {
       setIsLoading(false);
     }
   };
-
-  const messagesRemaining = useMemo(() => {
-    if (isUnlimited) return null;
-    const lastAction = userData?.lastActionAt;
-    const today = new Date().toDateString();
-    const lastDate = lastAction ? (lastAction.toDate ? lastAction.toDate().toDateString() : new Date(lastAction).toDateString()) : '';
-    const used = today === lastDate ? (userData?.dailyUsage?.messagesUsed || 0) : 0;
-    return Math.max(0, 10 - used);
-  }, [userData, isUnlimited]);
 
   return (
     <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-4">
