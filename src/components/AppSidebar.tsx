@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -14,6 +15,7 @@ import {
   Target,
   Sparkles,
   Terminal,
+  Trophy,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -68,6 +70,7 @@ export function AppSidebar() {
   const menuItems = [
     { title: "Dashboard", icon: LayoutDashboard, url: "/dashboard" },
     { title: "Jornada 7 Dias", icon: () => <div className="relative h-5 w-5 animate-bounce group-hover:scale-110 transition-transform"><Image src={LOGO_ICON} alt="Icon" fill className="object-contain" /></div>, url: "/dashboard" },
+    { title: "Ranking Vendedores", icon: Trophy, url: "/vendedores" },
     { title: "Captar Leads", icon: Search, url: "/leads" },
     { title: "Scripts WhatsApp", icon: MessageSquare, url: "/abordagens" },
     { title: "Gerador Prompts", icon: Terminal, url: "/prompts" },
