@@ -33,7 +33,8 @@ import {
   Calendar,
   ShieldX,
   ChevronRight,
-  Timer
+  Timer,
+  Play
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, query, orderBy, doc, setDoc, addDoc, increment, serverTimestamp, getDoc, limit, where } from 'firebase/firestore';
@@ -212,23 +213,6 @@ export default function Dashboard() {
   const dailyActions = userData?.dailyActions || 0;
   const dailyGoal = 10;
 
-  const handleAddEarning = async () => {
-    if (!db || !user || !earningAmount) return;
-    setIsAddingEarning(true);
-    const amount = Number(earningAmount);
-    try {
-      await addDoc(collection(db, 'users', user.uid, 'earnings'), { amount, date: earningDate, createdAt: serverTimestamp() });
-      await setDoc(doc(db, 'users', user.uid), { totalEarnings: increment(amount), totalActions: increment(1), dailyActions: increment(1), updatedAt: serverTimestamp() }, { merge: true });
-      toast({ title: "Venda Registrada!", description: `R$ ${amount.toLocaleString('pt-BR')} adicionados.` });
-      setShowEarningModal(false);
-      setEarningAmount("");
-    } catch (e) {
-      toast({ variant: "destructive", title: "Erro ao salvar" });
-    } finally {
-      setIsAddingEarning(false);
-    }
-  };
-
   useEffect(() => {
     if (!isUserLoading && !user) router.push('/auth');
   }, [user, isUserLoading, router]);
@@ -256,6 +240,7 @@ export default function Dashboard() {
           </header>
 
           <div className="flex-1 p-8 space-y-12 max-w-5xl mx-auto w-full">
+            {/* Boas Vindas */}
             <div className="flex flex-col md:flex-row justify-between items-end gap-6">
               <div className="space-y-3">
                 <h1 className="text-4xl font-black italic uppercase tracking-tighter text-white">{displayName}</h1>
@@ -271,6 +256,7 @@ export default function Dashboard() {
               </div>
             </div>
 
+            {/* Gráfico de Performance */}
             <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] p-10 space-y-10 metric-card mb-8">
               <div className="flex justify-between items-end">
                 <h3 className="text-2xl font-black italic uppercase tracking-tight text-white">Performance 30 Dias</h3>
@@ -293,6 +279,7 @@ export default function Dashboard() {
               </div>
             </Card>
 
+            {/* Grades de Métricas */}
             <div className="grid gap-6 md:grid-cols-2">
               <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] p-8 space-y-6 metric-card">
                 <div className="flex justify-between items-center">
@@ -328,6 +315,65 @@ export default function Dashboard() {
                   </div>
                 </div>
               </Card>
+            </div>
+
+            {/* JORNADA DE 7 DIAS (RESTAURADA) */}
+            <div className="space-y-8">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white">Sua Jornada de Escala</h2>
+                  <p className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.2em]">O método exato para sua primeira venda em 7 dias</p>
+                </div>
+                <Badge className="bg-primary/10 text-primary border-primary/30 text-[10px] font-black uppercase px-4 py-1">
+                  DIA {currentJourneyDay} ATIVO
+                </Badge>
+              </div>
+
+              <div className="grid gap-4">
+                {missions.map((m) => {
+                  const isCompleted = completedMissionIds.includes(m.id);
+                  const isLocked = !isSpecialUser && m.order > currentJourneyDay && !isCompleted;
+                  const isCurrent = !isCompleted && !isLocked && (isSpecialUser || m.order === currentJourneyDay);
+
+                  return (
+                    <Link 
+                      key={m.id} 
+                      href={isLocked ? '#' : `/missions/${m.id}`}
+                      className={`block group transition-all ${isLocked ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                    >
+                      <Card className={`glass-card border-white/5 rounded-3xl overflow-hidden transition-all duration-500 ${isCurrent ? 'border-primary/40 bg-primary/5 shadow-lg shadow-primary/5' : ''} ${isCompleted ? 'border-green-500/20' : ''}`}>
+                        <CardContent className="p-6">
+                          <div className="flex items-center justify-between gap-6">
+                            <div className="flex items-center gap-6">
+                              <div className={`h-14 w-14 rounded-2xl flex items-center justify-center text-xl font-black italic shrink-0 transition-all ${isCompleted ? 'bg-green-500/20 text-green-500' : isCurrent ? 'bg-primary text-white shadow-lg shadow-primary/30 rotate-3' : 'bg-white/5 text-muted-foreground'}`}>
+                                {isCompleted ? <CheckCircle2 className="h-7 w-7" /> : m.order}
+                              </div>
+                              <div className="space-y-1">
+                                <h4 className={`font-black uppercase italic tracking-tight text-lg ${isLocked ? 'text-muted-foreground' : 'text-white'}`}>{m.title}</h4>
+                                <p className="text-xs text-muted-foreground font-medium">{m.desc}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                              {isLocked ? (
+                                <div className="flex flex-col items-end">
+                                  <Lock className="h-5 w-5 text-muted-foreground/30" />
+                                  <span className="text-[8px] font-black uppercase text-muted-foreground/40 mt-1">Aguarde o Tempo Neural</span>
+                                </div>
+                              ) : isCompleted ? (
+                                <Badge className="bg-green-500/10 text-green-500 border-green-500/20 text-[8px] font-black uppercase">CONCLUÍDO</Badge>
+                              ) : (
+                                <Button size="sm" className="bg-primary hover:bg-primary/90 text-white rounded-xl text-[9px] font-black uppercase px-4 h-9 shadow-lg group-hover:scale-105 transition-all">
+                                  {isCurrent ? 'INICIAR AGORA' : 'EXECUTAR'} <Play className="ml-2 h-3 w-3 fill-white" />
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </main>
