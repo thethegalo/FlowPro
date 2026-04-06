@@ -20,7 +20,8 @@ import {
   Plus,
   Mail,
   Briefcase,
-  UserPlus
+  UserPlus,
+  Zap
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { generateLeadMessage } from '@/ai/flows/generate-lead-message';
