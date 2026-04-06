@@ -3,22 +3,18 @@ import { NextResponse } from 'next/server';
 
 /**
  * @fileOverview Endpoint de backend para buscar leads reais via Google Places API.
- * Refatorado para máxima resiliência com chaves de ambiente.
+ * Refatorado para ler exclusivamente de variáveis de ambiente do servidor.
  */
 
 export async function POST(req: Request) {
   try {
     const { niche, city, state } = await req.json();
     
-    // Busca exaustiva pela chave de API para garantir funcionamento
-    const apiKey = 
-      process.env.GOOGLE_PLACES_API_KEY || 
-      process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY || 
-      process.env.GEMINI_API_KEY || 
-      process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    // Busca restrita à chave do servidor para segurança
+    const apiKey = process.env.GOOGLE_PLACES_API_KEY;
 
-    if (!apiKey || apiKey === 'sua_chave_aqui' || apiKey === '') {
-      console.error('[ERRO CRÍTICO] Nenhuma API Key detectada.');
+    if (!apiKey || apiKey === 'SUA_CHAVE_AQUI' || apiKey === '') {
+      console.error('[ERRO CRÍTICO] Google Places API Key não configurada no servidor.');
       return NextResponse.json(
         { error: 'Configuração de API pendente no servidor.' },
         { status: 500 }
