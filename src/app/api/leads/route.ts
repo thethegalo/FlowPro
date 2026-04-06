@@ -1,39 +1,5 @@
 import { NextResponse } from 'next/server';
 
-function generateMockLeads(niche: string, city: string, state: string) {
-  const cityName = city || 'São Paulo';
-  const stateName = state || 'SP';
-  const businessNames = [
-    `${niche} Premium ${cityName}`,
-    `${niche} do ${stateName} Center`,
-    `${niche} Especializado ${cityName}`,
-    `${niche} & Cia ${cityName}`,
-    `${niche} Express`,
-    `${niche} Master ${cityName}`,
-    `${niche} Pro ${stateName}`,
-    `${niche} Elite`,
-    `${niche} Top ${cityName}`,
-    `${niche} Quality ${stateName}`,
-  ];
-  const streets = [
-    'Rua das Flores', 'Av. Principal', 'Rua Comercial', 'Av. Central',
-    'Rua do Comércio', 'Av. Brasil', 'Rua São João', 'Av. Independência',
-  ];
-  return businessNames.map((name, i) => ({
-    id: `mock-${i}-${Date.now()}`,
-    name,
-    type: niche,
-    city: cityName,
-    state: stateName,
-    address: `${streets[i % streets.length]}, ${100 + i * 23} - ${cityName}, ${stateName}`,
-    phone: `(${Math.floor(10 + Math.random() * 89)}) 9${Math.floor(1000 + Math.random() * 8999)}-${Math.floor(1000 + Math.random() * 8999)}`,
-    website: `www.${name.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 20)}.com.br`,
-    rating: (3.5 + Math.random() * 1.5).toFixed(1),
-    totalRatings: Math.floor(10 + Math.random() * 490),
-    status: 'OPERATIONAL',
-  }));
-}
-
 export async function POST(req: Request) {
   try {
     const { niche, city, state } = await req.json();
@@ -42,11 +8,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Nicho é obrigatório.' }, { status: 400 });
     }
 
+    // Leitura exclusiva de variável de ambiente de servidor
     const apiKey = process.env.GOOGLE_PLACES_API_KEY;
 
     if (!apiKey || apiKey === 'SUA_CHAVE_AQUI' || apiKey === '') {
-      const mockLeads = generateMockLeads(niche, city, state);
-      return NextResponse.json(mockLeads);
+      return NextResponse.json(
+        { error: 'Chave da API Google Places não configurada. Configure a variável GOOGLE_PLACES_API_KEY no arquivo .env.local.' },
+        { status: 503 }
+      );
     }
 
     const query = `${niche} em ${city || ''} ${state}`.trim();
@@ -65,9 +34,12 @@ export async function POST(req: Request) {
     });
 
     if (!response.ok) {
-      console.error('[GOOGLE PLACES ERROR]', response.status);
-      const mockLeads = generateMockLeads(niche, city, state);
-      return NextResponse.json(mockLeads);
+      const errorData = await response.json().catch(() => ({}));
+      console.error('[GOOGLE PLACES ERROR]', response.status, errorData);
+      return NextResponse.json(
+        { error: `Erro ao buscar leads: ${response.status}. Verifique sua chave de API.` },
+        { status: response.status }
+      );
     }
 
     const data = await response.json();
