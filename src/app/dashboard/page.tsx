@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useEffect, useState } from 'react';
@@ -238,12 +237,12 @@ export default function Dashboard() {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-[#050508] relative dashboard-root">
+      <div className="flex min-h-screen w-full bg-[#050508] relative dashboard-root overflow-x-hidden">
         <DashboardParticles />
         <AppSidebar />
         
         <main className="flex-1 flex flex-col min-w-0 relative z-10">
-          <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-40">
+          <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-40 overflow-hidden">
             <div className="flex items-center gap-4">
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
               <div className="h-6 w-px bg-white/10 hidden md:block" />
@@ -251,12 +250,12 @@ export default function Dashboard() {
                 <Sparkles className="h-4 w-4 text-primary" /> Painel de Comando
               </h2>
             </div>
-            <Badge variant="outline" className={`${isProMember ? 'bg-purple-500/10 border-purple-500/30 text-purple-400' : 'bg-white/5'} text-[8px] font-black uppercase px-3 py-1`}>
+            <Badge variant="outline" className={`${isProMember ? 'bg-purple-500/10 border-purple-500/30 text-purple-400' : 'bg-white/5'} text-[8px] font-black uppercase px-3 py-1 relative z-50`}>
               {userData?.plan?.toUpperCase() || 'ACESSO LIMITADO'}
             </Badge>
           </header>
 
-          <div className="flex-1 p-8 space-y-8 max-w-5xl mx-auto w-full">
+          <div className="flex-1 p-8 space-y-12 max-w-5xl mx-auto w-full">
             <div className="flex flex-col md:flex-row justify-between items-end gap-6">
               <div className="space-y-3">
                 <h1 className="text-4xl font-black italic uppercase tracking-tighter text-white">{displayName}</h1>
@@ -272,7 +271,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] p-10 space-y-10 metric-card">
+            <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] p-10 space-y-10 metric-card mb-8">
               <div className="flex justify-between items-end">
                 <h3 className="text-2xl font-black italic uppercase tracking-tight text-white">Performance 30 Dias</h3>
                 <div className="text-right">
@@ -280,12 +279,12 @@ export default function Dashboard() {
                   <div className="text-4xl font-black italic tracking-tighter text-white"><AnimatedNumber value={totalEarnings} prefix="R$ " /></div>
                 </div>
               </div>
-              <div className="h-[280px] w-full relative">
+              <div className="h-[300px] w-full relative pb-6">
                 <ChartContainer config={{ ganhos: { label: "Valor", color: "hsl(var(--primary))" } }}>
-                  <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                  <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 30 }}>
                     <defs><linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4}/><stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/></linearGradient></defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.06)" />
-                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }} dy={10} />
+                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }} dy={15} />
                     <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }} tickFormatter={(v) => `R$${v}`} />
                     <Tooltip content={<ChartTooltipContent />} />
                     <Area type="monotone" dataKey="ganhos" stroke="hsl(var(--primary))" strokeWidth={3} fill="url(#colorGanhos)" animationDuration={2000} />
@@ -346,7 +345,7 @@ export default function Dashboard() {
           .metric-card:hover { transform: translateY(-2px) !important; box-shadow: 0 8px 32px rgba(124, 58, 255, 0.2) !important; border-top: 1px solid rgba(124, 58, 255, 0.3) !important; transition: 0.25s ease !important; }
           .bg-green-500.absolute { animation: pulse-dot 2s infinite !important; }
           @keyframes pulse-dot { 0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); } 50% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } }
-          .dashboard-root::after { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(ellipse 50% 40% at 15% 10%, rgba(124, 58, 255, 0.07) 0%, transparent 60%), radial-gradient(ellipse 40% 35% at 85% 90%, rgba(34, 211, 238, 0.04) 0%, transparent 55%); animation: orbMove 12s ease-in-out infinite alternate; }
+          .dashboard-root::after { content: ""; position: fixed; inset: -5%; z-index: 0; pointer-events: none; background: radial-gradient(ellipse 50% 40% at 15% 10%, rgba(124, 58, 255, 0.07) 0%, transparent 60%), radial-gradient(ellipse 40% 35% at 85% 90%, rgba(34, 211, 238, 0.04) 0%, transparent 55%); animation: orbMove 12s ease-in-out infinite alternate; }
           @keyframes orbMove { 0% { background-position: 0% 0%, 100% 100%; opacity: 0.8; } 50% { background-position: 8% 12%, 92% 88%; opacity: 1; } 100% { background-position: 15% 5%, 85% 95%; opacity: 0.9; } }
         ` }} />
       </div>

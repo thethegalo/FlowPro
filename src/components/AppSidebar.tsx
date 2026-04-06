@@ -84,12 +84,12 @@ export function AppSidebar() {
     <Sidebar className="border-r border-white/5 bg-[#050508] transition-all duration-500 animate-in slide-in-from-left-full">
       <SidebarHeader className="p-6">
         <Link href="/dashboard" className="flex items-center group">
-          <div className="relative h-8 w-24 grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:drop-shadow-[0_0_12px_rgba(139,92,246,0.8)]">
+          <div className="relative h-10 w-32 transition-all duration-500 group-hover:drop-shadow-[0_0_12px_rgba(139,92,246,0.8)]">
             <Image 
               src={LOGO_URL} 
               alt="FlowPro Logo" 
               fill 
-              className="object-contain"
+              className="object-contain filter-none"
             />
           </div>
         </Link>
@@ -110,7 +110,7 @@ export function AppSidebar() {
                   >
                     <Link href={isApproved ? item.url : "#"} className="flex items-center gap-3">
                       {typeof item.icon === 'function' ? <item.icon /> : <item.icon className={`h-5 w-5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 ${pathname === item.url ? 'text-primary' : 'text-muted-foreground'}`} />}
-                      <span className="text-xs font-bold uppercase tracking-widest">{item.title}</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest">{item.title}</span>
                       {pathname === item.url && <ChevronRight className="ml-auto h-4 w-4 text-primary animate-pulse" />}
                     </Link>
                   </SidebarMenuButton>
@@ -133,7 +133,7 @@ export function AppSidebar() {
                 >
                   <Link href="/admin" className="flex items-center gap-3 text-primary">
                     <Shield className="h-5 w-5 animate-pulse" />
-                    <span className="text-xs font-black uppercase tracking-widest">Painel Admin</span>
+                    <span className="text-[11px] font-black uppercase tracking-widest">Painel Admin</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -159,7 +159,7 @@ export function AppSidebar() {
                 {formattedName}
               </p>
               <p className="text-[8px] font-bold uppercase text-muted-foreground truncate">
-                PLANO: {userData?.plan?.toUpperCase() === 'NENHUM' ? 'BLOQUEADO' : userData?.plan?.toUpperCase()}
+                PLANO: {userData?.plan ? (userData.plan.toUpperCase() === 'NENHUM' ? 'BLOQUEADO' : userData.plan.toUpperCase()) : 'BUSCANDO...'}
               </p>
             </div>
           </div>
