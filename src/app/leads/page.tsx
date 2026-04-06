@@ -53,7 +53,7 @@ export default function LeadsPage() {
   const { data: userData } = useDoc(userDocRef);
 
   const isUnlimited = useMemo(() => {
-    return user?.email === ADMIN_EMAIL || userData?.plan === 'vitalicio';
+    return true; // acesso liberado
   }, [user, userData]);
 
   const isProMember = useMemo(() => {
@@ -61,6 +61,7 @@ export default function LeadsPage() {
   }, [isUnlimited, userData]);
 
   const checkLimitAndTrack = async (type: 'leadsUsed' | 'messagesUsed', limitValue: number) => {
+    if (isUnlimited) return true;
     if (!db || !user || !userData) return false;
     
     if (isUnlimited) return true;
