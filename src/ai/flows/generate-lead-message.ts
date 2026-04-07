@@ -34,13 +34,11 @@ const leadMessagePrompt = ai.definePrompt({
   prompt: `Você é um especialista em Cold Outreach via WhatsApp.
 Gere uma mensagem curta e persuasiva para o dono do negócio "{{{businessName}}}" que atua como {{{businessType}}} em {{{city}}}.
 
-Regras de Ouro:
+Regras:
 1. Saudação amigável e humana.
-2. Identifique uma oportunidade clara de melhoria sem ser agressivo.
+2. Identifique uma oportunidade de melhoria clara.
 3. Máximo 300 caracteres.
-4. Linguagem natural, evite parecer um robô ou spam.
-
-Gere o script agora focado em conversão.`,
+4. Linguagem natural de WhatsApp.`,
 });
 
 const generateLeadMessageFlow = ai.defineFlow(
@@ -50,14 +48,9 @@ const generateLeadMessageFlow = ai.defineFlow(
     outputSchema: GenerateLeadMessageOutputSchema,
   },
   async (input) => {
-    try {
-      const { output } = await leadMessagePrompt(input);
-      if (!output) throw new Error('O motor neural não retornou uma mensagem válida.');
-      return output;
-    } catch (error: any) {
-      console.error('[GENKIT FLOW ERROR]', error);
-      throw new Error(`Falha na geração: ${error.message}`);
-    }
+    const { output } = await leadMessagePrompt(input);
+    if (!output) throw new Error('Falha na geração do script.');
+    return output;
   }
 );
 

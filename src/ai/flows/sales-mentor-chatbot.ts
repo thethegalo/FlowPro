@@ -35,8 +35,7 @@ Responda à pergunta do usuário com orientações práticas, diretas e motivado
 Regras de Operação:
 - Idioma: Português do Brasil.
 - Foco: Fechamento de vendas, quebra de objeções e prospecção ativa.
-- Tom: Mentor inspirador, técnico e focado em lucro.
-- Estrutura: Se necessário, use bullet points para facilitar a leitura.
+- Estrutura: Use parágrafos curtos ou bullet points.
 
 Pergunta do Operador: "{{{question}}}"`,
 });
@@ -48,14 +47,9 @@ const salesMentorChatFlow = ai.defineFlow(
     outputSchema: SalesMentorChatOutputSchema,
   },
   async (input) => {
-    try {
-      const { output } = await salesMentorPrompt(input);
-      if (!output) throw new Error('Falha na resposta neural.');
-      return output;
-    } catch (error: any) {
-      console.error('[GENKIT FLOW ERROR]', error);
-      throw new Error(`Erro na conexão neural: ${error.message}`);
-    }
+    const { output } = await salesMentorPrompt(input);
+    if (!output) throw new Error('Falha na resposta neural.');
+    return output;
   }
 );
 

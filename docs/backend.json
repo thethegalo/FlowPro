@@ -58,7 +58,20 @@
         "email": { "type": "string" },
         "businessType": { "type": "string" },
         "capturedAt": { "type": "string", "format": "date-time" },
-        "source": { "type": "string" }
+        "source": { "type": "string" },
+        "rating": { "type": "string" },
+        "city": { "type": "string" },
+        "state": { "type": "string" },
+        "address": { "type": "string" }
+      }
+    },
+    "MissionProgress": {
+      "title": "MissionProgress",
+      "type": "object",
+      "properties": {
+        "missionId": { "type": "string" },
+        "isCompleted": { "type": "boolean" },
+        "completedAt": { "type": "string", "format": "date-time" }
       }
     }
   },
@@ -76,11 +89,15 @@
     },
     "/users/{userId}/earnings/{earningId}": {
       "schema": { "$ref": "#/backend/entities/Earning" },
-      "description": "Individual earning records for chart and tracking."
+      "description": "Individual earning records."
     },
     "/users/{userId}/capturedLeads/{leadId}": {
       "schema": { "$ref": "#/backend/entities/CapturedLead" },
-      "description": "Leads saved by the user from radar or manually."
+      "description": "Leads saved by the user."
+    },
+    "/users/{userId}/missionProgress/{missionId}": {
+      "schema": { "$ref": "#/backend/entities/MissionProgress" },
+      "description": "Track completion of journey missions."
     }
   }
 }

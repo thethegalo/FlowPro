@@ -15,11 +15,9 @@ import {
   Filter,
   Users,
   Phone,
-  Send,
   Plus,
   UserPlus,
   Zap,
-  Star,
   ExternalLink,
   MessageSquare
 } from 'lucide-react';
@@ -129,7 +127,7 @@ export default function LeadsPage() {
 
     addDoc(collection(db, 'users', user.uid, 'capturedLeads'), leadData)
       .then(() => {
-        toast({ title: "Lead Salvo!", description: "Adicionado à sua base de dados com sucesso." });
+        toast({ title: "Lead Salvo!", description: "Adicionado à sua base de dados." });
         setCapturingId(null);
       })
       .catch((error) => {
@@ -187,7 +185,7 @@ export default function LeadsPage() {
       const res = await generateLeadMessage({
         businessName: lead.name || 'Dono do Negócio',
         businessType: lead.type || niche || 'Serviços',
-        city: lead.city || 'Sua cidade'
+        city: lead.city || city || 'Brasil'
       });
       
       if (res && res.message) {
@@ -197,8 +195,7 @@ export default function LeadsPage() {
         }
       }
     } catch (e) {
-      console.error('[AI MESSAGE ERROR]', e);
-      toast({ variant: "destructive", title: "Erro de IA", description: "O motor neural falhou ao gerar o script. Verifique sua conexão." });
+      toast({ variant: "destructive", title: "Erro de IA", description: "Não foi possível gerar o script agora." });
     } finally {
       setGeneratingMsg(null);
     }
@@ -359,7 +356,7 @@ export default function LeadsPage() {
                     <p className="text-xs font-black uppercase text-primary tracking-widest flex items-center gap-2">
                       <Zap className="h-4 w-4" /> MODO LIMITADO ATIVO
                     </p>
-                    <p className="text-xs text-white/70 font-medium">Você está vendo apenas os 5 primeiros leads. Assine o Pro para liberar 20+ por busca.</p>
+                    <p className="text-xs text-white/70 font-medium">Assine o Pro para liberar acesso ilimitado aos leads e ferramentas.</p>
                   </div>
                   <Button asChild size="sm" className="bg-primary text-white text-[9px] font-black h-10 px-6 rounded-xl">
                     <Link href="/paywall">UPGRADE PRO</Link>
