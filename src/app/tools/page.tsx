@@ -218,7 +218,6 @@ export default function ToolsPage() {
   const [ticket, setTicket] = useState("500");
   const [activeCategory, setActiveCategory] = useState('all');
 
-  // Calcula potencial tratando strings vazias como zero para não quebrar o layout
   const potentialEarnings = (Number(messagesPerDay || 0) * 30 * (Number(convRate || 0) / 100) * Number(ticket || 0));
 
   const filteredTools = activeCategory === 'all' 
@@ -226,17 +225,34 @@ export default function ToolsPage() {
     : TOOLS.filter(t => t.category === activeCategory);
 
   const handleInputChange = (setter: (v: string) => void, value: string) => {
-    // Permite apenas números e permite campo vazio (blank)
     const cleaned = value.replace(/\D/g, '').replace(/^0+/, '');
     setter(cleaned);
   };
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-[#050508]">
+      <div className="flex min-h-screen w-full bg-[#050508] relative overflow-hidden">
+        {/* Background Animado com Partículas */}
+        <div className="fixed inset-0 pointer-events-none z-0">
+          {[...Array(12)].map((_, i) => (
+            <span 
+              key={i}
+              className="absolute rounded-full bg-primary/10 blur-xl animate-pulse"
+              style={{
+                width: `${Math.random() * 300 + 100}px`,
+                height: `${Math.random() * 300 + 100}px`,
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`,
+                animationDuration: `${Math.random() * 10 + 5}s`
+              }}
+            />
+          ))}
+        </div>
+
         <AppSidebar />
         
-        <main className="flex-1 flex flex-col min-w-0">
+        <main className="flex-1 flex flex-col min-w-0 relative z-10">
           <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-50">
             <div className="flex items-center gap-4">
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
@@ -295,7 +311,8 @@ export default function ToolsPage() {
                       </div>
                     </div>
 
-                    <div className="bg-primary/5 border border-primary/20 rounded-[2rem] p-10 text-center space-y-4 relative overflow-hidden group">
+                    <div className="bg-primary/5 border border-primary/20 rounded-[2rem] p-10 text-center space-y-4 relative overflow-hidden group shadow-[0_0_80px_rgba(124,58,255,0.3)]">
+                      <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full -z-10 animate-pulse" />
                       <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform">
                         <TrendingUp className="h-24 w-24 text-primary" />
                       </div>
@@ -312,7 +329,7 @@ export default function ToolsPage() {
               </Card>
             </section>
 
-            {/* Ferramentas Recomendadas */}
+            {/* Hub de Ferramentas */}
             <section className="space-y-8 pb-20">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                 <div className="space-y-1">
@@ -328,7 +345,9 @@ export default function ToolsPage() {
                     variant={activeCategory === cat.id ? "default" : "outline"}
                     onClick={() => setActiveCategory(cat.id)}
                     className={`rounded-xl text-[9px] font-black uppercase tracking-widest h-11 px-6 whitespace-nowrap transition-all ${
-                      activeCategory === cat.id ? 'bg-primary border-primary' : 'border-white/10 hover:bg-white/5'
+                      activeCategory === cat.id 
+                      ? 'bg-primary border-primary shadow-[0_0_20px_rgba(124,58,255,0.4)]' 
+                      : 'border-white/10 hover:bg-white/5'
                     }`}
                   >
                     <span className="mr-2">{cat.icon}</span>
@@ -339,7 +358,10 @@ export default function ToolsPage() {
 
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {filteredTools.map((tool, i) => (
-                  <Card key={i} className="glass-card border-white/5 hover:border-primary/30 transition-all rounded-[2rem] group flex flex-col h-full">
+                  <Card 
+                    key={i} 
+                    className="glass-card border-white/5 hover:border-primary/30 transition-all rounded-[2rem] group flex flex-col h-full relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-[2px] before:bg-gradient-to-r before:from-primary before:via-accent before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity"
+                  >
                     <CardContent className="p-8 space-y-6 flex-1 flex flex-col">
                       <div className="flex justify-between items-start">
                         <div className="p-4 bg-white/5 rounded-2xl group-hover:scale-110 transition-transform border border-white/5 shadow-xl">
