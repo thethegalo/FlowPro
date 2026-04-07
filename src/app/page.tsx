@@ -164,7 +164,7 @@ export default function Home() {
       <main className="relative z-10">
         <section className="relative pt-16 pb-24 md:pt-32 md:pb-48 overflow-visible backdrop-blur-sm bg-white/[0.01]">
           <div className="container px-4 md:px-6 mx-auto relative z-20">
-            <div className="flex flex-col items-center lg:flex-row lg:items-center gap-6 lg:gap-24">
+            <div className="flex flex-col items-center lg:flex-row lg:items-center gap-6 lg:gap-24 min-h-[600px] overflow-visible">
               <div className="flex-1 text-center lg:text-left space-y-10 relative z-30 px-2 order-1 lg:order-1">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] mx-auto lg:mx-0 text-primary">
                   <Zap className="h-3 w-3 animate-pulse" />
@@ -206,9 +206,9 @@ export default function Home() {
               </div>
 
               <div className="flex-1 w-full flex justify-center order-2 lg:order-2">
-                <div className="h-32 w-32 rounded-full bg-primary/20 blur-3xl mx-auto lg:hidden animate-pulse" />
+                <div className="h-1 w-full lg:hidden" />
                 
-                <div className="hidden lg:flex flex-1 w-full relative aspect-square mx-auto max-w-[600px] items-center justify-center z-10">
+                <div className="hidden lg:flex flex-1 w-full relative aspect-square max-h-[500px] mx-auto max-w-[600px] items-center justify-center z-10 overflow-visible">
                   <div className="absolute inset-0 bg-primary/50 blur-[180px] rounded-full opacity-40 animate-pulse"></div>
                   
                   <div className="absolute w-[110%] h-[110%] border border-primary/10 rounded-full animate-spin-slow pointer-events-none">
