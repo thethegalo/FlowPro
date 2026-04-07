@@ -165,13 +165,13 @@ export default function Home() {
         <section className="relative pt-16 pb-24 md:pt-32 md:pb-48 overflow-visible">
           <div className="container px-6 mx-auto relative z-20">
             <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
-              <div className="flex-1 text-center lg:text-left space-y-10 relative z-30">
+              <div className="flex-1 text-center lg:text-left space-y-10 relative z-30 px-2">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] mx-auto lg:mx-0 text-primary">
                   <Zap className="h-3 w-3 animate-pulse" />
                   Motor Neural de Vendas Ativado
                 </div>
                 
-                <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tight md:tracking-tighter leading-[1.1] md:leading-[0.95] uppercase px-2 md:px-0">
+                <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.95] uppercase px-2 md:px-0">
                   SEU PRIMEIRO CLIENTE <br />
                   <span className="bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400 bg-clip-text text-transparent italic inline-block py-1">
                     COMEÇA COM UM SCRIPT.
@@ -223,7 +223,7 @@ export default function Home() {
 
         <section className="py-16 bg-gradient-to-b from-transparent via-primary/5 to-transparent border-y border-white/5 relative z-20">
           <div className="container px-6 mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0 relative">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0 relative max-w-5xl mx-auto">
               {stats.map((s, i) => (
                 <div key={i} className="flex flex-col items-center text-center space-y-2 group relative md:px-12">
                   {i < stats.length - 1 && (
@@ -274,7 +274,7 @@ export default function Home() {
              <h2 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter">O SEU PAINEL DE CONTROLE</h2>
              <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest mt-4">Toda a inteligência do mercado na palma da sua mão</p>
           </div>
-          <div className="scale-90 sm:scale-100 md:scale-125 lg:scale-150 transition-transform py-20 overflow-hidden">
+          <div className="scale-75 sm:scale-100 md:scale-125 lg:scale-150 transition-transform py-20 overflow-hidden">
             <MacbookShowcase />
           </div>
         </section>
@@ -369,7 +369,7 @@ export default function Home() {
             </div>
 
             <p className="mt-6 text-[10px] uppercase font-bold tracking-widest opacity-40 px-4">
-              Sem cartão de crédito • Acesso imediato • Cancele quando quiser
+              Acesso imediato
             </p>
             
             <div className="mt-20 flex flex-wrap justify-center gap-12 opacity-30 grayscale hover:grayscale-0 transition-all duration-700">
