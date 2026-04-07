@@ -62,11 +62,23 @@ export default function SimulatorPage() {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-[#050508]">
+      <div className="flex min-h-screen w-full bg-[#050508] relative">
+        {/* Background Grade */}
+        <div 
+          className="fixed inset-0 pointer-events-none z-0" 
+          style={{ 
+            backgroundImage: 'linear-gradient(rgba(124,58,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,255,0.03) 1px, transparent 1px)', 
+            backgroundSize: '40px 40px' 
+          }} 
+        />
+        
         <AppSidebar />
         
-        <main className="flex-1 flex flex-col min-w-0">
+        <main className="flex-1 flex flex-col min-w-0 relative z-10">
           <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-50">
+            {/* Soft Orb */}
+            <div className="absolute bg-primary/10 blur-[120px] rounded-full w-96 h-96 -top-48 -right-48 pointer-events-none" />
+            
             <div className="flex items-center gap-4">
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
               <div className="h-4 w-px bg-white/10 hidden md:block" />
@@ -93,23 +105,35 @@ export default function SimulatorPage() {
                   key={p.id}
                   variant={personality === p.id ? "default" : "outline"}
                   onClick={() => setPersonality(p.id as any)}
-                  className={`rounded-xl text-[9px] font-black uppercase tracking-widest h-12 transition-all ${personality === p.id ? 'bg-primary border-primary' : 'border-white/10'}`}
+                  className={`rounded-xl text-[9px] font-black uppercase tracking-widest h-12 transition-all ${
+                    personality === p.id 
+                    ? 'bg-primary border-primary shadow-[0_0_25px_rgba(124,58,255,0.5)] scale-105' 
+                    : 'border-white/10'
+                  }`}
                 >
                   <span className="mr-2 text-base">{p.icon}</span> {p.label}
                 </Button>
               ))}
             </div>
 
-            <Card className="flex-1 glass-card border-white/5 rounded-[2rem] overflow-hidden flex flex-col min-h-[500px]">
+            <Card className="flex-1 glass-card border-primary/10 rounded-[2rem] overflow-hidden flex flex-col min-h-[500px] shadow-[0_0_60px_rgba(124,58,255,0.1)]">
               <div className="flex-1 p-6 overflow-y-auto space-y-6">
                 {messages.length === 0 && (
-                  <div className="h-full flex flex-col items-center justify-center text-center opacity-30 space-y-4">
-                    <MessageSquare className="h-12 w-12" />
+                  <div className="h-full flex flex-col items-center justify-center text-center opacity-30 space-y-6">
+                    <MessageSquare className="h-12 w-12 animate-pulse" />
+                    <div className="space-y-2 w-full max-w-[200px]">
+                      <div className="h-1 bg-white/5 rounded animate-pulse w-full" />
+                      <div className="h-1 bg-white/5 rounded animate-pulse w-3/4 mx-auto" />
+                      <div className="h-1 bg-white/5 rounded animate-pulse w-1/2 mx-auto" />
+                    </div>
                     <p className="text-[10px] font-black uppercase tracking-[0.3em]">Envie sua primeira abordagem para começar</p>
                   </div>
                 )}
                 {messages.map((m, i) => (
                   <div key={i} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'} space-y-2 animate-in fade-in slide-in-from-bottom-2`}>
+                    <div className="flex items-center gap-2 mb-1">
+                      {m.role === 'customer' && <Bot className="h-5 w-5 text-primary" />}
+                    </div>
                     <div className={`max-w-[85%] p-5 rounded-2xl text-sm font-medium ${m.role === 'user' ? 'bg-primary text-white rounded-tr-none' : 'bg-white/5 border border-white/10 text-white rounded-tl-none'}`}>
                       {m.content}
                     </div>
