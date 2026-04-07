@@ -27,18 +27,20 @@ const leadMessagePrompt = ai.definePrompt({
     safetySettings: [
       { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
       { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+      { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+      { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
     ],
   },
   prompt: `Você é um especialista em Cold Outreach via WhatsApp.
 Gere uma mensagem curta e persuasiva para o dono do negócio "{{{businessName}}}" que atua como {{{businessType}}} em {{{city}}}.
 
 Regras de Ouro:
-1. Saudação amigável.
-2. Identifique uma oportunidade clara de melhoria.
+1. Saudação amigável e humana.
+2. Identifique uma oportunidade clara de melhoria sem ser agressivo.
 3. Máximo 300 caracteres.
-4. Linguagem humana e natural.
+4. Linguagem natural, evite parecer um robô ou spam.
 
-Gere o script agora.`,
+Gere o script agora focado em conversão.`,
 });
 
 const generateLeadMessageFlow = ai.defineFlow(
@@ -50,7 +52,7 @@ const generateLeadMessageFlow = ai.defineFlow(
   async (input) => {
     try {
       const { output } = await leadMessagePrompt(input);
-      if (!output) throw new Error('Erro ao gerar mensagem neural.');
+      if (!output) throw new Error('O motor neural não retornou uma mensagem válida.');
       return output;
     } catch (error: any) {
       console.error('[GENKIT FLOW ERROR]', error);

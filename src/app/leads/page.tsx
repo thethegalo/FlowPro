@@ -101,7 +101,6 @@ export default function LeadsPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Falha na busca de leads');
 
-      // Limite dinâmico: 20 para Pro/Admin, 5 para Free
       const finalLeads = isProMember ? (data.length > 20 ? data.slice(0, 20) : data) : data.slice(0, 5);
       setLeads(finalLeads);
 
@@ -135,7 +134,6 @@ export default function LeadsPage() {
       })
       .catch((error) => {
         setCapturingId(null);
-        // Emite erro contextual se falhar a permissão
         errorEmitter.emit('permission-error', new FirestorePermissionError({
           path: `users/${user.uid}/capturedLeads`,
           operation: 'create',
@@ -200,7 +198,7 @@ export default function LeadsPage() {
       }
     } catch (e) {
       console.error('[AI MESSAGE ERROR]', e);
-      toast({ variant: "destructive", title: "Erro de IA", description: "O motor neural falhou ao gerar o script. Verifique sua chave de API." });
+      toast({ variant: "destructive", title: "Erro de IA", description: "O motor neural falhou ao gerar o script. Verifique sua conexão." });
     } finally {
       setGeneratingMsg(null);
     }
@@ -455,7 +453,6 @@ export default function LeadsPage() {
                           </div>
                         </div>
 
-                        {/* Script Preview */}
                         {activeScript && activeScript.id === lead.id && (
                           <div className="mt-6 p-6 bg-white/[0.03] border border-primary/20 rounded-2xl animate-in zoom-in-95 duration-300">
                             <div className="flex items-center justify-between mb-4">

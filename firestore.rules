@@ -11,7 +11,24 @@ service cloud.firestore {
       allow update: if isOwner(userId) || isAdmin();
       allow delete: if isAdmin();
 
-      // Garante acesso total a todas as subcoleções para o dono ou admin
+      match /capturedLeads/{leadId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+      
+      match /missionProgress/{missionId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+      
+      match /earnings/{earningId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+      
+      match /subscriptions/{subId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow write: if isAdmin();
+      }
+
+      // Garante acesso total a todas as subcoleções para o dono ou admin de forma recursiva
       match /{allSubcollections=**} {
         allow read, write: if isOwner(userId) || isAdmin();
       }

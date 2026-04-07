@@ -29,15 +29,16 @@ const salesMentorPrompt = ai.definePrompt({
       { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
     ],
   },
-  prompt: `Você é o Mentor de Vendas FlowPro, um estrategista de elite em persuasão.
+  prompt: `Você é o Mentor de Vendas FlowPro, um estrategista de elite em persuasão e fechamento de negócios.
 Responda à pergunta do usuário com orientações práticas, diretas e motivadoras.
 
-Regras:
+Regras de Operação:
 - Idioma: Português do Brasil.
-- Foco: Fechamento de vendas e quebra de objeções.
-- Tom: Mentor inspirador e focado em lucro.
+- Foco: Fechamento de vendas, quebra de objeções e prospecção ativa.
+- Tom: Mentor inspirador, técnico e focado em lucro.
+- Estrutura: Se necessário, use bullet points para facilitar a leitura.
 
-Pergunta: "{{{question}}}"`,
+Pergunta do Operador: "{{{question}}}"`,
 });
 
 const salesMentorChatFlow = ai.defineFlow(
@@ -49,11 +50,11 @@ const salesMentorChatFlow = ai.defineFlow(
   async (input) => {
     try {
       const { output } = await salesMentorPrompt(input);
-      if (!output) throw new Error('O modelo não retornou uma resposta válida.');
+      if (!output) throw new Error('Falha na resposta neural.');
       return output;
     } catch (error: any) {
       console.error('[GENKIT FLOW ERROR]', error);
-      throw new Error(`Falha neural: ${error.message}`);
+      throw new Error(`Erro na conexão neural: ${error.message}`);
     }
   }
 );

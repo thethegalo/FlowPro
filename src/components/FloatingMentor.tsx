@@ -60,6 +60,7 @@ export function FloatingMentor() {
     return Math.max(0, 10 - used);
   }, [userData, isUnlimited]);
 
+  // CRITICAL: Move conditional return to AFTER all hook declarations
   if (['/', '/auth', '/quiz'].includes(pathname)) return null;
 
   const checkLimitAndTrack = async () => {
