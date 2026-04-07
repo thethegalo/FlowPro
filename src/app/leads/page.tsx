@@ -14,7 +14,6 @@ import {
   Filter,
   Users,
   Phone,
-  Plus,
   UserPlus,
   Zap,
   ExternalLink,
@@ -55,7 +54,6 @@ export default function LeadsPage() {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [generatingMsg, setGeneratingMsg] = useState<string | null>(null);
-  const [capturingId, setCapturingId] = useState<string | null>(null);
   const [approachedLeads, setApproachedLeads] = useState<string[]>([]);
   
   const [activeScript, setActiveScript] = useState<{ id: string, message: string, phone: string } | null>(null);
@@ -112,40 +110,6 @@ export default function LeadsPage() {
       toast({ variant: "destructive", title: "Erro na Busca", description: e.message || "Falha na conexão neural." });
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleSaveLead = async (lead: any) => {
-    if (!db || !user) return;
-    
-    setCapturingId(lead.id);
-    
-    const leadData = {
-      name: lead.name || '',
-      phone: lead.phone || '',
-      email: lead.email || '', 
-      businessType: lead.type || niche || 'Serviços',
-      capturedAt: serverTimestamp(),
-      source: 'radar',
-      rating: lead.rating || '0',
-      city: lead.city || city || '',
-      state: lead.state || state || '',
-      address: lead.address || '',
-      website: lead.website || ''
-    };
-
-    try {
-      await addDoc(collection(db, 'users', user.uid, 'capturedLeads'), leadData);
-      toast({ title: "Lead Salvo!", description: "Adicionado à sua base de dados com sucesso." });
-    } catch (error: any) {
-      console.error('Erro ao salvar lead:', error);
-      errorEmitter.emit('permission-error', new FirestorePermissionError({
-        path: `users/${user.uid}/capturedLeads`,
-        operation: 'create',
-        requestResourceData: leadData
-      }));
-    } finally {
-      setCapturingId(null);
     }
   };
 
@@ -436,17 +400,6 @@ export default function LeadsPage() {
                             >
                               {generatingMsg === lead.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
                               SCRIPT IA
-                            </Button>
-
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => handleSaveLead(lead)}
-                              disabled={capturingId === lead.id}
-                              className="h-12 border-white/10 bg-white/5 text-white rounded-xl text-[10px] font-black uppercase tracking-widest gap-2 hover:bg-white/10 transition-all"
-                            >
-                              {capturingId === lead.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-                              CAPTURAR
                             </Button>
 
                             <Button 
