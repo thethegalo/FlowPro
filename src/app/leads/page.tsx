@@ -182,10 +182,15 @@ export default function LeadsPage() {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-[#050508]">
+      <div className="flex min-h-screen w-full bg-[#050508] relative">
+        <div className="fixed inset-0 pointer-events-none z-0">
+          <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-primary/5 rounded-full blur-[180px]"></div>
+          <div className="absolute bottom-0 left-0 w-[40%] h-[40%] bg-cyan-500/3 rounded-full blur-[150px]"></div>
+        </div>
+
         <AppSidebar />
         
-        <main className="flex-1 flex flex-col min-w-0">
+        <main className="flex-1 flex flex-col min-w-0 relative z-10">
           <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-50">
             <div className="flex items-center gap-4">
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
@@ -267,7 +272,7 @@ export default function LeadsPage() {
           </header>
 
           <div className="flex-1 container max-w-4xl mx-auto p-4 md:p-8 space-y-8">
-            <Card className="glass-card border-white/10 overflow-hidden rounded-[2rem]">
+            <Card className="glass-card border-primary/20 overflow-hidden rounded-[2rem] shadow-[0_0_60px_rgba(124,58,255,0.08)]">
               <CardHeader className="bg-white/5 border-b border-white/5 p-6">
                 <CardTitle className="text-sm font-black uppercase tracking-widest italic flex items-center gap-2">
                   <Filter className="h-4 w-4 text-primary" /> Parâmetros do Radar Neural
@@ -308,7 +313,7 @@ export default function LeadsPage() {
                     <Button 
                       onClick={handleSearch} 
                       disabled={loading}
-                      className="w-full h-16 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-[0.98]"
+                      className="w-full h-16 bg-primary hover:bg-primary/90 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 transition-all active:scale-[0.98] relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:-translate-x-full hover:before:translate-x-full before:transition-transform before:duration-700"
                     >
                       {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <><Search className="h-5 w-5 mr-2" /> ATIVAR BUSCA NEURAL</>}
                     </Button>
@@ -330,7 +335,7 @@ export default function LeadsPage() {
               </div>
 
               {!isProMember && leads.length > 0 && (
-                <div className="p-6 bg-primary/10 border border-primary/20 rounded-3xl flex items-center justify-between gap-6">
+                <div className="p-6 bg-primary/10 border border-primary/20 rounded-3xl flex items-center justify-between gap-6 shadow-[0_0_40px_rgba(139,92,246,0.1)]">
                   <div className="space-y-1">
                     <p className="text-xs font-black uppercase text-primary tracking-widest flex items-center gap-2">
                       <Zap className="h-4 w-4" /> MODO LIMITADO ATIVO
@@ -363,7 +368,7 @@ export default function LeadsPage() {
               ) : (
                 <div className="grid gap-4">
                   {leads.map((lead) => (
-                    <Card key={lead.id} className={`glass-card border-white/10 transition-all duration-500 rounded-[2rem] overflow-hidden ${approachedLeads.includes(lead.id) ? 'border-primary/40 opacity-80' : ''}`}>
+                    <Card key={lead.id} className={`glass-card border-white/10 transition-all duration-300 rounded-[2rem] overflow-hidden hover:shadow-[0_0_30px_rgba(124,58,255,0.12)] hover:border-primary/30 ${approachedLeads.includes(lead.id) ? 'border-primary/40 opacity-80' : ''}`}>
                       <CardContent className="p-8">
                         <div className="flex flex-col xl:flex-row justify-between gap-8">
                           <div className="flex gap-6 items-start">
@@ -374,7 +379,7 @@ export default function LeadsPage() {
                               <div className="flex items-center gap-3">
                                 <h4 className="font-black text-xl italic leading-none text-white uppercase">{lead.name}</h4>
                                 {lead.rating && lead.rating !== '0' && (
-                                  <Badge variant="outline" className="bg-yellow-500/10 border-yellow-500/20 text-yellow-500 text-[10px] font-black">
+                                  <Badge variant="outline" className="bg-yellow-500/10 border-yellow-500/20 text-yellow-500 text-[10px] font-black shadow-[0_0_10px_rgba(234,179,8,0.3)]">
                                     ★ {lead.rating}
                                   </Badge>
                                 )}
@@ -390,13 +395,13 @@ export default function LeadsPage() {
                             </div>
                           </div>
 
-                          <div className="flex flex-wrap gap-3 items-center">
+                          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 items-center">
                             <Button 
                               variant="default" 
                               size="sm"
                               onClick={() => handleGenMessage(lead)}
                               disabled={generatingMsg === lead.id}
-                              className="h-12 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest gap-2 shadow-lg hover:scale-105 active:scale-95 transition-all"
+                              className="w-full sm:w-auto h-12 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest gap-2 shadow-lg hover:scale-105 active:scale-95 transition-all"
                             >
                               {generatingMsg === lead.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
                               SCRIPT IA
@@ -410,7 +415,7 @@ export default function LeadsPage() {
                                   setApproachedLeads(prev => [...prev, lead.id]);
                                 }
                               }}
-                              className={`h-12 rounded-xl text-[10px] font-black uppercase tracking-widest ${approachedLeads.includes(lead.id) ? 'text-green-500 bg-green-500/5' : 'text-muted-foreground'}`}
+                              className={`w-full sm:w-auto h-12 rounded-xl text-[10px] font-black uppercase tracking-widest ${approachedLeads.includes(lead.id) ? 'text-green-500 bg-green-500/5' : 'text-muted-foreground'}`}
                             >
                               {approachedLeads.includes(lead.id) ? <Check className="h-5 w-5 mr-2" /> : <div className="h-5 w-5 mr-2 border-2 border-current/20 rounded-full" />}
                               {approachedLeads.includes(lead.id) ? 'ABORDADO' : 'MARCAR'}
@@ -419,7 +424,7 @@ export default function LeadsPage() {
                         </div>
 
                         {activeScript && activeScript.id === lead.id && (
-                          <div className="mt-6 p-6 bg-white/[0.03] border border-primary/20 rounded-2xl animate-in zoom-in-95 duration-300">
+                          <div className="mt-6 p-6 bg-black/40 backdrop-blur-sm border border-primary/20 rounded-2xl animate-in zoom-in-95 duration-300">
                             <div className="flex items-center justify-between mb-4">
                               <h5 className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
                                 <MessageSquare className="h-3 w-3" /> Script de Ataque Gerado
@@ -435,7 +440,7 @@ export default function LeadsPage() {
                             />
                             <Button 
                               onClick={() => handleWhatsApp(activeScript.phone, activeScript.message)}
-                              className="w-full bg-green-600 hover:bg-green-500 text-white font-black uppercase tracking-widest text-[10px] h-12 rounded-xl"
+                              className="w-full bg-green-600 hover:bg-green-500 text-white font-black uppercase tracking-widest text-[10px] h-12 rounded-xl shadow-[0_0_20px_rgba(22,163,74,0.2)]"
                             >
                               ABRIR WHATSAPP <ExternalLink className="ml-2 h-4 w-4" />
                             </Button>

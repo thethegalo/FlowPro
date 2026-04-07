@@ -105,10 +105,15 @@ export default function AbordagensPage() {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-[#050508]">
+      <div className="flex min-h-screen w-full bg-[#050508] relative">
+        <div className="fixed inset-0 pointer-events-none z-0">
+          <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-green-500/5 rounded-full blur-[150px]"></div>
+          <div className="absolute bottom-0 right-0 w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px]"></div>
+        </div>
+
         <AppSidebar />
         
-        <main className="flex-1 flex flex-col min-w-0">
+        <main className="flex-1 flex flex-col min-w-0 relative z-10">
           <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-50">
             <div className="flex items-center gap-4">
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
@@ -123,11 +128,11 @@ export default function AbordagensPage() {
           </header>
 
           <div className="flex-1 container max-w-4xl mx-auto p-4 md:p-8 space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8">
               
               {/* Coluna de Inputs */}
               <div className="lg:col-span-5 space-y-6">
-                <Card className="glass-card border-white/10 rounded-[2rem] bg-[#0e0e1a]">
+                <Card className="glass-card border-white/10 rounded-[2rem] bg-[#0e0e1a] shadow-[0_0_40px_rgba(0,0,0,0.3)]">
                   <CardHeader className="border-b border-white/5 p-6">
                     <CardTitle className="text-xs font-black uppercase tracking-widest italic flex items-center gap-2">
                       <Zap className="h-4 w-4 text-primary" /> Parâmetros da Carga
@@ -159,7 +164,7 @@ export default function AbordagensPage() {
                             onChange={(e) => setWhatsapp(e.target.value)}
                           />
                         </div>
-                        <Button variant="outline" size="icon" onClick={handleCopyPhone} className="h-12 w-12 rounded-xl border-white/10 hover:bg-white/5">
+                        <Button variant="outline" size="icon" onClick={handleCopyPhone} className="h-12 w-12 rounded-xl border-white/10 hover:bg-white/5 hover:shadow-[0_0_15px_rgba(255,255,255,0.05)] transition-all">
                           <Copy className="h-4 w-4" />
                         </Button>
                       </div>
@@ -187,10 +192,10 @@ export default function AbordagensPage() {
                       <button
                         key={key}
                         onClick={() => setSelectedModel(key as any)}
-                        className={`flex items-center gap-3 p-4 rounded-2xl border text-left transition-all ${
+                        className={`flex items-center gap-3 p-4 rounded-2xl border text-left transition-all duration-300 ${
                           selectedModel === key 
-                          ? 'bg-primary/10 border-primary text-white shadow-lg shadow-primary/10' 
-                          : 'bg-white/[0.02] border-white/5 text-muted-foreground hover:bg-white/5'
+                          ? 'bg-primary/10 border-primary text-white shadow-[0_0_20px_rgba(124,58,255,0.3)] scale-[1.02]' 
+                          : 'bg-white/[0.02] border-white/5 text-muted-foreground hover:bg-white/5 hover:border-primary/40 hover:shadow-[0_0_30px_rgba(124,58,255,0.1)]'
                         }`}
                       >
                         <div className={`p-2 rounded-lg ${selectedModel === key ? 'bg-primary text-white' : 'bg-white/5'}`}>
@@ -205,7 +210,7 @@ export default function AbordagensPage() {
 
               {/* Coluna de Preview e Mensagem */}
               <div className="lg:col-span-7 space-y-6">
-                <Card className="glass-card border-white/10 rounded-[2.5rem] bg-[#0b0b14] h-full flex flex-col overflow-hidden">
+                <Card className="glass-card border-white/10 rounded-[2.5rem] bg-[#0b0b14] h-full flex flex-col overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.4)]">
                   <CardHeader className="border-b border-white/5 p-8 flex flex-row items-center justify-between">
                     <div className="space-y-1">
                       <CardTitle className="text-sm font-black uppercase italic tracking-widest text-primary flex items-center gap-2">
@@ -216,7 +221,12 @@ export default function AbordagensPage() {
                       </CardDescription>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" onClick={handleCopyMessage} className="h-10 rounded-xl font-black uppercase text-[10px] border-white/10 gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={handleCopyMessage} 
+                        className="h-10 rounded-xl font-black uppercase text-[10px] border-white/10 gap-2 hover:bg-white/5 hover:shadow-[0_0_20px_rgba(124,58,255,0.4)] active:scale-95 transition-all"
+                      >
                         {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
                         {copied ? 'COPIADO' : 'COPIAR'}
                       </Button>
@@ -225,7 +235,7 @@ export default function AbordagensPage() {
                   
                   <CardContent className="p-8 flex-1 flex flex-col gap-6">
                     <Textarea 
-                      className="flex-1 min-h-[350px] bg-black/40 p-8 rounded-2xl border border-white/5 text-base font-medium italic whitespace-pre-wrap leading-relaxed text-white/90 focus-visible:ring-primary resize-none"
+                      className="flex-1 min-h-[350px] bg-black/60 backdrop-blur-sm p-8 rounded-2xl border border-primary/20 text-base font-medium italic whitespace-pre-wrap leading-relaxed text-white/90 focus-visible:ring-primary resize-none shadow-inner"
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                     />

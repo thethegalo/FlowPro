@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -161,8 +160,8 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-[#0a0a0f] relative overflow-x-hidden">
         <div className="fixed inset-0 pointer-events-none z-0">
-          <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px]"></div>
-          <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/5 rounded-full blur-[120px]"></div>
+          <div className="absolute top-0 right-0 w-[45%] h-[45%] bg-primary/6 rounded-full blur-[160px] animate-pulse"></div>
+          <div className="absolute bottom-0 left-0 w-[35%] h-[35%] bg-accent/4 rounded-full blur-[130px]"></div>
         </div>
 
         <AppSidebar />
@@ -182,10 +181,10 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
           </header>
 
           <div className="flex-1 container max-w-7xl mx-auto p-4 md:p-8 space-y-8 pb-32">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8">
               
               <div className="lg:col-span-5 space-y-6">
-                <Card className="glass-card border-white/10 rounded-[2rem] bg-white/[0.02] overflow-hidden">
+                <Card className="glass-card border-white/10 rounded-[2rem] bg-white/[0.02] overflow-hidden shadow-[0_0_80px_rgba(124,58,255,0.06)] backdrop-blur-sm">
                   <CardHeader className="border-b border-white/5 bg-white/[0.02] p-6">
                     <CardTitle className="text-xs font-black uppercase tracking-widest italic flex items-center gap-2">
                       <Rocket className="h-4 w-4 text-primary" /> Parâmetros de Lançamento
@@ -223,8 +222,8 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                             onClick={() => setFormData({...formData, objective: obj})}
                             className={`px-3 py-2 rounded-lg text-[9px] font-black uppercase transition-all border ${
                               formData.objective === obj 
-                              ? 'bg-primary/20 border-primary text-primary' 
-                              : 'bg-white/5 border-white/5 text-muted-foreground hover:bg-white/10'
+                              ? 'bg-primary/20 border-primary text-primary shadow-[0_0_15px_rgba(124,58,255,0.4)]' 
+                              : 'bg-white/5 border-white/5 text-muted-foreground hover:bg-white/[0.08]'
                             }`}
                           >
                             {obj}
@@ -242,8 +241,8 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                             onClick={() => setFormData({...formData, visualStyle: style})}
                             className={`px-3 py-2 rounded-lg text-[9px] font-black uppercase transition-all border ${
                               formData.visualStyle === style 
-                              ? 'bg-accent/20 border-accent text-accent' 
-                              : 'bg-white/5 border-white/5 text-muted-foreground hover:bg-white/10'
+                              ? 'bg-accent/20 border-accent text-accent shadow-[0_0_15px_rgba(124,58,255,0.4)]' 
+                              : 'bg-white/5 border-white/5 text-muted-foreground hover:bg-white/[0.08]'
                             }`}
                           >
                             {style}
@@ -332,8 +331,8 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                             onClick={() => setFormData({...formData, tone: tone.label})}
                             className={`p-2 rounded-xl border flex flex-col items-center gap-1 transition-all ${
                               formData.tone === tone.label 
-                              ? 'bg-primary/10 border-primary text-white' 
-                              : 'bg-white/5 border-white/5 text-muted-foreground opacity-60'
+                              ? 'bg-primary/10 border-primary text-white shadow-[0_0_15px_rgba(124,58,255,0.4)]' 
+                              : 'bg-white/5 border-white/5 text-muted-foreground opacity-60 hover:bg-white/[0.08]'
                             }`}
                           >
                             <span className="text-sm">{tone.emoji}</span>
@@ -352,8 +351,8 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                             onClick={() => toggleSection(sec)}
                             className={`px-3 py-2 rounded-lg text-[9px] font-black uppercase transition-all border ${
                               formData.sections.includes(sec) 
-                              ? 'bg-green-500/20 border-green-500 text-green-400' 
-                              : 'bg-white/5 border-white/5 text-muted-foreground opacity-50 hover:opacity-100'
+                              ? 'bg-green-500/20 border-green-500 text-green-400 shadow-[0_0_10px_rgba(34,197,94,0.3)]' 
+                              : 'bg-white/5 border-white/5 text-muted-foreground opacity-50 hover:opacity-100 hover:bg-white/[0.08]'
                             }`}
                           >
                             {sec}
@@ -384,7 +383,7 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
 
                     <Button 
                       onClick={generatePrompt}
-                      className="w-full h-16 bg-primary hover:bg-primary/90 text-white rounded-2xl font-black uppercase tracking-[0.2em] shadow-[0_10px_30px_rgba(124,58,255,0.3)] transition-all active:scale-95 group"
+                      className="w-full h-16 bg-primary hover:bg-primary/90 text-white rounded-2xl font-black uppercase tracking-[0.2em] shadow-[0_10px_30px_rgba(124,58,255,0.3)] transition-all active:scale-95 group relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:-translate-x-full hover:before:translate-x-full before:transition-transform before:duration-700"
                     >
                       ATIVAR ENGENHARIA ⚡
                     </Button>
@@ -394,7 +393,7 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
 
               <div className="lg:col-span-7 space-y-8">
                 
-                <Card className="glass-card border-white/10 rounded-[2.5rem] bg-[#0b0b14] overflow-hidden flex flex-col h-fit">
+                <Card className="glass-card border-white/10 rounded-[2.5rem] bg-[#0b0b14] overflow-hidden flex flex-col h-fit shadow-[0_0_100px_rgba(124,58,255,0.15)]">
                   <CardHeader className="border-b border-white/5 p-6 flex flex-row items-center justify-between">
                     <div className="space-y-1">
                       <CardTitle className="text-sm font-black uppercase italic tracking-widest text-primary flex items-center gap-2">
@@ -422,7 +421,7 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                     <div className={`relative transition-all duration-700 ease-in-out ${previewDevice === 'desktop' ? 'w-full max-w-[550px]' : 'w-[280px]'}`}>
                       
                       {previewDevice === 'desktop' && (
-                        <div className="w-full h-[350px] bg-black border-[12px] border-zinc-800 rounded-3xl shadow-2xl relative overflow-hidden flex flex-col">
+                        <div className="w-full h-[350px] bg-black border-[12px] border-zinc-800 rounded-3xl shadow-2xl relative overflow-hidden flex flex-col backdrop-blur-md">
                           <div className="h-6 bg-zinc-900 border-b border-white/5 flex items-center px-3 gap-1.5">
                             <div className="h-2 w-2 rounded-full bg-red-500/50" />
                             <div className="h-2 w-2 rounded-full bg-yellow-500/50" />
@@ -458,7 +457,7 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                       )}
 
                       {previewDevice === 'mobile' && (
-                        <div className="w-full h-[480px] bg-black border-[10px] border-zinc-800 rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col">
+                        <div className="w-full h-[480px] bg-black border-[10px] border-zinc-800 rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col backdrop-blur-md">
                           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 bg-zinc-800 rounded-b-xl z-20" />
                           <div className="h-1.5 w-full flex mt-5 relative z-10">
                             {formData.colors.map((c, i) => (
@@ -494,7 +493,7 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                 </Card>
 
                 {generatedPrompt && (
-                  <Card className="glass-card border-primary/30 rounded-[2.5rem] bg-[#0b0b14] animate-in fade-in slide-in-from-bottom-4 duration-700">
+                  <Card className="glass-card border-primary/30 rounded-[2.5rem] bg-[#0b0b14] animate-in fade-in slide-in-from-bottom-4 duration-700 shadow-[0_0_60px_rgba(124,58,255,0.1)]">
                     <CardHeader className="border-b border-white/5 p-8 flex flex-row items-center justify-between">
                       <div className="space-y-1">
                         <CardTitle className="text-sm font-black uppercase italic tracking-widest text-primary flex items-center gap-2">
@@ -513,7 +512,7 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                       </div>
                     </CardHeader>
                     <CardContent className="p-8">
-                      <div className="bg-black/40 p-8 rounded-2xl border border-white/5 text-sm font-medium italic whitespace-pre-wrap leading-relaxed text-white/90 font-mono">
+                      <div className="bg-black/40 p-8 rounded-2xl border border-white/5 text-sm font-medium italic whitespace-pre-wrap leading-relaxed text-white/90 font-mono shadow-inner">
                         {generatedPrompt}
                       </div>
                     </CardContent>
