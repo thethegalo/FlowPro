@@ -11,7 +11,7 @@ service cloud.firestore {
       allow update: if isOwner(userId) || isAdmin();
       allow delete: if isAdmin();
 
-      // Permissão recursiva para todas as subcoleções (leads, progress, earnings, etc)
+      // Permissão total para todas as subcoleções (leads, progress, earnings, etc)
       match /{allSubcollections=**} {
         allow read, write: if isOwner(userId) || isAdmin();
       }

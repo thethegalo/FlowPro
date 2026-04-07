@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -119,11 +120,10 @@ export default function LeadsPage() {
     
     setCapturingId(lead.id);
     
-    // Alinha os campos com o esquema do banco de dados ( CapturedLead )
     const leadData = {
       name: lead.name || '',
       phone: lead.phone || '',
-      email: '', // API Places raramente retorna email direto
+      email: '', 
       businessType: lead.type || niche || 'Serviços',
       capturedAt: serverTimestamp(),
       source: 'radar',
@@ -206,8 +206,7 @@ export default function LeadsPage() {
         }
       }
     } catch (e: any) {
-      console.error('[IA GEN ERROR]', e);
-      toast({ variant: "destructive", title: "Erro de IA", description: e.message || "Não foi possível gerar o script agora." });
+      toast({ variant: "destructive", title: "Erro de IA", description: "Não foi possível gerar o script. Verifique sua chave API." });
     } finally {
       setGeneratingMsg(null);
     }

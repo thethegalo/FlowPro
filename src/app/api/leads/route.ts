@@ -1,3 +1,4 @@
+
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
@@ -8,7 +9,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Nicho é obrigatório.' }, { status: 400 });
     }
 
-    // Tenta múltiplas variáveis de ambiente para máxima compatibilidade
+    // Busca centralizada de chaves de API
     const apiKey = 
       process.env.GOOGLE_PLACES_API_KEY || 
       process.env.GEMINI_API_KEY || 
@@ -17,7 +18,7 @@ export async function POST(req: Request) {
 
     if (!apiKey || apiKey.length < 10) {
       return NextResponse.json(
-        { error: 'Chave de API não configurada corretamente no ambiente.' },
+        { error: 'Chave de API não configurada. Configure GEMINI_API_KEY no seu ambiente.' },
         { status: 503 }
       );
     }
@@ -39,9 +40,8 @@ export async function POST(req: Request) {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error('[GOOGLE PLACES ERROR]', response.status, errorData);
       return NextResponse.json(
-        { error: `Erro na API do Google: ${response.status}. Verifique se a API Places (New) está ativa.` },
+        { error: `Erro na API: ${response.status}. Verifique se a API Places está ativa.` },
         { status: response.status }
       );
     }

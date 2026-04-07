@@ -47,9 +47,14 @@ const salesMentorChatFlow = ai.defineFlow(
     outputSchema: SalesMentorChatOutputSchema,
   },
   async (input) => {
-    const { output } = await salesMentorPrompt(input);
-    if (!output) throw new Error('Falha na resposta neural.');
-    return output;
+    try {
+      const { output } = await salesMentorPrompt(input);
+      if (!output) throw new Error('Falha na resposta neural.');
+      return output;
+    } catch (error: any) {
+      console.error('[MENTOR FLOW ERROR]', error);
+      throw new Error(`Erro no Mentor: ${error.message}`);
+    }
   }
 );
 

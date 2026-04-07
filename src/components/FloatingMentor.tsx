@@ -60,7 +60,6 @@ export function FloatingMentor() {
     return Math.max(0, 10 - used);
   }, [userData, isUnlimited]);
 
-  // CRITICAL: Return null only after hooks are declared
   if (['/', '/auth', '/quiz'].includes(pathname)) return null;
 
   const checkLimitAndTrack = async () => {
@@ -113,7 +112,7 @@ export function FloatingMentor() {
         throw new Error('Resposta vazia');
       }
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'assistant', content: "Erro na conexão neural. Tente novamente em alguns instantes." }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: "Erro na conexão neural. Tente novamente." }]);
     } finally {
       setIsLoading(false);
     }
@@ -159,7 +158,7 @@ export function FloatingMentor() {
                 <div className="flex justify-start">
                   <div className="bg-white/5 p-3 rounded-2xl rounded-tl-none flex items-center gap-2 border border-white/10 animate-pulse">
                     <Loader2 className="h-3 w-3 animate-spin text-primary" />
-                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Neural Thinking...</span>
+                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Pensando...</span>
                   </div>
                 </div>
               )}
