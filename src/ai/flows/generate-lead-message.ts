@@ -24,13 +24,15 @@ const leadMessagePrompt = ai.definePrompt({
   input: { schema: GenerateLeadMessageInputSchema },
   output: { schema: GenerateLeadMessageOutputSchema },
   prompt: `Você é um especialista em Cold Outreach via WhatsApp.
-Gere uma mensagem curta e persuasiva para o dono do negócio "{{{businessName}}}" em {{{city}}}.
+Gere uma mensagem curta e persuasiva para o dono do negócio "{{{businessName}}}" que atua como {{{businessType}}} em {{{city}}}.
 
-REGRAS:
-1. Comece com uma saudação amigável.
-2. Identifique uma oportunidade de melhoria rápida.
+Regras de Ouro:
+1. Saudação amigável.
+2. Identifique uma oportunidade clara de melhoria.
 3. Máximo 300 caracteres.
-4. Linguagem humana, evite parecer robô ou spam.`,
+4. Linguagem humana e natural.
+
+Gere o script agora.`,
 });
 
 const generateLeadMessageFlow = ai.defineFlow(

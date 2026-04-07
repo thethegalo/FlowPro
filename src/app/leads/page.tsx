@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -59,10 +60,8 @@ export default function LeadsPage() {
   const [capturingId, setCapturingId] = useState<string | null>(null);
   const [approachedLeads, setApproachedLeads] = useState<string[]>([]);
   
-  // Estado para o script gerado
   const [activeScript, setActiveScript] = useState<{ id: string, message: string, phone: string } | null>(null);
 
-  // Manual Capture Form State
   const [manualLead, setManualLead] = useState({
     name: '',
     email: '',
@@ -453,7 +452,7 @@ export default function LeadsPage() {
                           </div>
                         </div>
 
-                        {/* Modal de Script Gerado */}
+                        {/* Script Preview */}
                         {activeScript && activeScript.id === lead.id && (
                           <div className="mt-6 p-6 bg-white/[0.03] border border-primary/20 rounded-2xl animate-in zoom-in-95 duration-300">
                             <div className="flex items-center justify-between mb-4">
