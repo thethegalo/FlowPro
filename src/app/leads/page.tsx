@@ -14,22 +14,19 @@ import {
   Filter,
   Users,
   Phone,
-  Download,
   Send,
-  History,
   Plus,
-  Mail,
-  Briefcase,
   UserPlus,
   Zap,
-  Globe,
-  Star
+  Star,
+  ExternalLink,
+  MessageSquare
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { generateLeadMessage } from '@/ai/flows/generate-lead-message';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
-import { doc, updateDoc, increment, serverTimestamp, collection, addDoc } from 'firebase/firestore';
+import { collection, doc, serverTimestamp, addDoc } from 'firebase/firestore';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import {
@@ -41,6 +38,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Textarea } from '@/components/ui/textarea';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const STATES = ["SP", "RJ", "MG", "PR", "SC", "RS", "BA", "CE", "PE", "GO"];
 const ADMIN_EMAIL = "thethegalo@gmail.com";
@@ -58,6 +58,9 @@ export default function LeadsPage() {
   const [generatingMsg, setGeneratingMsg] = useState<string | null>(null);
   const [capturingId, setCapturingId] = useState<string | null>(null);
   const [approachedLeads, setApproachedLeads] = useState<string[]>([]);
+  
+  // Estado para o script gerado
+  const [activeScript, setActiveScript] = useState<{ id: string, message: string, phone: string } | null>(null);
 
   // Manual Capture Form State
   const [manualLead, setManualLead] = useState({
@@ -99,7 +102,6 @@ export default function LeadsPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Falha na busca de leads');
 
-      // Limite de 20 para PRO e 5 para Free
       const finalLeads = isProMember ? (data.length > 20 ? data.slice(0, 20) : data) : data.slice(0, 5);
       setLeads(finalLeads);
 
@@ -120,18 +122,25 @@ export default function LeadsPage() {
     if (!db || !user) return;
     
     setCapturingId(lead.id);
-    try {
-      await addDoc(collection(db, 'users', user.uid, 'capturedLeads'), {
-        ...lead,
-        capturedAt: serverTimestamp(),
-        source: 'radar'
+    const leadData = {
+      ...lead,
+      capturedAt: serverTimestamp(),
+      source: 'radar'
+    };
+
+    addDoc(collection(db, 'users', user.uid, 'capturedLeads'), leadData)
+      .then(() => {
+        toast({ title: "Lead Salvo!", description: "Adicionado à sua base de dados com sucesso." });
+        setCapturingId(null);
+      })
+      .catch((error) => {
+        setCapturingId(null);
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: `users/${user.uid}/capturedLeads`,
+          operation: 'create',
+          requestResourceData: leadData
+        }));
       });
-      toast({ title: "Lead Salvo!", description: "Adicionado à sua base de dados com sucesso." });
-    } catch (e: any) {
-      toast({ variant: "destructive", title: "Erro ao Salvar", description: "Verifique suas permissões de acesso." });
-    } finally {
-      setCapturingId(null);
-    }
   };
 
   const handleManualSave = async (e: React.FormEvent) => {
@@ -139,33 +148,38 @@ export default function LeadsPage() {
     if (!db || !user) return;
     
     setIsManualSaving(true);
-    try {
-      await addDoc(collection(db, 'users', user.uid, 'capturedLeads'), {
-        ...manualLead,
-        capturedAt: serverTimestamp(),
-        source: 'manual'
+    const leadData = {
+      ...manualLead,
+      capturedAt: serverTimestamp(),
+      source: 'manual'
+    };
+
+    addDoc(collection(db, 'users', user.uid, 'capturedLeads'), leadData)
+      .then(() => {
+        toast({ title: "Lead Cadastrado!", description: "Dados salvos na sua base neural." });
+        setManualLead({ name: '', email: '', phone: '', businessType: '' });
+        setIsDialogOpen(false);
+        setIsManualSaving(false);
+      })
+      .catch((error) => {
+        setIsManualSaving(false);
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: `users/${user.uid}/capturedLeads`,
+          operation: 'create',
+          requestResourceData: leadData
+        }));
       });
-      
-      toast({ title: "Lead Cadastrado!", description: "Dados salvos na sua base neural." });
-      setManualLead({ name: '', email: '', phone: '', businessType: '' });
-      setIsDialogOpen(false);
-    } catch (error) {
-      toast({ variant: "destructive", title: "Erro", description: "Não foi possível salvar o lead manual." });
-    } finally {
-      setIsManualSaving(false);
-    }
   };
 
-  const handleWhatsApp = (phone: string, message?: string) => {
+  const handleWhatsApp = (phone: string, message: string) => {
     if (!phone || phone === 'Telefone não listado') {
       toast({ variant: "destructive", title: "Contato Indisponível", description: "Este lead não possui um número válido." });
       return;
     }
     const cleanPhone = phone.replace(/\D/g, '');
     const waPhone = cleanPhone.length <= 11 ? `55${cleanPhone}` : cleanPhone;
-    const encodedMsg = message ? encodeURIComponent(message) : '';
-    
-    window.open(`https://wa.me/${waPhone}${message ? `?text=${encodedMsg}` : ''}`, '_blank');
+    const encodedMsg = encodeURIComponent(message);
+    window.open(`https://wa.me/${waPhone}?text=${encodedMsg}`, '_blank');
   };
 
   const handleGenMessage = async (lead: any) => {
@@ -178,9 +192,7 @@ export default function LeadsPage() {
       });
       
       if (res && res.message) {
-        handleWhatsApp(lead.phone, res.message);
-        toast({ title: "WhatsApp Conectado!", description: "Mensagem estratégica gerada pela IA." });
-        
+        setActiveScript({ id: lead.id, message: res.message, phone: lead.phone });
         if (!approachedLeads.includes(lead.id)) {
           setApproachedLeads(prev => [...prev, lead.id]);
         }
@@ -279,7 +291,6 @@ export default function LeadsPage() {
           </header>
 
           <div className="flex-1 container max-w-4xl mx-auto p-4 md:p-8 space-y-8">
-            {/* SEARCH FILTERS */}
             <Card className="glass-card border-white/10 overflow-hidden rounded-[2rem]">
               <CardHeader className="bg-white/5 border-b border-white/5 p-6">
                 <CardTitle className="text-sm font-black uppercase tracking-widest italic flex items-center gap-2">
@@ -411,7 +422,7 @@ export default function LeadsPage() {
                               disabled={generatingMsg === lead.id}
                               className="h-12 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest gap-2 shadow-lg hover:scale-105 active:scale-95 transition-all"
                             >
-                              {generatingMsg === lead.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                              {generatingMsg === lead.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Zap className="h-4 w-4" />}
                               SCRIPT IA
                             </Button>
 
@@ -441,6 +452,31 @@ export default function LeadsPage() {
                             </Button>
                           </div>
                         </div>
+
+                        {/* Modal de Script Gerado */}
+                        {activeScript && activeScript.id === lead.id && (
+                          <div className="mt-6 p-6 bg-white/[0.03] border border-primary/20 rounded-2xl animate-in zoom-in-95 duration-300">
+                            <div className="flex items-center justify-between mb-4">
+                              <h5 className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                                <MessageSquare className="h-3 w-3" /> Script de Ataque Gerado
+                              </h5>
+                              <Button variant="ghost" size="sm" onClick={() => setActiveScript(null)} className="h-6 w-6 p-0 text-muted-foreground">
+                                &times;
+                              </Button>
+                            </div>
+                            <Textarea 
+                              className="bg-black/40 border-white/10 text-white italic text-sm mb-4 min-h-[100px] resize-none"
+                              value={activeScript.message}
+                              readOnly
+                            />
+                            <Button 
+                              onClick={() => handleWhatsApp(activeScript.phone, activeScript.message)}
+                              className="w-full bg-green-600 hover:bg-green-500 text-white font-black uppercase tracking-widest text-[10px] h-12 rounded-xl"
+                            >
+                              ABRIR WHATSAPP <ExternalLink className="ml-2 h-4 w-4" />
+                            </Button>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   ))}

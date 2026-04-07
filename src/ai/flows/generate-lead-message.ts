@@ -29,19 +29,17 @@ const leadMessagePrompt = ai.definePrompt({
   name: 'leadMessagePrompt',
   input: { schema: GenerateLeadMessageInputSchema },
   output: { schema: GenerateLeadMessageOutputSchema },
-  prompt: `Você é um especialista em prospecção de vendas (Cold Outreach) via WhatsApp e Direct.
-Gere uma mensagem de abertura para o dono do negócio "{{{businessName}}}" ({{{businessType}}}) em {{{city}}}.
+  prompt: `Você é um especialista em Cold Outreach via WhatsApp.
+Gere uma mensagem de abertura curta e persuasiva para o dono do negócio "{{{businessName}}}" ({{{businessType}}}) em {{{city}}}.
 
-DIRETRIZES DA MENSAGEM:
-1. TOM: Amigável, profissional e "humano". Evite parecer um robô ou script de vendas pronto.
-2. ESTRUTURA:
-   - Saudação informal (ex: "Opa, tudo bem?").
-   - Elogio ou Gancho: Mencione que viu o perfil deles e achou o trabalho de {{{businessType}}} interessante.
-   - Dor/Oportunidade: Mencione algo específico que pode ser melhorado (ex: automação de atendimento ou captação de clientes).
-   - Pergunta Aberta: Termine com uma pergunta simples para iniciar a conversa (ex: "Vocês já usam algo para automatizar isso por aí?").
-3. TAMANHO: Máximo 350 caracteres. Deve caber na tela do celular sem precisar de "ver mais".
+REQUISITOS:
+1. Comece com uma saudação amigável e elogie algo sobre ser um negócio de {{{businessType}}}.
+2. Identifique uma oportunidade de melhoria (ex: automação de atendimento ou novos clientes).
+3. Termine com uma pergunta aberta para gerar conversa.
+4. Máximo 300 caracteres.
+5. Tom humano, sem parecer spam.
 
-Gere apenas o texto da mensagem final.`,
+Gere apenas o conteúdo da mensagem.`,
 });
 
 const generateLeadMessageFlow = ai.defineFlow(
