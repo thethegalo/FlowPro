@@ -163,8 +163,8 @@ export default function Home() {
 
       <main className="relative z-10">
         <section className="relative pt-16 pb-24 md:pt-32 md:pb-48 overflow-visible">
-          <div className="container px-6 mx-auto relative z-20">
-            <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
+          <div className="container px-4 md:px-6 mx-auto relative z-20">
+            <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-24">
               <div className="flex-1 text-center lg:text-left space-y-10 relative z-30 px-2">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] mx-auto lg:mx-0 text-primary">
                   <Zap className="h-3 w-3 animate-pulse" />
@@ -205,13 +205,13 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="flex-1 w-full relative aspect-square mx-auto max-w-[600px] flex items-center justify-center z-10">
-                <div className="absolute inset-0 bg-primary/50 blur-[180px] rounded-full opacity-40 animate-pulse"></div>
+              <div className="flex-1 w-full relative aspect-square mx-auto max-w-[280px] md:max-w-[600px] flex items-center justify-center z-10">
+                <div className="absolute inset-0 bg-primary/20 md:bg-primary/50 blur-[80px] md:blur-[180px] rounded-full opacity-40 animate-pulse"></div>
                 
-                <div className="absolute w-[110%] h-[110%] border border-primary/10 rounded-full animate-spin-slow pointer-events-none">
+                <div className="absolute w-[110%] h-[110%] border border-primary/10 rounded-full animate-spin-slow pointer-events-none hidden md:block">
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 h-2 w-2 bg-primary rounded-full shadow-[0_0_10px_#8b5cf6]"></div>
                 </div>
-                <div className="absolute w-[90%] h-[90%] border border-blue-500/10 rounded-full animate-reverse-spin-slow pointer-events-none">
+                <div className="absolute w-[90%] h-[90%] border border-blue-500/10 rounded-full animate-reverse-spin-slow pointer-events-none hidden md:block">
                   <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-1.5 w-1.5 bg-blue-400 rounded-full shadow-[0_0_10px_#60a5fa]"></div>
                 </div>
                 
@@ -222,7 +222,7 @@ export default function Home() {
         </section>
 
         <section className="py-16 bg-gradient-to-b from-transparent via-primary/5 to-transparent border-y border-white/5 relative z-20">
-          <div className="container px-6 mx-auto">
+          <div className="container px-4 md:px-6 mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0 relative max-w-5xl mx-auto">
               {stats.map((s, i) => (
                 <div key={i} className="flex flex-col items-center text-center space-y-2 group relative md:px-12">
@@ -247,7 +247,7 @@ export default function Home() {
 
         <section id="tecnologia" className="py-24 md:py-48 relative overflow-hidden">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(124,58,237,0.1),transparent_50%)]"></div>
-          <div className="container px-6 mx-auto relative z-10">
+          <div className="container px-4 md:px-6 mx-auto relative z-10">
             <div className="text-center mb-24">
               <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-6 text-white leading-none">O SEU <span className="text-primary">ARSENAL</span></h2>
               <p className="text-muted-foreground max-w-xl mx-auto uppercase tracking-[0.2em] text-[10px] font-black">As ferramentas que transformam um "não" em um "fechado"</p>
@@ -268,7 +268,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="py-24 relative overflow-visible bg-gradient-to-b from-transparent via-blue-900/10 to-transparent">
+        <section className="py-24 relative overflow-visible bg-gradient-to-b from-transparent via-blue-900/10 to-transparent hidden md:block">
           <div className="text-center mb-16 px-4">
              <Badge className="bg-primary/20 text-primary border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5 mb-4">Command Center</Badge>
              <h2 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter">O SEU PAINEL DE CONTROLE</h2>
@@ -280,7 +280,7 @@ export default function Home() {
         </section>
 
         <section className="py-32 relative">
-          <div className="container px-6 mx-auto">
+          <div className="container px-4 md:px-6 mx-auto">
             <div className="text-center mb-20">
               <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-6 text-white leading-none">QUEM <span className="text-primary">EXECUTA</span> GANHA</h2>
               <p className="text-muted-foreground max-w-xl mx-auto uppercase tracking-[0.2em] text-[10px] font-black">Alunos comuns que começaram com o mesmo script que você vai gerar</p>
@@ -317,7 +317,7 @@ export default function Home() {
         </section>
 
         <section id="faq" className="py-24 md:py-48 bg-gradient-to-t from-primary/5 to-transparent">
-          <div className="container px-6 mx-auto max-w-4xl">
+          <div className="container px-4 md:px-6 mx-auto max-w-4xl">
             <h2 className="text-4xl md:text-6xl font-black italic mb-16 text-center uppercase tracking-tighter text-white">DÚVIDAS <span className="text-primary">FREQUENTES</span></h2>
             <Accordion type="single" collapsible className="space-y-6 px-4 md:px-0">
               {faqs.map((item, i) => (
@@ -351,7 +351,7 @@ export default function Home() {
           </div>
 
           <div className="absolute inset-0 bg-primary/5 blur-3xl rounded-full scale-150 pointer-events-none"></div>
-          <div className="container px-6 mx-auto text-center relative z-10">
+          <div className="container px-4 md:px-6 mx-auto text-center relative z-10">
             <h2 className="text-4xl md:text-7xl font-black italic uppercase tracking-tighter mb-10 text-white leading-tight">
               A ESCALA NÃO <br /><span className="text-primary shimmer-text">ESPERA POR VOCÊ.</span>
             </h2>
