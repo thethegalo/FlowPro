@@ -280,16 +280,16 @@ export default function Dashboard() {
               </div>
               <div className="h-[350px] w-full relative pb-12">
                 <ChartContainer config={{ ganhos: { label: "Valor", color: "hsl(var(--primary))" } }}>
-                  <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 50 }}>
+                  <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 10 }}>
                     <defs><linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4}/><stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/></linearGradient></defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.06)" />
                     <XAxis 
                       dataKey="date" 
                       axisLine={false} 
                       tickLine={false} 
-                      tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold', angle: -45, textAnchor: 'end' }} 
-                      dy={15} 
-                      interval={4}
+                      tick={{ fontSize: 9, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
+                      interval={6}
+                      dy={10}
                     />
                     <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }} tickFormatter={(v) => `R$${v}`} />
                     <Tooltip content={<ChartTooltipContent />} />
