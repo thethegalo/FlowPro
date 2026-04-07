@@ -164,8 +164,9 @@ export default function Home() {
       <main className="relative z-10">
         <section className="relative pt-16 pb-24 md:pt-32 md:pb-48 overflow-visible">
           <div className="container px-4 md:px-6 mx-auto relative z-20">
-            <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-24">
-              <div className="flex-1 text-center lg:text-left space-y-10 relative z-30 px-2">
+            <div className="flex flex-col items-center lg:flex-row lg:items-center gap-6 lg:gap-24">
+              {/* Text Content First on Mobile */}
+              <div className="flex-1 text-center lg:text-left space-y-10 relative z-30 px-2 order-1 lg:order-1">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] mx-auto lg:mx-0 text-primary">
                   <Zap className="h-3 w-3 animate-pulse" />
                   Motor Neural de Vendas Ativado
@@ -205,17 +206,24 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="flex-1 w-full relative aspect-square mx-auto max-w-[280px] md:max-w-[600px] flex items-center justify-center z-10">
-                <div className="absolute inset-0 bg-primary/20 md:bg-primary/50 blur-[80px] md:blur-[180px] rounded-full opacity-40 animate-pulse"></div>
+              {/* Globe Container - Text Before on Mobile */}
+              <div className="flex-1 w-full flex justify-center order-2 lg:order-2">
+                {/* Mobile Decorative Placeholder */}
+                <div className="h-32 w-32 rounded-full bg-primary/20 blur-3xl mx-auto lg:hidden animate-pulse" />
                 
-                <div className="absolute w-[110%] h-[110%] border border-primary/10 rounded-full animate-spin-slow pointer-events-none hidden md:block">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 h-2 w-2 bg-primary rounded-full shadow-[0_0_10px_#8b5cf6]"></div>
+                {/* Desktop 3D Globe */}
+                <div className="hidden lg:flex flex-1 w-full relative aspect-square mx-auto max-w-[600px] items-center justify-center z-10">
+                  <div className="absolute inset-0 bg-primary/50 blur-[180px] rounded-full opacity-40 animate-pulse"></div>
+                  
+                  <div className="absolute w-[110%] h-[110%] border border-primary/10 rounded-full animate-spin-slow pointer-events-none">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 h-2 w-2 bg-primary rounded-full shadow-[0_0_10px_#8b5cf6]"></div>
+                  </div>
+                  <div className="absolute w-[90%] h-[90%] border border-blue-500/10 rounded-full animate-reverse-spin-slow pointer-events-none">
+                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-1.5 w-1.5 bg-blue-400 rounded-full shadow-[0_0_10px_#60a5fa]"></div>
+                  </div>
+                  
+                  <Globe className="w-full h-full relative z-10" speed={0.008} dark={1} />
                 </div>
-                <div className="absolute w-[90%] h-[90%] border border-blue-500/10 rounded-full animate-reverse-spin-slow pointer-events-none hidden md:block">
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-1.5 w-1.5 bg-blue-400 rounded-full shadow-[0_0_10px_#60a5fa]"></div>
-                </div>
-                
-                <Globe className="w-full h-full relative z-10" speed={0.008} dark={1} />
               </div>
             </div>
           </div>
