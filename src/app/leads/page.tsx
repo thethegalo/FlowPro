@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -19,7 +18,8 @@ import {
   UserPlus,
   Zap,
   ExternalLink,
-  MessageSquare
+  MessageSquare,
+  X
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { generateLeadMessage } from '@/ai/flows/generate-lead-message';
@@ -155,7 +155,10 @@ export default function LeadsPage() {
     
     setIsManualSaving(true);
     const leadData = {
-      ...manualLead,
+      name: manualLead.name,
+      phone: manualLead.phone,
+      email: manualLead.email,
+      businessType: manualLead.businessType,
       capturedAt: serverTimestamp(),
       source: 'manual',
       city: '',
@@ -207,7 +210,7 @@ export default function LeadsPage() {
         }
       }
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Erro de IA", description: "Não foi possível gerar o script. Verifique sua chave API." });
+      toast({ variant: "destructive", title: "Erro de IA", description: "Não foi possível gerar o script. Tente novamente." });
     } finally {
       setGeneratingMsg(null);
     }

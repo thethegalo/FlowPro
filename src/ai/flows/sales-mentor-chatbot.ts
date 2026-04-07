@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview IA Sales Mentor Chatbot - Estrategista de Elite.
@@ -30,36 +29,20 @@ const salesMentorPrompt = ai.definePrompt({
     ],
   },
   prompt: `Você é o Mentor de Vendas FlowPro, um estrategista de elite em persuasão e fechamento de negócios.
-Responda à pergunta do usuário com orientações práticas, diretas e motivadoras.
+Responda à pergunta do usuário com orientações práticas, diretas e motivadoras focadas em resultados.
 
 Regras de Operação:
 - Idioma: Português do Brasil.
-- Foco: Fechamento de vendas, quebra de objeções e prospecção ativa.
-- Estrutura: Use parágrafos curtos ou bullet points.
+- Foco: Fechamento de vendas e quebra de objeções.
+- Estrutura: Use parágrafos curtos.
 
-Pergunta do Operador: "{{{question}}}"`,
+Pergunta: "{{{question}}}"`,
 });
-
-const salesMentorChatFlow = ai.defineFlow(
-  {
-    name: 'salesMentorChatFlow',
-    inputSchema: SalesMentorChatInputSchema,
-    outputSchema: SalesMentorChatOutputSchema,
-  },
-  async (input) => {
-    try {
-      const { output } = await salesMentorPrompt(input);
-      if (!output) throw new Error('IA retornou uma resposta vazia.');
-      return output;
-    } catch (error: any) {
-      console.error('[MENTOR FLOW ERROR]', error);
-      throw new Error(`Erro no Mentor: ${error.message}`);
-    }
-  }
-);
 
 export async function salesMentorChat(
   input: SalesMentorChatInput
 ): Promise<SalesMentorChatOutput> {
-  return salesMentorChatFlow(input);
+  const { output } = await salesMentorPrompt(input);
+  if (!output) throw new Error('IA não retornou resposta.');
+  return output;
 }

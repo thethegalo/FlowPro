@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
@@ -53,10 +52,11 @@ export function FloatingMentor() {
 
   const messagesRemaining = useMemo(() => {
     if (isUnlimited) return null;
-    const lastAction = userData?.lastActionAt;
+    if (!userData) return 0;
+    const lastAction = userData.lastActionAt;
     const today = new Date().toDateString();
     const lastDate = lastAction ? (lastAction.toDate ? lastAction.toDate().toDateString() : new Date(lastAction).toDateString()) : '';
-    const used = today === lastDate ? (userData?.dailyUsage?.messagesUsed || 0) : 0;
+    const used = today === lastDate ? (userData.dailyUsage?.messagesUsed || 0) : 0;
     return Math.max(0, 10 - used);
   }, [userData, isUnlimited]);
 
@@ -110,7 +110,7 @@ export function FloatingMentor() {
         throw new Error('Resposta vazia');
       }
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'assistant', content: "Erro na conexão neural. Verifique sua API Key e tente novamente." }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: "Erro na conexão neural. Tente novamente em alguns instantes." }]);
     } finally {
       setIsLoading(false);
     }

@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview IA para geração de scripts de abordagem fria (Cold Outreach).
@@ -35,32 +34,16 @@ const leadMessagePrompt = ai.definePrompt({
 Gere uma mensagem curta e persuasiva para o dono do negócio "{{{businessName}}}" que atua como {{{businessType}}} em {{{city}}}.
 
 Regras:
-1. Saudação amigável e humana.
-2. Identifique uma oportunidade de melhoria clara baseada no nicho dele.
+1. Saudação amigável.
+2. Identifique uma oportunidade de melhoria no nicho dele.
 3. Máximo 300 caracteres.
 4. Linguagem natural de WhatsApp.`,
 });
 
-const generateLeadMessageFlow = ai.defineFlow(
-  {
-    name: 'generateLeadMessageFlow',
-    inputSchema: GenerateLeadMessageInputSchema,
-    outputSchema: GenerateLeadMessageOutputSchema,
-  },
-  async (input) => {
-    try {
-      const { output } = await leadMessagePrompt(input);
-      if (!output) throw new Error('Falha na geração do script pela IA.');
-      return output;
-    } catch (error: any) {
-      console.error('[GENKIT FLOW ERROR]', error);
-      throw new Error(`Falha na geração: ${error.message}`);
-    }
-  }
-);
-
 export async function generateLeadMessage(
   input: GenerateLeadMessageInput
 ): Promise<GenerateLeadMessageOutput> {
-  return generateLeadMessageFlow(input);
+  const { output } = await leadMessagePrompt(input);
+  if (!output) throw new Error('Falha na geração do script.');
+  return output;
 }
