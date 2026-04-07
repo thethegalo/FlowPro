@@ -171,9 +171,9 @@ export default function Home() {
                   Motor Neural de Vendas Ativado
                 </div>
                 
-                <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.85] uppercase">
+                <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tight md:tracking-tighter leading-[1.1] md:leading-[0.95] uppercase px-2 md:px-0">
                   SEU PRIMEIRO CLIENTE <br />
-                  <span className="bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400 bg-clip-text text-transparent italic">
+                  <span className="bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400 bg-clip-text text-transparent italic inline-block py-1">
                     COMEÇA COM UM SCRIPT.
                   </span>
                 </h1>
@@ -183,7 +183,7 @@ export default function Home() {
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start items-center">
-                  <div className="relative group">
+                  <div className="relative group w-full sm:w-auto">
                     <div className="absolute -inset-1 bg-primary rounded-[2.5rem] blur-xl opacity-40 group-hover:opacity-100 animate-pulse transition duration-1000"></div>
                     <Button size="lg" className="relative h-16 md:h-20 px-8 md:px-12 text-lg md:text-xl font-black bg-primary hover:scale-105 transition-all rounded-3xl w-full sm:w-auto group overflow-hidden shadow-[0_0_30px_rgba(139,92,246,0.5)]" asChild>
                       <Link href="/quiz">
@@ -235,7 +235,7 @@ export default function Home() {
                     </div>
                     <span className="text-[10px] font-black uppercase tracking-widest opacity-70">{s.label}</span>
                   </div>
-                  <div className="text-5xl font-black italic uppercase tracking-tighter text-white">
+                  <div className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-white">
                     <AnimatedNumber value={s.value} prefix={s.prefix} suffix={s.suffix} />
                   </div>
                   <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{s.sub}</p>
@@ -269,12 +269,12 @@ export default function Home() {
         </section>
 
         <section className="py-24 relative overflow-visible bg-gradient-to-b from-transparent via-blue-900/10 to-transparent">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 px-4">
              <Badge className="bg-primary/20 text-primary border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5 mb-4">Command Center</Badge>
-             <h2 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter">O SEU PAINEL DE CONTROLE</h2>
-             <p className="text-muted-foreground text-xs uppercase font-bold tracking-widest mt-4">Toda a inteligência do mercado na palma da sua mão</p>
+             <h2 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter">O SEU PAINEL DE CONTROLE</h2>
+             <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest mt-4">Toda a inteligência do mercado na palma da sua mão</p>
           </div>
-          <div className="scale-110 md:scale-125 lg:scale-150 transition-transform py-20">
+          <div className="scale-90 sm:scale-100 md:scale-125 lg:scale-150 transition-transform py-20 overflow-hidden">
             <MacbookShowcase />
           </div>
         </section>
@@ -319,7 +319,7 @@ export default function Home() {
         <section id="faq" className="py-24 md:py-48 bg-gradient-to-t from-primary/5 to-transparent">
           <div className="container px-6 mx-auto max-w-4xl">
             <h2 className="text-4xl md:text-6xl font-black italic mb-16 text-center uppercase tracking-tighter text-white">DÚVIDAS <span className="text-primary">FREQUENTES</span></h2>
-            <Accordion type="single" collapsible className="space-y-6">
+            <Accordion type="single" collapsible className="space-y-6 px-4 md:px-0">
               {faqs.map((item, i) => (
                 <AccordionItem key={i} value={`item-${i}`} className="glass-card border-none rounded-[2rem] px-8 md:px-12 hover:bg-white/[0.05] transition-colors">
                   <AccordionTrigger className="font-black hover:no-underline py-8 md:py-10 uppercase tracking-[0.2em] text-xs md:text-sm text-left text-white">
@@ -359,7 +359,7 @@ export default function Home() {
               O ecossistema neural está operando em alta frequência. Garanta sua posição agora e gere seu primeiro script.
             </p>
             
-            <div className="relative inline-block group">
+            <div className="relative inline-block group w-full sm:w-auto px-4 sm:px-0">
               <div className="absolute -inset-1 bg-primary rounded-[2.5rem] blur-2xl opacity-30 group-hover:opacity-70 animate-pulse transition duration-1000"></div>
               <Button asChild size="lg" className="relative h-20 md:h-24 px-8 md:px-16 text-xl md:text-2xl font-black bg-primary hover:scale-105 transition-all rounded-[2.5rem] group w-full sm:w-auto shadow-[0_0_50px_rgba(139,92,246,0.4)]">
                 <Link href="/quiz">
@@ -368,7 +368,7 @@ export default function Home() {
               </Button>
             </div>
 
-            <p className="mt-6 text-[10px] uppercase font-bold tracking-widest opacity-40">
+            <p className="mt-6 text-[10px] uppercase font-bold tracking-widest opacity-40 px-4">
               Sem cartão de crédito • Acesso imediato • Cancele quando quiser
             </p>
             
