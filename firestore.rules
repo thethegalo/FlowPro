@@ -7,17 +7,14 @@ service cloud.firestore {
     function isOwner(userId) { return request.auth.uid == userId; }
 
     match /users/{userId} {
-      allow get, list: if isSignedIn();
-      allow create: if isSignedIn();
+      allow read, create: if isSignedIn();
       allow update: if isOwner(userId) || isAdmin();
       allow delete: if isAdmin();
 
-      match /quizResponses/{id} { allow read, write: if isOwner(userId) || isAdmin(); }
-      match /personalizedPlans/{id} { allow read, write: if isOwner(userId) || isAdmin(); }
-      match /missionProgress/{id} { allow read, write: if isOwner(userId) || isAdmin(); }
-      match /subscriptions/{id} { allow read, write: if isOwner(userId) || isAdmin(); }
-      match /earnings/{id} { allow read, write: if isOwner(userId) || isAdmin(); }
-      match /capturedLeads/{id} { allow read, write: if isOwner(userId) || isAdmin(); }
+      // Garante acesso total a todas as subcoleções para o dono ou admin
+      match /{allSubcollections=**} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
     }
     
     match /missions/{missionId} { 

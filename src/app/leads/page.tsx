@@ -101,6 +101,7 @@ export default function LeadsPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Falha na busca de leads');
 
+      // Limite dinâmico: 20 para Pro/Admin, 5 para Free
       const finalLeads = isProMember ? (data.length > 20 ? data.slice(0, 20) : data) : data.slice(0, 5);
       setLeads(finalLeads);
 
@@ -117,7 +118,7 @@ export default function LeadsPage() {
     }
   };
 
-  const handleSaveLead = async (lead: any) => {
+  const handleSaveLead = (lead: any) => {
     if (!db || !user) return;
     
     setCapturingId(lead.id);
@@ -134,6 +135,7 @@ export default function LeadsPage() {
       })
       .catch((error) => {
         setCapturingId(null);
+        // Emite erro contextual se falhar a permissão
         errorEmitter.emit('permission-error', new FirestorePermissionError({
           path: `users/${user.uid}/capturedLeads`,
           operation: 'create',
@@ -142,7 +144,7 @@ export default function LeadsPage() {
       });
   };
 
-  const handleManualSave = async (e: React.FormEvent) => {
+  const handleManualSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!db || !user) return;
     
@@ -186,7 +188,7 @@ export default function LeadsPage() {
     try {
       const res = await generateLeadMessage({
         businessName: lead.name || 'Dono do Negócio',
-        businessType: lead.type || 'Serviços',
+        businessType: lead.type || niche || 'Serviços',
         city: lead.city || 'Sua cidade'
       });
       
@@ -197,7 +199,8 @@ export default function LeadsPage() {
         }
       }
     } catch (e) {
-      toast({ variant: "destructive", title: "Erro de IA", description: "O motor neural falhou ao gerar o script. Tente novamente." });
+      console.error('[AI MESSAGE ERROR]', e);
+      toast({ variant: "destructive", title: "Erro de IA", description: "O motor neural falhou ao gerar o script. Verifique sua chave de API." });
     } finally {
       setGeneratingMsg(null);
     }
