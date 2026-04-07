@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/table';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
+import { cn } from '@/lib/utils';
 
 const SELLERS = [
   { pos: 1, name: "Carlos Eduardo", city: "São Paulo", revenue: 12847, sales: 23, status: "Elite" },
@@ -51,14 +52,14 @@ const SELLERS = [
 ];
 
 const getMedalIcon = (pos: number) => {
-  if (pos === 1) return <Trophy className="h-5 w-5 text-yellow-400" />;
+  if (pos === 1) return <Trophy className="h-5 w-5 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.4)]" />;
   if (pos === 2) return <Medal className="h-5 w-5 text-zinc-300" />;
   if (pos === 3) return <Medal className="h-5 w-5 text-amber-600" />;
   return <span className="text-[10px] font-black opacity-30">#{pos}</span>;
 };
 
 const getStatusBadge = (status: string) => {
-  if (status === "Elite") return <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 text-[8px] font-black uppercase">Elite Flow</Badge>;
+  if (status === "Elite") return <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 text-[8px] font-black uppercase shadow-[0_0_15px_rgba(124,58,255,0.3)]">Elite Flow</Badge>;
   if (status === "Top") return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-[8px] font-black uppercase">Top Player</Badge>;
   return <Badge variant="outline" className="text-[8px] font-black uppercase border-white/10 opacity-50">Operador</Badge>;
 };
@@ -69,15 +70,21 @@ export default function VendedoresRankingPage() {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-[#050508]">
+      <div className="flex min-h-screen w-full bg-[#050508] relative overflow-hidden">
+        {/* Fundo Animado */}
+        <div className="fixed inset-0 pointer-events-none z-0">
+          <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-primary/8 rounded-full blur-[150px] animate-pulse" />
+          <div className="absolute bottom-[-10%] left-[-5%] w-[30%] h-[30%] bg-cyan-500/5 rounded-full blur-[120px]" />
+        </div>
+
         <AppSidebar />
         
-        <main className="flex-1 flex flex-col min-w-0">
+        <main className="flex-1 flex flex-col min-w-0 relative z-10">
           <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-50">
             <div className="flex items-center gap-4">
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
               <div className="h-4 w-px bg-white/10 hidden md:block" />
-              <h1 className="text-sm font-black italic uppercase tracking-widest flex items-center gap-2">
+              <h1 className="text-sm font-black italic uppercase tracking-widest flex items-center gap-2 text-white">
                 <Trophy className="h-4 w-4 text-primary" /> Ranking de Consultores
               </h1>
             </div>
@@ -91,45 +98,32 @@ export default function VendedoresRankingPage() {
             
             {/* Cards de Resumo */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card className="glass-card border-white/10 bg-white/[0.02] p-6 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground">Total Faturado</span>
-                  <DollarSign className="h-4 w-4 text-primary" />
-                </div>
-                <div className="text-2xl font-black italic text-white uppercase tracking-tight">R$ 84.271</div>
-                <div className="text-[9px] font-bold text-green-500 flex items-center gap-1">
-                  <ArrowUpRight className="h-3 w-3" /> +14% vs mês anterior
-                </div>
-              </Card>
-
-              <Card className="glass-card border-white/10 bg-white/[0.02] p-6 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground">Total Vendas</span>
-                  <Target className="h-4 w-4 text-primary" />
-                </div>
-                <div className="text-2xl font-black italic text-white uppercase tracking-tight">156 contratos</div>
-                <div className="text-[9px] font-bold text-primary flex items-center gap-1 uppercase">Média R$ 540 p/venda</div>
-              </Card>
-
-              <Card className="glass-card border-white/10 bg-white/[0.02] p-6 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground">Consultores</span>
-                  <Users className="h-4 w-4 text-primary" />
-                </div>
-                <div className="text-2xl font-black italic text-white uppercase tracking-tight">42 Ativos</div>
-                <div className="text-[9px] font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-widest">Base total consolidada</div>
-              </Card>
-
-              <Card className="glass-card border-primary/20 bg-primary/5 p-6 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[8px] font-black uppercase tracking-[0.2em] text-primary">Meta do Mês</span>
-                  <TrendingUp className="h-4 w-4 text-primary" />
-                </div>
-                <div className="text-2xl font-black italic text-white uppercase tracking-tight">84% Atingida</div>
-                <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
-                  <div className="h-full bg-primary w-[84%] shadow-[0_0_10px_#7c3aff]" />
-                </div>
-              </Card>
+              {[
+                { label: "Total Faturado", value: "R$ 84.271", icon: DollarSign, sub: "+14% vs mês anterior", subColor: "text-green-500" },
+                { label: "Total Vendas", value: "156 contratos", icon: Target, sub: "Média R$ 540 p/venda", subColor: "text-primary" },
+                { label: "Consultores", value: "42 Ativos", icon: Users, sub: "Base total consolidada", subColor: "text-muted-foreground" },
+                { label: "Meta do Mês", value: "84% Atingida", icon: TrendingUp, sub: "progresso", subColor: "text-primary", isMeta: true }
+              ].map((card, i) => (
+                <Card key={i} className={cn(
+                  "glass-card border-white/10 bg-white/[0.02] p-6 space-y-2 transition-all duration-500 hover:shadow-[0_0_40px_rgba(124,58,255,0.15)] border-t-2",
+                  card.isMeta ? "border-t-primary/50 bg-primary/[0.03]" : "border-t-primary/30"
+                )}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground">{card.label}</span>
+                    <card.icon className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="text-2xl font-black italic text-white uppercase tracking-tight">{card.value}</div>
+                  {card.isMeta ? (
+                    <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden mt-2">
+                      <div className="h-full bg-primary w-[84%] shadow-[0_0_10px_#7c3aff]" />
+                    </div>
+                  ) : (
+                    <div className={cn("text-[9px] font-bold uppercase", card.subColor)}>
+                      {card.sub}
+                    </div>
+                  )}
+                </Card>
+              ))}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -152,7 +146,7 @@ export default function VendedoresRankingPage() {
                         </div>
                         <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden relative">
                           <div 
-                            className={`h-full bg-gradient-to-r from-primary to-accent transition-all duration-1000 delay-300 shadow-[0_0_15px_rgba(124,58,255,0.4)]`}
+                            className={`h-full bg-gradient-to-r from-primary to-accent transition-all duration-1000 delay-300 shadow-[0_0_10px_rgba(124,58,255,0.6)]`}
                             style={{ width: `${(seller.revenue / maxRevenue) * 100}%` }}
                           />
                         </div>
@@ -179,7 +173,7 @@ export default function VendedoresRankingPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-0">
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto w-full">
                       <Table>
                         <TableHeader className="bg-white/5">
                           <TableRow className="border-white/5 hover:bg-transparent">
@@ -193,7 +187,13 @@ export default function VendedoresRankingPage() {
                         </TableHeader>
                         <TableBody>
                           {SELLERS.map((seller) => (
-                            <TableRow key={seller.pos} className="border-white/5 hover:bg-white/[0.02] transition-colors group">
+                            <TableRow 
+                              key={seller.pos} 
+                              className={cn(
+                                "border-white/5 hover:bg-white/[0.03] transition-colors group",
+                                seller.pos === 1 && "bg-primary/5"
+                              )}
+                            >
                               <TableCell className="text-center">
                                 <div className="flex justify-center">
                                   {getMedalIcon(seller.pos)}
