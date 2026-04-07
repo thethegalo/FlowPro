@@ -162,10 +162,9 @@ export default function Home() {
       </header>
 
       <main className="relative z-10">
-        <section className="relative pt-16 pb-24 md:pt-32 md:pb-48 overflow-visible">
+        <section className="relative pt-16 pb-24 md:pt-32 md:pb-48 overflow-visible backdrop-blur-sm bg-white/[0.01]">
           <div className="container px-4 md:px-6 mx-auto relative z-20">
             <div className="flex flex-col items-center lg:flex-row lg:items-center gap-6 lg:gap-24">
-              {/* Text Content First on Mobile */}
               <div className="flex-1 text-center lg:text-left space-y-10 relative z-30 px-2 order-1 lg:order-1">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] mx-auto lg:mx-0 text-primary">
                   <Zap className="h-3 w-3 animate-pulse" />
@@ -186,7 +185,7 @@ export default function Home() {
                 <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start items-center">
                   <div className="relative group w-full sm:w-auto">
                     <div className="absolute -inset-1 bg-primary rounded-[2.5rem] blur-xl opacity-40 group-hover:opacity-100 animate-pulse transition duration-1000"></div>
-                    <Button size="lg" className="relative h-16 md:h-20 px-8 md:px-12 text-lg md:text-xl font-black bg-primary hover:scale-105 transition-all rounded-3xl w-full sm:w-auto group overflow-hidden shadow-[0_0_30px_rgba(139,92,246,0.5)]" asChild>
+                    <Button size="lg" className="relative h-16 md:h-20 px-8 md:px-12 text-lg md:text-xl font-black bg-primary hover:scale-105 transition-all rounded-3xl w-full sm:w-auto group overflow-hidden shadow-[0_0_30px_rgba(139,92,246,0.5)] before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:-translate-x-full hover:before:translate-x-full before:transition-transform before:duration-700" asChild>
                       <Link href="/quiz">
                         COMEÇAR JORNADA <ArrowRight className="ml-2 h-6 w-6 md:h-7 md:w-7 group-hover:translate-x-2 transition-transform" />
                       </Link>
@@ -195,23 +194,20 @@ export default function Home() {
                   
                   <div className="flex -space-x-3">
                     {[1,2,3,4].map(i => (
-                      <div key={i} className="h-10 w-10 rounded-full border-2 border-[#050508] bg-white/10 overflow-hidden">
+                      <div key={i} className="h-10 w-10 rounded-full border-2 border-[#050508] bg-white/10 overflow-hidden ring-2 ring-primary/20">
                         <img src={`https://picsum.photos/seed/${i+50}/100/100`} alt="user" className="w-full h-full object-cover" />
                       </div>
                     ))}
-                    <div className="h-10 w-10 rounded-full border-2 border-[#050508] bg-primary flex items-center justify-center text-[10px] font-black">
+                    <div className="h-10 w-10 rounded-full border-2 border-[#050508] bg-primary flex items-center justify-center text-[10px] font-black ring-2 ring-primary/20">
                       +12k
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Globe Container - Text Before on Mobile */}
               <div className="flex-1 w-full flex justify-center order-2 lg:order-2">
-                {/* Mobile Decorative Placeholder */}
                 <div className="h-32 w-32 rounded-full bg-primary/20 blur-3xl mx-auto lg:hidden animate-pulse" />
                 
-                {/* Desktop 3D Globe */}
                 <div className="hidden lg:flex flex-1 w-full relative aspect-square mx-auto max-w-[600px] items-center justify-center z-10">
                   <div className="absolute inset-0 bg-primary/50 blur-[180px] rounded-full opacity-40 animate-pulse"></div>
                   
@@ -233,12 +229,12 @@ export default function Home() {
           <div className="container px-4 md:px-6 mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0 relative max-w-5xl mx-auto">
               {stats.map((s, i) => (
-                <div key={i} className="flex flex-col items-center text-center space-y-2 group relative md:px-12">
+                <div key={i} className="flex flex-col items-center text-center space-y-2 group relative md:px-12 bg-white/[0.03] backdrop-blur-md border border-white/5 rounded-3xl p-6">
                   {i < stats.length - 1 && (
                     <div className="hidden md:block absolute -right-[1px] top-1/2 -translate-y-1/2 h-16 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
                   )}
                   <div className="flex items-center gap-3 text-primary mb-2">
-                    <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 group-hover:scale-110 transition-transform">
+                    <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 group-hover:scale-110 transition-transform drop-shadow-[0_0_8px_currentColor]">
                       {s.icon}
                     </div>
                     <span className="text-[10px] font-black uppercase tracking-widest opacity-70">{s.label}</span>
@@ -253,7 +249,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="tecnologia" className="py-24 md:py-48 relative overflow-hidden">
+        <section id="tecnologia" className="py-24 md:py-48 relative overflow-hidden bg-[radial-gradient(circle_at_center,rgba(124,58,255,0.08),transparent_70%)]">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(124,58,237,0.1),transparent_50%)]"></div>
           <div className="container px-4 md:px-6 mx-auto relative z-10">
             <div className="text-center mb-24">
@@ -263,8 +259,8 @@ export default function Home() {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {pillars.map((p, i) => (
-                <Card key={i} className={`glass-card p-10 md:p-12 group transition-all duration-500 rounded-[2.5rem] border-white/10 hover:border-t-primary/50 hover:shadow-2xl ${p.glow}`}>
-                  <span className="absolute bottom-6 right-8 text-6xl font-black opacity-5 pointer-events-none select-none">{p.id}</span>
+                <Card key={i} className={`glass-card p-10 md:p-12 group transition-all duration-500 rounded-[2.5rem] border-white/10 hover:border-t-primary/50 hover:shadow-2xl ${p.glow} relative overflow-hidden`}>
+                  <span className="absolute bottom-4 right-6 text-[120px] font-black text-white/[0.03] leading-none select-none">{p.id}</span>
                   <div className="mb-10 p-5 rounded-2xl bg-primary/10 inline-block transition-transform group-hover:scale-110 group-hover:rotate-6 shadow-2xl border border-primary/20">
                     {p.icon}
                   </div>
@@ -296,15 +292,19 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {testimonials.map((t, i) => (
-                <Card key={i} className="glass-card p-10 rounded-[2.5rem] space-y-6 border-white/5 flex flex-col justify-between relative overflow-hidden">
+                <Card key={i} className="glass-card p-10 rounded-[2.5rem] space-y-6 border-white/5 flex flex-col justify-between relative overflow-hidden hover:shadow-[0_0_40px_rgba(139,92,246,0.15)] transition-shadow duration-500">
                   <div className="absolute top-6 right-6">
                     <Badge className="bg-primary/20 text-primary border-primary/30 text-[10px] font-black px-3 py-1">
                       {t.result}
                     </Badge>
                   </div>
                   <div className="space-y-6">
-                    <div className="flex gap-1">
-                      {[1,2,3,4,5].map(star => <Star key={star} className="h-3 w-3 fill-yellow-500 text-yellow-500" />)}
+                    <div className="flex gap-1 text-yellow-400 text-sm">
+                      <Star className="h-3 w-3 fill-current" />
+                      <Star className="h-3 w-3 fill-current" />
+                      <Star className="h-3 w-3 fill-current" />
+                      <Star className="h-3 w-3 fill-current" />
+                      <Star className="h-3 w-3 fill-current" />
                     </div>
                     <Quote className="h-10 w-10 text-primary opacity-20" />
                     <p className="text-lg font-medium italic text-white/80 leading-relaxed">"{t.text}"</p>
@@ -369,7 +369,7 @@ export default function Home() {
             
             <div className="relative inline-block group w-full sm:w-auto px-4 sm:px-0">
               <div className="absolute -inset-1 bg-primary rounded-[2.5rem] blur-2xl opacity-30 group-hover:opacity-70 animate-pulse transition duration-1000"></div>
-              <Button asChild size="lg" className="relative h-20 md:h-24 px-8 md:px-16 text-xl md:text-2xl font-black bg-primary hover:scale-105 transition-all rounded-[2.5rem] group w-full sm:w-auto shadow-[0_0_50px_rgba(139,92,246,0.4)]">
+              <Button asChild size="lg" className="relative h-20 md:h-24 px-8 md:px-16 text-xl md:text-2xl font-black bg-primary hover:scale-105 transition-all rounded-[2.5rem] group w-full sm:w-auto shadow-[0_0_50px_rgba(139,92,246,0.4)] relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:-translate-x-full hover:before:translate-x-full before:transition-transform before:duration-700">
                 <Link href="/quiz">
                   ENTRAR NO FLOW AGORA <ArrowRight className="ml-3 h-8 w-8 group-hover:translate-x-2 transition-transform" />
                 </Link>
@@ -390,7 +390,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="py-20 border-t border-white/5 bg-[#030305] text-center relative z-10">
+      <footer className="py-20 border-t border-white/5 bg-[#030305] text-center relative z-10 bg-gradient-to-t from-primary/5 to-transparent">
         <div className="relative h-10 w-32 mx-auto mb-8 opacity-50">
           <Image src={LOGO_URL} alt="FlowPro Logo" fill className="object-contain" />
         </div>
