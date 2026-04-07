@@ -60,13 +60,11 @@ export function FloatingMentor() {
     return Math.max(0, 10 - used);
   }, [userData, isUnlimited]);
 
-  if (['/', '/auth', '/quiz'].includes(pathname)) return null;
-
   const checkLimitAndTrack = async () => {
     if (!db || !user || !userData) return false;
     if (isUnlimited) return true;
 
-    if (userData.plan === 'nenhum') {
+    if (userData.plan === 'nenhum' || !userData.plan) {
       toast({ variant: "destructive", title: "Acesso Restrito", description: "Assine um plano para liberar o Mentor." });
       return false;
     }
@@ -112,11 +110,13 @@ export function FloatingMentor() {
         throw new Error('Resposta vazia');
       }
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'assistant', content: "Erro na conexão neural. Tente novamente." }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: "Erro na conexão neural. Verifique sua API Key e tente novamente." }]);
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (['/', '/auth', '/quiz'].includes(pathname)) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-4">

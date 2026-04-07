@@ -123,14 +123,15 @@ export default function LeadsPage() {
     const leadData = {
       name: lead.name || '',
       phone: lead.phone || '',
-      email: '', 
+      email: lead.email || '', 
       businessType: lead.type || niche || 'Serviços',
       capturedAt: serverTimestamp(),
       source: 'radar',
       rating: lead.rating || '0',
       city: lead.city || city || '',
       state: lead.state || state || '',
-      address: lead.address || ''
+      address: lead.address || '',
+      website: lead.website || ''
     };
 
     try {
@@ -468,7 +469,7 @@ export default function LeadsPage() {
                                 <MessageSquare className="h-3 w-3" /> Script de Ataque Gerado
                               </h5>
                               <Button variant="ghost" size="sm" onClick={() => setActiveScript(null)} className="h-6 w-6 p-0 text-muted-foreground">
-                                &times;
+                                <X className="h-4 w-4" />
                               </Button>
                             </div>
                             <Textarea 
