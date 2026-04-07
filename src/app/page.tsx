@@ -124,7 +124,7 @@ function AnimatedNumber({ value, prefix = "", suffix = "" }: { value: number, pr
   }, [value]);
 
   return (
-    <span>
+    <span className="tabular-nums">
       {prefix}
       {Number.isInteger(displayValue) ? displayValue.toLocaleString('pt-BR') : displayValue.toFixed(1).replace('.', ',')}
       {suffix}
@@ -137,7 +137,6 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-[#050508] text-white overflow-x-hidden relative">
       <DashboardParticles />
       
-      {/* Atmosphere Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[140px] animate-pulse-glow"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent/10 rounded-full blur-[120px]"></div>
@@ -163,11 +162,10 @@ export default function Home() {
       </header>
 
       <main className="relative z-10">
-        {/* HERO SECTION */}
-        <section className="relative pt-16 pb-24 md:pt-32 md:pb-48 overflow-hidden">
+        <section className="relative pt-16 pb-24 md:pt-32 md:pb-48 overflow-visible">
           <div className="container px-6 mx-auto relative z-20">
             <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
-              <div className="flex-1 text-center lg:text-left space-y-10">
+              <div className="flex-1 text-center lg:text-left space-y-10 relative z-30">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] mx-auto lg:mx-0 text-primary">
                   <Zap className="h-3 w-3 animate-pulse" />
                   Motor Neural de Vendas Ativado
@@ -175,7 +173,7 @@ export default function Home() {
                 
                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.85] uppercase">
                   SEU PRIMEIRO CLIENTE <br />
-                  <span className="bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400 bg-clip-text text-transparent italic after:content-['|'] after:ml-1 after:animate-blink">
+                  <span className="bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400 bg-clip-text text-transparent italic">
                     COMEÇA COM UM SCRIPT.
                   </span>
                 </h1>
@@ -207,11 +205,9 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="flex-1 w-full relative aspect-square mx-auto max-w-[600px] flex items-center justify-center">
-                {/* Orbital Atmosphere */}
+              <div className="flex-1 w-full relative aspect-square mx-auto max-w-[600px] flex items-center justify-center z-10">
                 <div className="absolute inset-0 bg-primary/50 blur-[180px] rounded-full opacity-40 animate-pulse"></div>
                 
-                {/* Orbital Rings */}
                 <div className="absolute w-[110%] h-[110%] border border-primary/10 rounded-full animate-spin-slow pointer-events-none">
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 h-2 w-2 bg-primary rounded-full shadow-[0_0_10px_#8b5cf6]"></div>
                 </div>
@@ -219,21 +215,19 @@ export default function Home() {
                   <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-1.5 w-1.5 bg-blue-400 rounded-full shadow-[0_0_10px_#60a5fa]"></div>
                 </div>
                 
-                {/* Globe */}
                 <Globe className="w-full h-full relative z-10" speed={0.008} dark={1} />
               </div>
             </div>
           </div>
         </section>
 
-        {/* SOCIAL PROOF STATS */}
-        <section className="py-16 bg-gradient-to-b from-transparent via-primary/5 to-transparent border-y border-white/5">
+        <section className="py-16 bg-gradient-to-b from-transparent via-primary/5 to-transparent border-y border-white/5 relative z-20">
           <div className="container px-6 mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0 relative">
               {stats.map((s, i) => (
-                <div key={i} className="flex flex-col items-center md:items-start text-center md:text-left space-y-2 group relative">
+                <div key={i} className="flex flex-col items-center text-center space-y-2 group relative md:px-12">
                   {i < stats.length - 1 && (
-                    <div className="hidden md:block absolute -right-6 top-1/2 -translate-y-1/2 h-12 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+                    <div className="hidden md:block absolute -right-[1px] top-1/2 -translate-y-1/2 h-16 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
                   )}
                   <div className="flex items-center gap-3 text-primary mb-2">
                     <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 group-hover:scale-110 transition-transform">
@@ -241,7 +235,7 @@ export default function Home() {
                     </div>
                     <span className="text-[10px] font-black uppercase tracking-widest opacity-70">{s.label}</span>
                   </div>
-                  <div className="text-5xl font-black italic uppercase tracking-tighter">
+                  <div className="text-5xl font-black italic uppercase tracking-tighter text-white">
                     <AnimatedNumber value={s.value} prefix={s.prefix} suffix={s.suffix} />
                   </div>
                   <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{s.sub}</p>
@@ -251,7 +245,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FEATURES */}
         <section id="tecnologia" className="py-24 md:py-48 relative overflow-hidden">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(124,58,237,0.1),transparent_50%)]"></div>
           <div className="container px-6 mx-auto relative z-10">
@@ -275,7 +268,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* MACBOOK SHOWCASE */}
         <section className="py-24 relative overflow-visible bg-gradient-to-b from-transparent via-blue-900/10 to-transparent">
           <div className="text-center mb-16">
              <Badge className="bg-primary/20 text-primary border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5 mb-4">Command Center</Badge>
@@ -287,7 +279,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* TESTIMONIALS */}
         <section className="py-32 relative">
           <div className="container px-6 mx-auto">
             <div className="text-center mb-20">
@@ -325,7 +316,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FAQ */}
         <section id="faq" className="py-24 md:py-48 bg-gradient-to-t from-primary/5 to-transparent">
           <div className="container px-6 mx-auto max-w-4xl">
             <h2 className="text-4xl md:text-6xl font-black italic mb-16 text-center uppercase tracking-tighter text-white">DÚVIDAS <span className="text-primary">FREQUENTES</span></h2>
@@ -344,9 +334,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FINAL CTA */}
         <section className="py-32 relative overflow-hidden border-t border-white/5 bg-[#030305]">
-          {/* Floating particle backgrounds behind CTA */}
           <div className="absolute inset-0 pointer-events-none">
             {[...Array(15)].map((_, i) => (
               <div 
@@ -404,13 +392,6 @@ export default function Home() {
       </footer>
 
       <style jsx global>{`
-        @keyframes blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0; }
-        }
-        .animate-blink {
-          animation: blink 1s step-end infinite;
-        }
         @keyframes float-up {
           from { transform: translateY(0); opacity: 0; }
           20% { opacity: 0.4; }
