@@ -30,7 +30,9 @@ import {
   Eye,
   Rocket,
   RotateCcw,
-  MousePointerClick
+  MousePointerClick,
+  Plus,
+  X
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -61,7 +63,7 @@ export default function PromptsPage() {
     niche: '',
     objective: 'Capturar Leads',
     visualStyle: 'Moderno',
-    primaryColor: '#7c3aff',
+    colors: ['#7c3aff'],
     targetAudience: '',
     tone: 'Profissional',
     sections: ['Hero', 'Benefícios', 'CTA Final'],
@@ -69,10 +71,13 @@ export default function PromptsPage() {
     extras: ''
   });
 
+  const [customColor, setCustomColor] = useState('#7c3aff');
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [isCopied, setIsCopied] = useState(false);
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop');
   const { toast } = useToast();
+
+  const primaryColor = formData.colors[0] || '#7c3aff';
 
   const toggleSection = (section: string) => {
     setFormData(prev => ({
@@ -81,6 +86,36 @@ export default function PromptsPage() {
         ? prev.sections.filter(s => s !== section)
         : [...prev.sections, section]
     }));
+  };
+
+  const toggleColor = (color: string) => {
+    setFormData(prev => {
+      const exists = prev.colors.includes(color);
+      if (exists) {
+        if (prev.colors.length === 1) return prev;
+        return { ...prev, colors: prev.colors.filter(c => c !== color) };
+      } else {
+        if (prev.colors.length >= 5) {
+          toast({ variant: "destructive", title: "Limite atingido", description: "Máximo de 5 cores selecionadas." });
+          return prev;
+        }
+        return { ...prev, colors: [...prev.colors, color] };
+      }
+    });
+  };
+
+  const addCustomColor = () => {
+    if (formData.colors.length >= 5) {
+      toast({ variant: "destructive", title: "Limite atingido", description: "Máximo de 5 cores selecionadas." });
+      return;
+    }
+    if (formData.colors.includes(customColor)) return;
+    setFormData(prev => ({ ...prev, colors: [...prev.colors, customColor] }));
+  };
+
+  const removeColor = (color: string) => {
+    if (formData.colors.length === 1) return;
+    setFormData(prev => ({ ...prev, colors: prev.colors.filter(c => c !== color) }));
   };
 
   const generatePrompt = () => {
@@ -95,7 +130,7 @@ DADOS ESTRATÉGICOS:
 
 DIRETRIZES VISUAIS:
 - Estilo: ${formData.visualStyle}
-- Paleta de Cores: ${formData.primaryColor}
+- Paleta de Cores: ${formData.colors.join(', ')}
 - Requisitos: Design responsivo, moderno e focado em UX.
 
 ESTRUTURA DE SEÇÕES (ORDEM):
@@ -125,7 +160,6 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-[#0a0a0f] relative overflow-x-hidden">
-        {/* Orbs de fundo sutil */}
         <div className="fixed inset-0 pointer-events-none z-0">
           <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px]"></div>
           <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/5 rounded-full blur-[120px]"></div>
@@ -150,7 +184,6 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
           <div className="flex-1 container max-w-7xl mx-auto p-4 md:p-8 space-y-8 pb-32">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               
-              {/* COLUNA DO FORMULÁRIO */}
               <div className="lg:col-span-5 space-y-6">
                 <Card className="glass-card border-white/10 rounded-[2rem] bg-white/[0.02] overflow-hidden">
                   <CardHeader className="border-b border-white/5 bg-white/[0.02] p-6">
@@ -159,7 +192,6 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-6 space-y-6">
-                    {/* 1. O que você vende? */}
                     <div className="space-y-2">
                       <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">O que você vende?</Label>
                       <Input 
@@ -170,7 +202,6 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                       />
                     </div>
 
-                    {/* 2. Nicho */}
                     <div className="space-y-2">
                       <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Nicho do Negócio</Label>
                       <Select onValueChange={(v) => setFormData({...formData, niche: v})}>
@@ -183,7 +214,6 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                       </Select>
                     </div>
 
-                    {/* 3. Objetivo */}
                     <div className="space-y-2">
                       <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Objetivo da Página</Label>
                       <div className="flex flex-wrap gap-2">
@@ -203,7 +233,6 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                       </div>
                     </div>
 
-                    {/* 4. Estilo Visual */}
                     <div className="space-y-2">
                       <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Estilo Visual</Label>
                       <div className="flex flex-wrap gap-2">
@@ -223,32 +252,67 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                       </div>
                     </div>
 
-                    {/* 5. Cores */}
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Paleta de Cores</Label>
-                      <div className="flex items-center gap-3">
-                        {COLOR_SWATCHES.map(color => (
-                          <button
-                            key={color}
-                            onClick={() => setFormData({...formData, primaryColor: color})}
-                            className={`h-8 w-8 rounded-full border-2 transition-all ${
-                              formData.primaryColor === color ? 'border-white scale-110 shadow-[0_0_15px_rgba(255,255,255,0.3)]' : 'border-transparent opacity-60 hover:opacity-100'
-                            }`}
-                            style={{ backgroundColor: color }}
-                          />
-                        ))}
-                        <div className="flex-1 ml-2">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Paleta de Cores (Máx 5)</Label>
+                        <Badge variant="outline" className="text-[8px] opacity-50">{formData.colors.length}/5</Badge>
+                      </div>
+                      
+                      <div className="flex flex-wrap items-center gap-2">
+                        {COLOR_SWATCHES.map(color => {
+                          const isSelected = formData.colors.includes(color);
+                          return (
+                            <button
+                              key={color}
+                              onClick={() => toggleColor(color)}
+                              className={`h-8 w-8 rounded-full border-2 transition-all flex items-center justify-center relative overflow-hidden ${
+                                isSelected ? 'border-white scale-110 shadow-[0_0_15px_rgba(255,255,255,0.3)]' : 'border-transparent opacity-60 hover:opacity-100'
+                              }`}
+                              style={{ backgroundColor: color }}
+                            >
+                              {isSelected && <Check className={`h-3 w-3 ${color === '#ffffff' ? 'text-black' : 'text-white'}`} />}
+                            </button>
+                          );
+                        })}
+                        
+                        <div className="flex items-center gap-1 ml-auto">
                           <Input 
-                            value={formData.primaryColor}
-                            onChange={(e) => setFormData({...formData, primaryColor: e.target.value})}
-                            className="bg-white/5 border-white/10 h-9 rounded-lg font-mono text-[10px] uppercase text-center"
-                            placeholder="#HEX"
+                            type="color"
+                            value={customColor}
+                            onChange={(e) => setCustomColor(e.target.value)}
+                            className="w-10 h-10 p-1 bg-white/5 border-white/10 rounded-lg cursor-pointer"
                           />
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            onClick={addCustomColor}
+                            className="h-10 w-10 border-white/10 hover:bg-white/5"
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
                         </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2 min-h-[32px] pt-2">
+                        {formData.colors.map(color => (
+                          <Badge 
+                            key={color} 
+                            variant="secondary"
+                            className="pl-2 pr-1 py-1 gap-1 border-white/10 bg-white/5 group hover:bg-white/10 transition-colors"
+                          >
+                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
+                            <span className="text-[9px] font-mono uppercase">{color}</span>
+                            <button 
+                              onClick={() => removeColor(color)}
+                              className="p-0.5 hover:bg-white/10 rounded-full transition-colors"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </Badge>
+                        ))}
                       </div>
                     </div>
 
-                    {/* 6. Público-Alvo */}
                     <div className="space-y-2">
                       <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Público-Alvo</Label>
                       <Input 
@@ -259,7 +323,6 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                       />
                     </div>
 
-                    {/* 7. Tom de Voz */}
                     <div className="space-y-2">
                       <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Tom de Voz</Label>
                       <div className="grid grid-cols-3 gap-2">
@@ -280,7 +343,6 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                       </div>
                     </div>
 
-                    {/* 8. Seções do Site */}
                     <div className="space-y-2">
                       <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Seções do Site (Múltiplo)</Label>
                       <div className="flex flex-wrap gap-2">
@@ -300,7 +362,6 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                       </div>
                     </div>
 
-                    {/* 9. Diferencial */}
                     <div className="space-y-2">
                       <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Diferencial da Marca</Label>
                       <Input 
@@ -311,7 +372,6 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                       />
                     </div>
 
-                    {/* 10. Extras */}
                     <div className="space-y-2">
                       <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Informações Extras</Label>
                       <Textarea 
@@ -332,10 +392,8 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                 </Card>
               </div>
 
-              {/* COLUNA DE PREVIEW E OUTPUT */}
               <div className="lg:col-span-7 space-y-8">
                 
-                {/* MOCKUP PREVIEW CARD */}
                 <Card className="glass-card border-white/10 rounded-[2.5rem] bg-[#0b0b14] overflow-hidden flex flex-col h-fit">
                   <CardHeader className="border-b border-white/5 p-6 flex flex-row items-center justify-between">
                     <div className="space-y-1">
@@ -363,7 +421,6 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                   <CardContent className="p-10 flex items-center justify-center min-h-[500px]">
                     <div className={`relative transition-all duration-700 ease-in-out ${previewDevice === 'desktop' ? 'w-full max-w-[550px]' : 'w-[280px]'}`}>
                       
-                      {/* Desktop Frame */}
                       {previewDevice === 'desktop' && (
                         <div className="w-full h-[350px] bg-black border-[12px] border-zinc-800 rounded-3xl shadow-2xl relative overflow-hidden flex flex-col">
                           <div className="h-6 bg-zinc-900 border-b border-white/5 flex items-center px-3 gap-1.5">
@@ -371,7 +428,12 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                             <div className="h-2 w-2 rounded-full bg-yellow-500/50" />
                             <div className="h-2 w-2 rounded-full bg-green-500/50" />
                           </div>
-                          <div className="flex-1 overflow-y-auto no-scrollbar" style={{ backgroundColor: formData.primaryColor === '#ffffff' ? '#f0f0f0' : '#050508' }}>
+                          <div className="h-1.5 w-full flex">
+                            {formData.colors.map((c, i) => (
+                              <div key={i} className="flex-1 h-full" style={{ backgroundColor: c }} />
+                            ))}
+                          </div>
+                          <div className="flex-1 overflow-y-auto no-scrollbar" style={{ backgroundColor: primaryColor === '#ffffff' ? '#f0f0f0' : '#050508' }}>
                             <div className="p-4 space-y-4">
                               {formData.sections.map((sec, idx) => (
                                 <div 
@@ -379,9 +441,9 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                                   className={`rounded-xl flex items-center justify-center text-[10px] font-black uppercase tracking-widest border transition-all duration-500`}
                                   style={{ 
                                     height: sec === 'Hero' ? '120px' : '60px',
-                                    backgroundColor: `${formData.primaryColor}${sec === 'Hero' ? '20' : '10'}`,
-                                    borderColor: `${formData.primaryColor}30`,
-                                    color: formData.primaryColor,
+                                    backgroundColor: `${primaryColor}${sec === 'Hero' ? '20' : '10'}`,
+                                    borderColor: `${primaryColor}30`,
+                                    color: primaryColor,
                                     padding: formData.visualStyle === 'Minimalista' ? '10px' : '20px',
                                     borderWidth: formData.visualStyle === 'Bold' ? '3px' : '1px'
                                   }}
@@ -395,20 +457,24 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                         </div>
                       )}
 
-                      {/* Mobile Frame */}
                       {previewDevice === 'mobile' && (
                         <div className="w-full h-[480px] bg-black border-[10px] border-zinc-800 rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col">
                           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 bg-zinc-800 rounded-b-xl z-20" />
-                          <div className="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4" style={{ backgroundColor: formData.primaryColor === '#ffffff' ? '#f0f0f0' : '#050508' }}>
+                          <div className="h-1.5 w-full flex mt-5 relative z-10">
+                            {formData.colors.map((c, i) => (
+                              <div key={i} className="flex-1 h-full" style={{ backgroundColor: c }} />
+                            ))}
+                          </div>
+                          <div className="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4" style={{ backgroundColor: primaryColor === '#ffffff' ? '#f0f0f0' : '#050508' }}>
                             {formData.sections.map((sec, idx) => (
                               <div 
                                 key={idx} 
                                 className={`rounded-2xl flex items-center justify-center text-[8px] font-black uppercase tracking-widest border transition-all duration-500`}
                                 style={{ 
                                   height: sec === 'Hero' ? '100px' : '50px',
-                                  backgroundColor: `${formData.primaryColor}${sec === 'Hero' ? '20' : '10'}`,
-                                  borderColor: `${formData.primaryColor}30`,
-                                  color: formData.primaryColor,
+                                  backgroundColor: `${primaryColor}${sec === 'Hero' ? '20' : '10'}`,
+                                  borderColor: `${primaryColor}30`,
+                                  color: primaryColor,
                                   borderWidth: formData.visualStyle === 'Bold' ? '3px' : '1px'
                                 }}
                               >
@@ -427,7 +493,6 @@ Gere o comando final estruturado para Lovable/Bolt/v0.`;
                   </CardContent>
                 </Card>
 
-                {/* PROMPT OUTPUT */}
                 {generatedPrompt && (
                   <Card className="glass-card border-primary/30 rounded-[2.5rem] bg-[#0b0b14] animate-in fade-in slide-in-from-bottom-4 duration-700">
                     <CardHeader className="border-b border-white/5 p-8 flex flex-row items-center justify-between">
