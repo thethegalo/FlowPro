@@ -11,12 +11,9 @@ import {
   Send, 
   Bot, 
   Loader2, 
-  AlertCircle, 
   X, 
-  MessageSquare,
-  Sparkles,
-  User,
-  Minus
+  Minus,
+  Sparkles
 } from 'lucide-react';
 import { salesMentorChat } from '@/ai/flows/sales-mentor-chatbot';
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
@@ -63,8 +60,6 @@ export function FloatingMentor() {
     return Math.max(0, 10 - used);
   }, [userData, isUnlimited]);
 
-  // Early return for paths where mentor shouldn't appear
-  // Moved AFTER all hooks to follow Rules of Hooks
   if (['/', '/auth', '/quiz'].includes(pathname)) return null;
 
   const checkLimitAndTrack = async () => {
@@ -100,18 +95,24 @@ export function FloatingMentor() {
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
+    
+    const userMessage = input.trim();
     const canProceed = await checkLimitAndTrack();
     if (!canProceed) return;
 
-    const userMessage = input.trim();
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setIsLoading(true);
+    
     try {
       const response = await salesMentorChat({ question: userMessage });
-      setMessages(prev => [...prev, { role: 'assistant', content: response.advice }]);
+      if (response && response.advice) {
+        setMessages(prev => [...prev, { role: 'assistant', content: response.advice }]);
+      } else {
+        throw new Error('Resposta vazia');
+      }
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'assistant', content: "Erro na conexão neural. Tente novamente." }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: "Erro na conexão neural. Tente novamente em alguns instantes." }]);
     } finally {
       setIsLoading(false);
     }
@@ -120,7 +121,7 @@ export function FloatingMentor() {
   return (
     <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-4">
       {isOpen && (
-        <Card className="w-[350px] md:w-[400px] h-[500px] flex flex-col overflow-hidden glass-card border-primary/30 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-in slide-in-from-bottom-10">
+        <Card className="w-[320px] sm:w-[400px] h-[500px] flex flex-col overflow-hidden glass-card border-primary/30 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-in slide-in-from-bottom-10">
           <div className="bg-primary/10 border-b border-white/5 p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
@@ -171,6 +172,7 @@ export function FloatingMentor() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                disabled={isLoading}
                 className="flex-1 bg-white/5 border-white/10 h-10 rounded-xl text-xs focus-visible:ring-primary"
               />
               <Button onClick={handleSend} disabled={isLoading || (messagesRemaining === 0 && !isUnlimited)} size="icon" className="h-10 w-10 rounded-xl bg-primary">

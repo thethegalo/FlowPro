@@ -48,6 +48,18 @@
         "description": { "type": "string" }
       },
       "required": ["amount", "date"]
+    },
+    "CapturedLead": {
+      "title": "CapturedLead",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "businessType": { "type": "string" },
+        "capturedAt": { "type": "string", "format": "date-time" },
+        "source": { "type": "string" }
+      }
     }
   },
   "auth": {
@@ -65,6 +77,10 @@
     "/users/{userId}/earnings/{earningId}": {
       "schema": { "$ref": "#/backend/entities/Earning" },
       "description": "Individual earning records for chart and tracking."
+    },
+    "/users/{userId}/capturedLeads/{leadId}": {
+      "schema": { "$ref": "#/backend/entities/CapturedLead" },
+      "description": "Leads saved by the user from radar or manually."
     }
   }
 }

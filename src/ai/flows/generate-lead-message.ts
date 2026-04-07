@@ -1,45 +1,36 @@
+
 'use server';
 /**
- * @fileOverview Gera mensagens personalizadas de abordagem para leads.
- * Focado em prospecção natural e conversão rápida.
+ * @fileOverview IA para geração de scripts de abordagem fria (Cold Outreach).
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
 const GenerateLeadMessageInputSchema = z.object({
-  businessName: z.string().describe('O nome do negócio do lead.'),
-  businessType: z.string().describe('O nicho ou tipo de negócio.'),
-  city: z.string().describe('A cidade do lead.'),
+  businessName: z.string().describe('Nome da empresa do lead.'),
+  businessType: z.string().describe('Nicho de atuação.'),
+  city: z.string().describe('Cidade do lead.'),
 });
 export type GenerateLeadMessageInput = z.infer<typeof GenerateLeadMessageInputSchema>;
 
 const GenerateLeadMessageOutputSchema = z.object({
-  message: z.string().describe('A mensagem de abordagem personalizada.'),
+  message: z.string().describe('A mensagem de abordagem gerada.'),
 });
 export type GenerateLeadMessageOutput = z.infer<typeof GenerateLeadMessageOutputSchema>;
-
-export async function generateLeadMessage(
-  input: GenerateLeadMessageInput
-): Promise<GenerateLeadMessageOutput> {
-  return generateLeadMessageFlow(input);
-}
 
 const leadMessagePrompt = ai.definePrompt({
   name: 'leadMessagePrompt',
   input: { schema: GenerateLeadMessageInputSchema },
   output: { schema: GenerateLeadMessageOutputSchema },
   prompt: `Você é um especialista em Cold Outreach via WhatsApp.
-Gere uma mensagem de abertura curta e persuasiva para o dono do negócio "{{{businessName}}}" ({{{businessType}}}) em {{{city}}}.
+Gere uma mensagem curta e persuasiva para o dono do negócio "{{{businessName}}}" em {{{city}}}.
 
-REQUISITOS:
-1. Comece com uma saudação amigável e elogie algo sobre ser um negócio de {{{businessType}}}.
-2. Identifique uma oportunidade de melhoria (ex: automação de atendimento ou novos clientes).
-3. Termine com uma pergunta aberta para gerar conversa.
-4. Máximo 300 caracteres.
-5. Tom humano, sem parecer spam.
-
-Gere apenas o conteúdo da mensagem.`,
+REGRAS:
+1. Comece com uma saudação amigável.
+2. Identifique uma oportunidade de melhoria rápida.
+3. Máximo 300 caracteres.
+4. Linguagem humana, evite parecer robô ou spam.`,
 });
 
 const generateLeadMessageFlow = ai.defineFlow(
@@ -50,7 +41,13 @@ const generateLeadMessageFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await leadMessagePrompt(input);
-    if (!output) throw new Error('Falha ao gerar mensagem.');
+    if (!output) throw new Error('Erro ao gerar mensagem de abordagem.');
     return output;
   }
 );
+
+export async function generateLeadMessage(
+  input: GenerateLeadMessageInput
+): Promise<GenerateLeadMessageOutput> {
+  return generateLeadMessageFlow(input);
+}
