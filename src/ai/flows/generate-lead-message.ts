@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview IA para geração de scripts de abordagem fria (Cold Outreach).
@@ -48,9 +47,14 @@ const generateLeadMessageFlow = ai.defineFlow(
     outputSchema: GenerateLeadMessageOutputSchema,
   },
   async (input) => {
-    const { output } = await leadMessagePrompt(input);
-    if (!output) throw new Error('Falha na geração do script.');
-    return output;
+    try {
+      const { output } = await leadMessagePrompt(input);
+      if (!output) throw new Error('Falha na geração do script.');
+      return output;
+    } catch (error: any) {
+      console.error('[GENKIT FLOW ERROR]', error);
+      throw new Error(`Falha na geração: ${error.message}`);
+    }
   }
 );
 

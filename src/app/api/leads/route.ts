@@ -8,12 +8,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Nicho é obrigatório.' }, { status: 400 });
     }
 
-    // Leitura exclusiva de variável de ambiente de servidor
-    const apiKey = process.env.GOOGLE_PLACES_API_KEY;
+    // Tenta múltiplas variáveis de ambiente para máxima compatibilidade
+    const apiKey = 
+      process.env.GOOGLE_PLACES_API_KEY || 
+      process.env.GEMINI_API_KEY || 
+      process.env.GOOGLE_API_KEY || 
+      process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
 
-    if (!apiKey || apiKey === 'SUA_CHAVE_AQUI' || apiKey === '') {
+    if (!apiKey || apiKey.length < 10) {
       return NextResponse.json(
-        { error: 'Chave da API Google Places não configurada. Configure a variável GOOGLE_PLACES_API_KEY no arquivo .env.local.' },
+        { error: 'Chave de API não configurada corretamente no ambiente.' },
         { status: 503 }
       );
     }
@@ -37,7 +41,7 @@ export async function POST(req: Request) {
       const errorData = await response.json().catch(() => ({}));
       console.error('[GOOGLE PLACES ERROR]', response.status, errorData);
       return NextResponse.json(
-        { error: `Erro ao buscar leads: ${response.status}. Verifique sua chave de API.` },
+        { error: `Erro na API do Google: ${response.status}. Verifique se a API Places (New) está ativa.` },
         { status: response.status }
       );
     }
@@ -65,6 +69,6 @@ export async function POST(req: Request) {
     return NextResponse.json(leads);
   } catch (error) {
     console.error('[LEADS API ERROR]', error);
-    return NextResponse.json({ error: 'Erro interno no servidor.' }, { status: 500 });
+    return NextResponse.json({ error: 'Erro interno no motor de busca.' }, { status: 500 });
   }
 }

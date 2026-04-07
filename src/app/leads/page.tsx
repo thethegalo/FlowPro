@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -115,32 +114,41 @@ export default function LeadsPage() {
     }
   };
 
-  const handleSaveLead = (lead: any) => {
+  const handleSaveLead = async (lead: any) => {
     if (!db || !user) return;
     
     setCapturingId(lead.id);
+    
+    // Alinha os campos com o esquema do banco de dados ( CapturedLead )
     const leadData = {
-      ...lead,
+      name: lead.name || '',
+      phone: lead.phone || '',
+      email: '', // API Places raramente retorna email direto
+      businessType: lead.type || niche || 'Serviços',
       capturedAt: serverTimestamp(),
-      source: 'radar'
+      source: 'radar',
+      rating: lead.rating || '0',
+      city: lead.city || city || '',
+      state: lead.state || state || '',
+      address: lead.address || ''
     };
 
-    addDoc(collection(db, 'users', user.uid, 'capturedLeads'), leadData)
-      .then(() => {
-        toast({ title: "Lead Salvo!", description: "Adicionado à sua base de dados." });
-        setCapturingId(null);
-      })
-      .catch((error) => {
-        setCapturingId(null);
-        errorEmitter.emit('permission-error', new FirestorePermissionError({
-          path: `users/${user.uid}/capturedLeads`,
-          operation: 'create',
-          requestResourceData: leadData
-        }));
-      });
+    try {
+      await addDoc(collection(db, 'users', user.uid, 'capturedLeads'), leadData);
+      toast({ title: "Lead Salvo!", description: "Adicionado à sua base de dados com sucesso." });
+    } catch (error: any) {
+      console.error('Erro ao salvar lead:', error);
+      errorEmitter.emit('permission-error', new FirestorePermissionError({
+        path: `users/${user.uid}/capturedLeads`,
+        operation: 'create',
+        requestResourceData: leadData
+      }));
+    } finally {
+      setCapturingId(null);
+    }
   };
 
-  const handleManualSave = (e: React.FormEvent) => {
+  const handleManualSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!db || !user) return;
     
@@ -148,24 +156,27 @@ export default function LeadsPage() {
     const leadData = {
       ...manualLead,
       capturedAt: serverTimestamp(),
-      source: 'manual'
+      source: 'manual',
+      city: '',
+      state: '',
+      address: '',
+      rating: '5.0'
     };
 
-    addDoc(collection(db, 'users', user.uid, 'capturedLeads'), leadData)
-      .then(() => {
-        toast({ title: "Lead Cadastrado!", description: "Dados salvos na sua base neural." });
-        setManualLead({ name: '', email: '', phone: '', businessType: '' });
-        setIsDialogOpen(false);
-        setIsManualSaving(false);
-      })
-      .catch((error) => {
-        setIsManualSaving(false);
-        errorEmitter.emit('permission-error', new FirestorePermissionError({
-          path: `users/${user.uid}/capturedLeads`,
-          operation: 'create',
-          requestResourceData: leadData
-        }));
-      });
+    try {
+      await addDoc(collection(db, 'users', user.uid, 'capturedLeads'), leadData);
+      toast({ title: "Lead Cadastrado!", description: "Dados salvos na sua base neural." });
+      setManualLead({ name: '', email: '', phone: '', businessType: '' });
+      setIsDialogOpen(false);
+    } catch (error: any) {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({
+        path: `users/${user.uid}/capturedLeads`,
+        operation: 'create',
+        requestResourceData: leadData
+      }));
+    } finally {
+      setIsManualSaving(false);
+    }
   };
 
   const handleWhatsApp = (phone: string, message: string) => {
@@ -185,7 +196,7 @@ export default function LeadsPage() {
       const res = await generateLeadMessage({
         businessName: lead.name || 'Dono do Negócio',
         businessType: lead.type || niche || 'Serviços',
-        city: lead.city || city || 'Brasil'
+        city: lead.city || city || 'Sua região'
       });
       
       if (res && res.message) {
@@ -194,8 +205,9 @@ export default function LeadsPage() {
           setApproachedLeads(prev => [...prev, lead.id]);
         }
       }
-    } catch (e) {
-      toast({ variant: "destructive", title: "Erro de IA", description: "Não foi possível gerar o script agora." });
+    } catch (e: any) {
+      console.error('[IA GEN ERROR]', e);
+      toast({ variant: "destructive", title: "Erro de IA", description: e.message || "Não foi possível gerar o script agora." });
     } finally {
       setGeneratingMsg(null);
     }
