@@ -105,14 +105,16 @@ export default function Dashboard() {
   const { data: userData, isLoading: isUserDocLoading } = useDoc(userDocRef);
 
   const isSpecialUser = useMemo(() => user?.email === ADMIN_EMAIL, [user]);
+  const isGrayUser = useMemo(() => user?.email === 'grayy.fefe@gmail.com', [user]);
 
   const displayName = useMemo(() => {
     if (isSpecialUser) return 'Lucas';
+    if (isGrayUser) return 'Gray';
     if (userData?.name) return userData.name;
     if (user?.displayName) return user.displayName;
     if (user?.email) return user.email.split('@')[0];
     return 'Usuário';
-  }, [userData?.name, user?.displayName, user?.email, isSpecialUser]);
+  }, [userData?.name, user?.displayName, user?.email, isSpecialUser, isGrayUser]);
 
   const subQuery = useMemoFirebase(() => {
     if (!db || !user) return null;
@@ -123,17 +125,17 @@ export default function Dashboard() {
   const isProMember = useMemo(() => {
     const hasActiveSub = subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime') && sub.status === 'active');
     const hasPremiumPlan = userData?.plan === 'vitalicio' || userData?.plan === 'mensal' || userData?.plan === 'trimestral';
-    return hasActiveSub || hasPremiumPlan || isSpecialUser;
-  }, [subData, isSpecialUser, userData]);
+    return hasActiveSub || hasPremiumPlan || isSpecialUser || isGrayUser;
+  }, [subData, isSpecialUser, isGrayUser, userData]);
 
   const currentJourneyDay = useMemo(() => {
     if (!userData?.createdAt) return 1;
-    if (isSpecialUser) return 7;
+    if (isSpecialUser || isGrayUser) return 7;
     const created = userData.createdAt.toDate ? userData.createdAt.toDate() : new Date(userData.createdAt);
     const diffInMs = Date.now() - created.getTime();
     const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
     return diffInDays + 1;
-  }, [userData?.createdAt, isSpecialUser]);
+  }, [userData?.createdAt, isSpecialUser, isGrayUser]);
 
   const earningsQuery = useMemoFirebase(() => {
     if (!db || !user) return null;
@@ -177,31 +179,42 @@ export default function Dashboard() {
 
   const totalEarnings = useMemo(() => {
     const raw = userData?.totalEarnings || 0;
-    return isSpecialUser ? 28754 + raw : raw;
-  }, [userData?.totalEarnings, isSpecialUser]);
+    if (isSpecialUser) return 21564 + raw;
+    if (isGrayUser) return 12497 + raw;
+    return raw;
+  }, [userData?.totalEarnings, isSpecialUser, isGrayUser]);
 
-  const displayGoal = isSpecialUser ? 50000 : userGoal;
+  const displayGoal = isSpecialUser ? 50000 : isGrayUser ? 25000 : userGoal;
+  
   const chartData = useMemo(() => {
     const days = 30;
     const data = [];
     const now = new Date();
     const earningsByDate: Record<string, number> = {};
     earningsData?.forEach(e => { earningsByDate[e.date] = (earningsByDate[e.date] || 0) + (e.amount || 0); });
+    
+    const specialValues = [420,380,650,290,810,0,1200,340,290,480,0,920,670,410,380,0,1100,590,430,280,0,1340,480,670,0,1200,890,430,0,630];
+    const grayValues = [0,280,0,430,670,0,820,0,390,510,0,1200,0,430,280,0,890,0,540,0,1100,0,380,670,0,820,0,490,0,1097];
+
     for (let i = days; i >= 0; i--) {
       const d = new Date();
       d.setDate(now.getDate() - i);
       const dateKey = d.toISOString().split('T')[0];
       const dayStr = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
       let dailyValue = earningsByDate[dateKey] || 0;
-      if (isSpecialUser && dailyValue === 0) {
-        const seed = (i * 1234.5) + (user?.uid?.charCodeAt(0) || 1);
-        const rand = Math.abs(Math.sin(seed) * 10000) % 1;
-        dailyValue = Math.floor((28754 / 30) * (0.3 + rand * 1.5));
+      
+      if (dailyValue === 0) {
+        if (isSpecialUser) {
+          dailyValue = specialValues[30 - i] || 0;
+        } else if (isGrayUser) {
+          dailyValue = grayValues[30 - i] || 0;
+        }
       }
+      
       data.push({ date: dayStr, ganhos: dailyValue });
     }
     return data;
-  }, [earningsData, isSpecialUser, user?.uid]);
+  }, [earningsData, isSpecialUser, isGrayUser]);
 
   const userLevel = useMemo(() => {
     const missionsCount = completedMissionIds.length;
@@ -235,7 +248,7 @@ export default function Dashboard() {
               </h2>
             </div>
             <Badge variant="outline" className={`${isProMember ? 'bg-purple-500/10 border-purple-500/30 text-purple-400' : 'bg-white/5'} text-[8px] font-black uppercase px-3 py-1 relative z-50`}>
-              {isSpecialUser ? 'VITALÍCIO' : (userData?.plan?.toUpperCase() || 'ACESSO LIMITADO')}
+              {isSpecialUser ? 'VITALÍCIO' : isGrayUser ? 'MENSAL' : (userData?.plan?.toUpperCase() || 'ACESSO LIMITADO')}
             </Badge>
           </header>
 
@@ -251,7 +264,7 @@ export default function Dashboard() {
               </div>
               <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 max-w-xs">
                 <p className="text-[10px] font-bold text-white/80 leading-relaxed uppercase">
-                  {isSpecialUser ? "Modo de operação ativa. Acelere para a escala!" : !isProMember ? "Assine um plano para liberar o Radar Neural completo." : "Modo de operação ativo. Acelere para a escala!"}
+                  {isProMember ? "Modo de operação ativo. Acelere para a escala!" : "Assine um plano para liberar o Radar Neural completo."}
                 </p>
               </div>
             </div>
@@ -265,12 +278,19 @@ export default function Dashboard() {
                   <div className="text-4xl font-black italic tracking-tighter text-white"><AnimatedNumber value={totalEarnings} prefix="R$ " /></div>
                 </div>
               </div>
-              <div className="h-[300px] w-full relative pb-6">
+              <div className="h-[350px] w-full relative pb-12">
                 <ChartContainer config={{ ganhos: { label: "Valor", color: "hsl(var(--primary))" } }}>
-                  <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 30 }}>
+                  <AreaChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 50 }}>
                     <defs><linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4}/><stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/></linearGradient></defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.06)" />
-                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }} dy={15} />
+                    <XAxis 
+                      dataKey="date" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold', angle: -45, textAnchor: 'end' }} 
+                      dy={15} 
+                      interval={4}
+                    />
                     <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }} tickFormatter={(v) => `R$${v}`} />
                     <Tooltip content={<ChartTooltipContent />} />
                     <Area type="monotone" dataKey="ganhos" stroke="hsl(var(--primary))" strokeWidth={3} fill="url(#colorGanhos)" animationDuration={2000} />
@@ -294,7 +314,7 @@ export default function Dashboard() {
                 </div>
               </Card>
 
-              <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] p-8 metric-card">
+              <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] p-8 metric-card overflow-hidden">
                 <div className="flex justify-between items-center mb-6">
                   <span className="text-[10px] font-black uppercase tracking-widest text-accent">Execução Diária</span>
                   <Badge variant="outline" className="text-[8px] border-accent/20 text-accent">ALTA PERFORMANCE</Badge>
@@ -304,7 +324,7 @@ export default function Dashboard() {
                     <div className="text-4xl font-black italic tracking-tighter text-white"><AnimatedNumber value={dailyActions} />/{dailyGoal}</div>
                     <p className="text-[10px] font-bold text-muted-foreground uppercase mt-1">Ações do Dia</p>
                   </div>
-                  <div className="relative h-24 w-24 flex items-center justify-center">
+                  <div className="relative h-24 w-24 flex items-center justify-center overflow-hidden">
                     <svg className="h-full w-full transform -rotate-90">
                       <circle cx="50%" cy="50%" r="40%" fill="transparent" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
                       <circle cx="50%" cy="50%" r="40%" fill="transparent" stroke="hsl(var(--primary))" strokeWidth="8" strokeDasharray="251.2" strokeDashoffset={251.2 - (251.2 * Math.min(1, dailyActions / dailyGoal))} strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 8px #7c3aff)' }} />
@@ -317,7 +337,7 @@ export default function Dashboard() {
               </Card>
             </div>
 
-            {/* JORNADA DE 7 DIAS (RESTAURADA) */}
+            {/* JORNADA DE 7 DIAS */}
             <div className="space-y-8">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
@@ -332,8 +352,8 @@ export default function Dashboard() {
               <div className="grid gap-4">
                 {missions.map((m) => {
                   const isCompleted = completedMissionIds.includes(m.id);
-                  const isLocked = !isSpecialUser && m.order > currentJourneyDay && !isCompleted;
-                  const isCurrent = !isCompleted && !isLocked && (isSpecialUser || m.order === currentJourneyDay);
+                  const isLocked = !isSpecialUser && !isGrayUser && m.order > currentJourneyDay && !isCompleted;
+                  const isCurrent = !isCompleted && !isLocked && (isSpecialUser || isGrayUser || m.order === currentJourneyDay);
 
                   return (
                     <Link 
