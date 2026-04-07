@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useEffect, useState } from 'react';
@@ -270,7 +271,7 @@ export default function Dashboard() {
             </div>
 
             {/* Gráfico de Performance */}
-            <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] p-10 space-y-10 metric-card mb-8">
+            <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] p-10 space-y-10 metric-card mb-8 overflow-hidden">
               <div className="flex justify-between items-end">
                 <h3 className="text-2xl font-black italic uppercase tracking-tight text-white">Performance 30 Dias</h3>
                 <div className="text-right">
@@ -278,23 +279,25 @@ export default function Dashboard() {
                   <div className="text-4xl font-black italic tracking-tighter text-white"><AnimatedNumber value={totalEarnings} prefix="R$ " /></div>
                 </div>
               </div>
-              <div className="h-[260px] w-full relative">
-                <ChartContainer config={{ ganhos: { label: "Valor", color: "hsl(var(--primary))" } }}>
-                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                    <defs><linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4}/><stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/></linearGradient></defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.06)" />
-                    <XAxis 
-                      dataKey="date" 
-                      axisLine={false} 
-                      tickLine={false}
-                      tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
-                      interval={9}
-                      dy={8}
-                    />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }} tickFormatter={(v) => `R$${v}`} />
-                    <Tooltip content={<ChartTooltipContent />} />
-                    <Area type="monotone" dataKey="ganhos" stroke="hsl(var(--primary))" strokeWidth={3} fill="url(#colorGanhos)" animationDuration={2000} />
-                  </AreaChart>
+              <div className="h-[260px] w-full relative overflow-hidden">
+                <ChartContainer config={{ ganhos: { label: "Valor", color: "hsl(var(--primary))" } }} className="aspect-auto h-full w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                      <defs><linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4}/><stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/></linearGradient></defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.06)" />
+                      <XAxis 
+                        dataKey="date" 
+                        axisLine={false} 
+                        tickLine={false}
+                        tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
+                        interval={9}
+                        dy={8}
+                      />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }} tickFormatter={(v) => `R$${v}`} />
+                      <Tooltip content={<ChartTooltipContent />} />
+                      <Area type="monotone" dataKey="ganhos" stroke="hsl(var(--primary))" strokeWidth={3} fill="url(#colorGanhos)" animationDuration={2000} isAnimationActive={true} />
+                    </AreaChart>
+                  </ResponsiveContainer>
                 </ChartContainer>
               </div>
             </Card>
