@@ -75,9 +75,7 @@ export function AppSidebar() {
     { title: "Captar Leads", icon: Search, url: "/leads" },
     { title: "Scripts WhatsApp", icon: MessageSquare, url: "/abordagens" },
     { title: "Gerador Prompts", icon: Terminal, url: "/prompts" },
-    { title: "IAs Recomendadas", icon: Sparkles, url: "/ai-tools" },
     { title: "Ferramentas", icon: Wrench, url: "/tools" },
-    { title: "Simulador IA", icon: Target, url: "/simulator" },
     { title: "Biblioteca", icon: FileText, url: "/resources" },
   ];
 
