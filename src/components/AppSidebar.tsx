@@ -4,7 +4,6 @@ import * as React from "react";
 import { 
   LayoutDashboard, 
   Search, 
-  FileText, 
   MessageSquare, 
   User, 
   Shield, 
@@ -76,7 +75,6 @@ export function AppSidebar() {
     { title: "Scripts WhatsApp", icon: MessageSquare, url: "/abordagens" },
     { title: "Gerador Prompts", icon: Terminal, url: "/prompts" },
     { title: "Ferramentas", icon: Wrench, url: "/tools" },
-    { title: "Biblioteca", icon: FileText, url: "/resources" },
   ];
 
   const isApproved = userData?.status === 'approved' || isAdmin;
