@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -601,24 +600,24 @@ export default function LeadsPage() {
             </div>
           </div>
         </main>
-      </div>
 
-      <style jsx global>{`
-        @keyframes slow-spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        .animate-slow-spin {
-          animation: slow-spin 60s linear infinite;
-        }
-        .glass-card::before {
-          content: "";
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%);
-          pointer-events: none;
-        }
-      `}</style>
-    </div>
+        <style jsx global>{`
+          @keyframes slow-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+          .animate-slow-spin {
+            animation: slow-spin 60s linear infinite;
+          }
+          .glass-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+            pointer-events: none;
+          }
+        `}</style>
+      </div>
+    </SidebarProvider>
   );
 }
