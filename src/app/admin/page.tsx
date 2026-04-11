@@ -4,7 +4,7 @@
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,12 @@ import {
   Save,
   Infinity,
   CalendarDays,
-  Calendar
+  Calendar,
+  BarChart3,
+  Zap,
+  Trash2,
+  RefreshCcw,
+  DollarSign
 } from 'lucide-react';
 import { collection, query, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
@@ -30,6 +35,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function AdminPage() {
   const { user, isUserLoading } = useUser();
@@ -38,6 +53,13 @@ export default function AdminPage() {
   const { toast } = useToast();
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [plansToUpdate, setPlansToUpdate] = useState<Record<string, string>>({});
+  
+  // Estados para Simulação
+  const [simulationUser, setSimulationUser] = useState<any>(null);
+  const [minDayVal, setMinDayVal] = useState("100");
+  const [maxDayVal, setMaxDayVal] = useState("1200");
+  const [manualTotal, setTotalOverwrite] = useState("");
+  const [simulatedData, setSimulatedData] = useState<any[]>([]);
 
   const ADMIN_EMAIL = "thethegalo@gmail.com";
 
@@ -83,6 +105,63 @@ export default function AdminPage() {
       toast({ title: "Plano Atualizado", description: "O acesso do usuário foi modificado com sucesso." });
     } catch (error: any) {
       toast({ variant: "destructive", title: "Erro", description: error.message });
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  // Funções de Simulação
+  const handleGenerateRandom = () => {
+    const min = Number(minDayVal) || 0;
+    const max = Number(maxDayVal) || 1000;
+    const data = [];
+    const now = new Date();
+    let sum = 0;
+
+    for (let i = 30; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(now.getDate() - i);
+      const dateKey = d.toISOString().split('T')[0];
+      const val = Math.floor(Math.random() * (max - min + 1)) + min;
+      sum += val;
+      data.push({ date: dateKey, amount: val });
+    }
+    setSimulatedData(data);
+    if (!manualTotal) setTotalOverwrite(sum.toString());
+    toast({ title: "Dados Gerados", description: "Curva de 30 dias criada com sucesso." });
+  };
+
+  const handleSaveSimulation = async () => {
+    if (!db || !simulationUser) return;
+    setUpdatingId(simulationUser.id);
+    try {
+      await updateDoc(doc(db, 'users', simulationUser.id), {
+        simulatedStats: {
+          total: Number(manualTotal) || 0,
+          chart: simulatedData,
+          updatedAt: new Date().toISOString()
+        }
+      });
+      toast({ title: "Sucesso!", description: "Dados injetados na conta do usuário." });
+      setSimulationUser(null);
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Erro", description: e.message });
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const handleResetSimulation = async () => {
+    if (!db || !simulationUser) return;
+    setUpdatingId(simulationUser.id);
+    try {
+      await updateDoc(doc(db, 'users', simulationUser.id), {
+        simulatedStats: null
+      });
+      toast({ title: "Resetado", description: "Todos os dados de simulação foram removidos." });
+      setSimulationUser(null);
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Erro", description: e.message });
     } finally {
       setUpdatingId(null);
     }
@@ -209,6 +288,15 @@ export default function AdminPage() {
                             </div>
                           </TableCell>
                           <TableCell className="text-right flex justify-end gap-2 p-4">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setSimulationUser(u)}
+                              className="h-8 px-3 rounded-lg text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/10 border-primary/20"
+                            >
+                              <BarChart3 className="h-3 w-3 mr-1" />
+                              SIMULAR
+                            </Button>
                             {u.status !== 'approved' && (
                               <Button 
                                 size="sm" 
@@ -243,6 +331,84 @@ export default function AdminPage() {
             </Card>
           </div>
         </main>
+
+        {/* DIALOG DE SIMULAÇÃO */}
+        <Dialog open={!!simulationUser} onOpenChange={(open) => !open && setSimulationUser(null)}>
+          <DialogContent className="bg-[#0e0e1a] border-white/10 text-white rounded-[2rem] sm:max-w-[450px] shadow-[0_0_80px_rgba(124,58,255,0.2)]">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-2">
+                <Zap className="h-5 w-5 text-primary" /> Modo Simulação
+              </DialogTitle>
+              <DialogDescription className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
+                Injetar dados de faturamento para: <span className="text-white">{simulationUser?.name || simulationUser?.email}</span>
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="grid gap-6 py-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-black uppercase opacity-50 tracking-widest">Valor Mín/Dia (R$)</Label>
+                  <Input 
+                    type="number"
+                    value={minDayVal}
+                    onChange={(e) => setMinDayVal(e.target.value)}
+                    className="bg-white/5 border-white/10 rounded-xl h-12 focus-visible:ring-primary"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[10px] font-black uppercase opacity-50 tracking-widest">Valor Máx/Dia (R$)</Label>
+                  <Input 
+                    type="number"
+                    value={maxDayVal}
+                    onChange={(e) => setMaxDayVal(e.target.value)}
+                    className="bg-white/5 border-white/10 rounded-xl h-12 focus-visible:ring-primary"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase opacity-50 tracking-widest">Ganhos Totais (Sobrescrita Manual)</Label>
+                <div className="relative">
+                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary" />
+                  <Input 
+                    type="number"
+                    placeholder="Ex: 13501"
+                    value={manualTotal}
+                    onChange={(e) => setTotalOverwrite(e.target.value)}
+                    className="bg-white/5 border-white/10 rounded-xl h-12 pl-10 focus-visible:ring-primary font-bold text-lg"
+                  />
+                </div>
+                <p className="text-[8px] text-muted-foreground uppercase font-medium">Este valor aparecerá no placar principal do dashboard.</p>
+              </div>
+
+              <Button 
+                onClick={handleGenerateRandom}
+                variant="outline"
+                className="w-full h-12 border-primary/30 text-primary hover:bg-primary/10 rounded-xl font-black uppercase tracking-widest text-[10px]"
+              >
+                <RefreshCcw className="h-3.5 w-3.5 mr-2" /> Gerar Aleatório (30 Dias)
+              </Button>
+            </div>
+
+            <DialogFooter className="flex flex-col sm:flex-row gap-2">
+              <Button 
+                variant="ghost" 
+                onClick={handleResetSimulation}
+                disabled={updatingId === simulationUser?.id}
+                className="flex-1 h-12 text-destructive hover:bg-destructive/10 rounded-xl font-black uppercase tracking-widest text-[10px]"
+              >
+                <Trash2 className="h-3.5 w-3.5 mr-2" /> Zerar Tudo
+              </Button>
+              <Button 
+                onClick={handleSaveSimulation}
+                disabled={updatingId === simulationUser?.id}
+                className="flex-[2] h-12 bg-primary hover:bg-primary/90 rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20"
+              >
+                {updatingId === simulationUser?.id ? <Loader2 className="h-4 w-4 animate-spin" /> : "SALVAR ALTERAÇÕES"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </SidebarProvider>
   );

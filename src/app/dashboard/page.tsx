@@ -179,15 +179,28 @@ export default function Dashboard() {
   }, [progressData]);
 
   const totalEarnings = useMemo(() => {
+    // Prioridade 1: Estatísticas Simuladas pelo Admin
+    if (userData?.simulatedStats?.total !== undefined) return userData.simulatedStats.total;
+
+    // Prioridade 2: Valores hardcoded para usuários especiais
     const raw = userData?.totalEarnings || 0;
     if (isSpecialUser) return 21564 + raw;
     if (isGrayUser) return 17594 + raw;
+    
     return raw;
-  }, [userData?.totalEarnings, isSpecialUser, isGrayUser]);
+  }, [userData?.totalEarnings, userData?.simulatedStats, isSpecialUser, isGrayUser]);
 
   const displayGoal = isSpecialUser ? 50000 : isGrayUser ? 25000 : userGoal;
   
   const chartData = useMemo(() => {
+    // Prioridade 1: Gráfico Simulado pelo Admin
+    if (userData?.simulatedStats?.chart) {
+      return userData.simulatedStats.chart.map((p: any) => ({
+        date: new Date(p.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+        ganhos: p.amount
+      }));
+    }
+
     const days = 30;
     const data = [];
     const now = new Date();
@@ -218,7 +231,7 @@ export default function Dashboard() {
       data.push({ date: dayStr, ganhos: dailyValue });
     }
     return data;
-  }, [earningsData, isSpecialUser, isGrayUser]);
+  }, [earningsData, isSpecialUser, isGrayUser, userData?.simulatedStats]);
 
   const userLevel = useMemo(() => {
     const missionsCount = completedMissionIds.length;
