@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -20,7 +21,12 @@ import {
   ShoppingCart, 
   Bot, 
   Instagram,
-  ExternalLink
+  ExternalLink,
+  Smartphone,
+  ChevronRight,
+  MoreVertical,
+  Paperclip,
+  Smile
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -60,36 +66,30 @@ export default function AbordagensPage() {
   const [empresa, setEmpresa] = useState('');
   const [selectedModel, setSelectedModel] = useState<keyof typeof SCRIPTS>('presenca');
   const [message, setMessage] = useState('');
+  const [isManualMode, setIsManualMode] = useState(false);
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
-  // Carregar nome do localStorage
   useEffect(() => {
     const savedName = localStorage.getItem('flowpro_user_name');
     if (savedName) setNome(savedName);
   }, []);
 
-  // Salvar nome no localStorage
   useEffect(() => {
     if (nome) localStorage.setItem('flowpro_user_name', nome);
   }, [nome]);
 
-  // Atualizar mensagem quando campos ou modelo mudarem
   useEffect(() => {
-    setMessage(SCRIPTS[selectedModel].template(nome, empresa));
-  }, [nome, empresa, selectedModel]);
+    if (!isManualMode) {
+      setMessage(SCRIPTS[selectedModel].template(nome, empresa));
+    }
+  }, [nome, empresa, selectedModel, isManualMode]);
 
   const handleCopyMessage = () => {
     navigator.clipboard.writeText(message);
     setCopied(true);
-    toast({ title: "Mensagem Copiada!", description: "Agora é só colar no WhatsApp." });
+    toast({ title: "Mensagem Copiada!", description: "Pronta para ser colada." });
     setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleCopyPhone = () => {
-    if (!whatsapp) return;
-    navigator.clipboard.writeText(whatsapp);
-    toast({ title: "Número Copiado!" });
   };
 
   const openWhatsApp = () => {
@@ -105,10 +105,11 @@ export default function AbordagensPage() {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-[#050508] relative">
+      <div className="flex min-h-screen w-full bg-[#050508] relative overflow-hidden">
+        {/* Background Atmosphere */}
         <div className="fixed inset-0 pointer-events-none z-0">
           <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-green-500/5 rounded-full blur-[150px]"></div>
-          <div className="absolute bottom-0 right-0 w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px]"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px]"></div>
         </div>
 
         <AppSidebar />
@@ -119,142 +120,211 @@ export default function AbordagensPage() {
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
               <div className="h-4 w-px bg-white/10 hidden md:block" />
               <h1 className="text-sm font-black italic uppercase tracking-widest flex items-center gap-2">
-                <MessageSquare className="h-4 w-4 text-primary" /> Gerador de Abordagens
+                <MessageSquare className="h-4 w-4 text-primary" /> Flow Simulator
               </h1>
             </div>
             <Badge variant="outline" className="bg-primary/10 border-primary/30 text-primary text-[8px] font-black uppercase px-3 py-1">
-              Scripts de Alta Conversão
+              Engenharia de Conversão
             </Badge>
           </header>
 
-          <div className="flex-1 container max-w-4xl mx-auto p-4 md:p-8 space-y-8">
-            <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8">
+          <div className="flex-1 container max-w-6xl mx-auto p-4 md:p-8 space-y-8">
+            <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start">
               
-              {/* Coluna de Inputs */}
-              <div className="lg:col-span-5 space-y-6">
-                <Card className="glass-card border-white/10 rounded-[2rem] bg-[#0e0e1a] shadow-[0_0_40px_rgba(0,0,0,0.3)]">
-                  <CardHeader className="border-b border-white/5 p-6">
-                    <CardTitle className="text-xs font-black uppercase tracking-widest italic flex items-center gap-2">
-                      <Zap className="h-4 w-4 text-primary" /> Parâmetros da Carga
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-6 space-y-6">
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Seu Nome (Remetente)</Label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              {/* Coluna de Inputs (Esquerda) */}
+              <div className="lg:col-span-5 space-y-6 w-full">
+                
+                <div className="space-y-4">
+                  <Card className="glass-card border-white/5 rounded-2xl bg-[#0e0e1a]/50 backdrop-blur-sm">
+                    <CardContent className="p-6 space-y-4">
+                      <div className="space-y-2">
+                        <Label className="text-[9px] font-black uppercase tracking-widest opacity-50 flex items-center gap-2">
+                          <User className="h-3 w-3 text-primary" /> Identificação do Remetente
+                        </Label>
                         <Input 
-                          placeholder="Como você quer se identificar" 
-                          className="bg-white/5 border-white/10 h-12 pl-10 rounded-xl focus-visible:ring-primary"
+                          placeholder="Seu Nome" 
+                          className="bg-white/5 border-white/10 h-12 rounded-xl focus-visible:ring-primary text-sm font-medium"
                           value={nome}
                           onChange={(e) => setNome(e.target.value)}
                         />
                       </div>
-                    </div>
+                    </CardContent>
+                  </Card>
 
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">WhatsApp do Lead</Label>
-                      <div className="flex gap-2">
-                        <div className="relative flex-1">
-                          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input 
-                            placeholder="(00) 00000-0000" 
-                            className="bg-white/5 border-white/10 h-12 pl-10 rounded-xl focus-visible:ring-primary"
-                            value={whatsapp}
-                            onChange={(e) => setWhatsapp(e.target.value)}
-                          />
-                        </div>
-                        <Button variant="outline" size="icon" onClick={handleCopyPhone} className="h-12 w-12 rounded-xl border-white/10 hover:bg-white/5 hover:shadow-[0_0_15px_rgba(255,255,255,0.05)] transition-all">
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Empresa do Cliente (Opcional)</Label>
-                      <div className="relative">
-                        <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Card className="glass-card border-white/5 rounded-2xl bg-[#0e0e1a]/50 backdrop-blur-sm">
+                    <CardContent className="p-6 space-y-4">
+                      <div className="space-y-2">
+                        <Label className="text-[9px] font-black uppercase tracking-widest opacity-50 flex items-center gap-2">
+                          <Phone className="h-3 w-3 text-primary" /> Coordenadas do Alvo
+                        </Label>
                         <Input 
-                          placeholder="Ex: Barbearia do João" 
-                          className="bg-white/5 border-white/10 h-12 pl-10 rounded-xl focus-visible:ring-primary"
+                          placeholder="WhatsApp do Lead (DDD + Número)" 
+                          className="bg-white/5 border-white/10 h-12 rounded-xl focus-visible:ring-primary text-sm font-medium"
+                          value={whatsapp}
+                          onChange={(e) => setWhatsapp(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-[9px] font-black uppercase tracking-widest opacity-50 flex items-center gap-2">
+                          <Building2 className="h-3 w-3 text-primary" /> Nome do Negócio
+                        </Label>
+                        <Input 
+                          placeholder="Empresa do Cliente (Opcional)" 
+                          className="bg-white/5 border-white/10 h-12 rounded-xl focus-visible:ring-primary text-sm font-medium"
                           value={empresa}
                           onChange={(e) => setEmpresa(e.target.value)}
                         />
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </div>
 
                 <div className="space-y-3">
-                  <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-2">Selecione o Modelo</Label>
+                  <Label className="text-[9px] font-black uppercase tracking-widest opacity-50 ml-2">Diretriz da Abordagem</Label>
                   <div className="grid grid-cols-1 gap-2">
                     {Object.entries(SCRIPTS).map(([key, model]) => (
                       <button
                         key={key}
-                        onClick={() => setSelectedModel(key as any)}
-                        className={`flex items-center gap-3 p-4 rounded-2xl border text-left transition-all duration-300 ${
-                          selectedModel === key 
-                          ? 'bg-primary/10 border-primary text-white shadow-[0_0_20px_rgba(124,58,255,0.3)] scale-[1.02]' 
-                          : 'bg-white/[0.02] border-white/5 text-muted-foreground hover:bg-white/5 hover:border-primary/40 hover:shadow-[0_0_30px_rgba(124,58,255,0.1)]'
+                        onClick={() => {
+                          setSelectedModel(key as any);
+                          setIsManualMode(false);
+                        }}
+                        className={`flex items-center justify-between p-4 rounded-xl border text-left transition-all duration-300 ${
+                          selectedModel === key && !isManualMode
+                          ? 'bg-primary/10 border-primary text-white shadow-[0_0_20px_rgba(124,58,255,0.2)]' 
+                          : 'bg-white/[0.02] border-white/5 text-muted-foreground hover:bg-white/5'
                         }`}
                       >
-                        <div className={`p-2 rounded-lg ${selectedModel === key ? 'bg-primary text-white' : 'bg-white/5'}`}>
-                          {model.icon}
+                        <div className="flex items-center gap-3">
+                          <div className={`p-2 rounded-lg ${selectedModel === key && !isManualMode ? 'bg-primary text-white' : 'bg-white/5'}`}>
+                            {model.icon}
+                          </div>
+                          <span className="text-[10px] font-black uppercase italic tracking-wider">{model.title}</span>
                         </div>
-                        <span className="text-xs font-black uppercase italic">{model.title}</span>
+                        {selectedModel === key && !isManualMode && <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />}
                       </button>
                     ))}
                   </div>
                 </div>
+
+                <Button 
+                  onClick={() => setIsManualMode(true)}
+                  className="w-full h-14 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-primary/5 transition-all active:scale-[0.98]"
+                >
+                  <Zap className="h-4 w-4 mr-2" /> REFINAR SCRIPT MANUALMENTE
+                </Button>
               </div>
 
-              {/* Coluna de Preview e Mensagem */}
-              <div className="lg:col-span-7 space-y-6">
-                <Card className="glass-card border-white/10 rounded-[2.5rem] bg-[#0b0b14] h-full flex flex-col overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.4)]">
-                  <CardHeader className="border-b border-white/5 p-8 flex flex-row items-center justify-between">
-                    <div className="space-y-1">
-                      <CardTitle className="text-sm font-black uppercase italic tracking-widest text-primary flex items-center gap-2">
-                        <Send className="h-4 w-4" /> Script Gerado
-                      </CardTitle>
-                      <CardDescription className="text-[10px] uppercase font-bold tracking-widest opacity-50">
-                        Clique para editar se necessário
-                      </CardDescription>
+              {/* Coluna de Preview (Direita) */}
+              <div className="lg:col-span-7 flex flex-col items-center gap-8 w-full">
+                
+                {/* FLOW SIMULATOR (Smartphone Mockup) */}
+                <div className="relative group">
+                  {/* Smartphone Frame */}
+                  <div className="w-[300px] h-[600px] md:w-[340px] md:h-[680px] bg-[#121214] rounded-[3rem] border-[8px] border-[#222] shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative overflow-hidden flex flex-col">
+                    
+                    {/* Notch */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-[#222] rounded-b-2xl z-20" />
+                    
+                    {/* Chat Header */}
+                    <div className="h-20 bg-[#1a1a1e] border-b border-white/5 pt-8 px-6 flex items-center gap-3 shrink-0">
+                      <div className="h-10 w-10 rounded-full bg-white/10 border border-white/5 flex items-center justify-center overflow-hidden">
+                        <User className="h-6 w-6 text-white/20" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs font-bold text-white/90 truncate">{empresa || '[Nome do Lead]'}</p>
+                        <p className="text-[8px] font-bold text-green-500 uppercase tracking-widest">Online agora</p>
+                      </div>
+                      <MoreVertical className="h-4 w-4 text-white/30" />
                     </div>
-                    <div className="flex gap-2">
+
+                    {/* Chat Area */}
+                    <div className="flex-1 p-4 bg-[#0a0a0c] space-y-4 overflow-y-auto no-scrollbar">
+                      <div className="flex justify-start">
+                        <div className="max-w-[85%] p-4 rounded-2xl rounded-tl-none bg-[#1a1a1e] border border-white/5 shadow-xl relative animate-in fade-in slide-in-from-bottom-2">
+                          <p className="text-[11px] leading-relaxed text-white/80 whitespace-pre-wrap italic font-medium">
+                            {message.split('\n').map((line, i) => (
+                              <span key={i}>
+                                {line.includes('[Seu Nome]') ? (
+                                  <span className="text-primary font-black not-italic">[Seu Nome]</span>
+                                ) : line}
+                                <br />
+                              </span>
+                            ))}
+                          </p>
+                          <span className="text-[7px] text-white/20 uppercase font-black absolute bottom-2 right-3">14:32 ✓✓</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Chat Input Bar */}
+                    <div className="h-16 bg-[#1a1a1e] border-t border-white/5 px-4 flex items-center gap-3 shrink-0">
+                      <Smile className="h-5 w-5 text-white/20" />
+                      <div className="flex-1 bg-white/5 h-10 rounded-full border border-white/5 flex items-center px-4">
+                        <span className="text-[10px] text-white/20">Mensagem...</span>
+                      </div>
+                      <div className="h-10 w-10 rounded-full bg-green-600 flex items-center justify-center shadow-lg shadow-green-600/20">
+                        <Send className="h-4 w-4 text-white fill-white" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Reflection Effect */}
+                  <div className="absolute inset-0 rounded-[3rem] bg-gradient-to-tr from-white/[0.02] to-transparent pointer-events-none" />
+                </div>
+
+                {/* Manual Editor & Actions */}
+                <div className="w-full max-w-xl space-y-6">
+                  {isManualMode && (
+                    <Card className="glass-card border-primary/20 bg-black/40 rounded-2xl overflow-hidden animate-in fade-in slide-in-from-top-2">
+                      <CardHeader className="p-4 border-b border-white/5 flex flex-row items-center justify-between">
+                        <CardTitle className="text-[10px] font-black uppercase tracking-widest text-primary italic">Refino Tático</CardTitle>
+                        <Button variant="ghost" size="sm" onClick={() => setIsManualMode(false)} className="h-6 px-2 text-[8px] font-black uppercase tracking-widest opacity-50">Resetar Automático</Button>
+                      </CardHeader>
+                      <CardContent className="p-4">
+                        <Textarea 
+                          className="bg-transparent border-none text-white/90 italic text-sm p-0 min-h-[120px] focus-visible:ring-0 resize-none leading-relaxed"
+                          value={message}
+                          onChange={(e) => setMessage(e.target.value)}
+                        />
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  <div className="space-y-4">
+                    <Button 
+                      onClick={openWhatsApp}
+                      className="w-full h-20 bg-green-600 hover:bg-green-500 text-white rounded-[2rem] font-black uppercase tracking-widest text-lg shadow-[0_15px_40px_rgba(22,163,74,0.3)] transition-all active:scale-[0.98] group relative overflow-hidden"
+                    >
+                      <span className="flex items-center gap-3 relative z-10">
+                        ABRIR NO WHATSAPP <ExternalLink className="h-6 w-6 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                      </span>
+                      <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 skew-x-12" />
+                    </Button>
+
+                    <div className="flex gap-3">
                       <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={handleCopyMessage} 
-                        className="h-10 rounded-xl font-black uppercase text-[10px] border-white/10 gap-2 hover:bg-white/5 hover:shadow-[0_0_20px_rgba(124,58,255,0.4)] active:scale-95 transition-all"
+                        variant="outline"
+                        onClick={handleCopyMessage}
+                        className="flex-1 h-12 rounded-xl border-white/10 font-black uppercase text-[10px] tracking-widest gap-2 hover:bg-white/5"
                       >
                         {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
-                        {copied ? 'COPIADO' : 'COPIAR'}
+                        {copied ? 'COPIADO' : 'COPIAR SCRIPT'}
                       </Button>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="p-8 flex-1 flex flex-col gap-6">
-                    <Textarea 
-                      className="flex-1 min-h-[350px] bg-black/60 backdrop-blur-sm p-8 rounded-2xl border border-primary/20 text-base font-medium italic whitespace-pre-wrap leading-relaxed text-white/90 focus-visible:ring-primary resize-none shadow-inner"
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                    />
-
-                    <div className="space-y-4">
                       <Button 
-                        onClick={openWhatsApp}
-                        className="w-full h-20 bg-green-600 hover:bg-green-500 text-white rounded-[2rem] font-black uppercase tracking-widest text-lg shadow-[0_15px_40px_rgba(22,163,74,0.3)] transition-all active:scale-95 group"
+                        variant="outline"
+                        className="h-12 w-12 rounded-xl border-white/10 hover:bg-white/5"
                       >
-                        <span className="flex items-center gap-3">
-                          ABRIR NO WHATSAPP <ExternalLink className="h-6 w-6 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                        </span>
+                        <Smartphone className="h-4 w-4 opacity-50" />
                       </Button>
-                      <p className="text-[8px] text-center text-muted-foreground uppercase font-black tracking-[0.4em]">
-                        Certifique-se de que o número está correto com o DDD
-                      </p>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+
+                  <p className="text-[8px] text-center text-muted-foreground uppercase font-black tracking-[0.4em] opacity-40">
+                    Certifique-se de que o número está correto com o DDD
+                  </p>
+                </div>
+
               </div>
 
             </div>
