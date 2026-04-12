@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -88,10 +87,10 @@ export default function Home() {
       <main className="pt-[60px]">
         
         {/* HERO SECTION */}
-        <section className="max-w-[1200px] mx-auto px-6 md:px-12 py-16 md:py-32 overflow-visible">
+        <section className="max-w-[1200px] mx-auto px-6 md:px-12 py-12 md:py-32 overflow-visible">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
             <motion.div 
-              className="flex flex-col items-start text-left space-y-6 md:space-y-8 max-w-2xl shrink-0 z-20"
+              className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-6 md:space-y-8 max-w-2xl shrink-0 z-20"
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -101,7 +100,7 @@ export default function Home() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                 </span>
-                ✦ Mais de 1.800 consultores ativos
+                ✦ 1.800+ consultores ativos
               </Badge>
 
               <h1 className="text-[32px] sm:text-[44px] md:text-[72px] font-extrabold tracking-[-1px] md:tracking-[-2px] font-headline leading-[1.1] md:leading-[0.95] text-white">
@@ -126,7 +125,7 @@ export default function Home() {
                       </div>
                     ))}
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col items-start">
                     <span className="text-[12px] font-semibold text-white">4.9 ★</span>
                     <span className="text-[11px] text-white/40 font-medium">847 avaliações</span>
                   </div>
@@ -160,7 +159,7 @@ export default function Home() {
                 { val: "3,8 dias", label: "Para primeira venda" }
               ].map((m, i) => (
                 <div key={i} className={`flex flex-col items-center md:items-start md:px-12 ${i !== 0 ? 'md:border-l border-white/5' : ''}`}>
-                  <span className="text-[36px] md:text-[52px] font-extrabold text-white tracking-[-1.5px] leading-none">{m.val}</span>
+                  <span className="text-[36px] md:text-[52px] font-extrabold text-white tracking-[-1px] md:tracking-[-1.5px] leading-none">{m.val}</span>
                   <span className="text-[11px] md:text-[12px] text-white/30 font-medium uppercase tracking-widest mt-2">{m.label}</span>
                 </div>
               ))}
@@ -170,7 +169,7 @@ export default function Home() {
 
         {/* ARSENAL SECTION */}
         <section id="arsenal" className="max-w-[1100px] mx-auto px-6 md:px-12 py-20 md:py-32">
-          <motion.div className="space-y-4 mb-16" {...fadeInUp}>
+          <motion.div className="space-y-4 mb-16 text-center md:text-left" {...fadeInUp}>
             <h2 className="text-[28px] md:text-[36px] font-bold tracking-[-0.5px] text-white">O seu arsenal.</h2>
             <p className="text-[14px] text-white/35">As ferramentas que transformam um "não" em um fechamento.</p>
           </motion.div>
@@ -332,7 +331,7 @@ export default function Home() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-[36px] md:text-[52px] font-extrabold tracking-[-1.5px] text-white leading-tight max-w-[600px]">
+            <h2 className="text-[32px] md:text-[52px] font-extrabold tracking-[-1px] md:tracking-[-1.5px] text-white leading-tight max-w-[600px]">
               A escala não espera por você.
             </h2>
             <p className="text-[15px] text-white/40 max-w-[400px]">
