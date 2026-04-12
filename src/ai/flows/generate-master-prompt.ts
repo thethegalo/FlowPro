@@ -13,7 +13,7 @@ const GenerateMasterPromptInputSchema = z.object({
   language: z.string().describe('Idioma do briefing'),
   objective: z.string().describe('Objetivo principal'),
   style: z.string().describe('Estilo visual'),
-  palette: z.array(z.string()).describe('Cores sugeridas'),
+  palette: z.array(z.string()).describe('Cores sugeridas (Primária, Texto, Fundo)'),
   audience: z.string().describe('Público-alvo'),
   tone: z.string().describe('Tom de voz'),
   sections: z.array(z.string()).describe('Seções da página'),
@@ -27,6 +27,38 @@ const GenerateMasterPromptOutputSchema = z.object({
   wordCount: z.number().describe('Quantidade de palavras geradas.'),
 });
 export type GenerateMasterPromptOutput = z.infer<typeof GenerateMasterPromptOutputSchema>;
+
+/**
+ * Gera uma paleta de cores harmoniosa baseada no projeto.
+ */
+const GeneratePaletteInputSchema = z.object({
+  name: z.string(),
+  niche: z.string(),
+  style: z.string(),
+});
+
+const GeneratePaletteOutputSchema = z.object({
+  primary: z.string(),
+  text: z.string(),
+  background: z.string(),
+});
+
+export async function generateAIPalette(input: z.infer<typeof GeneratePaletteInputSchema>) {
+  const { output } = await ai.generate({
+    model: 'googleai/gemini-2.5-flash',
+    input: input,
+    output: { schema: GeneratePaletteOutputSchema },
+    prompt: `Você é um Designer UI/UX Sênior. Gere uma paleta de 3 cores (Primária, Texto e Fundo) em formato HEX que combine perfeitamente com:
+    Projeto: {{name}}
+    Nicho: {{niche}}
+    Estilo: {{style}}
+    
+    A cor primária deve ser vibrante mas profissional. O fundo deve ser coerente com o estilo (ex: Dark para estilos modernos, Light para clean).`,
+  });
+  
+  if (!output) throw new Error('Falha ao gerar paleta');
+  return output;
+}
 
 export async function generateMasterPrompt(
   input: GenerateMasterPromptInput
@@ -47,7 +79,7 @@ DADOS DO PROJETO:
 - Idioma: {{{language}}}
 - Objetivo: {{{objective}}}
 - Estilo: {{{style}}}
-- Cores: {{{palette}}}
+- Paleta: Primária: {{palette.[0]}}, Texto: {{palette.[1]}}, Fundo: {{palette.[2]}}
 - Público: {{{audience}}}
 - Tom: {{{tone}}}
 - Seções: {{{sections}}}
@@ -89,7 +121,7 @@ MODELO DE ESTRUTURA OBRIGATÓRIO:
 
 🎨 DESIGN SYSTEM E IDENTIDADE VISUAL
 Estilo: [Baseado no input]
-Cores: [Defina hexadecimais coerentes com o nicho e onde usar cada uma]
+Cores: [Primária: {{palette.[0]}}, Texto: {{palette.[1]}}, Fundo: {{palette.[2]}}]
 Tipografia: [Sugira fontes reais adequadas ao nicho]
 Efeitos: [Glassmorphism, micro-interações, etc]
 

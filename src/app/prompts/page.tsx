@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -43,7 +42,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { generateMasterPrompt } from '@/ai/flows/generate-master-prompt';
+import { generateMasterPrompt, generateAIPalette } from '@/ai/flows/generate-master-prompt';
 
 const STEPS = [
   { id: 1, title: 'Identidade', sub: 'Nome & Nicho', icon: Briefcase },
@@ -79,7 +78,11 @@ const NICHES = [
 ];
 
 const OBJECTIVES = ["Capturar Leads", "Vender Direto", "Agendar Reunião", "Distribuição de Conteúdo"];
-const STYLES = ["Moderno & Dark", "Minimalista", "Corporativo", "Futurista", "Cyberpunk", "Clean White", "Luxo Profundo"];
+const STYLES = [
+  "Moderno & Dark", "Minimalista", "Corporativo", "Futurista", "Cyberpunk", "Clean White", 
+  "Luxo Profundo", "Glassmorphism", "Neumorphism", "Retro & Vintage", "Elegante Serif", 
+  "Playful & Bold", "Industrial", "Boho & Nature"
+];
 const TONES = ["Profissional", "Amigável", "Urgente", "Luxuoso", "Descontraído"];
 const SECTIONS = ["Hero", "Problema/Dor", "Solução", "Benefícios", "Depoimentos", "Preços", "FAQ", "CTA Final"];
 
@@ -95,6 +98,7 @@ export default function PromptsPage() {
   const [wordCount, setWordCount] = useState(0);
   const [isCopied, setIsCopied] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingPalette, setIsGeneratingPalette] = useState(false);
   const { toast } = useToast();
 
   const currentTheme = useMemo(() => {
@@ -117,6 +121,26 @@ export default function PromptsPage() {
   const handleBack = () => {
     if (blueprint.step > 1) {
       setBlueprint(prev => ({ ...prev, step: prev.step - 1 }));
+    }
+  };
+
+  const handleAIPalette = async () => {
+    setIsGeneratingPalette(true);
+    try {
+      const palette = await generateAIPalette({
+        name: blueprint.name || 'Projeto',
+        niche: blueprint.niche,
+        style: blueprint.style
+      });
+      setBlueprint(prev => ({
+        ...prev,
+        palette: [palette.primary, palette.text, palette.background]
+      }));
+      toast.success("Paleta IA Criada", "Cores sugeridas aplicadas ao projeto.");
+    } catch (e) {
+      toast.error("Erro na Paleta", "Falha ao consultar designer neural.");
+    } finally {
+      setIsGeneratingPalette(false);
     }
   };
 
@@ -275,9 +299,21 @@ export default function PromptsPage() {
                           )}
 
                           {blueprint.step === 3 && (
-                            <div className="space-y-8">
+                            <div className="space-y-10">
                               <div className="space-y-4">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Estilo Visual</Label>
+                                <div className="flex items-center justify-between mb-2">
+                                  <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Estilo Visual</Label>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    onClick={handleAIPalette}
+                                    disabled={isGeneratingPalette}
+                                    className="h-7 text-[9px] font-black uppercase text-primary hover:bg-primary/10 rounded-lg gap-2"
+                                  >
+                                    {isGeneratingPalette ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+                                    Gerar Paleta com IA
+                                  </Button>
+                                </div>
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                                   {STYLES.map(s => (
                                     <button key={s} onClick={() => setBlueprint({...blueprint, style: s})} className={cn("px-4 py-3 rounded-xl text-[10px] font-black uppercase transition-all border", blueprint.style === s ? "bg-primary/25 border-primary/40 text-[#c4b5fd]" : "bg-white/[0.04] border-white/5 text-white/40")}>
@@ -286,16 +322,40 @@ export default function PromptsPage() {
                                   ))}
                                 </div>
                               </div>
-                              <div className="space-y-4">
-                                <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Cor Primária (HEX)</Label>
-                                <div className="flex gap-3">
-                                  <div className="h-14 w-14 rounded-xl border border-white/10 shrink-0 shadow-lg" style={{ backgroundColor: blueprint.palette[0] }} />
-                                  <Input 
-                                    placeholder="#7C3AED" 
-                                    className="h-14 bg-white/[0.04] border-white/5 rounded-xl font-mono text-lg" 
-                                    value={blueprint.palette[0]} 
-                                    onChange={e => setBlueprint({...blueprint, palette: [e.target.value, blueprint.palette[1], blueprint.palette[2]]})} 
-                                  />
+                              
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="space-y-3">
+                                  <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Primária</Label>
+                                  <div className="flex gap-2">
+                                    <div className="h-12 w-12 rounded-xl border border-white/10 shrink-0 shadow-lg" style={{ backgroundColor: blueprint.palette[0] }} />
+                                    <Input 
+                                      className="h-12 bg-white/[0.04] border-white/5 rounded-xl font-mono text-xs" 
+                                      value={blueprint.palette[0]} 
+                                      onChange={e => setBlueprint({...blueprint, palette: [e.target.value, blueprint.palette[1], blueprint.palette[2]]})} 
+                                    />
+                                  </div>
+                                </div>
+                                <div className="space-y-3">
+                                  <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Texto</Label>
+                                  <div className="flex gap-2">
+                                    <div className="h-12 w-12 rounded-xl border border-white/10 shrink-0 shadow-lg" style={{ backgroundColor: blueprint.palette[1] }} />
+                                    <Input 
+                                      className="h-12 bg-white/[0.04] border-white/5 rounded-xl font-mono text-xs" 
+                                      value={blueprint.palette[1]} 
+                                      onChange={e => setBlueprint({...blueprint, palette: [blueprint.palette[0], e.target.value, blueprint.palette[2]]})} 
+                                    />
+                                  </div>
+                                </div>
+                                <div className="space-y-3">
+                                  <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Fundo</Label>
+                                  <div className="flex gap-2">
+                                    <div className="h-12 w-12 rounded-xl border border-white/10 shrink-0 shadow-lg" style={{ backgroundColor: blueprint.palette[2] }} />
+                                    <Input 
+                                      className="h-12 bg-white/[0.04] border-white/5 rounded-xl font-mono text-xs" 
+                                      value={blueprint.palette[2]} 
+                                      onChange={e => setBlueprint({...blueprint, palette: [blueprint.palette[0], blueprint.palette[1], e.target.value]})} 
+                                    />
+                                  </div>
                                 </div>
                               </div>
                             </div>
