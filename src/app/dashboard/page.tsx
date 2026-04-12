@@ -27,7 +27,8 @@ import {
   GraduationCap,
   Users,
   MessageSquare,
-  Layout
+  Layout,
+  ChevronRight
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, query, orderBy, doc, getDoc, limit } from 'firebase/firestore';
@@ -230,39 +231,39 @@ export default function Dashboard() {
         <AppSidebar />
         
         <main className="flex-1 flex flex-col min-w-0 relative z-10">
-          <header className="h-24 px-8 flex items-center justify-between bg-black/20 backdrop-blur-md border-b border-white/5 sticky top-0 z-50">
-            <div className="space-y-1">
-              <h1 className="text-[28px] font-bold text-white tracking-tight leading-none">
+          <header className="px-8 pt-10 pb-6 flex items-center justify-between sticky top-0 z-50">
+            <div className="space-y-0.5">
+              <h1 className="text-[22px] font-semibold text-white tracking-[-0.3px] leading-tight">
                 Olá, {displayName} 👋
               </h1>
-              <p className="text-sm font-medium text-white/40">
+              <p className="text-[13px] font-normal text-white/35">
                 Seja bem-vindo ao seu centro de comando tático.
               </p>
             </div>
 
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4">
               <div className="hidden md:flex relative group w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30 group-focus-within:text-primary" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-[14px] w-[14px] text-white/30" />
                 <Input 
                   placeholder="Pesquisar ferramentas..." 
-                  className="h-10 bg-white/5 border-[#8b5cf6]/20 pl-10 text-xs rounded-lg focus-visible:ring-primary"
+                  className="h-[36px] bg-white/[0.04] border-white/[0.08] pl-9 text-[13px] rounded-lg focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-white/20 transition-all"
                 />
               </div>
 
-              <div className="flex items-center gap-4">
-                <Badge className="h-9 px-4 bg-gradient-to-r from-[#7c3aed] to-[#9333ea] border-none text-[10px] font-black uppercase text-white shadow-[0_0_20px_rgba(124,58,237,0.3)]">
-                  ⚡ VITALÍCIO
+              <div className="flex items-center gap-3">
+                <Badge className="bg-[#581c87] border border-[#7c3aed] text-[#c4b5fd] text-[11px] uppercase tracking-[0.5px] rounded-md px-[10px] py-[4px] font-medium shadow-none hover:bg-[#581c87]">
+                  VITALÍCIO
                 </Badge>
                 
-                <button className="relative h-10 w-10 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                  <Bell className="h-5 w-5 text-white/60" />
-                  <span className="absolute top-2.5 right-2.5 h-2 w-2 bg-red-500 rounded-full border-2 border-[#05050f]" />
+                <button className="relative w-[34px] h-[34px] flex items-center justify-center rounded-lg bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] transition-colors">
+                  <Bell className="h-4 w-4 text-white/60" />
+                  <span className="absolute top-2 right-2 h-1.5 w-1.5 bg-red-500 rounded-full" />
                 </button>
               </div>
             </div>
           </header>
 
-          <div className="flex-1 p-8 space-y-8 max-w-7xl mx-auto w-full">
+          <div className="flex-1 p-8 pt-2 space-y-8 max-w-7xl mx-auto w-full">
             
             {/* GRID DE MÉTRICAS */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -272,24 +273,21 @@ export default function Dashboard() {
                 { label: "Status Jornada", val: currentJourneyDay, prefix: "Dia ", icon: TrendingUp, badge: "Ativo", sub: `${completedMissionIds.length} concluídas` },
               ].map((m, i) => (
                 <div key={i} className="group relative">
-                  <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#a855f7] to-transparent z-10" />
-                  <Card className="bg-white/5 border border-[#8b5cf6]/15 rounded-2xl p-6 transition-all duration-300 hover:translate-y-[-2px] hover:border-[#a855f7]/35 relative overflow-hidden">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="space-y-1">
-                        <p className="text-[11px] font-bold text-white/40 uppercase tracking-[0.8px]">{m.label}</p>
-                        <h3 className="text-[28px] font-bold text-[#f0eeff] tracking-tight">
+                  <Card className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-[20px_24px] transition-all duration-150 hover:translate-y-[-1px] hover:border-white/[0.2] relative overflow-hidden">
+                    <m.icon className="h-4 w-4 text-white/20 absolute top-5 right-6" />
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-[11px] font-medium text-white/30 uppercase tracking-[0.8px] mb-1">{m.label}</p>
+                        <h3 className="text-[28px] font-[650] text-[#f4f4f5] tracking-[-0.5px] leading-none">
                           {typeof m.val === 'number' ? <AnimatedNumber value={m.val} prefix={m.prefix} suffix={m.suffix} /> : m.val}
                         </h3>
                       </div>
-                      <div className="p-2 bg-white/5 rounded-lg opacity-30 group-hover:opacity-100 transition-opacity">
-                        <m.icon className="h-5 w-5 text-primary" />
+                      <div className="flex items-center gap-2">
+                        <Badge className="bg-[#22c55e]/[0.08] border border-[#22c55e]/20 text-[#86efac] text-[10px] font-medium px-2 py-0.5 rounded-full shadow-none">
+                          {m.badge}
+                        </Badge>
+                        <span className="text-[11px] text-white/25 font-normal">{m.sub}</span>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-green-500/10 border-green-500/25 text-[#4ade80] text-[10px] font-bold px-2 py-0.5 rounded-md">
-                        {m.badge}
-                      </Badge>
-                      <span className="text-[10px] text-white/20 font-medium uppercase tracking-widest">{m.sub}</span>
                     </div>
                   </Card>
                 </div>
@@ -301,8 +299,7 @@ export default function Dashboard() {
               
               {/* GRÁFICO (65%) */}
               <div className="relative group">
-                <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#a855f7] to-transparent z-10" />
-                <Card className="bg-white/5 border border-[#8b5cf6]/15 rounded-2xl p-8 h-full">
+                <Card className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-8 h-full">
                   <div className="flex justify-between items-start mb-8">
                     <div className="space-y-1">
                       <h3 className="text-xl font-bold text-white italic uppercase tracking-tight">Ganhos dos Últimos 30 Dias</h3>
@@ -359,8 +356,7 @@ export default function Dashboard() {
               <div className="flex flex-col gap-6">
                 
                 {/* CARD 1: AÇÕES RÁPIDAS */}
-                <Card className="bg-white/5 border border-[#8b5cf6]/15 rounded-2xl p-6 relative overflow-hidden">
-                  <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#a855f7] to-transparent z-10" />
+                <Card className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-6 relative overflow-hidden">
                   <p className="text-[11px] font-black text-primary/40 uppercase tracking-[1.5px] mb-6 flex items-center gap-2">
                     <Zap className="h-3 w-3 fill-primary" /> AÇÕES RÁPIDAS
                   </p>
@@ -391,9 +387,9 @@ export default function Dashboard() {
                 </Card>
 
                 {/* CARD 2: VIP */}
-                <Card className="flex-1 rounded-2xl p-6 relative overflow-hidden border-[#a855f7]/30 shadow-xl" style={{ background: 'linear-gradient(135deg, rgba(88,28,135,0.5), rgba(49,10,107,0.6))' }}>
+                <Card className="flex-1 rounded-xl p-6 relative overflow-hidden border-[#a855f7]/30 shadow-xl" style={{ background: 'linear-gradient(135deg, rgba(88,28,135,0.5), rgba(49,10,107,0.6))' }}>
                   <div className="relative z-10 space-y-4">
-                    <Badge className="bg-[#c4b5fd] text-[#4c1d95] text-[9px] font-black uppercase px-3 py-1 rounded-md border-none">
+                    <Badge className="bg-[#c4b5fd] text-[#4c1d95] text-[9px] font-black uppercase px-3 py-1 rounded-md border-none shadow-none">
                       🎓 CONTEÚDO VIP
                     </Badge>
                     <div className="space-y-2">
@@ -421,7 +417,7 @@ export default function Dashboard() {
                   <h2 className="text-[18px] font-bold text-white tracking-tight uppercase italic">Ecossistema Premium</h2>
                   <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.2em]">O arsenal tático completo para sua operação digital</p>
                 </div>
-                <Badge className="bg-green-500/10 text-[#4ade80] border-green-500/25 text-[10px] font-black uppercase px-4 py-1.5 rounded-lg shadow-[0_0_15px_rgba(34,197,94,0.1)]">
+                <Badge className="bg-green-500/10 text-[#4ade80] border-green-500/25 text-[10px] font-black uppercase px-4 py-1.5 rounded-lg shadow-none">
                   FULL ACCESS ATIVO
                 </Badge>
               </div>
@@ -429,8 +425,7 @@ export default function Dashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {ecosystemModules.map((module, i) => (
                   <Link key={i} href={module.url}>
-                    <Card className="group relative bg-white/[0.04] border border-[#8b5cf6]/12 rounded-2xl p-5 transition-all duration-300 hover:border-[#a855f7]/40 hover:bg-[#8b5cf6]/[0.08] hover:translate-y-[-3px] hover:shadow-[0_8px_30px_rgba(139,92,246,0.15)] overflow-hidden">
-                      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#a855f7]/40 to-transparent z-10" />
+                    <Card className="group relative bg-white/[0.04] border border-white/[0.07] rounded-xl p-5 transition-all duration-300 hover:border-[#a855f7]/40 hover:bg-[#8b5cf6]/[0.08] hover:translate-y-[-3px] hover:shadow-[0_8px_30px_rgba(139,92,246,0.15)] overflow-hidden">
                       <div className="flex flex-col gap-4">
                         <div className="flex justify-between items-start">
                           <div 
@@ -466,7 +461,7 @@ export default function Dashboard() {
                   <h2 className="text-2xl font-bold italic uppercase tracking-tighter text-white">Sua Jornada de Escala</h2>
                   <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.2em]">O método exato para sua primeira venda em 7 dias</p>
                 </div>
-                <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px] font-black uppercase px-4 py-1.5 rounded-lg">
+                <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px] font-black uppercase px-4 py-1.5 rounded-lg shadow-none">
                   DIA {currentJourneyDay} ATIVO
                 </Badge>
               </div>
@@ -483,13 +478,13 @@ export default function Dashboard() {
                       href={isLocked ? '#' : `/missions/${m.id}`}
                       className={`block group transition-all ${isLocked ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                     >
-                      <Card className={`bg-white/[0.03] border-white/5 rounded-2xl p-5 transition-all duration-500 ${isCurrent ? 'border-primary/40 bg-primary/5 shadow-lg' : ''} ${isCompleted ? 'border-green-500/20' : 'hover:border-white/10'}`}>
+                      <Card className={`bg-white/[0.03] border-white/5 rounded-xl p-5 transition-all duration-500 ${isCurrent ? 'border-primary/40 bg-primary/5 shadow-lg' : ''} ${isCompleted ? 'border-green-500/20' : 'hover:border-white/10'}`}>
                         <div className="flex flex-col gap-4">
                           <div className="flex justify-between items-start">
                             <div className={`h-10 w-10 rounded-xl flex items-center justify-center text-sm font-black italic transition-all ${isCompleted ? 'bg-green-500/20 text-green-500' : isCurrent ? 'bg-primary text-white shadow-lg rotate-3' : 'bg-white/5 text-white/30'}`}>
                               {isCompleted ? <CheckCircle2 className="h-5 w-5" /> : m.order}
                             </div>
-                            {isLocked ? <Lock className="h-4 w-4 text-white/20" /> : isCompleted && <Badge className="bg-green-500/10 text-green-500 border-none text-[8px] font-black uppercase">OK</Badge>}
+                            {isLocked ? <Lock className="h-4 w-4 text-white/20" /> : isCompleted && <Badge className="bg-green-500/10 text-green-500 border-none text-[8px] font-black uppercase shadow-none">OK</Badge>}
                           </div>
                           <div className="space-y-1">
                             <h4 className={`font-bold uppercase italic tracking-tight text-xs ${isLocked ? 'text-white/20' : 'text-white'}`}>{m.title}</h4>
@@ -510,23 +505,4 @@ export default function Dashboard() {
       </div>
     </SidebarProvider>
   );
-}
-
-function ChevronRight(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m9 18 6-6-6-6" />
-    </svg>
-  )
 }
