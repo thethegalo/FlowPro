@@ -1,21 +1,30 @@
 'use server';
 /**
- * @fileOverview Fluxo de IA para gerar prompts mestres de alta performance.
- * Revisado para máxima compatibilidade com Lovable, ChatGPT e Midjourney.
+ * @fileOverview Fluxo de IA para gerar briefings técnicos e prompts mestres de alta performance.
+ * Otimizado para gerar documentação exaustiva e específica por nicho.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
 const GenerateMasterPromptInputSchema = z.object({
-  category: z.string().describe('A categoria do prompt (ex: sites, logo, abordagem).'),
-  variables: z.record(z.string(), z.string()).describe('As variáveis preenchidas pelo usuário.'),
+  name: z.string().describe('Nome do projeto'),
+  niche: z.string().describe('Nicho de atuação'),
+  language: z.string().describe('Idioma do briefing'),
+  objective: z.string().describe('Objetivo principal'),
+  style: z.string().describe('Estilo visual'),
+  palette: z.array(z.string()).describe('Cores sugeridas'),
+  audience: z.string().describe('Público-alvo'),
+  tone: z.string().describe('Tom de voz'),
+  sections: z.array(z.string()).describe('Seções da página'),
+  differential: z.string().describe('Diferencial competitivo'),
   complexity: z.enum(['simple', 'advanced']).optional().default('advanced'),
 });
 export type GenerateMasterPromptInput = z.infer<typeof GenerateMasterPromptInputSchema>;
 
 const GenerateMasterPromptOutputSchema = z.object({
-  prompt: z.string().describe('O prompt estruturado e pronto para uso.'),
+  prompt: z.string().describe('O briefing técnico completo e estruturado.'),
+  wordCount: z.number().describe('Quantidade de palavras geradas.'),
 });
 export type GenerateMasterPromptOutput = z.infer<typeof GenerateMasterPromptOutputSchema>;
 
@@ -29,33 +38,86 @@ const masterPromptPrompt = ai.definePrompt({
   name: 'masterPromptPrompt',
   input: { schema: GenerateMasterPromptInputSchema },
   output: { schema: GenerateMasterPromptOutputSchema },
-  prompt: `Você é um Engenheiro de Prompts Sênior e Especialista em Marketing Digital de Alta Performance.
-Sua tarefa é transformar os dados do usuário em um "Comando Mestre" (Prompt) projetado para extrair o resultado máximo de outra IA.
+  prompt: `Você é um Arquiteto de Software Senior e Especialista em UX Design de Alta Performance.
+Sua tarefa é transformar os dados do usuário em um "Briefing Técnico Mestre" exaustivo e ultra-detalhado.
 
-DADOS DO USUÁRIO:
-Categoria: {{{category}}}
-Variáveis:
-{{#each variables}}
-- {{ @key }}: {{ this }}
-{{/each}}
-Complexidade: {{{complexity}}}
+DADOS DO PROJETO:
+- Nome: {{{name}}}
+- Nicho: {{{niche}}}
+- Idioma: {{{language}}}
+- Objetivo: {{{objective}}}
+- Estilo: {{{style}}}
+- Cores: {{{palette}}}
+- Público: {{{audience}}}
+- Tom: {{{tone}}}
+- Seções: {{{sections}}}
+- Diferencial: {{{differential}}}
 
-DIRETRIZES DE ENGENHARIA (SE CATEGORIA FOR SITES/LP):
-Se a categoria for relacionada a Sites ou Landing Pages, gere um prompt otimizado para Lovable, Bolt ou v0.
-1. PERSONA: "Expert Senior Fullstack Developer & Web Designer".
-2. REQUISITOS: Uso obrigatório de Next.js, React, Tailwind CSS, Shadcn UI e Lucide Icons.
-3. ESTRUTURA: Defina seções claras (Hero, Social Proof, Pain Points, Solution, Pricing, FAQ, CTA).
-4. CONVERSÃO: Use o framework AIDA (Atenção, Interesse, Desejo, Ação).
-5. ESTILO: Aplique as cores {{{variables.colors}}} e o estilo {{{variables.style}}}.
+REGRAS DE OURO:
+1. CONTEÚDO ESPECÍFICO: NUNCA use frases genéricas. Se o nicho for Barbearia, fale sobre agendamento, toalhas quentes e estética vintage. Se for SaaS, fale sobre escalabilidade, API e conversão de trial.
+2. EXTENSÃO: O briefing deve ter entre 800 e 1200 palavras. Seja extremamente detalhado em cada seção.
+3. ESTRUTURA VISUAL: Use exatamente os separadores ━━━━━━━━━━━━━━ conforme o modelo abaixo.
 
-DIRETRIZES GERAIS:
-1. O prompt final deve começar definindo uma PERSONA EXPERT (ex: "Atue como um especialista em...").
-2. Estruture em seções: [CONTEXTO E PERSONA], [OBJETIVO PRINCIPAL], [REQUISITOS TÉCNICOS], [ESTILO E TOM], [FORMATO DE SAÍDA].
-3. Se complexidade for "advanced", inclua restrições negativas (o que a IA NÃO deve fazer) e frameworks de marketing (PAS, AIDA).
-4. O tom do prompt gerado deve ser autoritário, técnico e focado em RESULTADO FINAL.
-5. NÃO forneça o conteúdo final do serviço, mas sim o COMANDO MESTRE perfeito para que outra IA o execute.
+MODELO DE ESTRUTURA OBRIGATÓRIO:
 
-Gere apenas o texto final do prompt estruturado, pronto para ser colado.`,
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 PROJETO: [Nome]
+📌 TIPO: [Site/App para o Nicho]
+🌐 IDIOMA: [Idioma]
+🔧 PLATAFORMA: Web Desktop e Mobile
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📝 VISÃO GERAL DO PROJETO
+[Descreva o projeto com profundidade, contexto de mercado e proposta de valor única para o nicho]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📄 DESCRIÇÃO DETALHADA
+[Descrição técnica e funcional, arquitetura e fluxos principais de uso específicos]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+👥 PÚBLICO-ALVO E PERSONAS
+[Dores, necessidades e comportamento digital. Detalhe 2-3 personas do nicho]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ FUNCIONALIDADES PRINCIPAIS
+[Lista de 6-10 funcionalidades específicas do nicho, com contexto de implementação]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎨 DESIGN SYSTEM E IDENTIDADE VISUAL
+Estilo: [Baseado no input]
+Cores: [Defina hexadecimais coerentes com o nicho e onde usar cada uma]
+Tipografia: [Sugira fontes reais adequadas ao nicho]
+Efeitos: [Glassmorphism, micro-interações, etc]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📱 RESPONSIVIDADE
+[Diretrizes mobile first para este nicho específico]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 REQUISITOS TÉCNICOS
+[Stack: Next.js 15, Tailwind, Shadcn UI, Framer Motion, Genkit para IA]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ CHECKLIST DE QUALIDADE
+[7-10 itens específicos pro projeto, não genéricos]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 RESULTADO ESPERADO
+[Impacto esperado no mercado para este cliente específico]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📌 Gerado pela FlowPro IA — Sua plataforma de criação de sites
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Gere apenas o texto do briefing final, seguindo fielmente este modelo.`,
 });
 
 const generateMasterPromptFlow = ai.defineFlow(
@@ -66,7 +128,14 @@ const generateMasterPromptFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await masterPromptPrompt(input);
-    if (!output) throw new Error('Falha ao gerar comando neural.');
-    return output;
+    if (!output) throw new Error('Falha ao gerar briefing neural.');
+    
+    // Calcular contagem de palavras simples
+    const words = output.prompt.trim().split(/\s+/).length;
+    
+    return {
+      prompt: output.prompt,
+      wordCount: words
+    };
   }
 );
