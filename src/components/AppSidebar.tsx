@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -21,6 +22,7 @@ import { useUser, useAuth, useFirestore, useMemoFirebase, useDoc } from "@/fireb
 import { signOut } from "firebase/auth";
 import Image from "next/image";
 import { doc } from "firebase/firestore";
+import { cn } from "@/lib/utils";
 
 import {
   Sidebar,
@@ -30,7 +32,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarGroupContent,
@@ -69,7 +70,6 @@ export function AppSidebar() {
 
   const menuItems = [
     { title: "Dashboard", icon: LayoutDashboard, url: "/dashboard" },
-    { title: "Jornada 7 Dias", icon: () => <div className="relative h-5 w-5 animate-bounce group-hover:scale-110 transition-transform"><Image src={LOGO_ICON} alt="Icon" fill className="object-contain" /></div>, url: "/dashboard" },
     { title: "Ranking Vendedores", icon: Trophy, url: "/vendedores" },
     { title: "Captar Leads", icon: Search, url: "/leads" },
     { title: "Scripts WhatsApp", icon: MessageSquare, url: "/abordagens" },
@@ -80,58 +80,76 @@ export function AppSidebar() {
   const isApproved = userData?.status === 'approved' || isAdmin;
 
   return (
-    <Sidebar className="border-r border-white/5 bg-[#050508] transition-all duration-500 animate-in slide-in-from-left-full">
+    <Sidebar className="border-r border-[#8b5cf6]/15 bg-white/[0.03] backdrop-blur-[20px] transition-all duration-500 relative overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-[#7c3aed]/30 before:to-transparent">
       <SidebarHeader className="p-6">
-        <Link href="/dashboard" className="flex items-center group">
-          <div className="relative h-10 w-32 transition-all duration-500 group-hover:drop-shadow-[0_0_12px_rgba(139,92,246,0.8)]">
+        <Link href="/dashboard" className="flex items-center gap-3 group">
+          <div className="relative h-8 w-8 bg-gradient-to-br from-[#7c3aed] to-[#a855f7] rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(124,58,237,0.4)]">
             <Image 
-              src={LOGO_URL} 
-              alt="FlowPro Logo" 
-              fill 
-              className="object-contain filter-none"
+              src={LOGO_ICON} 
+              alt="Icon" 
+              width={18} 
+              height={18}
+              className="object-contain filter brightness-0 invert"
             />
           </div>
+          <span className="text-white font-bold text-lg tracking-tight uppercase italic">FlowPro</span>
         </Link>
+        <div className="h-px w-full bg-white/5 mt-4" />
       </SidebarHeader>
 
-      <SidebarContent className="px-4">
+      <SidebarContent className="px-2">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-4">Navegação Flow</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 px-4 mb-2">Sistema de Operação</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild 
-                    isActive={pathname === item.url}
-                    disabled={!isApproved}
-                    className={`h-12 rounded-xl transition-all group duration-300 ${!isApproved ? 'opacity-30' : ''} ${pathname === item.url ? 'bg-primary/20 text-primary border border-primary/30 shadow-[0_0_15px_rgba(124,58,255,0.1)]' : 'hover:bg-primary/10 hover:text-white border border-transparent hover:border-primary/20'}`}
-                  >
-                    <Link href={isApproved ? item.url : "#"} className="flex items-center gap-3">
-                      {typeof item.icon === 'function' ? <item.icon /> : <item.icon className={`h-5 w-5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 ${pathname === item.url ? 'text-primary' : 'text-muted-foreground'}`} />}
-                      <span className="text-[11px] font-bold uppercase tracking-widest whitespace-nowrap">{item.title}</span>
-                      {pathname === item.url && <ChevronRight className="ml-auto h-4 w-4 text-primary animate-pulse" />}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {menuItems.map((item) => {
+                const isActive = pathname === item.url;
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton 
+                      asChild 
+                      isActive={isActive}
+                      disabled={!isApproved}
+                      className={cn(
+                        "h-11 rounded-none px-4 transition-all duration-150 group",
+                        !isApproved ? 'opacity-20 pointer-events-none' : '',
+                        isActive 
+                          ? 'bg-[#a855f7]/10 text-white border-l-2 border-[#a855f7]' 
+                          : 'text-white/60 hover:bg-[#a855f7]/[0.07] border-l-2 border-transparent'
+                      )}
+                    >
+                      <Link href={isApproved ? item.url : "#"} className="flex items-center gap-3">
+                        <item.icon className={cn(
+                          "h-4 w-4 transition-colors duration-300",
+                          isActive ? 'text-[#c084fc]' : 'text-white/40 group-hover:text-white/70'
+                        )} />
+                        <span className="text-[11px] font-bold uppercase tracking-widest">{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
         {isAdmin && (
           <SidebarGroup className="mt-4">
-            <div className="sidebar-separator-gradient mb-4" />
-            <SidebarGroupLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60 mb-4">Controle Mestre</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-[9px] font-black uppercase tracking-[0.2em] text-[#7c3aed]/60 px-4 mb-2">Controle Mestre</SidebarGroupLabel>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton 
                   asChild 
                   isActive={pathname === "/admin"}
-                  className={`h-12 rounded-xl border border-primary/20 bg-primary/5 hover:bg-primary/15 transition-all shadow-[0_0_20px_rgba(124,58,255,0.05)]`}
+                  className={cn(
+                    "h-11 rounded-none px-4 transition-all group",
+                    pathname === "/admin"
+                      ? 'bg-[#7c3aed]/10 text-white border-l-2 border-[#7c3aed]'
+                      : 'text-white/60 hover:bg-[#7c3aed]/[0.07] border-l-2 border-transparent'
+                  )}
                 >
-                  <Link href="/admin" className="flex items-center gap-3 text-primary">
-                    <Shield className="h-5 w-5 animate-pulse" />
+                  <Link href="/admin" className="flex items-center gap-3">
+                    <Shield className={cn("h-4 w-4", pathname === "/admin" ? "text-[#7c3aed]" : "text-white/40")} />
                     <span className="text-[11px] font-black uppercase tracking-widest">Painel Admin</span>
                   </Link>
                 </SidebarMenuButton>
@@ -141,33 +159,40 @@ export function AppSidebar() {
         )}
       </SidebarContent>
 
-      <SidebarFooter className="p-6">
-        <div className="bg-white/5 rounded-2xl p-4 space-y-4 border border-white/10 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <SidebarFooter className="p-4 mt-auto">
+        <div className="bg-white/5 rounded-2xl p-4 space-y-4 border border-white/10 relative overflow-hidden group/footer">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#7c3aed]/10 to-transparent opacity-0 group-hover/footer:opacity-100 transition-opacity duration-500" />
+          
           <div className="flex items-center gap-3 relative z-10">
             <div className="relative">
-              <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-black italic border border-primary/30">
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#7c3aed] to-[#4c1d95] flex items-center justify-center text-white font-black italic shadow-lg">
                 {formattedName.charAt(0).toUpperCase()}
               </div>
-              <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-[#050508]">
-                <div className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-75" />
+              <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-[#22c55e] border-2 border-[#05050f]">
+                <div className="absolute inset-0 rounded-full bg-[#22c55e] animate-pulse" />
               </div>
             </div>
+            
             <div className="flex-1 overflow-hidden">
-              <p className="text-[10px] font-black uppercase truncate text-white">
+              <p className="text-[11px] font-black uppercase truncate text-white leading-none mb-1">
                 {formattedName}
               </p>
-              <p className="text-[8px] font-bold uppercase text-muted-foreground truncate">
-                PLANO: {isAdmin ? 'VITALÍCIO' : (userData?.plan ? (userData.plan.toUpperCase() === 'NENHUM' ? 'BLOQUEADO' : userData.plan.toUpperCase()) : 'BUSCANDO...')}
-              </p>
+              <div className="flex items-center gap-1.5">
+                <div className="h-1 w-1 rounded-full bg-[#22c55e] animate-pulse" />
+                <span className="text-[8px] font-black uppercase text-[#22c55e] tracking-widest">
+                  {isAdmin ? 'VITALÍCIO' : (userData?.plan?.toUpperCase() || 'BUSCANDO...')}
+                </span>
+              </div>
             </div>
           </div>
-          <div className="sidebar-separator-gradient" />
+
+          <div className="h-px w-full bg-white/5" />
+          
           <button 
             onClick={handleSignOut}
-            className="flex items-center gap-2 w-full text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-destructive transition-all duration-300 group/logout"
+            className="flex items-center gap-2 w-full text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-red-400 transition-all duration-300 group/logout relative z-10"
           >
-            <LogOut className="h-4 w-4 group-hover/logout:-translate-x-1 transition-transform" />
+            <LogOut className="h-3.5 w-3.5 group-hover/logout:-translate-x-1 transition-transform" />
             Sair da Conta
           </button>
         </div>
