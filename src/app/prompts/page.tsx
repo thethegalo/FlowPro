@@ -164,7 +164,7 @@ export default function PromptsPage() {
       <div className="flex min-h-screen w-full bg-transparent text-white relative z-10">
         <AppSidebar />
         <main className="flex-1 flex flex-col min-w-0 bg-transparent">
-          <header className="h-[52px] border-b border-white/5 flex items-center justify-between px-6 bg-transparent sticky top-0 z-50">
+          <header className="h-[48px] border-b border-white/5 flex items-center justify-between px-6 bg-transparent sticky top-0 z-50">
             <div className="flex items-center gap-3">
               <SidebarTrigger className="md:hidden" />
               <Terminal className="h-[14px] w-[14px] text-primary/70" />
@@ -415,8 +415,8 @@ export default function PromptsPage() {
               </div>
             </section>
 
-            <aside className="w-[35%] border-l border-white/5 bg-white/[0.01] p-10 hidden lg:flex flex-col items-center justify-center relative">
-              <div className="sticky top-1/2 -translate-y-1/2 w-full flex flex-col items-center gap-8">
+            <aside className="w-[35%] border-l border-white/5 bg-white/[0.01] p-10 hidden lg:flex flex-col items-center relative">
+              <div className="sticky top-12 w-full flex flex-col items-center gap-8">
                 <div className="px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/10 flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
                   <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">Real-time Visualizer</span>
