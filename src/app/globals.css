@@ -39,15 +39,47 @@
   }
   
   *:focus-visible {
-    outline: none !important;
-    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.4);
+    @apply outline-none ring-2 ring-primary/50 ring-offset-0;
   }
 
   body {
-    @apply bg-[#05050f] text-foreground font-body overflow-x-hidden;
+    @apply bg-[#05050f] text-foreground font-body overflow-x-hidden m-0;
     font-feature-settings: "cv11", "ss01", "ss02";
     letter-spacing: -0.015em;
   }
+
+  button:active, a:active {
+    transform: scale(0.97);
+  }
+
+  input, select, textarea {
+    @apply text-base md:text-sm; /* Prevent auto-zoom on iOS */
+  }
+}
+
+/* Glassmorphism Standard */
+.glass-card {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  @apply relative overflow-hidden;
+}
+
+/* Shimmer Animation for Skeleton */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0.04) 25%, 
+    rgba(255,255,255,0.08) 50%, 
+    rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
 }
 
 /* Scrollbar Customization */
@@ -65,21 +97,6 @@
   background: rgba(139, 92, 246, 0.5);
 }
 
-.glass-card {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  @apply relative overflow-hidden;
-}
-
-.grid-background {
-  background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
-
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -94,8 +111,4 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: shimmer 3s linear infinite;
-}
-
-@keyframes shimmer {
-  to { background-position: 200% center; }
 }

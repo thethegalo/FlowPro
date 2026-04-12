@@ -30,13 +30,8 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased min-h-screen bg-[#05050f] text-foreground selection:bg-primary/30 selection:text-white margin-0">
         <FirebaseClientProvider>
-          {/* FUNDO FIXO — aparece em TODAS as páginas */}
-          <div style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 0,
-            pointerEvents: 'none'
-          }}>
+          {/* FUNDO FIXO GLOBAL */}
+          <div className="fixed inset-0 z-0 pointer-events-none">
             <EtheralShadow
               color="rgba(109, 40, 217, 0.9)"
               animation={{ scale: 45, speed: 55 }}
@@ -45,8 +40,8 @@ export default function RootLayout({
             />
           </div>
 
-          {/* CONTEÚDO — fica sobre o fundo */}
-          <div style={{ position: 'relative', zIndex: 1 }} className="flex flex-col min-h-screen bg-transparent">
+          {/* CONTEÚDO PRINCIPAL */}
+          <div className="relative z-10 flex flex-col min-h-screen bg-transparent">
             <CustomCursor />
             {children}
             <FloatingMentor />

@@ -13,8 +13,6 @@ import {
   DollarSign,
   Search,
   Zap,
-  Bell,
-  TrendingUp,
   Activity,
   ArrowRight,
   Plus,
@@ -24,11 +22,13 @@ import {
   Users,
   MessageSquare,
   ChevronRight,
-  LayoutDashboard
+  LayoutDashboard,
+  TrendingUp,
+  Menu
 } from 'lucide-react';
 import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
 import { collection, query, orderBy, doc } from 'firebase/firestore';
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { 
   XAxis, 
@@ -39,10 +39,7 @@ import {
   ResponsiveContainer,
   Tooltip
 } from 'recharts';
-import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-
-const ADMIN_EMAIL = "thethegalo@gmail.com";
 
 function AnimatedNumber({ value, duration = 2000, prefix = "", suffix = "" }: { value: number, duration?: number, prefix?: string, suffix?: string }) {
   const [displayValue, setDisplayValue] = useState(0);
@@ -66,7 +63,7 @@ function AnimatedNumber({ value, duration = 2000, prefix = "", suffix = "" }: { 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-[#0f0f1a] border border-[#8b5cf6]/25 p-[10px_14px] rounded-[8px] shadow-none outline-none">
+      <div className="bg-[#0f0f1a] border border-[#8b5cf6]/25 p-[10px_14px] rounded-[8px] shadow-xl">
         <p className="text-[10px] font-medium uppercase text-white/20 mb-1">{payload[0].payload.date}</p>
         <p className="text-[12px] font-bold text-white">
           R$ {payload[0].value.toLocaleString('pt-BR')}
@@ -88,25 +85,22 @@ export default function Dashboard() {
   }, [db, user]);
   const { data: userData, isLoading: isUserDocLoading } = useDoc(userDocRef);
 
-  const isSpecialUser = useMemo(() => user?.email === ADMIN_EMAIL, [user]);
-  const isGrayUser = useMemo(() => user?.email === 'grayy.fefe@gmail.com', [user]);
+  const isAdmin = useMemo(() => user?.email === "thethegalo@gmail.com", [user]);
 
   const displayName = useMemo(() => {
-    if (isSpecialUser) return 'Lucas';
-    if (isGrayUser) return 'Gray';
+    if (isAdmin) return 'Lucas';
     if (userData?.name) return userData.name;
     if (user?.displayName) return user.displayName;
     if (user?.email) return user.email.split('@')[0];
     return 'Usuário';
-  }, [userData?.name, user?.displayName, user?.email, isSpecialUser, isGrayUser]);
+  }, [userData?.name, user?.displayName, user?.email, isAdmin]);
 
   const totalEarnings = useMemo(() => {
     if (userData?.simulatedStats?.total !== undefined) return userData.simulatedStats.total;
     const raw = userData?.totalEarnings || 0;
-    if (isSpecialUser) return 21564 + raw;
-    if (isGrayUser) return 17594 + raw;
+    if (isAdmin) return 21564 + raw;
     return raw;
-  }, [userData?.totalEarnings, userData?.simulatedStats, isSpecialUser, isGrayUser]);
+  }, [userData?.totalEarnings, userData?.simulatedStats, isAdmin]);
 
   const chartData = useMemo(() => {
     if (userData?.simulatedStats?.chart) {
@@ -115,32 +109,20 @@ export default function Dashboard() {
         ganhos: p.amount
       }));
     }
-
-    const days = 30;
-    const data = [];
-    const now = new Date();
-    const lucasValues = [5874,420,380,650,290,810,0,1200,340,290,480,0,920,670,410,380,0,1100,590,430,280,0,1340,480,670,0,1200,890,430,0,630];
-    const grayValues = [0,600,0,800,1200,0,1500,0,700,900,0,1900,0,800,600,0,1700,0,1000,0,2000,0,700,1300,0,1600,0,294,0,0,0];
-
-    for (let i = days; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(now.getDate() - i);
-      const dayStr = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-      let dailyValue = 0;
-      if (isSpecialUser) dailyValue = lucasValues[30 - i] || 0;
-      else if (isGrayUser) dailyValue = grayValues[30 - i] || 0;
-      data.push({ date: dayStr, ganhos: dailyValue });
-    }
-    return data;
-  }, [isSpecialUser, isGrayUser, userData?.simulatedStats]);
+    // Default mock data
+    return Array.from({ length: 30 }).map((_, i) => ({
+      date: `${i + 1}/03`,
+      ganhos: Math.floor(Math.random() * 1000)
+    }));
+  }, [userData?.simulatedStats]);
 
   const currentJourneyDay = useMemo(() => {
     if (!userData?.createdAt) return 1;
-    if (isSpecialUser || isGrayUser) return 7;
+    if (isAdmin) return 7;
     const created = userData.createdAt.toDate ? userData.createdAt.toDate() : new Date(userData.createdAt);
     const diffInMs = Date.now() - created.getTime();
-    return Math.floor(diffInMs / (1000 * 60 * 60 * 24)) + 1;
-  }, [userData?.createdAt, isSpecialUser, isGrayUser]);
+    return Math.max(1, Math.floor(diffInMs / (1000 * 60 * 60 * 24)) + 1);
+  }, [userData?.createdAt, isAdmin]);
 
   const missions = [
     { id: 'dia1', title: 'DIA 1: Criar Oferta', desc: 'Defina o que vender e seu primeiro script.', order: 1 },
@@ -151,11 +133,9 @@ export default function Dashboard() {
 
   const ecosystemModules = [
     { title: 'Captar lead', desc: 'Escaneie o mercado e encontre alvos em segundos.', icon: Search, url: '/leads' },
-    { title: 'CRM leads', desc: 'Gerencie seu funil de vendas e organize contatos.', icon: Users, url: '#' },
-    { title: 'Contratos', desc: 'Gere contratos profissionais e feche parcerias.', icon: FileText, url: '#' },
     { title: 'Abordagem', desc: 'Scripts de WhatsApp otimizados por IA.', icon: MessageSquare, url: '/abordagens' },
-    { title: 'Criar sites', desc: 'Desenvolva Landing Pages sem código.', icon: Globe, url: '/prompts' },
-    { title: 'Blueprints', desc: 'Comandos mestres para escalar sua operação.', icon: Zap, url: '/prompts' },
+    { title: 'Gerador de Prompts', desc: 'Comandos mestres para escalar sua operação.', icon: Zap, url: '/prompts' },
+    { title: 'Ferramentas', desc: 'Arsenal de inteligência para acelerar fluxo.', icon: Globe, url: '/tools' },
   ];
 
   const progressQuery = useMemoFirebase(() => {
@@ -172,137 +152,122 @@ export default function Dashboard() {
     if (!isUserLoading && !user) router.push('/auth');
   }, [user, isUserLoading, router]);
 
-  if (isUserLoading || isUserDocLoading) return <div className="min-h-screen flex items-center justify-center bg-transparent"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  if (isUserLoading || isUserDocLoading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full relative overflow-x-hidden bg-transparent">
+      <div className="flex min-h-screen w-full relative bg-transparent">
         <AppSidebar />
         
-        <main className="flex-1 flex flex-col min-w-0 relative z-0 bg-transparent">
+        <main className="flex-1 flex flex-col min-w-0 bg-transparent">
           <header className="h-[52px] border-b border-white/5 flex items-center justify-between px-6 bg-transparent sticky top-0 z-50">
-            <div className="flex items-center gap-2">
-              <LayoutDashboard className="h-[14px] w-[14px] text-[#8b5cf6]/70" />
+            <div className="flex items-center gap-3">
+              <SidebarTrigger className="md:hidden">
+                <Menu className="h-5 w-5 text-white/50" />
+              </SidebarTrigger>
+              <LayoutDashboard className="h-[14px] w-[14px] text-primary/70" />
               <h1 className="text-[13px] font-medium text-white/50">Dashboard</h1>
             </div>
 
-            <div className="bg-[#581c87]/40 border border-[#7c3aed]/30 text-[#c4b5fd] text-[11px] font-medium rounded-[6px] px-[10px] py-[4px] uppercase tracking-[0.5px]">
-              VITALÍCIO
+            <div className="flex items-center gap-4">
+              <div className="hidden md:block bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase">
+                {userData?.plan?.toUpperCase() || 'BUSCANDO...'}
+              </div>
+              <div className="bg-[#581c87]/40 border border-[#7c3aed]/30 text-[#c4b5fd] text-[11px] font-medium rounded-[6px] px-[10px] py-[4px] uppercase tracking-[0.5px]">
+                VITALÍCIO
+              </div>
             </div>
           </header>
 
-          <div className="flex-1 p-[32px] pt-8 space-y-7 max-w-7xl mx-auto w-full bg-transparent">
+          <div className="flex-1 p-6 md:p-8 space-y-8 max-w-7xl mx-auto w-full">
             
-            <div className="mb-8 space-y-0.5">
-              <h1 className="text-[22px] font-semibold text-white tracking-[-0.3px] leading-tight">
+            <div className="space-y-1">
+              <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight">
                 Olá, {displayName} 👋
               </h1>
-              <p className="text-[13px] font-normal text-white/35">
+              <p className="text-xs md:text-sm text-white/30">
                 Seja bem-vindo ao seu centro de comando tático.
               </p>
             </div>
 
             {/* GRID DE MÉTRICAS */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               {[
-                { label: "Placar de Caixa", val: totalEarnings, prefix: "R$ ", icon: DollarSign, badge: "+12% hoje", sub: `Alvo R$ ${isSpecialUser ? '50.000' : '5.000'}` },
+                { label: "Placar de Caixa", val: totalEarnings, prefix: "R$ ", icon: DollarSign, badge: "+12% hoje", sub: `Alvo R$ ${isAdmin ? '50.000' : '5.000'}` },
                 { label: "Execução Diária", val: userData?.dailyActions || 0, suffix: " / 10", icon: Activity, badge: "Alta Performance", sub: "Ritmo constante" },
                 { label: "Status Jornada", val: currentJourneyDay, prefix: "Dia ", icon: TrendingUp, badge: "Ativo", sub: `${completedMissionIds.length} concluídas` },
               ].map((m, i) => (
-                <div key={i} className="group relative">
-                  <Card className="glass-card p-[20px_24px] hover:border-white/[0.2] hover:translate-y-[-1px] relative overflow-hidden transition-all duration-150">
-                    <m.icon className="h-4 w-4 text-white/20 absolute top-5 right-6" />
-                    <div className="space-y-4">
-                      <div>
-                        <p className="text-[11px] font-medium text-white/30 uppercase tracking-[0.8px] mb-1">{m.label}</p>
-                        <h3 className="text-[28px] font-semibold text-[#f4f4f5] tracking-[-0.5px] leading-none">
-                          {typeof m.val === 'number' ? <AnimatedNumber value={m.val} prefix={m.prefix} suffix={m.suffix} /> : m.val}
-                        </h3>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge className="bg-[#22c55e]/[0.08] border border-[#22c55e]/20 text-[#86efac] text-[10px] font-medium px-2 py-0.5 rounded-full shadow-none">
-                          {m.badge}
-                        </Badge>
-                        <span className="text-[11px] text-white/25 font-normal">{m.sub}</span>
-                      </div>
+                <Card key={i} className="glass-card p-6 flex flex-col justify-between hover:border-primary/20 transition-all">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1">{m.label}</p>
+                      <h3 className="text-2xl md:text-3xl font-black italic text-white leading-none">
+                        {typeof m.val === 'number' ? <AnimatedNumber value={m.val} prefix={m.prefix} suffix={m.suffix} /> : m.val}
+                      </h3>
                     </div>
-                  </Card>
-                </div>
+                    <m.icon className="h-4 w-4 text-primary/40" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-green-500/10 border-green-500/20 text-green-400 text-[9px] font-bold uppercase py-0 px-2 rounded-full">
+                      {m.badge}
+                    </Badge>
+                    <span className="text-[10px] text-white/20 uppercase font-medium">{m.sub}</span>
+                  </div>
+                </Card>
               ))}
             </div>
 
-            {/* SEÇÃO CENTRAL (GRÁFICO + AÇÕES) */}
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-7 bg-transparent">
+            {/* SEÇÃO CENTRAL */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               
-              {/* GRÁFICO (65%) */}
-              <div className="lg:col-span-1">
-                <Card className="glass-card p-6 h-full shadow-none overflow-hidden">
-                  <div className="flex justify-between items-start mb-6">
-                    <div className="space-y-1">
-                      <h3 className="text-[12px] font-medium text-white/30 uppercase tracking-[1px]">Ganhos dos últimos 30 dias</h3>
-                      <p className="text-[11px] font-normal text-white/20">Análise de performance tática mensal</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-[11px] text-white/30 mb-1">Total Período</p>
-                      <div className="text-[20px] font-semibold text-[#a78bfa] tracking-[-0.3px]">
-                        R$ {totalEarnings.toLocaleString('pt-BR')}
-                      </div>
+              {/* GRÁFICO */}
+              <Card className="lg:col-span-8 glass-card p-6 min-h-[300px] flex flex-col">
+                <div className="flex justify-between items-center mb-8">
+                  <div>
+                    <h3 className="text-[11px] font-black uppercase tracking-widest text-white/30">Ganhos Temporais</h3>
+                    <p className="text-[10px] text-white/20 uppercase">Performance tática (30 dias)</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] font-bold text-primary uppercase">Total Período</p>
+                    <div className="text-lg md:text-xl font-black text-white italic">
+                      R$ {totalEarnings.toLocaleString('pt-BR')}
                     </div>
                   </div>
+                </div>
 
-                  <div className="h-[180px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={chartData} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
-                        <defs>
-                          <linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#8b5cf6" stopOpacity="0.15"/>
-                            <stop offset="95%" stopColor="#8b5cf6" stopOpacity="0"/>
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.04)" strokeDasharray="4 4" />
-                        <XAxis 
-                          dataKey="date" 
-                          axisLine={false} 
-                          tickLine={false}
-                          tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.2)' }}
-                          dy={10}
-                        />
-                        <YAxis 
-                          axisLine={false} 
-                          tickLine={false} 
-                          tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.2)' }} 
-                          width={45}
-                          tickFormatter={(v) => `R$${v}`} 
-                        />
-                        <Tooltip 
-                          content={<CustomTooltip />} 
-                          cursor={{ stroke: 'rgba(139,92,246,0.3)', strokeWidth: 1, strokeDasharray: '4 4' }}
-                        />
-                        <Area 
-                          type="monotone" 
-                          dataKey="ganhos" 
-                          stroke="#8b5cf6" 
-                          strokeWidth={1.5} 
-                          fill="url(#colorGanhos)" 
-                          dot={false}
-                          isAnimationActive={false}
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </div>
-                </Card>
-              </div>
+                <div className="flex-1 w-full min-h-[180px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#8b5cf6" stopOpacity="0.15"/>
+                          <stop offset="95%" stopColor="#8b5cf6" stopOpacity="0"/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.03)" strokeDasharray="3 3" />
+                      <XAxis dataKey="date" hide />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.2)' }} tickFormatter={(v) => `R$${v}`} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Area 
+                        type="monotone" 
+                        dataKey="ganhos" 
+                        stroke="#8b5cf6" 
+                        strokeWidth={2} 
+                        fill="url(#colorGanhos)" 
+                        isAnimationActive={false}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </Card>
 
-              {/* COLUNA DIREITA (35%) */}
-              <div className="flex flex-col gap-7">
-                <Card className="glass-card p-6 relative overflow-hidden">
-                  <p className="text-[11px] font-medium text-white/20 uppercase tracking-[1.5px] mb-6">
-                    AÇÕES RÁPIDAS
-                  </p>
-                  
+              {/* AÇÕES E VIP */}
+              <div className="lg:col-span-4 flex flex-col gap-6">
+                <Card className="glass-card p-6">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-white/20 mb-6">Comandos Rápidos</p>
                   <div className="space-y-3">
                     <Button 
-                      className="w-full h-10 bg-[#7c3aed]/80 hover:bg-[#7c3aed] transition-all rounded-[8px] font-medium text-[13px] gap-2 shadow-none px-5"
+                      className="w-full h-11 bg-primary/80 hover:bg-primary rounded-xl font-medium text-sm gap-2"
                       onClick={() => router.push('/leads')}
                     >
                       <Plus className="h-4 w-4" /> Nova prospecção
@@ -310,76 +275,71 @@ export default function Dashboard() {
                     <div className="grid grid-cols-2 gap-3">
                       <Button 
                         variant="outline" 
-                        className="h-10 bg-white/[0.04] border-white/5 hover:bg-white/[0.08] transition-all rounded-[8px] text-[12px] font-medium gap-2"
+                        className="h-11 bg-white/5 border-white/5 hover:bg-white/10 rounded-xl text-xs"
                         onClick={() => router.push('/prompts')}
                       >
-                        <Globe className="h-3.5 w-3.5 text-white/40" /> Criar Site
+                        <Globe className="h-3.5 w-3.5 mr-2 opacity-40" /> Criar Site
                       </Button>
                       <Button 
                         variant="outline" 
-                        className="h-10 bg-white/[0.04] border-white/5 hover:bg-white/[0.08] transition-all rounded-[8px] text-[12px] font-medium gap-2"
+                        className="h-11 bg-white/5 border-white/5 hover:bg-white/10 rounded-xl text-xs"
                       >
-                        <FileText className="h-3.5 w-3.5 text-white/40" /> Contrato
+                        <FileText className="h-3.5 w-3.5 mr-2 opacity-40" /> Contrato
                       </Button>
                     </div>
                   </div>
                 </Card>
 
-                <Card className="glass-card flex-1 p-6 relative overflow-hidden shadow-none bg-purple-900/20 border-purple-500/20">
+                <Card className="glass-card flex-1 p-6 relative overflow-hidden group">
                   <div className="relative z-10 space-y-4">
-                    <Badge className="bg-purple-400/20 text-purple-300 text-[9px] font-semibold uppercase px-2 py-0.5 rounded-md border-none">
+                    <Badge className="bg-primary/20 text-primary border-none text-[9px] font-black uppercase px-2 py-0.5 rounded-md">
                       🎓 CONTEÚDO VIP
                     </Badge>
-                    <div className="space-y-2">
-                      <h4 className="text-[16px] font-bold text-white leading-tight">Masterclass: Escala Infinitos</h4>
-                      <p className="text-xs text-white/40 font-normal leading-relaxed">
-                        Aprenda o método exato para faturar R$ 50k em 30 dias usando automação neural.
+                    <div className="space-y-1">
+                      <h4 className="text-base font-bold text-white leading-tight">Masterclass: Escala Infinitos</h4>
+                      <p className="text-xs text-white/30 font-medium leading-relaxed">
+                        Aprenda o método exato para faturar R$ 50k em 30 dias com IA.
                       </p>
                     </div>
-                    <Button variant="outline" className="w-full mt-4 bg-white/10 border-white/15 text-white hover:bg-white/20 transition-all rounded-lg text-[11px] font-medium">
+                    <Button variant="outline" className="w-full mt-4 bg-white/10 border-white/10 text-white hover:bg-white/20 transition-all rounded-xl text-[11px] font-bold uppercase">
                       Acessar Agora <ArrowRight className="ml-2 h-3 w-3" />
                     </Button>
                   </div>
-                  <div className="absolute -bottom-4 -right-4 opacity-5">
+                  <div className="absolute -bottom-4 -right-4 opacity-5 group-hover:scale-110 transition-transform">
                     <GraduationCap className="h-32 w-32 text-white" />
                   </div>
                 </Card>
               </div>
             </div>
 
-            {/* SEÇÃO: ECOSSISTEMA PREMIUM */}
-            <div className="space-y-7 pt-4 bg-transparent">
+            {/* ECOSSISTEMA */}
+            <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <h2 className="text-[15px] font-semibold text-white/85 tracking-tight">Ecossistema Premium</h2>
-                  <p className="text-white/30 text-[11px] font-normal">o arsenal tático completo para sua operação digital</p>
+                  <h2 className="text-base md:text-lg font-semibold text-white tracking-tight">Ecossistema Premium</h2>
+                  <p className="text-white/30 text-[11px] uppercase tracking-widest">Arsenal tático para sua operação digital</p>
                 </div>
-                <div className="bg-[#14532d]/30 border border-[#22c55e]/25 text-[#86efac]/90 text-[10px] font-medium px-3 py-1 rounded-[6px] flex items-center gap-2">
-                  Full access ativo
+                <div className="hidden md:flex bg-green-500/10 border border-green-500/20 text-green-400 text-[10px] font-medium px-3 py-1 rounded-lg items-center gap-2">
+                  <CheckCircle2 className="h-3 w-3" /> Full access ativo
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {ecosystemModules.map((module, i) => (
                   <Link key={i} href={module.url}>
-                    <Card className="glass-card p-5 group relative overflow-hidden bg-white/[0.02] border-white/[0.07] hover:translate-y-[-1px] hover:border-white/12 hover:bg-white/[0.06] transition-all duration-200">
+                    <Card className="glass-card p-5 group hover:border-primary/30 transition-all">
                       <div className="flex flex-col gap-4">
                         <div className="flex justify-between items-start">
-                          <div className="h-7 w-7 rounded-[7px] bg-white/5 flex items-center justify-center border border-white/5">
-                            <module.icon className="size-3.5 text-white/45" />
+                          <div className="h-8 w-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/5">
+                            <module.icon className="h-4 w-4 text-white/40" />
                           </div>
-                          <ArrowRight className="h-3.5 w-3.5 text-white/10 group-hover:text-white/40 transition-all group-hover:translate-x-1" />
+                          <ChevronRight className="h-4 w-4 text-white/10 group-hover:text-primary transition-all group-hover:translate-x-1" />
                         </div>
                         <div className="space-y-1">
-                          <h4 className="text-[14px] font-medium text-white/80 tracking-tight">{module.title}</h4>
-                          <p className="text-[12px] text-white/35 font-normal leading-[1.6] line-clamp-2">
+                          <h4 className="text-sm font-semibold text-white/80">{module.title}</h4>
+                          <p className="text-xs text-white/30 leading-relaxed line-clamp-2">
                             {module.desc}
                           </p>
-                        </div>
-                        <div className="pt-1">
-                          <span className="text-[11px] font-medium text-[#8b5cf6]/70 group-hover:text-[#8b5cf6] flex items-center gap-2 transition-colors">
-                            Iniciar módulo <ChevronRight className="h-3 w-3" />
-                          </span>
                         </div>
                       </div>
                     </Card>
@@ -388,83 +348,68 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* JORNADA DE MISSÕES */}
-            <div className="space-y-7 pt-4 bg-transparent">
+            {/* JORNADA */}
+            <div className="space-y-6 pb-20">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <h2 className="text-[15px] font-semibold text-white/85 tracking-[-0.2px]">Sua Jornada de Escala</h2>
-                  <p className="text-[11px] font-normal text-white/30 tracking-[0.8px]">o método exato para sua primeira venda em 7 dias</p>
+                  <h2 className="text-base md:text-lg font-semibold text-white tracking-tight">Jornada de Escala</h2>
+                  <p className="text-white/30 text-[11px] uppercase tracking-widest">Sua primeira venda em 7 dias</p>
                 </div>
-                <Badge className="bg-[#8b5cf6]/10 border border-[#8b5cf6]/25 text-[#c4b5fd] text-[10px] uppercase rounded-[6px] px-3 py-1 font-medium shadow-none">
+                <Badge className="bg-primary/10 border-primary/20 text-primary text-[10px] uppercase rounded-lg px-3 py-1 font-bold">
                   DIA {currentJourneyDay} ATIVO
                 </Badge>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="flex md:grid md:grid-cols-4 overflow-x-auto gap-4 no-scrollbar pb-4 snap-x snap-mandatory">
                 {missions.map((m) => {
                   const isCompleted = completedMissionIds.includes(m.id);
-                  const isLocked = !isSpecialUser && !isGrayUser && m.order > currentJourneyDay && !isCompleted;
-                  const isCurrent = !isCompleted && !isLocked && (isSpecialUser || isGrayUser || m.order === currentJourneyDay);
+                  const isLocked = !isAdmin && m.order > currentJourneyDay && !isCompleted;
+                  const isCurrent = !isCompleted && !isLocked && (isAdmin || m.order === currentJourneyDay);
 
                   return (
                     <Link 
                       key={m.id} 
                       href={isLocked ? '#' : `/missions/${m.id}`}
                       className={cn(
-                        "block transition-all",
-                        isLocked ? 'cursor-not-allowed' : 'cursor-pointer'
+                        "block min-w-[260px] md:min-w-0 snap-start",
+                        isLocked ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
                       )}
                     >
                       <Card className={cn(
-                        "glass-card p-[18px] transition-all duration-200 h-full flex flex-col justify-between bg-white/[0.025] border-white/[0.06]",
-                        isCurrent && "hover:border-white/12 hover:translate-y-[-1px] hover:bg-white/[0.05]"
+                        "glass-card p-5 h-full flex flex-col justify-between transition-all",
+                        isCurrent && "border-primary/40 bg-primary/5"
                       )}>
                         <div className="space-y-4">
                           <div className="flex justify-between items-start">
                             <div className={cn(
-                              "h-7 w-7 rounded-[8px] border flex items-center justify-center text-[13px] font-semibold transition-all",
-                              isCompleted ? "bg-[#22c55e]/10 border-[#22c55e]/20 text-[#4ade80]" : 
-                              isCurrent ? "bg-[#8b5cf6]/15 border-[#8b5cf6]/30 text-[#a78bfa] shadow-none" : 
-                              "bg-white/[0.04] border-white/[0.08] text-white/20"
+                              "h-8 w-8 rounded-lg border flex items-center justify-center text-xs font-bold",
+                              isCompleted ? "bg-green-500/10 border-green-500/20 text-green-400" : 
+                              isCurrent ? "bg-primary/20 border-primary/40 text-primary" : 
+                              "bg-white/5 border-white/10 text-white/20"
                             )}>
-                              {isCompleted ? <CheckCircle2 className="h-[14px] w-[14px]" /> : m.order}
+                              {isCompleted ? <CheckCircle2 className="h-4 w-4" /> : m.order}
                             </div>
                             {isLocked && <Lock className="h-3.5 w-3.5 text-white/10" />}
                           </div>
                           
-                          <div className="space-y-1.5">
-                            <h4 className={cn(
-                              "text-[12px] font-semibold uppercase tracking-[0.3px] transition-colors",
-                              isCompleted ? "text-white/40" : isCurrent ? "text-white/90" : "text-white/25"
-                            )}>
+                          <div className="space-y-1">
+                            <h4 className={cn("text-xs font-bold uppercase", isCompleted ? 'text-white/40' : 'text-white/90')}>
                               {m.title}
                             </h4>
-                            <p className={cn(
-                              "text-[11px] leading-[1.5] transition-colors",
-                              isCompleted ? "text-white/20" : "text-white/35"
-                            )}>
+                            <p className="text-[11px] text-white/30 leading-relaxed">
                               {m.desc}
                             </p>
                           </div>
                         </div>
 
                         <div className="pt-4">
-                          {isCompleted ? (
-                            <div className="w-full h-[32px] rounded-[6px] border border-white/10 text-white/35 text-[11px] font-normal flex items-center justify-center transition-colors hover:bg-white/5">
-                              revisar
-                            </div>
-                          ) : (
-                            <div 
-                              className={cn(
-                                "w-full h-[32px] rounded-[6px] text-[11px] font-medium flex items-center justify-center transition-all",
-                                isCurrent 
-                                  ? "bg-[#6d28d9]/30 border border-[#8b5cf6]/40 text-[#c4b5fd]" 
-                                  : "bg-white/[0.04] border-white/[0.08] text-white/20"
-                              )}
-                            >
-                              {isLocked ? 'bloqueado' : 'iniciar'}
-                            </div>
-                          )}
+                          <div className={cn(
+                            "w-full h-9 rounded-lg text-[10px] font-bold uppercase flex items-center justify-center transition-all",
+                            isCompleted ? "border border-white/5 text-white/30 hover:bg-white/5" : 
+                            isCurrent ? "bg-primary text-white" : "bg-white/5 text-white/20"
+                          )}>
+                            {isCompleted ? 'revisar' : isLocked ? 'bloqueado' : 'iniciar etapa'}
+                          </div>
                         </div>
                       </Card>
                     </Link>

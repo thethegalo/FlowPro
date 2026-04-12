@@ -1,11 +1,10 @@
-
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect } from "react"
 
 /**
  * FlowPro Custom Toast System
- * Handles notification state and provides a rich API for different variants.
+ * Optimized for mobile and multi-toast handling.
  */
 
 type ToastVariant = 'default' | 'success' | 'error' | 'warning';
@@ -17,7 +16,7 @@ export interface Toast {
   variant: ToastVariant;
 }
 
-// Internal singleton store to keep toasts synced across components
+// Internal singleton store to keep toasts synced
 let toasts: Toast[] = [];
 let listeners: Array<(toasts: Toast[]) => void> = [];
 
@@ -34,8 +33,8 @@ const addToast = (props: { title: string; description?: string; variant?: ToastV
     variant: props.variant || 'default'
   };
 
-  // Limit visible toasts to 5
-  toasts = [newToast, ...toasts].slice(0, 5);
+  // LIMIT TO 3 VISIBLE TOASTS
+  toasts = [newToast, ...toasts].slice(0, 3);
   notify();
 
   // Auto-dismiss after 3.5 seconds
@@ -52,9 +51,6 @@ const dismissToast = (id: string) => {
   notify();
 };
 
-/**
- * The main toast function. Can be called directly or via methods.
- */
 export const toast = Object.assign(
   (props: { title: string; description?: string; variant?: string }) => {
     const variantMap: Record<string, ToastVariant> = {
@@ -91,7 +87,6 @@ export function useToast() {
     toasts: state,
     dismiss: dismissToast,
     toast,
-    // Direct methods for cleaner access in components
     success: toast.success,
     error: toast.error,
     warning: toast.warning,
