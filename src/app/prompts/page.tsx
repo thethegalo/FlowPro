@@ -32,7 +32,8 @@ import {
   Search,
   Type,
   Briefcase,
-  Droplets
+  Droplets,
+  Wand2
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -66,9 +67,20 @@ const COLOR_PRESETS = [
   { name: 'Edge', primary: '#DC2626', secondary: '#ffffff' },
 ];
 
+const AI_PALETTES = [
+  { primary: '#FF3366', secondary: '#1A1A1A' }, // Neon Punk
+  { primary: '#00F5FF', secondary: '#002B36' }, // Deep Sea Tech
+  { primary: '#FFD700', secondary: '#1C1C1C' }, // Golden Night
+  { primary: '#8E2DE2', secondary: '#4A00E0' }, // Purple Haze
+  { primary: '#00C9FF', secondary: '#92FE9D' }, // Sky Ocean
+  { primary: '#F7971E', secondary: '#FFD200' }, // Sun Flare
+  { primary: '#11998e', secondary: '#38ef7d' }, // Emerald Dream
+  { primary: '#ee0979', secondary: '#ff6a00' }, // Red Sunset
+];
+
 // --- COMPONENTES AUXILIARES ---
 
-const SuggestButton = ({ onSuggest, label }: { onSuggest: () => void, label?: string }) => {
+const SuggestButton = ({ onSuggest, label, icon: Icon = Sparkles }: { onSuggest: () => void, label?: string, icon?: any }) => {
   const [loading, setLoading] = useState(false);
   
   const handleClick = () => {
@@ -85,7 +97,7 @@ const SuggestButton = ({ onSuggest, label }: { onSuggest: () => void, label?: st
       disabled={loading}
       className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-primary hover:text-primary/80 transition-all group"
     >
-      {loading ? <Zap className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3 group-hover:scale-110 transition-transform" />}
+      {loading ? <Zap className="h-3 w-3 animate-spin" /> : <Icon className="h-3 w-3 group-hover:scale-110 transition-transform" />}
       {label || 'Sugerir com IA'}
     </button>
   );
@@ -154,6 +166,12 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
       setBlueprint(prev => ({ ...prev, isGenerated: true }));
       toast({ title: "Blueprint Gerado!", description: "Seu comando mestre está pronto." });
     }, 3000);
+  };
+
+  const handleAIPalette = () => {
+    const randomPalette = AI_PALETTES[Math.floor(Math.random() * AI_PALETTES.length)];
+    setBlueprint(prev => ({ ...prev, palette: [randomPalette.primary, randomPalette.secondary] }));
+    toast({ title: "Paleta Gerada!", description: "IA sugeriu novas cores de alta conversão." });
   };
 
   const isStepValid = () => {
@@ -345,9 +363,16 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                             {/* Seleção de Cores */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                               <div className="space-y-4">
-                                <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 flex items-center gap-2">
-                                  <Droplets className="h-3 w-3 text-primary" /> Cor Primária (HEX)
-                                </Label>
+                                <div className="flex items-center justify-between">
+                                  <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 flex items-center gap-2">
+                                    <Droplets className="h-3 w-3 text-primary" /> Cor Primária (HEX)
+                                  </Label>
+                                  <SuggestButton 
+                                    onSuggest={handleAIPalette} 
+                                    label="Gerar Paleta IA" 
+                                    icon={Wand2}
+                                  />
+                                </div>
                                 <div className="flex items-center gap-4">
                                   <div className="h-14 w-14 rounded-2xl border border-white/10 shrink-0 shadow-lg" style={{ background: blueprint.palette[0] }} />
                                   <Input 
