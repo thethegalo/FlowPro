@@ -75,20 +75,22 @@ export default function VendedoresRankingPage() {
     const shuffled = [...NAMES_POOL].sort(() => rng() - 0.5);
     const selected = shuffled.slice(0, 20);
     
-    let baseRevenue = 45000 + (rng() * 10000); // Top 1 entre 45k e 55k
+    // Top 1 entre 11k e 13k
+    let baseRevenue = 11000 + (rng() * 2000); 
     
     return selected.map((name, i) => {
-      const revenue = baseRevenue * (1 - (i * 0.08) - (rng() * 0.05));
-      baseRevenue = revenue; // Garante ordem decrescente
+      // Curva decrescente suave para chegar próximo a 500 no final da lista
+      const reductionFactor = Math.pow(0.85, i);
+      const revenue = baseRevenue * reductionFactor * (0.95 + rng() * 0.1);
       
-      const sales = Math.floor(revenue / (400 + rng() * 300));
+      const sales = Math.floor(revenue / (150 + rng() * 100)); // Vendas proporcionais ao faturamento
       
       return {
         pos: i + 1,
         name,
         city: CITIES[Math.floor(rng() * CITIES.length)],
         revenue: Math.floor(revenue),
-        sales,
+        sales: sales || 1,
         status: i < 3 ? "Elite" : i < 8 ? "Top" : "Ativo"
       };
     });
@@ -132,7 +134,7 @@ export default function VendedoresRankingPage() {
             {/* Cards de Resumo Operacional */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { label: "Volume Semanal", value: "R$ " + (dynamicSellers.reduce((acc, s) => acc + s.revenue, 0) / 10).toLocaleString('pt-BR', {maximumFractionDigits: 0}) + "k", icon: DollarSign, sub: "Faturamento global da base", subColor: "text-primary" },
+                { label: "Volume Semanal", value: "R$ " + (dynamicSellers.reduce((acc, s) => acc + s.revenue, 0) / 1000).toLocaleString('pt-BR', {maximumFractionDigits: 1}) + "k", icon: DollarSign, sub: "Faturamento global da base", subColor: "text-primary" },
                 { label: "Contratos Ativos", value: dynamicSellers.reduce((acc, s) => acc + s.sales, 0) + " vendas", icon: Target, sub: "Volume de fechamentos", subColor: "text-cyan-400" },
                 { label: "Consultores", value: "42 em campo", icon: Users, sub: "Operadores ativos no Flow", subColor: "text-muted-foreground" },
                 { label: "Performance", value: "92% Ótima", icon: TrendingUp, sub: "Saúde do ecossistema", subColor: "text-green-500" }
@@ -192,7 +194,7 @@ export default function VendedoresRankingPage() {
                   <Crown className="h-10 w-10 text-yellow-400 mx-auto animate-bounce drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]" />
                   <h3 className="text-base font-black uppercase italic text-white tracking-widest">Premiação do Ciclo</h3>
                   <p className="text-[10px] font-medium text-muted-foreground uppercase leading-relaxed max-w-[200px] mx-auto">
-                    O Top 1 da semana ganhará um bônus de <span className="text-primary font-black">R$ 1.500 no PIX</span> e consultoria direta com o Mestre.
+                    O Top 1 da semana ganhará um bônus de <span className="text-primary font-black">R$ 500 no PIX</span> e consultoria direta com o Mestre.
                   </p>
                 </div>
               </div>
