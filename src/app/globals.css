@@ -45,8 +45,8 @@
 
   body {
     @apply bg-[#05050f] text-foreground font-body overflow-x-hidden;
-    font-feature-settings: "cv11", "ss01";
-    letter-spacing: -0.1px;
+    font-feature-settings: "cv11", "ss01", "ss02";
+    letter-spacing: -0.015em;
   }
 }
 
