@@ -132,7 +132,7 @@ function AnimatedNumber({ value, prefix = "", suffix = "" }: { value: number, pr
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen text-white overflow-x-hidden relative">
+    <div className="flex flex-col min-h-screen text-white overflow-x-hidden relative bg-transparent">
       <header className="px-4 md:px-6 h-20 flex items-center justify-between sticky top-0 z-50 bg-[#050508]/40 backdrop-blur-xl border-b border-white/5">
         <Link href="/" className="flex items-center group relative shrink-0">
           <div className="relative h-8 w-24 md:h-12 md:w-40 transition-all duration-500 group-hover:scale-105 group-hover:drop-shadow-[0_0_15px_rgba(139,92,246,0.6)]">
@@ -151,7 +151,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="relative z-10">
+      <main className="relative z-10 bg-transparent">
         <section className="relative pt-16 pb-24 md:pt-32 md:pb-48 overflow-visible">
           <div className="container px-4 md:px-6 mx-auto relative z-20">
             <div className="flex flex-col items-center lg:flex-row lg:items-center gap-6 lg:gap-24 min-h-[600px] overflow-visible">
@@ -175,7 +175,7 @@ export default function Home() {
                 <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start items-center">
                   <div className="relative group w-full sm:w-auto">
                     <div className="absolute -inset-1 bg-primary rounded-[2.5rem] blur-xl opacity-40 group-hover:opacity-100 animate-pulse transition duration-1000"></div>
-                    <Button size="lg" className="relative h-16 md:h-20 px-8 md:px-12 text-lg md:text-xl font-black bg-primary hover:scale-105 transition-all rounded-3xl w-full sm:w-auto group overflow-hidden shadow-[0_0_30px_rgba(139,92,246,0.5)] before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:-translate-x-full hover:before:translate-x-full before:transition-transform before:duration-700" asChild>
+                    <Button size="lg" className="relative h-16 md:h-20 px-8 md:px-12 text-lg md:text-xl font-black bg-primary hover:scale-105 transition-all rounded-3xl w-full sm:w-auto group overflow-hidden shadow-[0_0_30px_rgba(139,92,246,0.5)]" asChild>
                       <Link href="/quiz">
                         COMEÇAR JORNADA <ArrowRight className="ml-2 h-6 w-6 md:h-7 md:w-7 group-hover:translate-x-2 transition-transform" />
                       </Link>
@@ -213,11 +213,11 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="py-16 bg-gradient-to-b from-transparent via-primary/5 to-transparent border-y border-white/5 relative z-20">
+        <section className="py-16 border-y border-white/5 relative z-20 bg-transparent">
           <div className="container px-4 md:px-6 mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0 relative max-w-5xl mx-auto">
               {stats.map((s, i) => (
-                <div key={i} className="flex flex-col items-center text-center space-y-2 group relative md:px-12 bg-white/[0.03] backdrop-blur-md border border-white/5 rounded-3xl p-6">
+                <div key={i} className="flex flex-col items-center text-center space-y-2 group relative md:px-12 glass-card p-6 border-none">
                   {i < stats.length - 1 && (
                     <div className="hidden md:block absolute -right-[1px] top-1/2 -translate-y-1/2 h-16 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
                   )}
@@ -237,7 +237,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="tecnologia" className="py-24 md:py-48 relative overflow-hidden">
+        <section id="tecnologia" className="py-24 md:py-48 relative overflow-hidden bg-transparent">
           <div className="container px-4 md:px-6 mx-auto relative z-10">
             <div className="text-center mb-24">
               <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-6 text-white leading-none">O SEU <span className="text-primary">ARSENAL</span></h2>
@@ -246,7 +246,7 @@ export default function Home() {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {pillars.map((p, i) => (
-                <Card key={i} className={`glass-card p-10 md:p-12 group transition-all duration-500 rounded-[2.5rem] border-white/10 hover:border-t-primary/50 hover:shadow-2xl ${p.glow} relative overflow-hidden`}>
+                <Card key={i} className="glass-card p-10 md:p-12 group transition-all duration-500 hover:border-white/20 hover:shadow-2xl relative overflow-hidden bg-transparent">
                   <span className="absolute bottom-4 right-6 text-[120px] font-black text-white/[0.03] leading-none select-none">{p.id}</span>
                   <div className="mb-10 p-5 rounded-2xl bg-primary/10 inline-block transition-transform group-hover:scale-110 group-hover:rotate-6 shadow-2xl border border-primary/20">
                     {p.icon}
@@ -259,7 +259,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="py-24 relative overflow-visible bg-gradient-to-b from-transparent via-blue-900/10 to-transparent hidden md:block">
+        <section className="py-24 relative overflow-visible bg-transparent hidden md:block">
           <div className="text-center mb-16 px-4">
              <Badge className="bg-primary/20 text-primary border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5 mb-4">Command Center</Badge>
              <h2 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter">O SEU PAINEL DE CONTROLE</h2>
@@ -270,7 +270,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="py-32 relative">
+        <section className="py-32 relative bg-transparent">
           <div className="container px-4 md:px-6 mx-auto">
             <div className="text-center mb-20">
               <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-6 text-white leading-none">QUEM <span className="text-primary">EXECUTA</span> GANHA</h2>
@@ -279,7 +279,7 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {testimonials.map((t, i) => (
-                <Card key={i} className="glass-card p-10 rounded-[2.5rem] space-y-6 border-white/5 flex flex-col justify-between relative overflow-hidden hover:shadow-[0_0_40px_rgba(139,92,246,0.15)] transition-shadow duration-500">
+                <Card key={i} className="glass-card p-10 space-y-6 flex flex-col justify-between relative overflow-hidden hover:shadow-[0_0_40px_rgba(139,92,246,0.15)] transition-shadow duration-500 bg-transparent">
                   <div className="absolute top-6 right-6">
                     <Badge className="bg-primary/20 text-primary border-primary/30 text-[10px] font-black px-3 py-1">
                       {t.result}
@@ -311,12 +311,12 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="faq" className="py-24 md:py-48">
+        <section id="faq" className="py-24 md:py-48 bg-transparent">
           <div className="container px-4 md:px-6 mx-auto max-w-4xl">
             <h2 className="text-4xl md:text-6xl font-black italic mb-16 text-center uppercase tracking-tighter text-white">DÚVIDAS <span className="text-primary">FREQUENTES</span></h2>
             <Accordion type="single" collapsible className="space-y-6 px-4 md:px-0">
               {faqs.map((item, i) => (
-                <AccordionItem key={i} value={`item-${i}`} className="glass-card border-none rounded-[2rem] px-8 md:px-12 hover:bg-white/[0.05] transition-colors">
+                <AccordionItem key={i} value={`item-${i}`} className="glass-card border-none rounded-2xl px-8 md:px-12 hover:bg-white/[0.05] transition-colors bg-transparent">
                   <AccordionTrigger className="font-black hover:no-underline py-8 md:py-10 uppercase tracking-[0.2em] text-xs md:text-sm text-left text-white">
                     {item.q}
                   </AccordionTrigger>
@@ -329,7 +329,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="py-32 relative overflow-hidden">
+        <section className="py-32 relative overflow-hidden bg-transparent">
           <div className="container px-4 md:px-6 mx-auto text-center relative z-10">
             <h2 className="text-4xl md:text-7xl font-black italic uppercase tracking-tighter mb-10 text-white leading-tight">
               A ESCALA NÃO <br /><span className="text-primary shimmer-text">ESPERA POR VOCÊ.</span>
@@ -361,7 +361,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="py-20 border-t border-white/5 text-center relative z-10">
+      <footer className="py-20 border-t border-white/5 text-center relative z-10 bg-transparent">
         <div className="relative h-10 w-32 mx-auto mb-8 opacity-50">
           <Image src={LOGO_URL} alt="FlowPro Logo" fill className="object-contain" />
         </div>

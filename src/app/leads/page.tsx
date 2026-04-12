@@ -213,7 +213,7 @@ export default function LeadsPage() {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-[#050508] relative overflow-hidden">
+      <div className="flex min-h-screen w-full bg-transparent relative overflow-hidden">
         {/* Radar Background Effects */}
         <div className="fixed inset-0 pointer-events-none z-0">
           <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-primary/5 rounded-full blur-[180px] animate-pulse"></div>
@@ -230,7 +230,7 @@ export default function LeadsPage() {
 
         <AppSidebar />
         
-        <main className="flex-1 flex flex-col min-w-0 relative z-10">
+        <main className="flex-1 flex flex-col min-w-0 relative z-10 bg-transparent">
           <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-50">
             <div className="flex items-center gap-4">
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
@@ -311,7 +311,7 @@ export default function LeadsPage() {
             </div>
           </header>
 
-          <div className="flex-1 container max-w-5xl mx-auto p-4 md:p-12 space-y-12 relative overflow-visible">
+          <div className="flex-1 container max-w-5xl mx-auto p-4 md:p-12 space-y-12 relative overflow-visible bg-transparent">
             
             {/* Radar Search Form */}
             <motion.div 
@@ -326,7 +326,7 @@ export default function LeadsPage() {
                 <Globe className="h-64 w-64 text-primary opacity-10 absolute animate-slow-spin" />
               </div>
 
-              <Card className="glass-card border-primary/20 bg-white/[0.03] backdrop-blur-xl rounded-[2.5rem] overflow-hidden shadow-[0_0_60px_rgba(124,58,255,0.08)]">
+              <Card className="glass-card overflow-hidden shadow-[0_0_60px_rgba(124,58,255,0.08)] bg-transparent">
                 <CardHeader className="bg-white/5 border-b border-white/5 p-8 flex flex-row items-center justify-between">
                   <div className="space-y-1">
                     <CardTitle className="text-lg font-black uppercase tracking-widest italic flex items-center gap-2">
@@ -426,7 +426,7 @@ export default function LeadsPage() {
             </motion.div>
 
             {/* Results Section */}
-            <div className="space-y-8 pb-32">
+            <div className="space-y-8 pb-32 bg-transparent">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white">
@@ -470,7 +470,7 @@ export default function LeadsPage() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="py-32 text-center glass-card rounded-[3rem] border-dashed border-white/10"
+                      className="py-32 text-center glass-card border-dashed border-white/10 bg-transparent"
                     >
                       <div className="h-24 w-24 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-8 opacity-20 relative">
                         <Search className="h-12 w-12 text-white" />
@@ -500,7 +500,7 @@ export default function LeadsPage() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.1 }}
                       >
-                        <Card className={`glass-card border-white/10 transition-all duration-500 rounded-[2.5rem] overflow-hidden group hover:shadow-[0_0_30px_rgba(124,58,255,0.12)] hover:border-primary/30 ${approachedLeads.includes(lead.id) ? 'opacity-60 grayscale' : ''}`}>
+                        <Card className={`glass-card transition-all duration-500 overflow-hidden group hover:shadow-[0_0_30px_rgba(124,58,255,0.12)] hover:border-primary/30 bg-transparent ${approachedLeads.includes(lead.id) ? 'opacity-60 grayscale' : ''}`}>
                           <CardContent className="p-10">
                             <div className="flex flex-col xl:flex-row justify-between gap-10">
                               <div className="flex gap-8 items-start flex-1">
@@ -613,13 +613,6 @@ export default function LeadsPage() {
           }
           .animate-slow-spin {
             animation: slow-spin 60s linear infinite;
-          }
-          .glass-card::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%);
-            pointer-events: none;
           }
         `}</style>
       </div>

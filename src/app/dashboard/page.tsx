@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useEffect, useState } from 'react';
@@ -222,7 +221,7 @@ export default function Dashboard() {
                 { label: "Status Jornada", val: currentJourneyDay, prefix: "Dia ", icon: TrendingUp, badge: "Ativo", sub: `${completedMissionIds.length} concluídas` },
               ].map((m, i) => (
                 <div key={i} className="group relative">
-                  <Card className="bg-white/[0.03] border border-white/[0.07] rounded-[12px] p-[20px_24px] transition-all duration-150 hover:translate-y-[-1px] hover:border-white/[0.2] relative overflow-hidden">
+                  <Card className="glass-card p-[20px_24px] hover:border-white/[0.2] relative overflow-hidden">
                     <m.icon className="h-4 w-4 text-white/20 absolute top-5 right-6" />
                     <div className="space-y-4">
                       <div>
@@ -248,7 +247,7 @@ export default function Dashboard() {
               
               {/* GRÁFICO (65%) */}
               <div className="lg:col-span-1">
-                <Card className="bg-white/[0.025] border border-white/[0.07] rounded-[12px] p-6 h-full shadow-none overflow-hidden">
+                <Card className="glass-card p-6 h-full shadow-none overflow-hidden">
                   <div className="flex justify-between items-start mb-6">
                     <div className="space-y-1">
                       <h3 className="text-[12px] font-medium text-white/30 uppercase tracking-[1px]">Ganhos dos últimos 30 dias</h3>
@@ -307,7 +306,7 @@ export default function Dashboard() {
 
               {/* COLUNA DIREITA (35%) */}
               <div className="flex flex-col gap-7">
-                <Card className="bg-white/[0.03] border border-white/[0.07] rounded-[12px] p-6 relative overflow-hidden">
+                <Card className="glass-card p-6 relative overflow-hidden">
                   <p className="text-[11px] font-black text-primary/40 uppercase tracking-[1.5px] mb-6 flex items-center gap-2">
                     <Zap className="h-3 w-3 fill-primary" /> AÇÕES RÁPIDAS
                   </p>
@@ -337,7 +336,7 @@ export default function Dashboard() {
                   </div>
                 </Card>
 
-                <Card className="flex-1 rounded-[12px] p-6 relative overflow-hidden border-[#a855f7]/20 shadow-none bg-[#581c87]/20">
+                <Card className="glass-card flex-1 p-6 relative overflow-hidden shadow-none">
                   <div className="relative z-10 space-y-4">
                     <Badge className="bg-[#c4b5fd] text-[#4c1d95] text-[9px] font-black uppercase px-3 py-1 rounded-md border-none shadow-none">
                       🎓 CONTEÚDO VIP
@@ -374,7 +373,7 @@ export default function Dashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {ecosystemModules.map((module, i) => (
                   <Link key={i} href={module.url}>
-                    <Card className="group relative bg-white/[0.02] border border-white/[0.07] rounded-[12px] p-5 transition-all duration-200 hover:border-white/12 hover:translate-y-[-1px] overflow-hidden">
+                    <Card className="glass-card p-5 group relative transition-all duration-200 hover:border-white/12 hover:translate-y-[-1px] overflow-hidden">
                       <div className="flex flex-col gap-4">
                         <div className="flex justify-between items-start">
                           <div className="h-8 w-8 rounded-lg bg-white/[0.06] flex items-center justify-center transition-all group-hover:scale-105">
@@ -428,7 +427,7 @@ export default function Dashboard() {
                       )}
                     >
                       <Card className={cn(
-                        "bg-white/[0.025] border border-white/[0.06] rounded-[10px] p-[18px] transition-all duration-200 h-full flex flex-col justify-between",
+                        "glass-card p-[18px] transition-all duration-200 h-full flex flex-col justify-between",
                         isCurrent && "hover:border-white/12 hover:translate-y-[-1px]"
                       )}>
                         <div className="space-y-4">

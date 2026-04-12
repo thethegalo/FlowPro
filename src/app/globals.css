@@ -61,8 +61,12 @@
 }
 
 .glass-card {
-  @apply bg-white/[0.03] backdrop-blur-2xl border border-white/10 transition-all duration-150 ease-out relative overflow-hidden;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
+  @apply relative overflow-hidden transition-all duration-150 ease-out;
 }
 
 .grid-background {
@@ -77,4 +81,16 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+.shimmer-text {
+  background: linear-gradient(90deg, #fff 0%, #a78bfa 50%, #fff 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+  to { background-position: 200% center; }
 }
