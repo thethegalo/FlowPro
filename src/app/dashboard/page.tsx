@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useEffect, useState } from 'react';
@@ -149,12 +150,12 @@ export default function Dashboard() {
   ];
 
   const ecosystemModules = [
-    { title: 'Captar Lead', desc: 'Escaneie o mercado e encontre alvos de alta probabilidade em segundos.', icon: Search, color: 'rgba(124,58,237,0.2)', iconColor: '#a78bfa', url: '/leads' },
-    { title: 'CRM Leads', desc: 'Gerencie seu funil de vendas e organize seus contatos por status.', icon: Users, color: 'rgba(59,130,246,0.15)', iconColor: '#60a5fa', url: '#' },
-    { title: 'Contratos', desc: 'Gere contratos profissionais e feche parcerias com segurança jurídica.', icon: FileText, color: 'rgba(34,197,94,0.12)', iconColor: '#4ade80', url: '#' },
-    { title: 'Abordagem', desc: 'Scripts de WhatsApp otimizados por IA para máxima taxa de resposta.', icon: MessageSquare, color: 'rgba(245,158,11,0.12)', iconColor: '#fbbf24', url: '/abordagens' },
-    { title: 'Criar Sites', desc: 'Desenvolva Landing Pages de luxo sem precisar escrever uma linha de código.', icon: Globe, color: 'rgba(236,72,153,0.12)', iconColor: '#f472b6', url: '/prompts' },
-    { title: 'Blueprints', desc: 'Comandos mestres para escalar sua operação com inteligência artificial.', icon: Zap, color: 'rgba(20,184,166,0.12)', iconColor: '#2dd4bf', url: '/prompts' },
+    { title: 'Captar Lead', desc: 'Escaneie o mercado e encontre alvos em segundos.', icon: Search, url: '/leads' },
+    { title: 'CRM Leads', desc: 'Gerencie seu funil de vendas e organize contatos.', icon: Users, url: '#' },
+    { title: 'Contratos', desc: 'Gere contratos profissionais e feche parcerias.', icon: FileText, url: '#' },
+    { title: 'Abordagem', desc: 'Scripts de WhatsApp otimizados por IA.', icon: MessageSquare, url: '/abordagens' },
+    { title: 'Criar Sites', desc: 'Desenvolva Landing Pages sem código.', icon: Globe, url: '/prompts' },
+    { title: 'Blueprints', desc: 'Comandos mestres para escalar sua operação.', icon: Zap, url: '/prompts' },
   ];
 
   const progressQuery = useMemoFirebase(() => {
@@ -178,7 +179,7 @@ export default function Dashboard() {
       <div className="flex min-h-screen w-full relative overflow-x-hidden">
         <AppSidebar />
         
-        <main className="flex-1 flex flex-col min-w-0 relative z-10">
+        <main className="flex-1 flex flex-col min-w-0 relative z-0">
           <header className="px-[32px] pt-[28px] pb-6 flex items-center justify-between sticky top-0 z-50">
             <div className="space-y-0.5">
               <h1 className="text-[22px] font-semibold text-white tracking-[-0.3px] leading-tight">
@@ -199,7 +200,7 @@ export default function Dashboard() {
               </div>
 
               <div className="flex items-center gap-3">
-                <Badge className="bg-[#581c87] border border-[#7c3aed] text-[#c4b5fd] text-[11px] uppercase tracking-[0.5px] rounded-[6px] px-[10px] py-[4px] font-medium shadow-none hover:bg-[#581c87]">
+                <Badge className="bg-[#581c87]/40 border border-[#7c3aed]/35 text-[#c4b5fd] text-[11px] uppercase tracking-[0.5px] rounded-[6px] px-[10px] py-[4px] font-medium shadow-none hover:bg-[#581c87]/60">
                   VITALÍCIO
                 </Badge>
                 
@@ -226,7 +227,7 @@ export default function Dashboard() {
                     <div className="space-y-4">
                       <div>
                         <p className="text-[11px] font-medium text-white/30 uppercase tracking-[0.8px] mb-1">{m.label}</p>
-                        <h3 className="text-[28px] font-[650] text-[#f4f4f5] tracking-[-0.5px] leading-none">
+                        <h3 className="text-[28px] font-semibold text-[#f4f4f5] tracking-[-0.5px] leading-none">
                           {typeof m.val === 'number' ? <AnimatedNumber value={m.val} prefix={m.prefix} suffix={m.suffix} /> : m.val}
                         </h3>
                       </div>
@@ -255,7 +256,7 @@ export default function Dashboard() {
                     </div>
                     <div className="text-right">
                       <p className="text-[11px] text-white/30 mb-1">Total Período</p>
-                      <div className="text-[20px] font-[650] text-[#a78bfa] tracking-[-0.3px]">
+                      <div className="text-[20px] font-semibold text-[#a78bfa] tracking-[-0.3px]">
                         R$ {totalEarnings.toLocaleString('pt-BR')}
                       </div>
                     </div>
@@ -336,19 +337,19 @@ export default function Dashboard() {
                   </div>
                 </Card>
 
-                <Card className="flex-1 rounded-[12px] p-6 relative overflow-hidden border-[#a855f7]/30 shadow-none" style={{ background: 'linear-gradient(135deg, rgba(88,28,135,0.5), rgba(49,10,107,0.6))' }}>
+                <Card className="flex-1 rounded-[12px] p-6 relative overflow-hidden border-[#a855f7]/20 shadow-none bg-[#581c87]/20">
                   <div className="relative z-10 space-y-4">
                     <Badge className="bg-[#c4b5fd] text-[#4c1d95] text-[9px] font-black uppercase px-3 py-1 rounded-md border-none shadow-none">
                       🎓 CONTEÚDO VIP
                     </Badge>
                     <div className="space-y-2">
-                      <h4 className="text-lg font-bold text-white italic leading-tight">Masterclass: Escala de Leads Infinitos</h4>
-                      <p className="text-xs text-white/50 font-medium leading-relaxed">
+                      <h4 className="text-[16px] font-bold text-white leading-tight">Masterclass: Escala de Leads Infinitos</h4>
+                      <p className="text-xs text-white/50 font-normal leading-relaxed">
                         Aprenda o método que permitiu ao Lucas faturar R$ 50k em 30 dias usando automação neural.
                       </p>
                     </div>
-                    <Button variant="outline" className="w-full mt-4 border-white text-white hover:bg-white hover:text-purple-900 transition-all rounded-[12px] text-[10px] font-black uppercase tracking-widest">
-                      ACESSAR AGORA <ArrowRight className="ml-2 h-3 w-3" />
+                    <Button variant="outline" className="w-full mt-4 bg-white/10 border-white/15 text-white hover:bg-white/20 transition-all rounded-lg text-[10px] font-semibold uppercase tracking-widest">
+                      Acessar Agora <ArrowRight className="ml-2 h-3 w-3" />
                     </Button>
                   </div>
                   <div className="absolute -bottom-4 -right-4 opacity-10">
@@ -362,37 +363,34 @@ export default function Dashboard() {
             <div className="space-y-7 pt-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <h2 className="text-[18px] font-bold text-white tracking-tight italic">Ecossistema Premium</h2>
-                  <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.2em]">O arsenal tático completo para sua operação digital</p>
+                  <h2 className="text-[15px] font-semibold text-white/85 tracking-tight">Ecossistema Premium</h2>
+                  <p className="text-white/30 text-[11px] font-normal">O arsenal tático completo para sua operação digital</p>
                 </div>
                 <Badge className="bg-green-500/10 text-[#4ade80] border-green-500/25 text-[10px] font-black uppercase px-4 py-1.5 rounded-[12px] shadow-none">
                   FULL ACCESS ATIVO
                 </Badge>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {ecosystemModules.map((module, i) => (
                   <Link key={i} href={module.url}>
-                    <Card className="group relative bg-white/[0.04] border border-white/[0.07] rounded-[12px] p-5 transition-all duration-300 hover:border-[#a855f7]/40 hover:bg-[#8b5cf6]/[0.08] hover:translate-y-[-3px] overflow-hidden">
+                    <Card className="group relative bg-white/[0.02] border border-white/[0.07] rounded-[12px] p-5 transition-all duration-200 hover:border-white/12 hover:translate-y-[-1px] overflow-hidden">
                       <div className="flex flex-col gap-4">
                         <div className="flex justify-between items-start">
-                          <div 
-                            className="h-10 w-10 rounded-[10px] flex items-center justify-center transition-all group-hover:scale-110 shadow-none"
-                            style={{ backgroundColor: module.color }}
-                          >
-                            <module.icon className="h-5 w-5" style={{ color: module.iconColor }} />
+                          <div className="h-8 w-8 rounded-lg bg-white/[0.06] flex items-center justify-center transition-all group-hover:scale-105">
+                            <module.icon className="size-4 text-white/50" />
                           </div>
-                          <ArrowRight className="h-4 w-4 text-white/10 group-hover:text-[#a855f7] transition-all group-hover:translate-x-1" />
+                          <ArrowRight className="h-3.5 w-3.5 text-white/10 group-hover:text-[#a855f7] transition-all group-hover:translate-x-1" />
                         </div>
                         <div className="space-y-1.5">
-                          <h4 className="text-[14px] font-bold text-[#e8e6f0] uppercase tracking-tight">{module.title}</h4>
-                          <p className="text-[12px] text-white/45 font-medium leading-[1.5] line-clamp-2">
+                          <h4 className="text-[13px] font-medium text-white/85 tracking-tight">{module.title}</h4>
+                          <p className="text-[12px] text-white/35 font-normal leading-[1.6] line-clamp-2">
                             {module.desc}
                           </p>
                         </div>
-                        <div className="pt-2">
-                          <span className="text-[11px] font-black uppercase tracking-widest text-[#a855f7]/80 group-hover:text-[#a855f7] flex items-center gap-2 transition-colors">
-                            INICIAR MÓDULO <ChevronRight className="h-3 w-3" />
+                        <div className="pt-1">
+                          <span className="text-[11px] font-medium text-[#8b5cf6]/70 group-hover:text-[#8b5cf6] flex items-center gap-2 transition-colors">
+                            Iniciar módulo <ChevronRight className="h-3 w-3" />
                           </span>
                         </div>
                       </div>
@@ -406,15 +404,15 @@ export default function Dashboard() {
             <div className="space-y-7 pt-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <h2 className="text-[16px] font-semibold text-white tracking-[-0.2px]">Sua Jornada de Escala</h2>
-                  <p className="text-[11px] font-medium text-white/30 uppercase tracking-[0.8px]">O método exato para sua primeira venda em 7 dias</p>
+                  <h2 className="text-[15px] font-semibold text-white/85 tracking-[-0.2px]">Sua Jornada de Escala</h2>
+                  <p className="text-[11px] font-normal text-white/30 tracking-[0.8px]">O método exato para sua primeira venda em 7 dias</p>
                 </div>
                 <Badge className="bg-[#8b5cf6]/10 border border-[#8b5cf6]/25 text-[#c4b5fd] text-[10px] uppercase rounded-[12px] px-3 py-1 font-medium shadow-none">
                   DIA {currentJourneyDay} ATIVO
                 </Badge>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                 {missions.map((m) => {
                   const isCompleted = completedMissionIds.includes(m.id);
                   const isLocked = !isSpecialUser && !isGrayUser && m.order > currentJourneyDay && !isCompleted;
@@ -430,8 +428,8 @@ export default function Dashboard() {
                       )}
                     >
                       <Card className={cn(
-                        "bg-white/[0.025] border border-white/[0.06] rounded-[12px] p-[18px] transition-all duration-200 h-full flex flex-col justify-between",
-                        isCurrent && "hover:border-[#8b5cf6]/30 hover:translate-y-[-1px]"
+                        "bg-white/[0.025] border border-white/[0.06] rounded-[10px] p-[18px] transition-all duration-200 h-full flex flex-col justify-between",
+                        isCurrent && "hover:border-white/12 hover:translate-y-[-1px]"
                       )}>
                         <div className="space-y-4">
                           <div className="flex justify-between items-start">
@@ -464,19 +462,19 @@ export default function Dashboard() {
 
                         <div className="pt-4">
                           {isCompleted ? (
-                            <div className="w-full h-[32px] rounded-[6px] border border-white/10 text-white/40 text-[11px] font-medium flex items-center justify-center transition-colors hover:bg-white/5">
-                              REVISAR
+                            <div className="w-full h-[32px] rounded-[6px] border border-white/10 text-white/35 text-[11px] font-normal flex items-center justify-center transition-colors hover:bg-white/5">
+                              Revisar
                             </div>
                           ) : (
                             <div 
                               className={cn(
                                 "w-full h-[32px] rounded-[6px] text-[11px] font-medium flex items-center justify-center transition-all",
                                 isCurrent 
-                                  ? "bg-[#581c87] border border-[#7c3aed] text-[#e9d5ff]" 
+                                  ? "bg-[#6d28d9]/30 border border-[#8b5cf6]/40 text-[#c4b5fd]" 
                                   : "bg-white/[0.04] border-white/[0.08] text-white/20"
                               )}
                             >
-                              {isLocked ? 'BLOQUEADO' : 'INICIAR'}
+                              {isLocked ? 'Bloqueado' : 'Iniciar'}
                             </div>
                           )}
                         </div>
