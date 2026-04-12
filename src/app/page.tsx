@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -23,6 +22,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { MacbookShowcase } from '@/components/MacbookShowcase';
+import { GlobePulse } from '@/components/ui/cobe-globe-pulse';
 
 const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
 
@@ -81,47 +81,55 @@ export default function Home() {
         
         {/* HERO SECTION */}
         <section className="max-w-[1100px] mx-auto px-6 md:px-12 py-24 md:py-32">
-          <motion.div 
-            className="flex flex-col items-start text-left space-y-8 max-w-3xl"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <Badge className="bg-[#6d28d9]/15 border border-[#7c3aed]/30 text-[#c4b5fd] text-[12px] font-medium px-4 py-1.5 rounded-full flex items-center gap-2 shadow-none">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-              </span>
-              ✦ Mais de 1.800 consultores ativos
-            </Badge>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-12">
+            <motion.div 
+              className="flex flex-col items-start text-left space-y-8 max-w-2xl"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <Badge className="bg-[#6d28d9]/15 border border-[#7c3aed]/30 text-[#c4b5fd] text-[12px] font-medium px-4 py-1.5 rounded-full flex items-center gap-2 shadow-none">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+                ✦ Mais de 1.800 consultores ativos
+              </Badge>
 
-            <h1 className="text-[44px] md:text-[72px] font-extrabold tracking-[-2px] leading-[0.95] text-white">
-              Seu primeiro cliente<br />
-              <span className="bg-gradient-to-r from-[#a855f7] to-[#6366f1] bg-clip-text text-transparent">começa com um script.</span>
-            </h1>
+              <h1 className="text-[44px] md:text-[72px] font-extrabold tracking-[-2px] leading-[0.95] text-white">
+                Seu primeiro cliente<br />
+                <span className="bg-gradient-to-r from-[#a855f7] to-[#6366f1] bg-clip-text text-transparent">começa com um script.</span>
+              </h1>
 
-            <p className="text-[16px] md:text-[18px] text-white/45 leading-[1.6] max-w-[480px]">
-              Encontre leads qualificados, gere abordagens com IA e realize sua primeira venda em tempo recorde.
-            </p>
+              <p className="text-[16px] md:text-[18px] text-white/45 leading-[1.6] max-w-[480px]">
+                Encontre leads qualificados, gere abordagens com IA e realize sua primeira venda em tempo recorde.
+              </p>
 
-            <div className="flex flex-col sm:flex-row items-center gap-8 pt-4">
-              <Button asChild size="lg" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-medium text-[14px] h-[48px] px-8 rounded-[10px] transition-all hover:-translate-y-0.5 shadow-[0_8px_24px_rgba(124,58,237,0.4)] border-none">
-                <Link href="/quiz">Começar jornada →</Link>
-              </Button>
+              <div className="flex flex-col sm:flex-row items-center gap-8 pt-4">
+                <Button asChild size="lg" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-medium text-[14px] h-[48px] px-8 rounded-[10px] transition-all hover:-translate-y-0.5 shadow-[0_8px_24px_rgba(124,58,237,0.4)] border-none">
+                  <Link href="/quiz">Começar jornada →</Link>
+                </Button>
 
-              <div className="flex items-center gap-3">
-                <div className="flex -space-x-2">
-                  {[ '#7c3aed', '#ec4899', '#3b82f6', '#10b981' ].map((color, i) => (
-                    <div key={i} className="h-7 w-7 rounded-full border-2 border-[#05050f]" style={{ backgroundColor: color }} />
-                  ))}
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[12px] font-semibold text-white">4.9 ★</span>
-                  <span className="text-[11px] text-white/40 font-medium">847 avaliações</span>
+                <div className="flex items-center gap-3">
+                  <div className="flex -space-x-2">
+                    {[ '#7c3aed', '#ec4899', '#3b82f6', '#10b981' ].map((color, i) => (
+                      <div key={i} className="h-7 w-7 rounded-full border-2 border-[#05050f]" style={{ backgroundColor: color }} />
+                    ))}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[12px] font-semibold text-white">4.9 ★</span>
+                    <span className="text-[11px] text-white/40 font-medium">847 avaliações</span>
+                  </div>
                 </div>
               </div>
+            </motion.div>
+
+            {/* GLOBE PULSE - HIDDEN ON MOBILE */}
+            <div className="hidden md:block flex-1 max-w-[450px] relative">
+              <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full animate-pulse pointer-events-none" />
+              <GlobePulse className="w-full h-full relative z-10" />
             </div>
-          </motion.div>
+          </div>
         </section>
 
         {/* METRICS SECTION */}
