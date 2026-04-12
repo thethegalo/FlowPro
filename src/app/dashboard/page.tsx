@@ -1,11 +1,10 @@
-
 "use client";
 
 import { useMemo, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   CheckCircle2, 
@@ -13,10 +12,7 @@ import {
   Loader2,
   DollarSign,
   Search,
-  Trophy,
-  Sparkles,
   Zap,
-  Play,
   Bell,
   TrendingUp,
   Activity,
@@ -27,14 +23,12 @@ import {
   GraduationCap,
   Users,
   MessageSquare,
-  Layout,
   ChevronRight
 } from 'lucide-react';
-import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
-import { collection, query, orderBy, doc, getDoc, limit } from 'firebase/firestore';
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
+import { collection, query, orderBy, doc } from 'firebase/firestore';
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
-import { useToast } from '@/hooks/use-toast';
 import { 
   XAxis, 
   YAxis, 
@@ -86,10 +80,7 @@ export default function Dashboard() {
   const { user, isUserLoading } = useUser();
   const db = useFirestore();
   const router = useRouter();
-  const { toast } = useToast();
   
-  const [userGoal, setUserGoal] = useState(5000);
-
   const userDocRef = useMemoFirebase(() => {
     if (!db || !user) return null;
     return doc(db, 'users', user.uid);
@@ -127,7 +118,6 @@ export default function Dashboard() {
     const days = 30;
     const data = [];
     const now = new Date();
-    
     const lucasValues = [5874,420,380,650,290,810,0,1200,340,290,480,0,920,670,410,380,0,1100,590,430,280,0,1340,480,670,0,1200,890,430,0,630];
     const grayValues = [0,600,0,800,1200,0,1500,0,700,900,0,1900,0,800,600,0,1700,0,1000,0,2000,0,700,1300,0,1600,0,294,0,0,0];
 
@@ -138,7 +128,6 @@ export default function Dashboard() {
       let dailyValue = 0;
       if (isSpecialUser) dailyValue = lucasValues[30 - i] || 0;
       else if (isGrayUser) dailyValue = grayValues[30 - i] || 0;
-      
       data.push({ date: dayStr, ganhos: dailyValue });
     }
     return data;
@@ -160,54 +149,12 @@ export default function Dashboard() {
   ];
 
   const ecosystemModules = [
-    { 
-      title: 'Captar Lead', 
-      desc: 'Escaneie o mercado e encontre alvos de alta probabilidade em segundos.', 
-      icon: Search, 
-      color: 'rgba(124,58,237,0.2)', 
-      iconColor: '#a78bfa',
-      url: '/leads' 
-    },
-    { 
-      title: 'CRM Leads', 
-      desc: 'Gerencie seu funil de vendas e organize seus contatos por status.', 
-      icon: Users, 
-      color: 'rgba(59,130,246,0.15)', 
-      iconColor: '#60a5fa',
-      url: '#' 
-    },
-    { 
-      title: 'Contratos', 
-      desc: 'Gere contratos profissionais e feche parcerias com segurança jurídica.', 
-      icon: FileText, 
-      color: 'rgba(34,197,94,0.12)', 
-      iconColor: '#4ade80',
-      url: '#' 
-    },
-    { 
-      title: 'Abordagem', 
-      desc: 'Scripts de WhatsApp otimizados por IA para máxima taxa de resposta.', 
-      icon: MessageSquare, 
-      color: 'rgba(245,158,11,0.12)', 
-      iconColor: '#fbbf24',
-      url: '/abordagens' 
-    },
-    { 
-      title: 'Criar Sites', 
-      desc: 'Desenvolva Landing Pages de luxo sem precisar escrever uma linha de código.', 
-      icon: Globe, 
-      color: 'rgba(236,72,153,0.12)', 
-      iconColor: '#f472b6',
-      url: '/prompts' 
-    },
-    { 
-      title: 'Blueprints', 
-      desc: 'Comandos mestres para escalar sua operação com inteligência artificial.', 
-      icon: Zap, 
-      color: 'rgba(20,184,166,0.12)', 
-      iconColor: '#2dd4bf',
-      url: '/prompts' 
-    },
+    { title: 'Captar Lead', desc: 'Escaneie o mercado e encontre alvos de alta probabilidade em segundos.', icon: Search, color: 'rgba(124,58,237,0.2)', iconColor: '#a78bfa', url: '/leads' },
+    { title: 'CRM Leads', desc: 'Gerencie seu funil de vendas e organize seus contatos por status.', icon: Users, color: 'rgba(59,130,246,0.15)', iconColor: '#60a5fa', url: '#' },
+    { title: 'Contratos', desc: 'Gere contratos profissionais e feche parcerias com segurança jurídica.', icon: FileText, color: 'rgba(34,197,94,0.12)', iconColor: '#4ade80', url: '#' },
+    { title: 'Abordagem', desc: 'Scripts de WhatsApp otimizados por IA para máxima taxa de resposta.', icon: MessageSquare, color: 'rgba(245,158,11,0.12)', iconColor: '#fbbf24', url: '/abordagens' },
+    { title: 'Criar Sites', desc: 'Desenvolva Landing Pages de luxo sem precisar escrever uma linha de código.', icon: Globe, color: 'rgba(236,72,153,0.12)', iconColor: '#f472b6', url: '/prompts' },
+    { title: 'Blueprints', desc: 'Comandos mestres para escalar sua operação com inteligência artificial.', icon: Zap, color: 'rgba(20,184,166,0.12)', iconColor: '#2dd4bf', url: '/prompts' },
   ];
 
   const progressQuery = useMemoFirebase(() => {
@@ -232,7 +179,7 @@ export default function Dashboard() {
         <AppSidebar />
         
         <main className="flex-1 flex flex-col min-w-0 relative z-10">
-          <header className="px-8 pt-10 pb-6 flex items-center justify-between sticky top-0 z-50">
+          <header className="px-[32px] pt-[28px] pb-6 flex items-center justify-between sticky top-0 z-50">
             <div className="space-y-0.5">
               <h1 className="text-[22px] font-semibold text-white tracking-[-0.3px] leading-tight">
                 Olá, {displayName} 👋
@@ -247,16 +194,16 @@ export default function Dashboard() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-[14px] w-[14px] text-white/30" />
                 <Input 
                   placeholder="Pesquisar ferramentas..." 
-                  className="h-[36px] bg-white/[0.04] border-white/[0.08] pl-9 text-[13px] rounded-lg focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-white/20 transition-all"
+                  className="h-[36px] bg-white/[0.04] border-white/[0.08] pl-9 text-[13px] rounded-[8px] focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-white/20 transition-all"
                 />
               </div>
 
               <div className="flex items-center gap-3">
-                <Badge className="bg-[#581c87] border border-[#7c3aed] text-[#c4b5fd] text-[11px] uppercase tracking-[0.5px] rounded-md px-[10px] py-[4px] font-medium shadow-none hover:bg-[#581c87]">
+                <Badge className="bg-[#581c87] border border-[#7c3aed] text-[#c4b5fd] text-[11px] uppercase tracking-[0.5px] rounded-[6px] px-[10px] py-[4px] font-medium shadow-none hover:bg-[#581c87]">
                   VITALÍCIO
                 </Badge>
                 
-                <button className="relative w-[34px] h-[34px] flex items-center justify-center rounded-lg bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] transition-colors">
+                <button className="relative w-[34px] h-[34px] flex items-center justify-center rounded-[8px] bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] transition-colors">
                   <Bell className="h-4 w-4 text-white/60" />
                   <span className="absolute top-2 right-2 h-1.5 w-1.5 bg-red-500 rounded-full" />
                 </button>
@@ -264,17 +211,17 @@ export default function Dashboard() {
             </div>
           </header>
 
-          <div className="flex-1 p-8 pt-2 space-y-8 max-w-7xl mx-auto w-full">
+          <div className="flex-1 p-[28px_32px] pt-2 space-y-7 max-w-7xl mx-auto w-full">
             
             {/* GRID DE MÉTRICAS */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
               {[
                 { label: "Placar de Caixa", val: totalEarnings, prefix: "R$ ", icon: DollarSign, badge: "+12% hoje", sub: `Alvo R$ ${isSpecialUser ? '50.000' : '5.000'}` },
                 { label: "Execução Diária", val: userData?.dailyActions || 0, suffix: " / 10", icon: Activity, badge: "Alta Performance", sub: "Ritmo constante" },
                 { label: "Status Jornada", val: currentJourneyDay, prefix: "Dia ", icon: TrendingUp, badge: "Ativo", sub: `${completedMissionIds.length} concluídas` },
               ].map((m, i) => (
                 <div key={i} className="group relative">
-                  <Card className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-[20px_24px] transition-all duration-150 hover:translate-y-[-1px] hover:border-white/[0.2] relative overflow-hidden">
+                  <Card className="bg-white/[0.03] border border-white/[0.07] rounded-[12px] p-[20px_24px] transition-all duration-150 hover:translate-y-[-1px] hover:border-white/[0.2] relative overflow-hidden">
                     <m.icon className="h-4 w-4 text-white/20 absolute top-5 right-6" />
                     <div className="space-y-4">
                       <div>
@@ -296,14 +243,14 @@ export default function Dashboard() {
             </div>
 
             {/* SEÇÃO CENTRAL (GRÁFICO + AÇÕES) */}
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-7">
               
               {/* GRÁFICO (65%) */}
               <div className="lg:col-span-1">
                 <Card className="bg-white/[0.025] border border-white/[0.07] rounded-[12px] p-6 h-full shadow-none overflow-hidden">
                   <div className="flex justify-between items-start mb-6">
                     <div className="space-y-1">
-                      <h3 className="text-[12px] font-medium text-white/30 uppercase tracking-[1px]">Ganhos dos Últimos 30 Dias</h3>
+                      <h3 className="text-[12px] font-medium text-white/30 uppercase tracking-[1px]">Ganhos dos últimos 30 dias</h3>
                       <p className="text-[11px] text-white/20 font-normal">Análise de performance tática mensal</p>
                     </div>
                     <div className="text-right">
@@ -358,17 +305,15 @@ export default function Dashboard() {
               </div>
 
               {/* COLUNA DIREITA (35%) */}
-              <div className="flex flex-col gap-6">
-                
-                {/* CARD 1: AÇÕES RÁPIDAS */}
-                <Card className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-6 relative overflow-hidden">
+              <div className="flex flex-col gap-7">
+                <Card className="bg-white/[0.03] border border-white/[0.07] rounded-[12px] p-6 relative overflow-hidden">
                   <p className="text-[11px] font-black text-primary/40 uppercase tracking-[1.5px] mb-6 flex items-center gap-2">
                     <Zap className="h-3 w-3 fill-primary" /> AÇÕES RÁPIDAS
                   </p>
                   
                   <div className="space-y-3">
                     <Button 
-                      className="w-full h-10 bg-gradient-to-r from-[#7c3aed] to-[#9333ea] hover:opacity-85 transition-all hover:scale-[0.99] rounded-[10px] font-bold uppercase text-[11px] tracking-widest gap-2 shadow-lg shadow-purple-500/20"
+                      className="w-full h-10 bg-[#7c3aed] hover:bg-[#6d28d9] transition-all rounded-[10px] font-bold uppercase text-[11px] tracking-widest gap-2 shadow-none"
                       onClick={() => router.push('/leads')}
                     >
                       <Plus className="h-4 w-4" /> Nova Prospecção
@@ -376,14 +321,14 @@ export default function Dashboard() {
                     <div className="grid grid-cols-2 gap-3">
                       <Button 
                         variant="outline" 
-                        className="h-10 bg-white/5 border-[#a855f7]/20 hover:bg-white/10 hover:scale-[0.99] transition-all rounded-[10px] text-[10px] font-bold uppercase tracking-tight gap-2"
+                        className="h-10 bg-white/5 border-[#a855f7]/20 hover:bg-white/10 transition-all rounded-[10px] text-[10px] font-bold uppercase tracking-tight gap-2"
                         onClick={() => router.push('/prompts')}
                       >
                         <Globe className="h-3.5 w-3.5 text-primary" /> Criar Site IA
                       </Button>
                       <Button 
                         variant="outline" 
-                        className="h-10 bg-white/5 border-[#a855f7]/20 hover:bg-white/10 hover:scale-[0.99] transition-all rounded-[10px] text-[10px] font-bold uppercase tracking-tight gap-2"
+                        className="h-10 bg-white/5 border-[#a855f7]/20 hover:bg-white/10 transition-all rounded-[10px] text-[10px] font-bold uppercase tracking-tight gap-2"
                       >
                         <FileText className="h-3.5 w-3.5 text-primary" /> Gerar Contrato
                       </Button>
@@ -391,19 +336,18 @@ export default function Dashboard() {
                   </div>
                 </Card>
 
-                {/* CARD 2: VIP */}
-                <Card className="flex-1 rounded-xl p-6 relative overflow-hidden border-[#a855f7]/30 shadow-xl" style={{ background: 'linear-gradient(135deg, rgba(88,28,135,0.5), rgba(49,10,107,0.6))' }}>
+                <Card className="flex-1 rounded-[12px] p-6 relative overflow-hidden border-[#a855f7]/30 shadow-none" style={{ background: 'linear-gradient(135deg, rgba(88,28,135,0.5), rgba(49,10,107,0.6))' }}>
                   <div className="relative z-10 space-y-4">
                     <Badge className="bg-[#c4b5fd] text-[#4c1d95] text-[9px] font-black uppercase px-3 py-1 rounded-md border-none shadow-none">
                       🎓 CONTEÚDO VIP
                     </Badge>
                     <div className="space-y-2">
-                      <h4 className="text-lg font-bold text-white italic leading-tight uppercase">Masterclass: Escala de Leads Infinitos</h4>
+                      <h4 className="text-lg font-bold text-white italic leading-tight">Masterclass: Escala de Leads Infinitos</h4>
                       <p className="text-xs text-white/50 font-medium leading-relaxed">
                         Aprenda o método que permitiu ao Lucas faturar R$ 50k em 30 dias usando automação neural.
                       </p>
                     </div>
-                    <Button variant="outline" className="w-full mt-4 border-white text-white hover:bg-white hover:text-purple-900 transition-all rounded-xl text-[10px] font-black uppercase tracking-widest">
+                    <Button variant="outline" className="w-full mt-4 border-white text-white hover:bg-white hover:text-purple-900 transition-all rounded-[12px] text-[10px] font-black uppercase tracking-widest">
                       ACESSAR AGORA <ArrowRight className="ml-2 h-3 w-3" />
                     </Button>
                   </div>
@@ -411,30 +355,29 @@ export default function Dashboard() {
                     <GraduationCap className="h-32 w-32 text-white" />
                   </div>
                 </Card>
-
               </div>
             </div>
 
             {/* SEÇÃO: ECOSSISTEMA PREMIUM */}
-            <div className="space-y-6 pt-4">
+            <div className="space-y-7 pt-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <h2 className="text-[18px] font-bold text-white tracking-tight uppercase italic">Ecossistema Premium</h2>
+                  <h2 className="text-[18px] font-bold text-white tracking-tight italic">Ecossistema Premium</h2>
                   <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.2em]">O arsenal tático completo para sua operação digital</p>
                 </div>
-                <Badge className="bg-green-500/10 text-[#4ade80] border-green-500/25 text-[10px] font-black uppercase px-4 py-1.5 rounded-lg shadow-none">
+                <Badge className="bg-green-500/10 text-[#4ade80] border-green-500/25 text-[10px] font-black uppercase px-4 py-1.5 rounded-[12px] shadow-none">
                   FULL ACCESS ATIVO
                 </Badge>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
                 {ecosystemModules.map((module, i) => (
                   <Link key={i} href={module.url}>
-                    <Card className="group relative bg-white/[0.04] border border-white/[0.07] rounded-xl p-5 transition-all duration-300 hover:border-[#a855f7]/40 hover:bg-[#8b5cf6]/[0.08] hover:translate-y-[-3px] hover:shadow-[0_8px_30px_rgba(139,92,246,0.15)] overflow-hidden">
+                    <Card className="group relative bg-white/[0.04] border border-white/[0.07] rounded-[12px] p-5 transition-all duration-300 hover:border-[#a855f7]/40 hover:bg-[#8b5cf6]/[0.08] hover:translate-y-[-3px] overflow-hidden">
                       <div className="flex flex-col gap-4">
                         <div className="flex justify-between items-start">
                           <div 
-                            className="h-10 w-10 rounded-[10px] flex items-center justify-center transition-all group-hover:scale-110 shadow-lg"
+                            className="h-10 w-10 rounded-[10px] flex items-center justify-center transition-all group-hover:scale-110 shadow-none"
                             style={{ backgroundColor: module.color }}
                           >
                             <module.icon className="h-5 w-5" style={{ color: module.iconColor }} />
@@ -459,19 +402,19 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* JORNADA DE MISSÕES (REESTRUTURADA) */}
-            <div className="space-y-6 pt-4">
+            {/* JORNADA DE MISSÕES */}
+            <div className="space-y-7 pt-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <h2 className="text-[16px] font-semibold text-white tracking-[-0.2px]">Sua Jornada de Escala</h2>
                   <p className="text-[11px] font-medium text-white/30 uppercase tracking-[0.8px]">O método exato para sua primeira venda em 7 dias</p>
                 </div>
-                <Badge className="bg-[#8b5cf6]/10 border border-[#8b5cf6]/25 text-[#c4b5fd] text-[10px] uppercase rounded-md px-3 py-1 font-medium shadow-none">
+                <Badge className="bg-[#8b5cf6]/10 border border-[#8b5cf6]/25 text-[#c4b5fd] text-[10px] uppercase rounded-[12px] px-3 py-1 font-medium shadow-none">
                   DIA {currentJourneyDay} ATIVO
                 </Badge>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[12px]">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7">
                 {missions.map((m) => {
                   const isCompleted = completedMissionIds.includes(m.id);
                   const isLocked = !isSpecialUser && !isGrayUser && m.order > currentJourneyDay && !isCompleted;
@@ -487,7 +430,7 @@ export default function Dashboard() {
                       )}
                     >
                       <Card className={cn(
-                        "bg-white/[0.025] border border-white/[0.06] rounded-[10px] p-[18px] transition-all duration-200 h-full flex flex-col justify-between",
+                        "bg-white/[0.025] border border-white/[0.06] rounded-[12px] p-[18px] transition-all duration-200 h-full flex flex-col justify-between",
                         isCurrent && "hover:border-[#8b5cf6]/30 hover:translate-y-[-1px]"
                       )}>
                         <div className="space-y-4">
@@ -495,7 +438,7 @@ export default function Dashboard() {
                             <div className={cn(
                               "h-7 w-7 rounded-[8px] border flex items-center justify-center text-[13px] font-semibold transition-all",
                               isCompleted ? "bg-[#22c55e]/10 border-[#22c55e]/20 text-[#4ade80]" : 
-                              isCurrent ? "bg-[#8b5cf6]/15 border-[#8b5cf6]/30 text-[#a78bfa] shadow-[0_0_10px_rgba(139,92,246,0.2)]" : 
+                              isCurrent ? "bg-[#8b5cf6]/15 border-[#8b5cf6]/30 text-[#a78bfa] shadow-none" : 
                               "bg-white/[0.04] border-white/[0.08] text-white/20"
                             )}>
                               {isCompleted ? <CheckCircle2 className="h-[14px] w-[14px]" /> : m.order}
@@ -530,7 +473,7 @@ export default function Dashboard() {
                                 "w-full h-[32px] rounded-[6px] text-[11px] font-medium flex items-center justify-center transition-all",
                                 isCurrent 
                                   ? "bg-[#581c87] border border-[#7c3aed] text-[#e9d5ff]" 
-                                  : "bg-white/[0.04] border border-white/[0.08] text-white/20"
+                                  : "bg-white/[0.04] border-white/[0.08] text-white/20"
                               )}
                             >
                               {isLocked ? 'BLOQUEADO' : 'INICIAR'}
