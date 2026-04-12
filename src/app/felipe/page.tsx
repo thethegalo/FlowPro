@@ -34,6 +34,13 @@ import { DashboardParticles } from '@/components/DashboardParticles';
 
 const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
 
+const TESTIMONIAL_IMAGES = [
+  "https://media.inlead.cloud/uploads/44422/2026-01-05/md-vOR05-design-sem-nome-36.png",
+  "https://media.inlead.cloud/uploads/44422/2026-01-03/md-soixE-design-sem-nome-31.png",
+  "https://media.inlead.cloud/uploads/44422/2026-01-03/md-jztVV-design-sem-nome-30.png",
+  "https://media.inlead.cloud/uploads/44422/2026-01-05/md-flBj3-design-sem-nome-38.png"
+];
+
 const stats = [
   { label: 'Scripts Gerados', value: 3200, prefix: '', suffix: '+', sub: 'Só esta semana', icon: <MessageSquare className="h-4 w-4" /> },
   { label: 'Vendas Alunos', value: 4.8, prefix: 'R$ ', suffix: 'M', sub: 'Total acumulado', icon: <TrendingUp className="h-4 w-4" /> },
@@ -73,28 +80,28 @@ const testimonials = [
     result: "R$ 1.200",
     subResult: "no 4º dia",
     text: "Eu nunca tinha vendido nada online. Usei o script de IA para falar com uma pizzaria local e fechei meu primeiro contrato em menos de uma semana.",
-    avatar: "https://picsum.photos/seed/b1/100/100"
+    avatar: TESTIMONIAL_IMAGES[0]
   },
   {
     name: "Ana Oliveira",
     result: "3 clientes",
     subResult: "em 10 dias",
     text: "O Radar de Leads é bizarro. Achei 50 dentistas na minha cidade e a IA gerou abordagens que todos responderam. Já faturei R$ 3.500.",
-    avatar: "https://picsum.photos/seed/a2/100/100"
+    avatar: TESTIMONIAL_IMAGES[1]
   },
   {
     name: "Marcos Reus",
     result: "1ª Venda",
     subResult: "em 48h",
     text: "A barreira de não saber o que falar sumiu. Copiei o script da IA, mandei no WhatsApp e o cliente fechou na hora. Simples assim.",
-    avatar: "https://picsum.photos/seed/m3/100/100"
+    avatar: TESTIMONIAL_IMAGES[2]
   }
 ];
 
 const faqs = [
   { q: "O sistema funciona para quem não tem experiência?", a: "Totalmente. O FlowPro foi desenhado como uma jornada guiada passo a passo. Você só precisa seguir as missões diárias e copiar os scripts gerados." },
   { q: "Como a IA ajuda no processo?", a: "Nossa IA analisa o nicho do lead e gera um script de abordagem que não parece spam, aumentando drasticamente suas chances de resposta." },
-  { q: "Em quanto tempo vejo resultados?", a: "Nossa jornada foi feita para você realizar sua primeira venda em até 7 dias, desde que execute todas as tarefas propostas." },
+  { q: "Em quanto tempo vejo os primeiros resultados?", a: "Nossa jornada foi feita para você realizar sua primeira venda em até 7 dias, desde que execute todas as tarefas propostas." },
   { q: "Preciso aparecer nas redes sociais?", a: "Não. Ensinamos estratégias de bastidores onde você pode prospectar e vender sem nunca mostrar o rosto." },
 ];
 
@@ -192,12 +199,12 @@ export default function Home() {
                   </div>
                   
                   <div className="flex -space-x-3">
-                    {[1,2,3,4].map(i => (
-                      <div key={i} className="h-10 w-10 rounded-full border-2 border-[#050508] bg-white/10 overflow-hidden">
-                        <img src={`https://picsum.photos/seed/${i+50}/100/100`} alt="user" className="w-full h-full object-cover" />
+                    {TESTIMONIAL_IMAGES.map((img, i) => (
+                      <div key={i} className="h-10 w-10 rounded-full border-2 border-[#050508] bg-white/10 overflow-hidden relative shadow-lg">
+                        <Image src={img} alt={`user ${i}`} fill className="object-cover" />
                       </div>
                     ))}
-                    <div className="h-10 w-10 rounded-full border-2 border-[#050508] bg-primary flex items-center justify-center text-[10px] font-black">
+                    <div className="h-10 w-10 rounded-full border-2 border-[#050508] bg-primary flex items-center justify-center text-[10px] font-black z-10">
                       +12k
                     </div>
                   </div>
@@ -249,7 +256,7 @@ export default function Home() {
           <div className="container px-6 mx-auto relative z-10">
             <div className="text-center mb-24">
               <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-6 text-white leading-none">O SEU <span className="text-primary">ARSENAL</span></h2>
-              <p className="text-muted-foreground max-w-xl mx-auto uppercase tracking-[0.2em] text-[10px] font-black">As ferramentas que transformam um "não" em um "fechado"</p>
+              <p className="text-muted-foreground max-w-xl mx-auto uppercase tracking-[0.2em] text-[10px] font-black">As ferramentas que transformam um "no" em um "fechado"</p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -287,7 +294,7 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {testimonials.map((t, i) => (
-                <Card key={i} className="glass-card p-10 rounded-[2.5rem] space-y-6 border-white/5 flex flex-col justify-between relative overflow-hidden">
+                <Card key={i} className="glass-card p-10 rounded-[2.5rem] space-y-6 border-white/5 flex flex-col justify-between relative overflow-hidden h-full">
                   <div className="absolute top-6 right-6">
                     <Badge className="bg-primary/20 text-primary border-primary/30 text-[10px] font-black px-3 py-1">
                       {t.result}
@@ -301,8 +308,8 @@ export default function Home() {
                     <p className="text-lg font-medium italic text-white/80 leading-relaxed">"{t.text}"</p>
                   </div>
                   <div className="flex items-center gap-4 pt-6 border-t border-white/5">
-                    <div className="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 overflow-hidden shrink-0">
-                      <img src={t.avatar} alt={t.name} className="w-full h-full object-cover" />
+                    <div className="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 overflow-hidden shrink-0 relative shadow-inner">
+                      <Image src={t.avatar} alt={t.name} fill className="object-cover" />
                     </div>
                     <div>
                       <p className="font-black uppercase italic text-white leading-none mb-1">{t.name}</p>

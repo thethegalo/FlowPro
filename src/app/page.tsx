@@ -26,6 +26,13 @@ import { GlobePulse } from '@/components/ui/cobe-globe-pulse';
 
 const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
 
+const TESTIMONIAL_IMAGES = [
+  "https://media.inlead.cloud/uploads/44422/2026-01-05/md-vOR05-design-sem-nome-36.png",
+  "https://media.inlead.cloud/uploads/44422/2026-01-03/md-soixE-design-sem-nome-31.png",
+  "https://media.inlead.cloud/uploads/44422/2026-01-03/md-jztVV-design-sem-nome-30.png",
+  "https://media.inlead.cloud/uploads/44422/2026-01-05/md-flBj3-design-sem-nome-38.png"
+];
+
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
   whileInView: { opacity: 1, y: 0 },
@@ -112,8 +119,10 @@ export default function Home() {
 
                 <div className="flex items-center gap-3">
                   <div className="flex -space-x-2">
-                    {[ '#7c3aed', '#ec4899', '#3b82f6', '#10b981' ].map((color, i) => (
-                      <div key={i} className="h-7 w-7 rounded-full border-2 border-[#05050f]" style={{ backgroundColor: color }} />
+                    {TESTIMONIAL_IMAGES.map((img, i) => (
+                      <div key={i} className="h-7 w-7 rounded-full border-2 border-[#05050f] overflow-hidden relative bg-white/5">
+                        <Image src={img} alt={`User ${i}`} fill className="object-cover" />
+                      </div>
                     ))}
                   </div>
                   <div className="flex flex-col">
@@ -124,7 +133,7 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* GLOBE PULSE CONTAINER - FIXED CLIPPING */}
+            {/* GLOBE PULSE CONTAINER */}
             <div className="hidden lg:flex flex-1 items-center justify-center relative min-h-[600px] overflow-visible">
               <div className="absolute inset-0 bg-primary/10 blur-[140px] rounded-full animate-pulse pointer-events-none scale-110" />
               <div className="relative z-10 w-full max-w-[600px] aspect-square flex items-center justify-center">
@@ -254,26 +263,28 @@ export default function Home() {
             {[
               { 
                 text: "Eu nunca tinha vendido nada online. Usei o script de IA para falar com uma pizzaria e fechei meu primeiro contrato em menos de uma semana.",
-                author: "Bruno Silva", context: "Consultor Fase 1"
+                author: "Bruno Silva", context: "Consultor Fase 1", image: TESTIMONIAL_IMAGES[0]
               },
               { 
                 text: "O Radar de Leads é bizarro. Achei 50 dentistas na minha cidade e a IA gerou abordagens que todos responderam. Já faturei R$ 3.500.",
-                author: "Ana Oliveira", context: "Faturamento R$ 12k"
+                author: "Ana Oliveira", context: "Faturamento R$ 12k", image: TESTIMONIAL_IMAGES[1]
               },
               { 
                 text: "A barreira de não saber o que falar sumiu. Copiei o script da IA, mandei no WhatsApp e o cliente fechou na hora. Simples assim.",
-                author: "Marcos Reus", context: "Venda em 48h"
+                author: "Marcos Reus", context: "Venda em 48h", image: TESTIMONIAL_IMAGES[2]
               }
             ].map((t, i) => (
               <motion.div key={i} variants={cardIn}>
-                <Card className="bg-white/[0.03] border-white/[0.07] rounded-2xl p-8 space-y-6 hover:-translate-y-1.5 transition-all hover:border-primary/30 hover:shadow-[0_16px_48px_rgba(0,0,0,0.3)]">
+                <Card className="bg-white/[0.03] border-white/[0.07] rounded-2xl p-8 space-y-6 hover:-translate-y-1.5 transition-all hover:border-primary/30 hover:shadow-[0_16px_48px_rgba(0,0,0,0.3)] h-full flex flex-col">
                   <div className="text-[48px] text-primary/30 font-serif leading-none h-6">“</div>
                   <div className="flex gap-1 mb-2">
                     {[1,2,3,4,5].map(s => <Star key={s} className="h-3.5 w-3.5 fill-[#f59e0b] text-[#f59e0b]" />)}
                   </div>
-                  <p className="text-[15px] text-white/65 leading-[1.8] italic">"{t.text}"</p>
+                  <p className="text-[15px] text-white/65 leading-[1.8] italic flex-1">"{t.text}"</p>
                   <div className="flex items-center gap-3 pt-4 border-t border-white/5">
-                    <div className="h-8 w-8 rounded-full bg-white/10" />
+                    <div className="h-10 w-10 rounded-full border border-white/10 overflow-hidden relative bg-white/5">
+                      <Image src={t.image} alt={t.author} fill className="object-cover" />
+                    </div>
                     <div>
                       <p className="text-[13px] font-bold text-white">{t.author}</p>
                       <p className="text-[11px] text-white/30 font-medium">{t.context}</p>
@@ -300,7 +311,7 @@ export default function Home() {
                 { q: "Preciso aparecer nas redes sociais?", a: "Não. Ensinamos estratégias de bastidores onde você pode prospectar e vender sem nunca mostrar o rosto." }
               ].map((item, i) => (
                 <AccordionItem key={i} value={`item-${i}`} className="border-b border-white/[0.07] py-4">
-                  <AccordionTrigger className="text-[14px] font-medium text-white/80 hover:no-underline hover:text-white transition-colors py-4">
+                  <AccordionTrigger className="text-[14px] font-medium text-white/80 hover:no-underline hover:text-white transition-colors py-4 text-left">
                     {item.q}
                   </AccordionTrigger>
                   <AccordionContent className="text-[13px] text-white/45 leading-[1.7] pt-2 pb-4 max-w-2xl">

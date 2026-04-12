@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -24,24 +25,31 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
+const TESTIMONIAL_IMAGES = [
+  "https://media.inlead.cloud/uploads/44422/2026-01-05/md-vOR05-design-sem-nome-36.png",
+  "https://media.inlead.cloud/uploads/44422/2026-01-03/md-soixE-design-sem-nome-31.png",
+  "https://media.inlead.cloud/uploads/44422/2026-01-03/md-jztVV-design-sem-nome-30.png",
+  "https://media.inlead.cloud/uploads/44422/2026-01-05/md-flBj3-design-sem-nome-38.png"
+];
+
 const TESTIMONIALS = [
   {
     name: "Ricardo Mendes",
     role: "Gestor de Tráfego",
     text: "O Radar de Leads mudou meu jogo. Consegui fechar 3 contratos de R$ 1.500 logo na primeira semana seguindo a jornada.",
-    avatar: "https://picsum.photos/seed/user1/100/100"
+    avatar: TESTIMONIAL_IMAGES[0]
   },
   {
     name: "Juliana Costa",
     role: "Social Media",
     text: "As IAs do FlowPro geram abordagens que não parecem robóticas. Minha taxa de resposta no Direct subiu de 5% para 22%.",
-    avatar: "https://picsum.photos/seed/user2/100/100"
+    avatar: TESTIMONIAL_IMAGES[1]
   },
   {
     name: "Marcos Paulo",
     role: "Vendedor Digital",
     text: "O Plano Vitalício foi o melhor investimento que fiz. Ter o Mentor IA 24h para tirar dúvidas de scripts é bizarro!",
-    avatar: "https://picsum.photos/seed/user3/100/100"
+    avatar: TESTIMONIAL_IMAGES[2]
   }
 ];
 
@@ -267,15 +275,15 @@ export default function PaywallPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-transparent">
               {TESTIMONIALS.map((t, i) => (
-                <Card key={i} className="glass-card p-8 space-y-6 bg-transparent">
+                <Card key={i} className="glass-card p-8 space-y-6 bg-transparent flex flex-col h-full">
                   <Quote className="h-8 w-8 text-primary opacity-30" />
-                  <p className="text-sm font-medium leading-relaxed italic text-white/80">"{t.text}"</p>
-                  <div className="flex items-center gap-4 bg-transparent">
-                    <div className="h-10 w-10 rounded-full bg-white/10 border border-white/10 overflow-hidden">
-                      <img src={t.avatar} alt={t.name} className="w-full h-full object-cover" />
+                  <p className="text-sm font-medium leading-relaxed italic text-white/80 flex-1">"{t.text}"</p>
+                  <div className="flex items-center gap-4 bg-transparent pt-4 border-t border-white/5">
+                    <div className="h-10 w-10 rounded-full bg-white/10 border border-white/10 overflow-hidden relative">
+                      <Image src={t.avatar} alt={t.name} fill className="object-cover" />
                     </div>
                     <div className="bg-transparent">
-                      <p className="text-xs font-black uppercase text-white">{t.name}</p>
+                      <p className="text-xs font-black uppercase text-white leading-none mb-1">{t.name}</p>
                       <p className="text-[10px] font-bold text-primary uppercase tracking-widest">{t.role}</p>
                     </div>
                   </div>
