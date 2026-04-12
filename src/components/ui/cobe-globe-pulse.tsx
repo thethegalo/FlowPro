@@ -13,6 +13,7 @@ interface GlobePulseProps {
   markers?: PulseMarker[]
   className?: string
   speed?: number
+  dark?: number
 }
 
 const defaultMarkers: PulseMarker[] = [
@@ -26,10 +27,10 @@ const defaultMarkers: PulseMarker[] = [
 export function GlobePulse({
   markers = defaultMarkers,
   className = "",
-  speed = 0.008, // Aumentado para um giro mais perceptível
+  speed = 0.008,
+  dark = 1,
 }: GlobePulseProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const globeRef = useRef<any>(null)
   const pointerInteracting = useRef<{ x: number; y: number } | null>(null)
   const dragOffset = useRef({ phi: 0, theta: 0 })
   const phiOffsetRef = useRef(0)
@@ -74,57 +75,57 @@ export function GlobePulse({
     if (!canvasRef.current) return
     const canvas = canvasRef.current
     let phi = 0
+    let globe: any
 
-    // WebGL Safety
-    try {
-      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
-      if (!gl) return
-    } catch (e) {
-      return
+    const updateSize = () => {
+      const width = canvas.offsetWidth
+      if (width === 0) return
+      
+      if (globe) globe.destroy()
+
+      globe = createGlobe(canvas, {
+        devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+        width: width * 2,
+        height: width * 2,
+        phi: 0,
+        theta: 0.15,
+        dark,
+        diffuse: 1.2,
+        mapSamples: 16000,
+        mapBrightness: 6,
+        baseColor: [0.1, 0.1, 0.2],
+        markerColor: [124/255, 58/255, 237/255],
+        glowColor: [0.15, 0.15, 0.2],
+        markerElevation: 0.05,
+        markers: markers.map((m) => ({ location: m.location, size: 0.08 })),
+        onRender: (state) => {
+          if (!isPausedRef.current) {
+            phi += speed
+          }
+          state.phi = phi + phiOffsetRef.current + dragOffset.current.phi
+          state.theta = 0.15 + thetaOffsetRef.current + dragOffset.current.theta
+        },
+      })
     }
 
-    const globe = createGlobe(canvas, {
-      devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
-      width: canvas.offsetWidth * 2, // Melhor resolução
-      height: canvas.offsetWidth * 2,
-      phi: 0,
-      theta: 0.15,
-      dark: 1,
-      diffuse: 1.2,
-      mapSamples: 16000,
-      mapBrightness: 6, // Brilho ajustado para ver os continentes
-      baseColor: [0.1, 0.1, 0.2],
-      markerColor: [124/255, 58/255, 237/255], // Cor primária do FlowPro
-      glowColor: [0.15, 0.15, 0.2],
-      markerElevation: 0.05,
-      markers: markers.map((m) => ({ location: m.location, size: 0.08 })),
-      onRender: (state) => {
-        if (!isPausedRef.current) {
-          phi += speed
-        }
-        state.phi = phi + phiOffsetRef.current + dragOffset.current.phi
-        state.theta = 0.15 + thetaOffsetRef.current + dragOffset.current.theta
-      },
-    })
-
-    globeRef.current = globe
+    updateSize()
+    window.addEventListener('resize', updateSize)
     setTimeout(() => (canvas.style.opacity = "1"))
 
     return () => {
-      globe.destroy()
+      if (globe) globe.destroy()
+      window.removeEventListener('resize', updateSize)
     }
-  }, [markers, speed])
+  }, [markers, speed, dark])
 
   return (
-    <div className={`relative aspect-square select-none overflow-hidden ${className}`}>
+    <div className={`relative aspect-square select-none ${className}`}>
       <canvas
         ref={canvasRef}
         onPointerDown={handlePointerDown}
         className="w-full h-full opacity-0 transition-opacity duration-1000 cursor-grab"
         style={{ touchAction: "none" }}
       />
-      {/* Glow Orbital de Fundo */}
-      <div className="absolute inset-0 bg-primary/10 blur-[120px] rounded-full -z-10 pointer-events-none scale-75" />
     </div>
   )
 }

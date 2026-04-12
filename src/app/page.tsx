@@ -80,10 +80,10 @@ export default function Home() {
       <main className="pt-[60px]">
         
         {/* HERO SECTION */}
-        <section className="max-w-[1100px] mx-auto px-6 md:px-12 py-24 md:py-32">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+        <section className="max-w-[1200px] mx-auto px-6 md:px-12 py-24 md:py-32">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-24">
             <motion.div 
-              className="flex flex-col items-start text-left space-y-8 max-w-2xl"
+              className="flex flex-col items-start text-left space-y-8 max-w-2xl shrink-0"
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -98,7 +98,7 @@ export default function Home() {
 
               <h1 className="text-[44px] md:text-[72px] font-extrabold tracking-[-2px] leading-[0.95] text-white">
                 Seu primeiro cliente<br />
-                <span className="bg-gradient-to-r from-[#a855f7] to-[#6366f1] bg-clip-text text-transparent">começa com um script.</span>
+                <span className="bg-gradient-to-r from-[#a855f7] to-[#6366f1] bg-clip-text text-transparent italic">começa com um script.</span>
               </h1>
 
               <p className="text-[16px] md:text-[18px] text-white/45 leading-[1.6] max-w-[480px]">
@@ -124,10 +124,10 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* GLOBE PULSE - LARGER AND MORE DYNAMIC */}
-            <div className="hidden lg:block flex-1 max-w-[600px] w-full relative">
-              <div className="absolute inset-0 bg-primary/15 blur-[140px] rounded-full animate-pulse pointer-events-none" />
-              <div className="relative z-10 w-full aspect-square">
+            {/* GLOBE PULSE CONTAINER - ENSURING NO CLIPPING */}
+            <div className="hidden lg:flex flex-1 items-center justify-center relative min-h-[500px]">
+              <div className="absolute inset-0 bg-primary/10 blur-[140px] rounded-full animate-pulse pointer-events-none scale-75" />
+              <div className="relative z-10 w-full max-w-[550px] aspect-square">
                 <GlobePulse className="w-full h-full" speed={0.008} />
               </div>
             </div>
