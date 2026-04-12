@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -19,10 +18,10 @@ import {
   CalendarDays,
   Calendar,
   BarChart3,
-  Zap,
   Trash2,
   RefreshCcw,
-  DollarSign
+  DollarSign,
+  Zap
 } from 'lucide-react';
 import { collection, query, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
@@ -83,9 +82,9 @@ export default function AdminPage() {
         status: newStatus,
         updatedAt: serverTimestamp()
       });
-      toast({ title: "Status Atualizado", description: `Usuário agora está como ${newStatus}.` });
+      toast.success("Status Atualizado", `Usuário agora está como ${newStatus}.`);
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Erro", description: error.message });
+      toast.error("Erro", error.message);
     } finally {
       setUpdatingId(null);
     }
@@ -102,9 +101,9 @@ export default function AdminPage() {
         plan: newPlan,
         updatedAt: serverTimestamp()
       });
-      toast({ title: "Plano Atualizado", description: "O acesso do usuário foi modificado com sucesso." });
+      toast.success("Plano Atualizado", "O acesso do usuário foi modificado com sucesso.");
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Erro", description: error.message });
+      toast.error("Erro", error.message);
     } finally {
       setUpdatingId(null);
     }
@@ -128,7 +127,7 @@ export default function AdminPage() {
     }
     setSimulatedData(data);
     if (!manualTotal) setTotalOverwrite(sum.toString());
-    toast({ title: "Dados Gerados", description: "Curva de 30 dias criada com sucesso." });
+    toast.success("Dados Gerados", "Curva de 30 dias criada com sucesso.");
   };
 
   const handleSaveSimulation = async () => {
@@ -142,10 +141,10 @@ export default function AdminPage() {
           updatedAt: new Date().toISOString()
         }
       });
-      toast({ title: "Sucesso!", description: "Dados injetados na conta do usuário." });
+      toast.success("Sucesso!", "Dados injetados na conta do usuário.");
       setSimulationUser(null);
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Erro", description: e.message });
+      toast.error("Erro", e.message);
     } finally {
       setUpdatingId(null);
     }
@@ -158,10 +157,10 @@ export default function AdminPage() {
       await updateDoc(doc(db, 'users', simulationUser.id), {
         simulatedStats: null
       });
-      toast({ title: "Resetado", description: "Todos os dados de simulação foram removidos." });
+      toast.success("Resetado", "Todos os dados de simulação foram removidos.");
       setSimulationUser(null);
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Erro", description: e.message });
+      toast.error("Erro", e.message);
     } finally {
       setUpdatingId(null);
     }
@@ -169,7 +168,7 @@ export default function AdminPage() {
 
   if (isUserLoading || isUsersLoading) {
     return (
-      <div className="min-h-screen bg-[#050508] flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -179,45 +178,34 @@ export default function AdminPage() {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-[#050508]">
+      <div className="flex min-h-screen w-full bg-transparent relative z-10">
         <AppSidebar />
         
-        <main className="flex-1 flex flex-col min-w-0">
-          <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-50">
+        <main className="flex-1 flex flex-col min-w-0 bg-transparent">
+          <header className="h-[52px] border-b border-white/5 flex items-center justify-between px-6 bg-transparent sticky top-0 z-50">
             <div className="flex items-center gap-4">
-              <SidebarTrigger className="text-muted-foreground hover:text-white" />
-              <div className="h-4 w-px bg-white/10 hidden md:block" />
-              <h1 className="text-sm font-black italic uppercase tracking-widest flex items-center gap-2">
-                <Shield className="h-4 w-4 text-primary" /> Flow Command
+              <h1 className="text-[13px] font-medium text-white/50 flex items-center gap-2">
+                <Shield className="h-3.5 w-3.5 text-primary" /> Flow Command
               </h1>
             </div>
-            <Badge className="bg-primary/20 text-primary uppercase tracking-widest px-4 py-1 border-primary/30 text-[8px] font-black">ADMIN MASTER</Badge>
+            <div className="bg-[#581c87]/40 border border-[#7c3aed]/30 text-[#c4b5fd] text-[11px] font-medium rounded-[6px] px-[10px] py-[4px] uppercase tracking-[0.5px]">
+              ADMIN MASTER
+            </div>
           </header>
 
-          <div className="flex-1 p-4 md:p-8 space-y-8 container max-w-6xl mx-auto">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Card className="glass-card border-white/10 p-6 flex flex-col items-center justify-center text-center">
-                <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Total Usuários</span>
-                <div className="text-3xl font-black italic">{usersData?.length || 0}</div>
-              </Card>
-              <Card className="glass-card border-white/10 p-6 flex flex-col items-center justify-center text-center">
-                <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Aguardando</span>
-                <div className="text-3xl font-black italic text-yellow-500">
-                  {usersData?.filter(u => u.status === 'pending').length || 0}
-                </div>
-              </Card>
-              <Card className="glass-card border-white/10 p-6 flex flex-col items-center justify-center text-center">
-                <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Aprovados</span>
-                <div className="text-3xl font-black italic text-green-500">
-                  {usersData?.filter(u => u.status === 'approved').length || 0}
-                </div>
-              </Card>
-              <Card className="glass-card border-white/10 p-6 flex flex-col items-center justify-center text-center">
-                <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">Bloqueados</span>
-                <div className="text-3xl font-black italic text-destructive">
-                  {usersData?.filter(u => u.status === 'blocked').length || 0}
-                </div>
-              </Card>
+          <div className="flex-1 p-4 md:p-8 space-y-8 container max-w-6xl mx-auto bg-transparent">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 bg-transparent">
+              {[
+                { label: "Total Usuários", val: usersData?.length || 0, color: "" },
+                { label: "Aguardando", val: usersData?.filter(u => u.status === 'pending').length || 0, color: "text-yellow-500" },
+                { label: "Aprovados", val: usersData?.filter(u => u.status === 'approved').length || 0, color: "text-green-500" },
+                { label: "Bloqueados", val: usersData?.filter(u => u.status === 'blocked').length || 0, color: "text-destructive" },
+              ].map((stat, i) => (
+                <Card key={i} className="glass-card border-white/10 p-6 flex flex-col items-center justify-center text-center">
+                  <span className="text-[8px] font-black uppercase tracking-widest opacity-50 mb-1">{stat.label}</span>
+                  <div className={`text-3xl font-black italic ${stat.color}`}>{stat.val}</div>
+                </Card>
+              ))}
             </div>
 
             <Card className="glass-card border-white/10 overflow-hidden rounded-[2rem]">

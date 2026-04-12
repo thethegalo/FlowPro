@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -54,25 +53,18 @@ export default function AuthPage() {
           isOnboarded: false
         });
 
-        toast({ 
-          title: "Solicitação Enviada!", 
-          description: "Seu cadastro foi enviado para análise manual do mestre." 
-        });
+        toast.success("Solicitação Enviada!", "Seu cadastro foi enviado para análise manual do mestre.");
         router.push('/dashboard');
       }
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Erro na Autenticação", description: error.message });
+      toast.error("Erro na Autenticação", error.message);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#050508] flex flex-col items-center justify-center p-4">
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[140px]"></div>
-      </div>
-
+    <div className="min-h-screen bg-transparent flex flex-col items-center justify-center p-4 relative z-10">
       <Card className="w-full max-w-md glass-card border-white/10 relative z-10 rounded-[2rem] overflow-hidden">
         <CardHeader className="space-y-1 text-center p-8 bg-white/5 border-b border-white/5">
           <div className="flex justify-center mb-4">

@@ -28,9 +28,15 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased min-h-screen bg-[#05050f] text-foreground selection:bg-primary/30 selection:text-white">
+      <body className="font-body antialiased min-h-screen bg-[#05050f] text-foreground selection:bg-primary/30 selection:text-white margin-0">
         <FirebaseClientProvider>
-          <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+          {/* FUNDO FIXO — aparece em TODAS as páginas */}
+          <div style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 0,
+            pointerEvents: 'none'
+          }}>
             <EtheralShadow
               color="rgba(109, 40, 217, 0.9)"
               animation={{ scale: 45, speed: 55 }}
@@ -38,7 +44,9 @@ export default function RootLayout({
               sizing="fill"
             />
           </div>
-          <div className="relative z-10 flex flex-col min-h-screen bg-transparent">
+
+          {/* CONTEÚDO — fica sobre o fundo */}
+          <div style={{ position: 'relative', zIndex: 1 }} className="flex flex-col min-h-screen bg-transparent">
             <CustomCursor />
             {children}
             <FloatingMentor />
