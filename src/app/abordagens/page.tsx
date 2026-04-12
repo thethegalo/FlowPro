@@ -56,11 +56,11 @@ const LANGUAGES = [
 ];
 
 const TONES = [
-  { id: 'professional', label: 'Profissional', icon: <Briefcase className="h-3 w-3" /> },
-  { id: 'friendly', label: 'Amigável', icon: <Smile className="h-3 w-3" /> },
-  { id: 'urgent', label: 'Urgente', icon: <Zap className="h-3 w-3" /> },
-  { id: 'luxury', label: 'Luxuoso', icon: <Sparkles className="h-3 w-3" /> },
-  { id: 'casual', label: 'Descontraído', icon: <Type className="h-3 w-3" /> },
+  { id: 'professional', label: 'Profissional', icon: <Briefcase className="h-5 w-5" /> },
+  { id: 'friendly', label: 'Amigável', icon: <Smile className="h-5 w-5" /> },
+  { id: 'urgent', label: 'Urgente', icon: <Zap className="h-5 w-5" /> },
+  { id: 'luxury', label: 'Luxuoso', icon: <Sparkles className="h-5 w-5" /> },
+  { id: 'casual', label: 'Descontraído', icon: <Type className="h-5 w-5" /> },
 ];
 
 const NICHES = {
@@ -106,7 +106,7 @@ const NICHES = {
     templates: {
       pt: "Oi! Sou o [Nome]. Acompanho o conteúdo da [Empresa] e vejo que o engajamento poderia estar 3x maior com o design certo. Podemos bater um papo sobre como profissionalizar o perfil?",
       en: "Hi! I'm [Nome]. I follow [Empresa]'s content and see that engagement could be 3x higher with the right design. Can we chat about professionalizing the profile?",
-      es: "¡Hola! Soy [Nome]. Sigo el contenido de [Empresa] y veo que el compromiso podría ser 3 veces mayor con el diseño adecuado. ¿Podemos hablar sobre cómo profesionalizar el perfil?"
+      es: "¡Hola! Soy [Nome]. Sigo el contenido de [Empresa] e veo que el compromiso podría ser 3 veces mayor con el diseño adecuado. ¿Podemos hablar sobre cómo profissionalizar el perfil?"
     }
   }
 };
@@ -161,13 +161,13 @@ export default function AbordagensPage() {
   const handleCopyMessage = () => {
     navigator.clipboard.writeText(message);
     setCopied(true);
-    toast({ title: "Mensagem Copiada!", description: "Pronta para ser colada." });
+    toast.success("Mensagem Copiada!", "Pronta para ser colada.");
     setTimeout(() => setCopied(false), 2000);
   };
 
   const openWhatsApp = () => {
     if (!whatsapp) {
-      toast({ variant: "destructive", title: "Número necessário", description: "Insira o WhatsApp do lead primeiro." });
+      toast.warning("Número necessário", "Insira o WhatsApp do lead primeiro.");
       return;
     }
     const cleanPhone = whatsapp.replace(/\D/g, '');
@@ -292,14 +292,21 @@ export default function AbordagensPage() {
                               key={t.id}
                               onClick={() => setTone(t.id)}
                               className={cn(
-                                "flex flex-col items-center justify-center gap-2 p-3 rounded-xl border transition-all duration-300",
+                                "flex flex-col items-center justify-center gap-3 p-4 rounded-2xl border transition-all duration-300",
                                 tone === t.id 
-                                ? 'bg-primary/20 border-primary text-white shadow-[0_0_15px_rgba(124,58,255,0.3)]' 
+                                ? 'bg-primary/20 border-primary text-white shadow-[0_0_20px_rgba(124,58,255,0.3)] scale-[1.02]' 
                                 : 'bg-white/[0.02] border-white/5 text-muted-foreground hover:bg-white/5'
                               )}
                             >
-                              {t.icon}
-                              <span className="text-[8px] font-black uppercase tracking-tighter">{t.label}</span>
+                              <div className={cn(
+                                "transition-transform duration-300",
+                                tone === t.id ? "scale-110 text-primary" : "opacity-60"
+                              )}>
+                                {t.icon}
+                              </div>
+                              <span className="text-[9px] font-black uppercase tracking-widest leading-none text-center whitespace-nowrap">
+                                {t.label}
+                              </span>
                             </button>
                           ))}
                         </div>
