@@ -31,7 +31,8 @@ import {
   ShieldCheck,
   Search,
   Type,
-  Briefcase
+  Briefcase,
+  Droplets
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -53,9 +54,17 @@ const STEPS = [
 
 const NICHES = ["Infoprodutos", "SaaS/Tech", "Serviços Locais", "E-commerce", "Saúde/Bem-estar", "Consultoria", "Imóveis"];
 const OBJECTIVES = ["Capturar Leads", "Vender Direto", "Agendar Reunião", "Distribuição de Conteúdo"];
-const STYLES = ["Moderno & Dark", "Minimalista", "Corporativo", "Futurista", "Bold & Colorido"];
+const STYLES = ["Moderno & Dark", "Minimalista", "Corporativo", "Futurista", "Cyberpunk", "Clean White", "Luxo Profundo"];
 const TONES = ["Profissional", "Amigável", "Urgente", "Luxuoso", "Descontraído"];
 const SECTIONS = ["Hero", "Problema/Dor", "Solução", "Benefícios", "Depoimentos", "Preços", "FAQ", "CTA Final"];
+
+const COLOR_PRESETS = [
+  { name: 'Flow', primary: '#7C3AED', secondary: '#ffffff' },
+  { name: 'Cyber', primary: '#06B6D4', secondary: '#000000' },
+  { name: 'Luxury', primary: '#F59E0B', secondary: '#111111' },
+  { name: 'High', primary: '#10B981', secondary: '#ffffff' },
+  { name: 'Edge', primary: '#DC2626', secondary: '#ffffff' },
+];
 
 // --- COMPONENTES AUXILIARES ---
 
@@ -128,7 +137,8 @@ Gere o código completo para a Landing Page da marca "${blueprint.name}", focada
 ESPECIFICAÇÕES TÉCNICAS:
 - Objetivo: ${blueprint.objective}
 - Estilo Visual: ${blueprint.style}
-- Paleta: ${blueprint.palette.join(', ')}
+- Paleta Primária: ${blueprint.palette[0]}
+- Paleta Secundária: ${blueprint.palette[1]}
 - Tom de Voz: ${blueprint.tone}
 - Público: ${blueprint.audience}
 
@@ -155,15 +165,19 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-[#050505] text-white relative overflow-hidden font-body">
-        {/* Topographic Background Pattern */}
-        <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.03] select-none scale-110">
-          <svg width="100%" height="100%" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 100 C 200 150, 400 50, 600 100 S 800 150, 1000 100" stroke="white" fill="transparent" strokeWidth="2" />
-            <path d="M0 200 C 200 250, 400 150, 600 200 S 800 250, 1000 200" stroke="white" fill="transparent" strokeWidth="2" />
-            <path d="M0 300 C 200 350, 400 250, 600 300 S 800 350, 1000 300" stroke="white" fill="transparent" strokeWidth="2" />
-            <path d="M0 400 C 200 450, 400 350, 600 400 S 800 450, 1000 400" stroke="white" fill="transparent" strokeWidth="2" />
-            <path d="M0 500 C 200 550, 400 450, 600 500 S 800 550, 1000 500" stroke="white" fill="transparent" strokeWidth="2" />
-          </svg>
+        {/* Fundo Atmosférico */}
+        <div className="fixed inset-0 pointer-events-none z-0">
+          <div className="absolute top-0 right-0 w-[45%] h-[45%] bg-primary/6 rounded-full blur-[160px] animate-pulse" />
+          <div className="absolute bottom-0 left-0 w-[35%] h-[35%] bg-accent/4 rounded-full blur-[130px]" />
+          <div className="absolute inset-0 opacity-[0.03] select-none scale-110">
+            <svg width="100%" height="100%" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 100 C 200 150, 400 50, 600 100 S 800 150, 1000 100" stroke="white" fill="transparent" strokeWidth="2" />
+              <path d="M0 200 C 200 250, 400 150, 600 200 S 800 250, 1000 200" stroke="white" fill="transparent" strokeWidth="2" />
+              <path d="M0 300 C 200 350, 400 250, 600 300 S 800 350, 1000 300" stroke="white" fill="transparent" strokeWidth="2" />
+              <path d="M0 400 C 200 450, 400 350, 600 400 S 800 450, 1000 400" stroke="white" fill="transparent" strokeWidth="2" />
+              <path d="M0 500 C 200 550, 400 450, 600 500 S 800 550, 1000 500" stroke="white" fill="transparent" strokeWidth="2" />
+            </svg>
+          </div>
         </div>
 
         <AppSidebar />
@@ -250,8 +264,8 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                     </div>
 
                     {/* Formulários Dinâmicos */}
-                    <Card className="bg-white/[0.02] border-white/10 backdrop-blur-2xl rounded-[2.5rem] overflow-hidden shadow-2xl">
-                      <CardContent className="p-8 md:p-10 space-y-6">
+                    <Card className="bg-white/[0.02] border-white/10 backdrop-blur-sm rounded-[2.5rem] overflow-hidden shadow-[0_0_80px_rgba(124,58,255,0.06)]">
+                      <CardContent className="p-8 md:p-10 space-y-8">
                         
                         {blueprint.step === 1 && (
                           <div className="space-y-6">
@@ -273,7 +287,7 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                                     onClick={() => setBlueprint({...blueprint, niche: n})}
                                     className={cn(
                                       "px-4 py-3 rounded-xl text-[10px] font-black uppercase transition-all border",
-                                      blueprint.niche === n ? "bg-primary/20 border-primary text-primary" : "bg-white/5 border-white/5 text-muted-foreground hover:bg-white/10"
+                                      blueprint.niche === n ? "bg-primary/20 border-primary text-primary shadow-[0_0_15px_rgba(124,58,255,0.4)]" : "bg-white/5 border-white/5 text-muted-foreground hover:bg-white/[0.08]"
                                     )}
                                   >
                                     {n}
@@ -295,7 +309,7 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                                     onClick={() => setBlueprint({...blueprint, objective: obj})}
                                     className={cn(
                                       "flex items-center justify-between p-5 rounded-2xl border transition-all",
-                                      blueprint.objective === obj ? "bg-primary/10 border-primary text-white shadow-lg" : "bg-white/[0.02] border-white/5 text-muted-foreground hover:bg-white/5"
+                                      blueprint.objective === obj ? "bg-primary/10 border-primary text-white shadow-[0_0_15px_rgba(124,58,255,0.4)]" : "bg-white/[0.02] border-white/5 text-muted-foreground hover:bg-white/[0.08]"
                                     )}
                                   >
                                     <span className="font-bold uppercase italic text-sm">{obj}</span>
@@ -308,8 +322,9 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                         )}
 
                         {blueprint.step === 3 && (
-                          <div className="space-y-6">
-                            <div className="space-y-3">
+                          <div className="space-y-10">
+                            {/* Estilo Visual */}
+                            <div className="space-y-4">
                               <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Estilo Visual</Label>
                               <div className="flex flex-wrap gap-2">
                                 {STYLES.map(s => (
@@ -317,8 +332,8 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                                     key={s}
                                     onClick={() => setBlueprint({...blueprint, style: s})}
                                     className={cn(
-                                      "px-4 py-2 rounded-lg text-[9px] font-black uppercase border transition-all",
-                                      blueprint.style === s ? "bg-primary text-white border-primary" : "bg-white/5 border-white/10 text-muted-foreground"
+                                      "px-4 py-2 rounded-xl text-[9px] font-black uppercase border transition-all",
+                                      blueprint.style === s ? "bg-primary text-white border-primary shadow-[0_0_15px_rgba(124,58,255,0.4)]" : "bg-white/5 border-white/10 text-muted-foreground hover:bg-white/[0.08]"
                                     )}
                                   >
                                     {s}
@@ -326,15 +341,54 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                                 ))}
                               </div>
                             </div>
-                            <div className="space-y-3">
-                              <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Cor Primária (HEX)</Label>
-                              <div className="flex items-center gap-4">
-                                <div className="h-14 w-14 rounded-2xl border border-white/10 shrink-0" style={{ background: blueprint.palette[0] }} />
-                                <Input 
-                                  value={blueprint.palette[0]}
-                                  onChange={e => setBlueprint({...blueprint, palette: [e.target.value, blueprint.palette[1]]})}
-                                  className="h-14 bg-white/5 border-white/10 rounded-2xl font-mono text-center"
-                                />
+
+                            {/* Seleção de Cores */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                              <div className="space-y-4">
+                                <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 flex items-center gap-2">
+                                  <Droplets className="h-3 w-3 text-primary" /> Cor Primária (HEX)
+                                </Label>
+                                <div className="flex items-center gap-4">
+                                  <div className="h-14 w-14 rounded-2xl border border-white/10 shrink-0 shadow-lg" style={{ background: blueprint.palette[0] }} />
+                                  <Input 
+                                    value={blueprint.palette[0]}
+                                    onChange={e => setBlueprint({...blueprint, palette: [e.target.value, blueprint.palette[1]]})}
+                                    className="h-14 bg-white/5 border-white/10 rounded-2xl font-mono text-center focus-visible:ring-primary"
+                                  />
+                                </div>
+                              </div>
+                              <div className="space-y-4">
+                                <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 flex items-center gap-2">
+                                  <Droplets className="h-3 w-3 text-accent" /> Cor Secundária (HEX)
+                                </Label>
+                                <div className="flex items-center gap-4">
+                                  <div className="h-14 w-14 rounded-2xl border border-white/10 shrink-0 shadow-lg" style={{ background: blueprint.palette[1] }} />
+                                  <Input 
+                                    value={blueprint.palette[1]}
+                                    onChange={e => setBlueprint({...blueprint, palette: [blueprint.palette[0], e.target.value]})}
+                                    className="h-14 bg-white/5 border-white/10 rounded-2xl font-mono text-center focus-visible:ring-accent"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Presets Rápidos */}
+                            <div className="space-y-4">
+                              <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Presets de Paleta</Label>
+                              <div className="flex flex-wrap gap-3">
+                                {COLOR_PRESETS.map(preset => (
+                                  <button
+                                    key={preset.name}
+                                    onClick={() => setBlueprint({...blueprint, palette: [preset.primary, preset.secondary]})}
+                                    className="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group"
+                                  >
+                                    <div className="flex -space-x-2">
+                                      <div className="h-4 w-4 rounded-full border border-black/20" style={{ background: preset.primary }} />
+                                      <div className="h-4 w-4 rounded-full border border-black/20" style={{ background: preset.secondary }} />
+                                    </div>
+                                    <span className="text-[8px] font-black uppercase tracking-tight opacity-50 group-hover:opacity-100">{preset.name}</span>
+                                  </button>
+                                ))}
                               </div>
                             </div>
                           </div>
@@ -348,7 +402,7 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                             </div>
                             <Textarea 
                               placeholder="Descreva quem vai comprar de você..."
-                              className="min-h-[150px] bg-white/5 border-white/10 rounded-2xl text-base p-6 leading-relaxed"
+                              className="min-h-[150px] bg-white/5 border-white/10 rounded-2xl text-base p-6 leading-relaxed focus-visible:ring-primary"
                               value={blueprint.audience}
                               onChange={e => setBlueprint({...blueprint, audience: e.target.value})}
                             />
@@ -365,7 +419,7 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                                   onClick={() => setBlueprint({...blueprint, tone: t})}
                                   className={cn(
                                     "p-6 rounded-2xl border text-center transition-all",
-                                    blueprint.tone === t ? "bg-primary/20 border-primary text-white" : "bg-white/5 border-white/5 text-muted-foreground"
+                                    blueprint.tone === t ? "bg-primary/20 border-primary text-white shadow-[0_0_15px_rgba(124,58,255,0.4)]" : "bg-white/5 border-white/5 text-muted-foreground hover:bg-white/[0.08]"
                                   )}
                                 >
                                   <span className="font-black uppercase tracking-tighter italic text-sm">{t}</span>
@@ -390,7 +444,7 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                                   }}
                                   className={cn(
                                     "p-4 rounded-xl border text-[10px] font-black uppercase transition-all",
-                                    blueprint.sections.includes(s) ? "bg-green-500/20 border-green-500 text-green-400" : "bg-white/5 border-white/5 text-muted-foreground"
+                                    blueprint.sections.includes(s) ? "bg-green-500/20 border-green-500 text-green-400 shadow-[0_0_10px_rgba(34,197,94,0.3)]" : "bg-white/5 border-white/5 text-muted-foreground hover:bg-white/[0.08]"
                                   )}
                                 >
                                   {s}
@@ -408,7 +462,7 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                             </div>
                             <Input 
                               placeholder="O que te faz único?"
-                              className="h-14 bg-white/5 border-white/10 rounded-2xl px-6"
+                              className="h-14 bg-white/5 border-white/10 rounded-2xl px-6 focus-visible:ring-primary"
                               value={blueprint.differential}
                               onChange={e => setBlueprint({...blueprint, differential: e.target.value})}
                             />
@@ -462,7 +516,7 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                         onClick={handleNext}
                         disabled={!isStepValid() || isGenerating}
                         className={cn(
-                          "flex-1 h-16 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl transition-all",
+                          "flex-1 h-16 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl transition-all relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:-translate-x-full hover:before:translate-x-full before:transition-transform before:duration-700",
                           isStepValid() ? "bg-primary hover:bg-primary/90 shadow-primary/20 animate-pulse" : "bg-white/5 text-muted-foreground border-white/10 cursor-not-allowed"
                         )}
                       >
@@ -511,14 +565,14 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
             {/* --- COLUNA 3: LIVE PREVIEW (iPhone) --- */}
             <aside className="w-full lg:w-[450px] border-l border-white/5 bg-black/40 p-10 flex flex-col items-center justify-center flex-shrink-0 hidden xl:flex">
               <div className="relative group">
-                {/* Glow Effect */}
+                {/* Glow Effect Reativo */}
                 <div 
                   className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full transition-all duration-1000"
                   style={{ backgroundColor: `${blueprint.palette[0]}20` }}
                 />
                 
                 {/* Smartphone Frame */}
-                <div className="w-[300px] h-[620px] bg-[#0a0a0a] rounded-[3.5rem] border-[10px] border-[#1a1a1a] shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative overflow-hidden flex flex-col z-10 transition-all duration-700">
+                <div className="w-[300px] h-[620px] bg-[#0a0a0a] rounded-[3.5rem] border-[10px] border-[#1a1a1a] shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative overflow-hidden flex flex-col z-10 transition-all duration-700 backdrop-blur-md">
                   
                   {/* Notch */}
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-[#1a1a1a] rounded-b-3xl z-20" />
@@ -545,8 +599,8 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                           {blueprint.differential || 'O segredo da alta performance neural.'}
                         </p>
                         <div 
-                          className="h-10 w-full rounded-xl mt-4 shadow-lg shadow-primary/20 flex items-center justify-center text-[10px] font-black uppercase tracking-widest"
-                          style={{ background: blueprint.palette[0], color: blueprint.palette[1] }}
+                          className="h-10 w-full rounded-xl mt-4 shadow-lg flex items-center justify-center text-[10px] font-black uppercase tracking-widest"
+                          style={{ background: blueprint.palette[0], color: blueprint.palette[1], boxShadow: `0 10px 25px ${blueprint.palette[0]}30` }}
                         >
                           {blueprint.objective}
                         </div>
@@ -558,7 +612,7 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                           <div key={i} className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-2">
                             <div className="flex items-center justify-between">
                               <span className="text-[8px] font-black uppercase tracking-widest text-white/20">{s}</span>
-                              <div className="h-1.5 w-1.5 rounded-full" style={{ background: blueprint.palette[0] }} />
+                              <div className="h-1.5 w-1.5 rounded-full" style={{ background: blueprint.palette[1] }} />
                             </div>
                             <div className="h-2 w-full bg-white/5 rounded-full" />
                             <div className="h-2 w-2/3 bg-white/5 rounded-full" />
