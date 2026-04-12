@@ -33,7 +33,11 @@ import {
   Type,
   Briefcase,
   Droplets,
-  Wand2
+  Wand2,
+  Globe,
+  Binary,
+  Cpu,
+  Eye
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -43,7 +47,7 @@ import { cn } from '@/lib/utils';
 // --- CONFIGURAÇÕES E CONSTANTES ---
 
 const STEPS = [
-  { id: 1, title: 'Identidade', sub: 'Nome & Nicho', icon: Briefcase },
+  { id: 1, title: 'Identidade', sub: 'Nome, Nicho & Idioma', icon: Briefcase },
   { id: 2, title: 'Estratégia', sub: 'Objetivo Principal', icon: Target },
   { id: 3, title: 'Visual', sub: 'Estilo & Cores', icon: Palette },
   { id: 4, title: 'Público', sub: 'Audiência Alvo', icon: Users },
@@ -51,6 +55,11 @@ const STEPS = [
   { id: 6, title: 'Estrutura', sub: 'Seções da LP', icon: Layers },
   { id: 7, title: 'Diferencial', sub: 'Proposta Única', icon: Zap },
   { id: 8, title: 'Launch', sub: 'Gerar Blueprint', icon: Rocket },
+];
+
+const LANGUAGES = [
+  { id: 'pt', label: 'Português (BR)', icon: '🇧🇷' },
+  { id: 'en', label: 'English (US)', icon: '🇺🇸' },
 ];
 
 const NICHES = ["Infoprodutos", "SaaS/Tech", "Serviços Locais", "E-commerce", "Saúde/Bem-estar", "Consultoria", "Imóveis"];
@@ -68,14 +77,11 @@ const COLOR_PRESETS = [
 ];
 
 const AI_PALETTES = [
-  { primary: '#FF3366', secondary: '#1A1A1A' }, // Neon Punk
-  { primary: '#00F5FF', secondary: '#002B36' }, // Deep Sea Tech
-  { primary: '#FFD700', secondary: '#1C1C1C' }, // Golden Night
-  { primary: '#8E2DE2', secondary: '#4A00E0' }, // Purple Haze
-  { primary: '#00C9FF', secondary: '#92FE9D' }, // Sky Ocean
-  { primary: '#F7971E', secondary: '#FFD200' }, // Sun Flare
-  { primary: '#11998e', secondary: '#38ef7d' }, // Emerald Dream
-  { primary: '#ee0979', secondary: '#ff6a00' }, // Red Sunset
+  { primary: '#FF3366', secondary: '#1A1A1A' },
+  { primary: '#00F5FF', secondary: '#002B36' },
+  { primary: '#FFD700', secondary: '#1C1C1C' },
+  { primary: '#8E2DE2', secondary: '#4A00E0' },
+  { primary: '#00C9FF', secondary: '#92FE9D' },
 ];
 
 // --- COMPONENTES AUXILIARES ---
@@ -108,6 +114,7 @@ const SuggestButton = ({ onSuggest, label, icon: Icon = Sparkles }: { onSuggest:
 export default function PromptsPage() {
   const [blueprint, setBlueprint] = useState({
     step: 1,
+    language: 'pt',
     name: '',
     niche: '',
     objective: 'Capturar Leads',
@@ -143,28 +150,58 @@ export default function PromptsPage() {
   const handleFinalGeneration = () => {
     setIsGenerating(true);
     setTimeout(() => {
-      const prompt = `Atue como um Especialista em Web Design e Engenheiro de Prompts.
-Gere o código completo para a Landing Page da marca "${blueprint.name}", focada no nicho de ${blueprint.niche}.
-
-ESPECIFICAÇÕES TÉCNICAS:
-- Objetivo: ${blueprint.objective}
-- Estilo Visual: ${blueprint.style}
-- Paleta Primária: ${blueprint.palette[0]}
-- Paleta Secundária: ${blueprint.palette[1]}
-- Tom de Voz: ${blueprint.tone}
-- Público: ${blueprint.audience}
-
-ESTRUTURA SOLICITADA:
-${blueprint.sections.map((s, i) => `${i+1}. ${s}`).join('\n')}
-
-Diferencial Competitivo: ${blueprint.differential}
-
-Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e alta taxa de conversão.`;
+      const isEn = blueprint.language === 'en';
       
-      setGeneratedPrompt(prompt);
+      const promptParts = {
+        role: isEn 
+          ? `[ROLE]: Act as a Senior Frontend Developer and CRO (Conversion Rate Optimization) Specialist. Your mission is to build a high-converting, luxury Landing Page for the brand "${blueprint.name}", focused on the ${blueprint.niche} niche.`
+          : `[ROLE]: Atue como um Desenvolvedor Front-end Senior e Especialista em CRO (Conversion Rate Optimization). Sua missão é construir uma Landing Page de luxo e alta conversão para a marca "${blueprint.name}", focada no nicho de ${blueprint.niche}.`,
+        
+        visual: isEn
+          ? `[VISUAL IDENTITY]:
+- Style: ${blueprint.style} with premium 'Apple-like' aesthetics.
+- Palette: Primary ${blueprint.palette[0]}, Accent ${blueprint.palette[1]}.
+- Effects: Apply backdrop-blur-xl on all cards and subtle borders (10% opacity) for a sleek 'Glassmorphism' effect.
+- Animations: Use Framer Motion for staggered fade-in effects and smooth transitions on scroll.`
+          : `[IDENTIDADE VISUAL]:
+- Estilo: ${blueprint.style} com estética 'Apple-like' premium.
+- Paleta: Primária ${blueprint.palette[0]}, Destaque ${blueprint.palette[1]}.
+- Efeitos: Aplique backdrop-blur-xl em todos os cards e bordas finas (10% opacidade) para um efeito 'Glassmorphism' elegante.
+- Animações: Utilize Framer Motion para efeitos de fade-in escalonados e transições suaves no scroll.`,
+
+        content: isEn
+          ? `[CONTENT ARCHITECTURE]:
+- Strategy: Use the ${blueprint.tone === 'Urgente' ? 'PAS (Problem-Agitation-Solution)' : 'AIDA (Attention-Interesse-Desire-Action)'} framework.
+- Sections: ${blueprint.sections.join(', ')}.
+- Tone: ${blueprint.tone}. Use ${blueprint.tone === 'Urgente' ? 'scarcity and high-energy' : blueprint.tone === 'Luxuoso' ? 'exclusive and sophisticated' : 'clear and direct'} copywriting.
+- Target Audience: ${blueprint.audience}.
+- Unique Value: ${blueprint.differential}.`
+          : `[ARQUITETURA DE CONTEÚDO]:
+- Estratégia: Utilize o framework ${blueprint.tone === 'Urgente' ? 'PAS (Problema-Agitação-Solução)' : 'AIDA (Atenção-Interesse-Desejo-Ação)'}.
+- Seções: ${blueprint.sections.join(', ')}.
+- Tom de Voz: ${blueprint.tone}. Utilize uma copy ${blueprint.tone === 'Urgente' ? 'focada em escassez e alta energia' : blueprint.tone === 'Luxuoso' ? 'exclusiva e sofisticada' : 'clara e direta'}.
+- Público-Alvo: ${blueprint.audience}.
+- Diferencial: ${blueprint.differential}.`,
+
+        tech: isEn
+          ? `[TECHNICAL SPECS]:
+- Framework: Next.js 15 (App Router).
+- Styling: Tailwind CSS (Utility-first).
+- Icons: Lucide-React.
+- Performance: Mobile-first approach, optimized SEO metadata, and modularized code components ready for immediate deployment.`
+          : `[ESPECIFICAÇÕES TÉCNICAS]:
+- Framework: Next.js 15 (App Router).
+- Estilização: Tailwind CSS (Purista).
+- Ícones: Lucide-React.
+- Performance: Abordagem Mobile-first, metadados de SEO otimizados e código modularizado pronto para deploy imediato.`
+      };
+
+      const finalPrompt = `${promptParts.role}\n\n${promptParts.visual}\n\n${promptParts.content}\n\n${promptParts.tech}\n\n${isEn ? 'Generate the complete, high-quality code now.' : 'Gere o código completo e de alta qualidade agora.'}`;
+      
+      setGeneratedPrompt(finalPrompt);
       setIsGenerating(false);
       setBlueprint(prev => ({ ...prev, isGenerated: true }));
-      toast({ title: "Blueprint Gerado!", description: "Seu comando mestre está pronto." });
+      toast({ title: isEn ? "Blueprint Generated!" : "Blueprint Gerado!", description: isEn ? "Your Master Command is ready." : "Seu comando mestre está pronto." });
     }, 3000);
   };
 
@@ -192,8 +229,6 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
               <path d="M0 100 C 200 150, 400 50, 600 100 S 800 150, 1000 100" stroke="white" fill="transparent" strokeWidth="2" />
               <path d="M0 200 C 200 250, 400 150, 600 200 S 800 250, 1000 200" stroke="white" fill="transparent" strokeWidth="2" />
               <path d="M0 300 C 200 350, 400 250, 600 300 S 800 350, 1000 300" stroke="white" fill="transparent" strokeWidth="2" />
-              <path d="M0 400 C 200 450, 400 350, 600 400 S 800 450, 1000 400" stroke="white" fill="transparent" strokeWidth="2" />
-              <path d="M0 500 C 200 550, 400 450, 600 500 S 800 550, 1000 500" stroke="white" fill="transparent" strokeWidth="2" />
             </svg>
           </div>
         </div>
@@ -286,7 +321,27 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                       <CardContent className="p-8 md:p-10 space-y-8">
                         
                         {blueprint.step === 1 && (
-                          <div className="space-y-6">
+                          <div className="space-y-8">
+                            <div className="space-y-3">
+                              <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Idioma do Comando Mestre</Label>
+                              <div className="flex gap-2">
+                                {LANGUAGES.map(lang => (
+                                  <button
+                                    key={lang.id}
+                                    onClick={() => setBlueprint({...blueprint, language: lang.id})}
+                                    className={cn(
+                                      "flex-1 flex items-center justify-center gap-2 h-14 rounded-xl border transition-all",
+                                      blueprint.language === lang.id ? "bg-primary/20 border-primary text-white shadow-[0_0_15px_rgba(124,58,255,0.3)]" : "bg-white/5 border-white/10 text-muted-foreground"
+                                    )}
+                                  >
+                                    <span className="text-lg">{lang.icon}</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest">{lang.label}</span>
+                                  </button>
+                                ))}
+                              </div>
+                              <p className="text-[8px] font-bold text-primary uppercase tracking-widest text-center mt-2">Dica: Comandos em Inglês performam melhor em IAs de código.</p>
+                            </div>
+
                             <div className="space-y-3">
                               <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Nome do Projeto / Marca</Label>
                               <Input 
@@ -341,7 +396,6 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
 
                         {blueprint.step === 3 && (
                           <div className="space-y-10">
-                            {/* Estilo Visual */}
                             <div className="space-y-4">
                               <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Estilo Visual</Label>
                               <div className="flex flex-wrap gap-2">
@@ -360,18 +414,13 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                               </div>
                             </div>
 
-                            {/* Seleção de Cores */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                               <div className="space-y-4">
                                 <div className="flex items-center justify-between">
                                   <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 flex items-center gap-2">
                                     <Droplets className="h-3 w-3 text-primary" /> Cor Primária (HEX)
                                   </Label>
-                                  <SuggestButton 
-                                    onSuggest={handleAIPalette} 
-                                    label="Gerar Paleta IA" 
-                                    icon={Wand2}
-                                  />
+                                  <SuggestButton onSuggest={handleAIPalette} label="Gerar Paleta IA" icon={Wand2} />
                                 </div>
                                 <div className="flex items-center gap-4">
                                   <div className="h-14 w-14 rounded-2xl border border-white/10 shrink-0 shadow-lg" style={{ background: blueprint.palette[0] }} />
@@ -397,7 +446,6 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                               </div>
                             </div>
 
-                            {/* Presets Rápidos */}
                             <div className="space-y-4">
                               <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Presets de Paleta</Label>
                               <div className="flex flex-wrap gap-3">
@@ -495,32 +543,65 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                         )}
 
                         {blueprint.step === 8 && (
-                          <div className="space-y-8 py-10 text-center">
-                            <div className="h-20 w-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto border border-primary/30 animate-pulse">
-                              <ShieldCheck className="h-10 w-10 text-primary" />
-                            </div>
-                            <div className="space-y-2">
-                              <h3 className="text-2xl font-black italic uppercase tracking-tighter">Blueprint Concluído</h3>
-                              <p className="text-muted-foreground text-xs uppercase font-bold tracking-widest">Seu plano neural está pronto para ser processado.</p>
-                            </div>
-                            
+                          <div className="space-y-8 py-10">
                             {isGenerating ? (
-                              <div className="space-y-4">
-                                <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                                  <motion.div 
-                                    className="h-full bg-primary"
-                                    initial={{ width: 0 }}
-                                    animate={{ width: '100%' }}
-                                    transition={{ duration: 3 }}
-                                  />
+                              <div className="text-center space-y-6">
+                                <div className="h-20 w-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto border border-primary/30 animate-pulse">
+                                  <ShieldCheck className="h-10 w-10 text-primary" />
                                 </div>
-                                <p className="text-[8px] font-black uppercase tracking-[0.4em] text-primary animate-pulse italic">Estruturando algoritmos de conversão...</p>
+                                <div className="space-y-4">
+                                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                    <motion.div 
+                                      className="h-full bg-primary"
+                                      initial={{ width: 0 }}
+                                      animate={{ width: '100%' }}
+                                      transition={{ duration: 3 }}
+                                    />
+                                  </div>
+                                  <p className="text-[8px] font-black uppercase tracking-[0.4em] text-primary animate-pulse italic">Engenharia Neural Processando...</p>
+                                </div>
                               </div>
                             ) : blueprint.isGenerated ? (
-                              <div className="p-6 bg-green-500/10 border border-green-500/30 rounded-2xl text-green-400 text-[10px] font-black uppercase tracking-widest">
-                                Comandos neurais gerados com sucesso!
+                              <div className="text-center space-y-4">
+                                <div className="h-16 w-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto border border-green-500/30">
+                                  <Check className="h-8 w-8 text-green-500" />
+                                </div>
+                                <h3 className="text-xl font-black italic uppercase text-green-500">Comando Mestre Compilado</h3>
+                                <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">O código da sua LP está pronto para ser fabricado.</p>
                               </div>
-                            ) : null}
+                            ) : (
+                              <div className="space-y-6">
+                                <div className="flex items-center gap-3 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full w-fit mx-auto">
+                                  <Binary className="h-3 w-3 text-primary" />
+                                  <span className="text-[8px] font-black uppercase tracking-widest text-primary">Technical Blueprint Visualization</span>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-3">
+                                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-1">
+                                    <p className="text-[7px] font-black uppercase text-muted-foreground">Framework</p>
+                                    <p className="text-[10px] font-bold text-white uppercase italic">Next.js 15 (RSC)</p>
+                                  </div>
+                                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-1">
+                                    <p className="text-[7px] font-black uppercase text-muted-foreground">Styling Engine</p>
+                                    <p className="text-[10px] font-bold text-white uppercase italic">Tailwind + Shadcn</p>
+                                  </div>
+                                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-1">
+                                    <p className="text-[7px] font-black uppercase text-muted-foreground">Animations</p>
+                                    <p className="text-[10px] font-bold text-white uppercase italic">Framer Motion 11</p>
+                                  </div>
+                                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-1">
+                                    <p className="text-[7px] font-black uppercase text-muted-foreground">Architecture</p>
+                                    <p className="text-[10px] font-bold text-white uppercase italic">{blueprint.sections.length} Active Modules</p>
+                                  </div>
+                                </div>
+
+                                <div className="p-6 rounded-2xl bg-primary/5 border border-dashed border-primary/20 text-center">
+                                  <p className="text-[9px] font-bold text-white/60 uppercase leading-relaxed italic">
+                                    Ao disparar, a IA assumirá o papel de Engenheiro CRO Sênior para estruturar sua página com {blueprint.tone} copywriting e visual {blueprint.style}.
+                                  </p>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         )}
 
@@ -545,7 +626,7 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                           isStepValid() ? "bg-primary hover:bg-primary/90 shadow-primary/20 animate-pulse" : "bg-white/5 text-muted-foreground border-white/10 cursor-not-allowed"
                         )}
                       >
-                        {blueprint.step === 8 ? 'DISPARAR ENGENHARIA' : 'PRÓXIMO PASSO'}
+                        {blueprint.step === 8 ? (blueprint.isGenerated ? 'REGERAR COMANDO' : 'DISPARAR ENGENHARIA') : 'PRÓXIMO PASSO'}
                         <ChevronRight className="ml-2 h-5 w-5" />
                       </Button>
                     </div>
@@ -560,7 +641,10 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                     className="space-y-6 pt-10"
                   >
                     <div className="flex items-center justify-between">
-                      <h3 className="text-xl font-black italic uppercase text-primary">Comando Mestre</h3>
+                      <div className="flex items-center gap-3">
+                        <Terminal className="h-5 w-5 text-primary" />
+                        <h3 className="text-xl font-black italic uppercase text-white">Comando Mestre de Engenharia</h3>
+                      </div>
                       <div className="flex gap-2">
                         <Button 
                           variant="outline" 
@@ -571,15 +655,19 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                             setTimeout(() => setIsCopied(false), 2000);
                             toast({ title: "Copiado!" });
                           }}
-                          className="h-10 rounded-xl border-white/10 bg-white/5 gap-2"
+                          className="h-10 rounded-xl border-white/10 bg-white/5 gap-2 font-black text-[9px] uppercase tracking-widest"
                         >
                           {isCopied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
                           {isCopied ? 'COPIADO' : 'COPIAR PROMPT'}
                         </Button>
                       </div>
                     </div>
-                    <div className="bg-black/60 p-8 rounded-3xl border border-primary/20 text-sm font-medium italic text-white/80 leading-relaxed font-mono shadow-inner">
+                    <div className="bg-black/60 p-8 rounded-3xl border border-primary/20 text-xs font-medium italic text-white/80 leading-relaxed font-mono shadow-inner whitespace-pre-wrap">
                       {generatedPrompt}
+                    </div>
+                    <div className="flex items-center justify-center gap-2 py-4 opacity-30">
+                      <ShieldCheck className="h-3 w-3" />
+                      <p className="text-[8px] font-black uppercase tracking-[0.4em]">Auditado por FlowPro Neural Security</p>
                     </div>
                   </motion.div>
                 )}
@@ -590,28 +678,22 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
             {/* --- COLUNA 3: LIVE PREVIEW (iPhone) --- */}
             <aside className="w-full lg:w-[450px] border-l border-white/5 bg-black/40 p-10 flex flex-col items-center justify-center flex-shrink-0 hidden xl:flex">
               <div className="relative group">
-                {/* Glow Effect Reativo */}
                 <div 
                   className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full transition-all duration-1000"
                   style={{ backgroundColor: `${blueprint.palette[0]}20` }}
                 />
                 
-                {/* Smartphone Frame */}
                 <div className="w-[300px] h-[620px] bg-[#0a0a0a] rounded-[3.5rem] border-[10px] border-[#1a1a1a] shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative overflow-hidden flex flex-col z-10 transition-all duration-700 backdrop-blur-md">
                   
-                  {/* Notch */}
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-[#1a1a1a] rounded-b-3xl z-20" />
                   
-                  {/* Internal Screen Content */}
                   <div className="flex-1 flex flex-col bg-[#050505] overflow-y-auto no-scrollbar">
-                    {/* Header Simulado */}
                     <div className="h-16 px-6 flex items-center justify-between border-b border-white/5 shrink-0">
                       <div className="h-4 w-12 bg-white/5 rounded-full" />
                       <div className="h-6 w-6 rounded-full bg-primary/20" style={{ background: `${blueprint.palette[0]}30` }} />
                     </div>
 
                     <div className="p-6 space-y-6">
-                      {/* Hero Preview */}
                       <div className="space-y-3 pt-4">
                         <div 
                           className="h-3 w-20 rounded-full mb-2" 
@@ -631,7 +713,6 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                         </div>
                       </div>
 
-                      {/* Dynamic Sections Preview */}
                       <div className="space-y-4 pt-6">
                         {blueprint.sections.map((s, i) => (
                           <div key={i} className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-2">
@@ -647,14 +728,13 @@ Utilize Next.js 15, Tailwind CSS e Lucide Icons. Garanta responsividade mobile e
                     </div>
                   </div>
 
-                  {/* Reflection */}
                   <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.02] to-transparent pointer-events-none" />
                 </div>
               </div>
               
               <div className="mt-10 flex flex-col items-center gap-2">
                 <div className="flex gap-2">
-                  <Smartphone className="h-4 w-4 text-primary" />
+                  <Eye className="h-4 w-4 text-primary" />
                   <span className="text-[10px] font-black uppercase tracking-widest text-white/60 italic">Live Mobile Blueprint</span>
                 </div>
                 <p className="text-[8px] font-bold text-white/20 uppercase">Renderização Neural em Tempo Real</p>
