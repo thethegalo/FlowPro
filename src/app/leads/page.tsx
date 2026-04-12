@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -47,7 +48,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
-// Lista completa de estados brasileiros
 const STATES = [
   "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", 
   "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", 
@@ -67,7 +67,7 @@ const SUGGESTIONS = [
 export default function LeadsPage() {
   const { user } = useUser();
   const db = useFirestore();
-  const { toast } = useToast();
+  const { toast, success, error, warning } = useToast();
   
   const [loading, setLoading] = useState(false);
   const [leads, setLeads] = useState<any[]>([]);
@@ -106,12 +106,12 @@ export default function LeadsPage() {
     setCity(random.city);
     setState(random.state);
     setCountry(random.country);
-    toast({ title: "Sugestão Aplicada", description: `Radar configurado para ${random.niche}.` });
+    success("Sugestão Aplicada", `Radar configurado para ${random.niche}.`);
   };
 
   const handleSearch = async () => {
     if (!niche || !state) {
-      toast({ variant: "destructive", title: "Campos Obrigatórios", description: "Por favor, digite o nicho e selecione o estado." });
+      warning("Campos Obrigatórios", "Por favor, digite o nicho e selecione o estado.");
       return;
     }
     
@@ -131,14 +131,11 @@ export default function LeadsPage() {
       const finalLeads = isProMember ? (data.length > 20 ? data.slice(0, 20) : data) : data.slice(0, 5);
       setLeads(finalLeads);
 
-      toast({ 
-        title: "Escaneamento Concluído!", 
-        description: isProMember 
-          ? `Identificamos ${finalLeads.length} novos alvos de alta probabilidade.` 
-          : "Encontramos vários leads! Faça upgrade para ver o relatório completo."
-      });
+      success("Escaneamento Concluído!", isProMember 
+        ? `Identificamos ${finalLeads.length} novos alvos de alta probabilidade.` 
+        : "Relatório parcial gerado. Faça upgrade para ver todos os alvos.");
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Erro no Radar", description: e.message || "Conexão neural interrompida." });
+      error("Erro no Radar", e.message || "Conexão neural interrompida.");
     } finally {
       setLoading(false);
     }
@@ -164,10 +161,10 @@ export default function LeadsPage() {
 
     try {
       await addDoc(collection(db, 'users', user.uid, 'capturedLeads'), leadData);
-      toast({ title: "Alvo Adicionado", description: "Coordenadas salvas na base de dados." });
+      success("Alvo Registrado", "As coordenadas foram salvas na base neural local.");
       setManualLead({ name: '', email: '', phone: '', businessType: '' });
       setIsDialogOpen(false);
-    } catch (error: any) {
+    } catch (err: any) {
       errorEmitter.emit('permission-error', new FirestorePermissionError({
         path: `users/${user.uid}/capturedLeads`,
         operation: 'create',
@@ -180,7 +177,7 @@ export default function LeadsPage() {
 
   const handleWhatsApp = (phone: string, message: string) => {
     if (!phone || phone === 'Telefone não listado') {
-      toast({ variant: "destructive", title: "Contato Indisponível", description: "Este lead não possui um número válido." });
+      warning("Contato Indisponível", "Este lead não possui um número válido registrado.");
       return;
     }
     const cleanPhone = phone.replace(/\D/g, '');
@@ -200,12 +197,13 @@ export default function LeadsPage() {
       
       if (res && res.message) {
         setActiveScript({ id: lead.id, message: res.message, phone: lead.phone });
+        success("Script Gerado", "Mensagem personalizada composta com sucesso.");
         if (!approachedLeads.includes(lead.id)) {
           setApproachedLeads(prev => [...prev, lead.id]);
         }
       }
     } catch (e: any) {
-      toast({ variant: "destructive", title: "Falha na IA", description: "O motor neural falhou ao compor a mensagem." });
+      error("Falha na IA", "O motor neural falhou ao compor a mensagem.");
     } finally {
       setGeneratingMsg(null);
     }
@@ -213,24 +211,10 @@ export default function LeadsPage() {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-transparent relative overflow-hidden">
-        {/* Radar Background Effects */}
-        <div className="fixed inset-0 pointer-events-none z-0">
-          <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-primary/5 rounded-full blur-[180px] animate-pulse"></div>
-          <div className="absolute bottom-0 left-0 w-[40%] h-[40%] bg-cyan-500/3 rounded-full blur-[150px]"></div>
-          {/* Dotted World Map Mockup */}
-          <div 
-            className="absolute inset-0 opacity-[0.03] mix-blend-overlay"
-            style={{ 
-              backgroundImage: `radial-gradient(circle, white 1px, transparent 1px)`,
-              backgroundSize: '30px 30px'
-            }}
-          />
-        </div>
-
+      <div className="flex min-h-screen w-full bg-transparent relative overflow-hidden z-10">
         <AppSidebar />
         
-        <main className="flex-1 flex flex-col min-w-0 relative z-10 bg-transparent">
+        <main className="flex-1 flex flex-col min-w-0 relative z-10">
           <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-50">
             <div className="flex items-center gap-4">
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
@@ -312,20 +296,12 @@ export default function LeadsPage() {
           </header>
 
           <div className="flex-1 container max-w-5xl mx-auto p-4 md:p-12 space-y-12 relative overflow-visible bg-transparent">
-            
-            {/* Radar Search Form */}
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               className="relative"
             >
-              <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-full h-[400px] flex items-center justify-center pointer-events-none">
-                <div className="w-[300px] h-[300px] rounded-full border border-primary/10 animate-ping opacity-20" />
-                <div className="absolute w-[500px] h-[500px] rounded-full border border-primary/5 animate-pulse" />
-                <Globe className="h-64 w-64 text-primary opacity-10 absolute animate-slow-spin" />
-              </div>
-
               <Card className="glass-card overflow-hidden shadow-[0_0_60px_rgba(124,58,255,0.08)] bg-transparent">
                 <CardHeader className="bg-white/5 border-b border-white/5 p-8 flex flex-row items-center justify-between">
                   <div className="space-y-1">
@@ -351,7 +327,7 @@ export default function LeadsPage() {
                         <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                         <Input 
                           placeholder="Ex: Barbearia, Dentista, Academia..." 
-                          className="bg-white/5 border-white/10 h-16 pl-12 rounded-2xl focus-visible:ring-primary focus-visible:shadow-[0_0_20px_rgba(124,58,255,0.2)] transition-all text-base font-medium"
+                          className="bg-white/5 border-white/10 h-16 pl-12 rounded-2xl focus-visible:ring-primary transition-all text-base font-medium"
                           value={niche}
                           onChange={e => setNiche(e.target.value)}
                           disabled={loading}
@@ -365,7 +341,7 @@ export default function LeadsPage() {
                         <Navigation className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                         <Input 
                           placeholder="Ex: São Paulo" 
-                          className="bg-white/5 border-white/10 h-16 pl-12 rounded-2xl focus-visible:ring-primary focus-visible:shadow-[0_0_20px_rgba(124,58,255,0.2)] transition-all text-base font-medium"
+                          className="bg-white/5 border-white/10 h-16 pl-12 rounded-2xl focus-visible:ring-primary transition-all text-base font-medium"
                           value={city}
                           onChange={e => setCity(e.target.value)}
                           disabled={loading}
@@ -394,7 +370,7 @@ export default function LeadsPage() {
                         <Flag className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                         <Input 
                           placeholder="Ex: Brasil" 
-                          className="bg-white/5 border-white/10 h-16 pl-12 rounded-2xl focus-visible:ring-primary focus-visible:shadow-[0_0_20px_rgba(124,58,255,0.2)] transition-all text-base font-medium"
+                          className="bg-white/5 border-white/10 h-16 pl-12 rounded-2xl focus-visible:ring-primary transition-all text-base font-medium"
                           value={country}
                           onChange={e => setCountry(e.target.value)}
                           disabled={loading}
@@ -406,7 +382,7 @@ export default function LeadsPage() {
                       <Button 
                         onClick={handleSearch} 
                         disabled={loading}
-                        className="w-full h-20 bg-gradient-to-r from-primary to-pink-600 hover:scale-[1.01] transition-all rounded-[2rem] font-black uppercase tracking-[0.3em] text-lg shadow-[0_20px_50px_rgba(124,58,255,0.3)] active:scale-95 relative overflow-hidden group before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:-translate-x-full hover:before:translate-x-full before:transition-transform before:duration-700"
+                        className="w-full h-20 bg-primary hover:bg-primary/90 transition-all rounded-[2rem] font-black uppercase tracking-[0.3em] text-lg shadow-[0_20px_50px_rgba(124,58,255,0.3)] active:scale-95"
                       >
                         {loading ? (
                           <div className="flex items-center gap-4">
@@ -425,42 +401,17 @@ export default function LeadsPage() {
               </Card>
             </motion.div>
 
-            {/* Results Section */}
             <div className="space-y-8 pb-32 bg-transparent">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white">
-                    {leads.length > 0 ? `Relatório de Varredura` : 'Alvos Identificados'}
+                    Alvos Identificados
                   </h2>
                   <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest">
-                    {leads.length > 0 ? `${leads.length} alvos encontrados na região de ${city || state}` : 'O radar está aguardando o comando de inicialização'}
+                    O radar neural está operando na sua frequência de escala
                   </p>
                 </div>
-                {leads.length > 0 && (
-                  <Button variant="outline" size="sm" onClick={() => setLeads([])} className="h-10 rounded-xl border-white/10 text-[9px] font-black uppercase opacity-50 hover:opacity-100 transition-all">
-                    Resetar Radar
-                  </Button>
-                )}
               </div>
-
-              {!isProMember && leads.length > 0 && (
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="p-8 bg-gradient-to-br from-primary/20 to-pink-600/10 border border-primary/30 rounded-[2.5rem] flex flex-col md:flex-row items-center justify-between gap-8 shadow-[0_0_60px_rgba(124,58,255,0.15)]"
-                >
-                  <div className="space-y-2 text-center md:text-left">
-                    <div className="flex items-center gap-2 justify-center md:justify-start">
-                      <div className="h-2 w-2 rounded-full bg-primary animate-ping" />
-                      <p className="text-xs font-black uppercase text-primary tracking-[0.2em]">MODO LIMITADO ATIVO</p>
-                    </div>
-                    <p className="text-sm text-white/80 font-medium">Sua conta atual permite visualizar apenas 5 alvos por busca. Libere a varredura completa agora.</p>
-                  </div>
-                  <Button asChild className="h-14 px-10 bg-primary text-white font-black uppercase tracking-widest rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all">
-                    <Link href="/paywall">UPGRADE VITALÍCIO</Link>
-                  </Button>
-                </motion.div>
-              )}
 
               <div className="grid gap-6">
                 <AnimatePresence mode="popLayout">
@@ -469,28 +420,16 @@ export default function LeadsPage() {
                       key="empty"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
                       className="py-32 text-center glass-card border-dashed border-white/10 bg-transparent"
                     >
-                      <div className="h-24 w-24 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-8 opacity-20 relative">
-                        <Search className="h-12 w-12 text-white" />
-                        <div className="absolute inset-0 border-2 border-primary/30 rounded-full animate-ping" />
-                      </div>
                       <p className="text-muted-foreground uppercase text-[11px] font-black tracking-[0.5em] px-8 leading-relaxed">
-                        SISTEMA AGUARDANDO COORDENADAS... <br />
-                        <span className="opacity-50 mt-2 block font-bold tracking-widest text-[9px]">Insira o nicho e a localização acima</span>
+                        SISTEMA AGUARDANDO COORDENADAS...
                       </p>
                     </motion.div>
                   ) : loading ? (
                     <div key="loading" className="py-32 text-center space-y-8">
-                      <div className="relative h-24 w-24 mx-auto">
-                        <div className="absolute inset-0 bg-primary/20 rounded-full blur-[40px] animate-pulse"></div>
-                        <Loader2 className="h-24 w-24 animate-spin text-primary relative z-10" />
-                      </div>
-                      <div className="space-y-2">
-                        <p className="text-primary uppercase text-[11px] font-black tracking-[0.5em] animate-pulse">Sincronizando Banco de Dados Neural...</p>
-                        <p className="text-white/30 text-[8px] font-bold uppercase tracking-widest">Identificando padrões de consumo e faturamento</p>
-                      </div>
+                      <Loader2 className="h-24 w-24 animate-spin text-primary mx-auto" />
+                      <p className="text-primary uppercase text-[11px] font-black tracking-[0.5em] animate-pulse">Sincronizando Banco de Dados Neural...</p>
                     </div>
                   ) : (
                     leads.map((lead, i) => (
@@ -500,18 +439,18 @@ export default function LeadsPage() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.1 }}
                       >
-                        <Card className={`glass-card transition-all duration-500 overflow-hidden group hover:shadow-[0_0_30px_rgba(124,58,255,0.12)] hover:border-primary/30 bg-transparent ${approachedLeads.includes(lead.id) ? 'opacity-60 grayscale' : ''}`}>
+                        <Card className={`glass-card transition-all duration-500 overflow-hidden group bg-transparent ${approachedLeads.includes(lead.id) ? 'opacity-60 grayscale' : ''}`}>
                           <CardContent className="p-10">
                             <div className="flex flex-col xl:flex-row justify-between gap-10">
                               <div className="flex gap-8 items-start flex-1">
-                                <div className="h-16 w-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shrink-0 border border-primary/20 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                                <div className="h-16 w-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shrink-0 border border-primary/20">
                                   <MapPin className="h-8 w-8" />
                                 </div>
                                 <div className="space-y-3 flex-1">
                                   <div className="flex items-center gap-4 flex-wrap">
                                     <h4 className="font-black text-2xl italic leading-none text-white uppercase tracking-tight">{lead.name}</h4>
                                     {lead.rating && lead.rating !== '0' && (
-                                      <Badge variant="outline" className="bg-yellow-500/10 border-yellow-500/30 text-yellow-500 text-[10px] font-black py-1 px-3 shadow-[0_0_10px_rgba(234,179,8,0.3)]">
+                                      <Badge variant="outline" className="bg-yellow-500/10 border-yellow-500/30 text-yellow-500 text-[10px] font-black py-1 px-3">
                                         ★ {lead.rating}
                                       </Badge>
                                     )}
@@ -532,24 +471,22 @@ export default function LeadsPage() {
                                 </div>
                               </div>
 
-                              <div className="flex flex-col md:flex-col lg:flex-row xl:flex-col 2xl:flex-row gap-3 items-center min-w-[200px]">
+                              <div className="flex flex-col gap-3 min-w-[200px]">
                                 <Button 
-                                  variant="default" 
-                                  size="lg"
                                   onClick={() => handleGenMessage(lead)}
                                   disabled={generatingMsg === lead.id}
-                                  className="w-full h-14 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-xl hover:scale-105 active:scale-95 transition-all group/btn"
+                                  className="w-full h-14 bg-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-xl hover:scale-105 active:scale-95 transition-all"
                                 >
-                                  {generatingMsg === lead.id ? <Loader2 className="h-5 w-5 animate-spin" /> : <Zap className="h-5 w-5 group-hover/btn:animate-pulse" />}
+                                  {generatingMsg === lead.id ? <Loader2 className="h-5 w-5 animate-spin" /> : <Zap className="h-5 w-5" />}
                                   GERAR SCRIPT IA
                                 </Button>
 
                                 <Button 
                                   variant="ghost" 
-                                  size="lg"
                                   onClick={() => {
                                     if (!approachedLeads.includes(lead.id)) {
                                       setApproachedLeads(prev => [...prev, lead.id]);
+                                      success("Alvo Marcado", "Lead marcado como abordado na sua base local.");
                                     } else {
                                       setApproachedLeads(prev => prev.filter(id => id !== lead.id));
                                     }
@@ -572,12 +509,7 @@ export default function LeadsPage() {
                                 className="mt-8 p-8 bg-black/60 backdrop-blur-md border border-primary/30 rounded-3xl relative"
                               >
                                 <div className="flex items-center justify-between mb-6">
-                                  <div className="flex items-center gap-3">
-                                    <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                                      <MessageSquare className="h-4 w-4 text-white" />
-                                    </div>
-                                    <h5 className="text-[11px] font-black uppercase tracking-widest text-primary italic">Script de Abordagem Personalizado</h5>
-                                  </div>
+                                  <h5 className="text-[11px] font-black uppercase tracking-widest text-primary italic">Script de Abordagem Personalizado</h5>
                                   <Button variant="ghost" size="sm" onClick={() => setActiveScript(null)} className="h-8 w-8 p-0 text-white/30 hover:text-white rounded-full">
                                     <X className="h-5 w-5" />
                                   </Button>
@@ -605,16 +537,6 @@ export default function LeadsPage() {
             </div>
           </div>
         </main>
-
-        <style jsx global>{`
-          @keyframes slow-spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-          }
-          .animate-slow-spin {
-            animation: slow-spin 60s linear infinite;
-          }
-        `}</style>
       </div>
     </SidebarProvider>
   );

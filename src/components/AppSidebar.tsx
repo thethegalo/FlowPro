@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -18,6 +19,7 @@ import { signOut } from "firebase/auth";
 import Image from "next/image";
 import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 import {
   Sidebar,
@@ -41,6 +43,7 @@ export function AppSidebar() {
   const db = useFirestore();
   const router = useRouter();
   const pathname = usePathname();
+  const { warning } = useToast();
 
   const isAdmin = React.useMemo(() => user?.email === ADMIN_EMAIL, [user]);
 
@@ -60,6 +63,13 @@ export function AppSidebar() {
 
   const handleSignOut = () => {
     signOut(auth).then(() => router.push('/'));
+  };
+
+  const handleLockedClick = (e: React.MouseEvent) => {
+    if (!isApproved) {
+      e.preventDefault();
+      warning("Acesso Pendente", "Seu perfil está em análise manual. Aguarde a liberação do mestre.");
+    }
   };
 
   const menuItems = [
@@ -106,16 +116,15 @@ export function AppSidebar() {
                       <SidebarMenuButton 
                         asChild 
                         isActive={isActive}
-                        disabled={!isApproved}
                         className={cn(
                           "h-8 rounded-md px-3 flex items-center gap-2.5 transition-all duration-120 group border-none",
-                          !isApproved ? 'opacity-20 pointer-events-none' : '',
+                          !isApproved ? 'opacity-20 cursor-not-allowed' : '',
                           isActive 
                             ? 'bg-[#8b5cf6]/12 text-white/90' 
                             : 'text-white/55 hover:bg-white/5 hover:text-white/75'
                         )}
                       >
-                        <Link href={isApproved ? item.url : "#"}>
+                        <Link href={isApproved ? item.url : "#"} onClick={handleLockedClick}>
                           <item.icon className={cn(
                             "size-[15px] shrink-0 transition-colors duration-300",
                             isActive ? 'text-[#a78bfa]' : 'text-white/35'

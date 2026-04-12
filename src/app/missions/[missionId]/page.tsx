@@ -220,7 +220,7 @@ export default function MissionPage() {
   
   const { user, isUserLoading } = useUser();
   const db = useFirestore();
-  const { toast } = useToast();
+  const { toast, success, warning } = useToast();
   const router = useRouter();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -244,48 +244,41 @@ export default function MissionPage() {
     return progressData ? progressData.filter(p => p.isCompleted).map(p => p.missionId) : [];
   }, [progressData]);
 
-  // Verificação de segurança (Conclusão prévia + Tempo)
   useEffect(() => {
     if (!isUserLoading && !isProgressLoading && !isUserDocLoading && progressData && userData && missionId) {
       if (!content) return;
 
       const isSpecialUser = user?.email === "thethegalo@gmail.com";
       
-      // 1. Verificação de Ordem
       if (missionId !== 'dia1') {
         const dayNum = parseInt(missionId.replace('dia', ''));
         const prevMissionId = `dia${dayNum - 1}`;
         if (!completedMissionIds.includes(prevMissionId) && !completedMissionIds.includes(missionId)) {
-          toast({ variant: "destructive", title: "Missão Bloqueada", description: "Complete a etapa anterior primeiro." });
+          warning("Missão Bloqueada", "Complete a etapa anterior primeiro para avançar.");
           router.push('/dashboard');
           return;
         }
       }
 
-      // 2. Verificação de Tempo (1 por dia)
       if (!isSpecialUser) {
         const created = userData.createdAt.toDate ? userData.createdAt.toDate() : new Date(userData.createdAt);
         const diffInMs = Date.now() - created.getTime();
         const currentJourneyDay = Math.floor(diffInMs / (1000 * 60 * 60 * 24)) + 1;
 
         if (content.order > currentJourneyDay && !completedMissionIds.includes(missionId)) {
-          toast({ 
-            variant: "destructive", 
-            title: "Aguarde o Tempo Neural", 
-            description: `Esta missão será liberada em ${content.order - currentJourneyDay} dia(s).` 
-          });
+          warning("Aguarde o Tempo Neural", `Esta missão será liberada em ${content.order - currentJourneyDay} dia(s).`);
           router.push('/dashboard');
         }
       }
     }
-  }, [progressData, userData, missionId, completedMissionIds, router, toast, isUserLoading, isProgressLoading, isUserDocLoading, content, user?.email]);
+  }, [progressData, userData, missionId, completedMissionIds, router, warning, isUserLoading, isProgressLoading, isUserDocLoading, content, user?.email]);
 
   const handleCopy = () => {
     if (!content) return;
     navigator.clipboard.writeText(content.script);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-    toast({ title: "Script Copiado!", description: "Personalize e envie para o lead." });
+    success("Script Copiado!", "Personalize e envie para o lead via WhatsApp.");
   };
 
   const toggleTask = (index: number) => {
@@ -298,11 +291,7 @@ export default function MissionPage() {
     if (!user || !db || !content) return;
     
     if (completedTasks.length < content.tasks.length) {
-      toast({ 
-        variant: "destructive", 
-        title: "Ação Requerida", 
-        description: "Marque todos os itens da checklist antes de concluir a missão." 
-      });
+      warning("Ação Requerida", "Marque todos os itens da checklist antes de concluir a missão.");
       return;
     }
 
@@ -325,11 +314,11 @@ export default function MissionPage() {
       if (missionId === 'dia7') {
         setShowCelebration(true);
       } else {
-        toast({ title: "Missão Concluída!", description: `Etapa finalizada com sucesso!` });
+        success(`Missão ${missionId.toUpperCase()} Concluída!`, "Você avançou um passo importante na sua escala.");
         router.push('/dashboard');
       }
     } catch (error: any) {
-      toast({ variant: "destructive", title: "Erro", description: error.message });
+      toast({ variant: "destructive", title: "Erro ao salvar progresso", description: error.message });
       setIsSubmitting(false);
     }
   };
@@ -367,7 +356,7 @@ export default function MissionPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050508] flex flex-col">
+    <div className="min-h-screen bg-transparent flex flex-col relative z-10">
       <header className="px-4 h-16 flex items-center border-b border-white/5 bg-[#050508]/80 sticky top-0 z-50">
         <Link href="/dashboard" className="mr-4 text-muted-foreground hover:text-primary transition-colors">
           <ArrowLeft className="h-5 w-5" />

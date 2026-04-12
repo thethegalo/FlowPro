@@ -47,7 +47,7 @@ const ADMIN_EMAIL = "thethegalo@gmail.com";
 export default function ResourcesPage() {
   const { user } = useUser();
   const db = useFirestore();
-  const { toast } = useToast();
+  const { success, warning, error } = useToast();
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const userDocRef = useMemoFirebase(() => {
@@ -70,27 +70,18 @@ export default function ResourcesPage() {
 
   const copyToClipboard = (text: string, id: string, isPro: boolean) => {
     if (isPro && !isProMember) {
-      toast({
-        variant: "destructive",
-        title: "Recurso Pro",
-        description: "Scripts avançados são exclusivos para membros Flow Pro ou Vitalícios.",
-      });
+      warning("Recurso Pro", "Scripts avançados são exclusivos para membros Flow Pro ou Vitalícios.");
       return;
     }
     navigator.clipboard.writeText(text);
     setCopiedId(id);
-    toast({ title: "Copiado!", description: "Script pronto para uso." });
+    success("Copiado!", "Script pronto para ser colado e personalizado.");
     setTimeout(() => setCopiedId(null), 2000);
   };
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-[#050508] relative">
-        <div className="fixed inset-0 pointer-events-none z-0">
-          <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[150px] animate-pulse" />
-          <div className="absolute bottom-[-20%] left-[-10%] w-[40%] h-[40%] bg-accent/5 rounded-full blur-[120px]" />
-        </div>
-
+      <div className="flex min-h-screen w-full bg-transparent relative z-10">
         <AppSidebar />
         
         <main className="flex-1 flex flex-col min-w-0 relative z-10">
@@ -111,15 +102,15 @@ export default function ResourcesPage() {
 
           <div className="flex-1 container max-w-4xl mx-auto p-4 md:p-8 space-y-8">
             <div className="space-y-2">
-              <h2 className="text-3xl font-black italic uppercase tracking-tighter bg-gradient-to-r from-white via-primary to-white bg-clip-text text-transparent">Arsenal de Scripts</h2>
+              <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white">Arsenal de Scripts</h2>
               <p className="text-muted-foreground uppercase text-[10px] font-bold tracking-widest">Modelos de alta conversão testados no campo de batalha.</p>
             </div>
 
             <Tabs defaultValue="outreach" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 bg-white/5 p-1 h-14 rounded-2xl shadow-inner border border-white/5">
-                <TabsTrigger value="outreach" className="gap-2 font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-primary data-[state=active]:text-white rounded-xl"><Mail className="h-4 w-4" /> Abordagem</TabsTrigger>
-                <TabsTrigger value="closing" className="gap-2 font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-primary data-[state=active]:text-white rounded-xl"><Zap className="h-4 w-4" /> Fechamento</TabsTrigger>
-                <TabsTrigger value="models" className="gap-2 font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-primary data-[state=active]:text-white rounded-xl"><FileCheck className="h-4 w-4" /> Modelos</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-3 bg-white/5 p-1 h-14 rounded-2xl border border-white/5">
+                <TabsTrigger value="outreach" className="gap-2 font-black uppercase text-[10px] tracking-widest rounded-xl"><Mail className="h-4 w-4" /> Abordagem</TabsTrigger>
+                <TabsTrigger value="closing" className="gap-2 font-black uppercase text-[10px] tracking-widest rounded-xl"><Zap className="h-4 w-4" /> Fechamento</TabsTrigger>
+                <TabsTrigger value="models" className="gap-2 font-black uppercase text-[10px] tracking-widest rounded-xl"><FileCheck className="h-4 w-4" /> Modelos</TabsTrigger>
               </TabsList>
 
               {Object.entries(SCRIPTS).map(([key, list]) => (
@@ -127,7 +118,7 @@ export default function ResourcesPage() {
                   {list.map((script, idx) => {
                     const isLocked = script.pro && !isProMember;
                     return (
-                      <Card key={idx} className={`glass-card border-white/10 transition-all ${isLocked ? 'opacity-60' : 'hover:border-primary/30 hover:shadow-[0_0_30px_rgba(124,58,255,0.1)]'} rounded-[1.5rem]`}>
+                      <Card key={idx} className={`glass-card border-white/10 transition-all ${isLocked ? 'opacity-60' : 'hover:border-primary/30'} rounded-[1.5rem]`}>
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                           <div className="space-y-1">
                             <CardTitle className="text-lg font-black italic uppercase tracking-tight flex items-center gap-2">
@@ -177,7 +168,7 @@ export default function ResourcesPage() {
                     <h3 className="text-xl font-black italic uppercase tracking-tighter">Precisa de Scripts de Elite?</h3>
                     <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">Desbloqueie a Fase 2 para ter acesso a modelos de escala agressiva.</p>
                   </div>
-                  <Button asChild className="bg-primary hover:bg-primary/90 rounded-2xl h-14 px-8 font-black uppercase tracking-widest shadow-lg shadow-primary/20 relative overflow-hidden after:absolute after:inset-0 after:bg-gradient-to-r after:from-transparent after:via-white/10 after:to-transparent after:translate-x-[-100%] hover:after:translate-x-[100%] after:transition-transform after:duration-700">
+                  <Button asChild className="bg-primary hover:bg-primary/90 rounded-2xl h-14 px-8 font-black uppercase tracking-widest shadow-lg shadow-primary/20 transition-all">
                     <Link href="/paywall">EVOLUIR PARA PRO</Link>
                   </Button>
                 </CardContent>
