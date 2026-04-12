@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useEffect, useState } from 'react';
@@ -12,32 +13,23 @@ import {
   CheckCircle2, 
   Flame, 
   MessageSquare, 
-  BookOpen, 
   Lock,
   Loader2,
   DollarSign,
   Target,
   Search,
-  UserCheck,
   Trophy,
   ArrowUpRight,
-  ShieldAlert,
-  Clock,
-  ShieldCheck,
   Sparkles,
-  Plus,
-  TrendingUp,
   Zap,
-  AlertCircle,
-  TrendingDown,
   Calendar,
-  ShieldX,
-  ChevronRight,
-  Timer,
-  Play
+  Play,
+  Bell,
+  TrendingUp,
+  Activity
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
-import { collection, query, orderBy, doc, setDoc, addDoc, increment, serverTimestamp, getDoc, limit, where } from 'firebase/firestore';
+import { collection, query, orderBy, doc, getDoc, limit } from 'firebase/firestore';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { useToast } from '@/hooks/use-toast';
@@ -50,7 +42,8 @@ import {
   ResponsiveContainer,
   Tooltip
 } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import { Input } from '@/components/ui/input';
 
 const ADMIN_EMAIL = "thethegalo@gmail.com";
 
@@ -99,17 +92,9 @@ export default function Dashboard() {
     return 'Usuário';
   }, [userData?.name, user?.displayName, user?.email, isSpecialUser, isGrayUser]);
 
-  const subQuery = useMemoFirebase(() => {
-    if (!db || !user) return null;
-    return query(collection(db, 'users', user.uid, 'subscriptions'));
-  }, [db, user]);
-  const { data: subData } = useCollection(subQuery);
-
   const isProMember = useMemo(() => {
-    const hasActiveSub = subData?.some(sub => (sub.planType === 'monthly' || sub.planType === 'lifetime') && sub.status === 'active');
-    const hasPremiumPlan = userData?.plan === 'vitalicio' || userData?.plan === 'mensal' || userData?.plan === 'trimestral';
-    return hasActiveSub || hasPremiumPlan || isSpecialUser || isGrayUser;
-  }, [subData, isSpecialUser, isGrayUser, userData]);
+    return userData?.plan === 'vitalicio' || userData?.plan === 'mensal' || userData?.plan === 'trimestral' || isSpecialUser || isGrayUser;
+  }, [isSpecialUser, isGrayUser, userData]);
 
   const currentJourneyDay = useMemo(() => {
     if (!userData?.createdAt) return 1;
@@ -195,11 +180,8 @@ export default function Dashboard() {
       let dailyValue = earningsByDate[dateKey] || 0;
       
       if (dailyValue === 0) {
-        if (isSpecialUser) {
-          dailyValue = lucasValues[30 - i] || 0;
-        } else if (isGrayUser) {
-          dailyValue = grayValues[30 - i] || 0;
-        }
+        if (isSpecialUser) dailyValue = lucasValues[30 - i] || 0;
+        else if (isGrayUser) dailyValue = grayValues[30 - i] || 0;
       }
       
       data.push({ date: dayStr, ganhos: dailyValue });
@@ -229,58 +211,149 @@ export default function Dashboard() {
         <AppSidebar />
         
         <main className="flex-1 flex flex-col min-w-0 relative z-10">
-          <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-black/40 backdrop-blur-md sticky top-0 z-40 overflow-hidden">
-            <div className="flex items-center gap-4">
-              <SidebarTrigger className="text-muted-foreground hover:text-white" />
-              <div className="h-6 w-px bg-white/10 hidden md:block" />
-              <h2 className="text-sm font-black italic uppercase tracking-widest flex items-center gap-2 animate-gradient-text">
-                <Sparkles className="h-4 w-4 text-primary" /> Painel de Comando
-              </h2>
+          {/* HEADER ULTRA-PREMIUM */}
+          <header className="h-24 px-8 flex items-center justify-between bg-black/20 backdrop-blur-md border-b border-white/5 sticky top-0 z-50">
+            <div className="space-y-1">
+              <h1 className="text-[28px] font-bold text-white tracking-tight leading-none">
+                Olá, {displayName} 👋
+              </h1>
+              <p className="text-sm font-medium text-white/40">
+                Seja bem-vindo ao seu centro de comando tático.
+              </p>
             </div>
-            <Badge variant="outline" className={`${isProMember ? 'bg-purple-500/10 border-purple-500/30 text-purple-400' : 'bg-white/5'} text-[8px] font-black uppercase px-3 py-1 relative z-50`}>
-              {isSpecialUser ? 'VITALÍCIO' : isGrayUser ? 'MENSAL' : (userData?.plan?.toUpperCase() || 'ACESSO LIMITADO')}
-            </Badge>
+
+            <div className="flex items-center gap-6">
+              <div className="hidden md:flex relative group w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30 group-focus-within:text-primary transition-colors" />
+                <Input 
+                  placeholder="Pesquisar ferramentas..." 
+                  className="h-10 bg-white/5 border-[#8b5cf6]/20 pl-10 text-xs rounded-lg focus-visible:ring-primary focus-visible:bg-white/[0.08] transition-all"
+                />
+              </div>
+
+              <div className="flex items-center gap-4">
+                <Badge className="h-9 px-4 bg-gradient-to-r from-[#7c3aed] to-[#9333ea] border-none text-[10px] font-black uppercase tracking-widest text-white shadow-[0_0_20px_rgba(124,58,237,0.3)] rounded-lg">
+                  ⚡ VITALÍCIO
+                </Badge>
+                
+                <button className="relative h-10 w-10 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                  <Bell className="h-5 w-5 text-white/60" />
+                  <span className="absolute top-2.5 right-2.5 h-2 w-2 bg-red-500 rounded-full border-2 border-[#05050f]" />
+                </button>
+              </div>
+            </div>
           </header>
 
-          <div className="flex-1 p-8 space-y-12 max-w-5xl mx-auto w-full">
-            <div className="flex flex-col md:flex-row justify-between items-end gap-6">
-              <div className="space-y-3">
-                <h1 className="text-4xl font-black italic uppercase tracking-tighter text-white">{displayName}</h1>
-                <div className="flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full w-fit status-badge">
-                  <div className={userLevel.color}>{userLevel.icon}</div>
-                  <span className={`text-[10px] font-black uppercase tracking-widest ${userLevel.color}`}>Patente {userLevel.name}</span>
-                </div>
+          <div className="flex-1 p-8 space-y-10 max-w-7xl mx-auto w-full">
+            
+            {/* GRID DE MÉTRICAS (3 COLUNAS) */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Card 1: Ganhos Totais */}
+              <div className="group relative">
+                <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#a855f7] to-transparent z-10" />
+                <Card className="bg-white/5 border border-[#8b5cf6]/15 rounded-2xl p-6 transition-all duration-300 hover:translate-y-[-2px] hover:border-[#a855f7]/35 relative overflow-hidden">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="space-y-1">
+                      <p className="text-[11px] font-bold text-white/40 uppercase tracking-[0.8px]">Placar de Caixa</p>
+                      <h3 className="text-[28px] font-bold text-[#f0eeff] tracking-tight">
+                        <AnimatedNumber value={totalEarnings} prefix="R$ " />
+                      </h3>
+                    </div>
+                    <div className="p-2 bg-white/5 rounded-lg opacity-30 group-hover:opacity-100 transition-opacity">
+                      <DollarSign className="h-5 w-5 text-primary" />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-green-500/10 border-green-500/25 text-[#4ade80] text-[10px] font-bold px-2 py-0.5 rounded-md">
+                      +12% hoje
+                    </Badge>
+                    <span className="text-[10px] text-white/20 font-medium uppercase tracking-widest">Meta: R$ {displayGoal.toLocaleString('pt-BR')}</span>
+                  </div>
+                </Card>
               </div>
-              <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 max-w-xs">
-                <p className="text-[10px] font-bold text-white/80 leading-relaxed uppercase">
-                  {isProMember ? "Modo de operação ativo. Acelere para a escala!" : "Assine um plano para liberar o Radar Neural completo."}
-                </p>
+
+              {/* Card 2: Ações Diárias */}
+              <div className="group relative">
+                <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#a855f7] to-transparent z-10" />
+                <Card className="bg-white/5 border border-[#8b5cf6]/15 rounded-2xl p-6 transition-all duration-300 hover:translate-y-[-2px] hover:border-[#a855f7]/35 relative overflow-hidden">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="space-y-1">
+                      <p className="text-[11px] font-bold text-white/40 uppercase tracking-[0.8px]">Execução Diária</p>
+                      <h3 className="text-[28px] font-bold text-[#f0eeff] tracking-tight">
+                        <AnimatedNumber value={dailyActions} /> <span className="text-lg opacity-30">/ {dailyGoal}</span>
+                      </h3>
+                    </div>
+                    <div className="p-2 bg-white/5 rounded-lg opacity-30 group-hover:opacity-100 transition-opacity">
+                      <Activity className="h-5 w-5 text-primary" />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-blue-500/10 border-blue-500/25 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                      Alta Performance
+                    </Badge>
+                    <span className="text-[10px] text-white/20 font-medium uppercase tracking-widest">Ritmo constante</span>
+                  </div>
+                </Card>
+              </div>
+
+              {/* Card 3: Progresso Jornada */}
+              <div className="group relative">
+                <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#a855f7] to-transparent z-10" />
+                <Card className="bg-white/5 border border-[#8b5cf6]/15 rounded-2xl p-6 transition-all duration-300 hover:translate-y-[-2px] hover:border-[#a855f7]/35 relative overflow-hidden">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="space-y-1">
+                      <p className="text-[11px] font-bold text-white/40 uppercase tracking-[0.8px]">Status Jornada</p>
+                      <h3 className="text-[28px] font-bold text-[#f0eeff] tracking-tight">
+                        Dia {currentJourneyDay} <span className="text-lg opacity-30">Ativo</span>
+                      </h3>
+                    </div>
+                    <div className="p-2 bg-white/5 rounded-lg opacity-30 group-hover:opacity-100 transition-opacity">
+                      <TrendingUp className="h-5 w-5 text-primary" />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-purple-500/10 border-purple-500/25 text-[#c084fc] text-[10px] font-bold px-2 py-0.5 rounded-md">
+                      Patente {userLevel.name}
+                    </Badge>
+                    <span className="text-[10px] text-white/20 font-medium uppercase tracking-widest">{completedMissionIds.length} concluídas</span>
+                  </div>
+                </Card>
               </div>
             </div>
 
-            <Card className="glass-card p-10 space-y-10 metric-card mb-8 overflow-hidden">
+            {/* GRÁFICO DE PERFORMANCE */}
+            <Card className="bg-white/[0.03] border border-white/5 p-8 rounded-3xl space-y-8 overflow-hidden relative">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0" />
               <div className="flex justify-between items-end">
-                <h3 className="text-2xl font-black italic uppercase tracking-tight text-white">Performance 30 Dias</h3>
+                <div className="space-y-1">
+                  <h3 className="text-xl font-bold text-white italic uppercase tracking-tight">Performance 30 Dias</h3>
+                  <p className="text-xs text-white/30 uppercase font-bold tracking-widest">Análise de fluxo financeiro neural</p>
+                </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-1">Ganhos Totais</p>
-                  <div className="text-4xl font-black italic tracking-tighter text-white"><AnimatedNumber value={totalEarnings} prefix="R$ " /></div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/20 mb-1">Total Período</p>
+                  <div className="text-3xl font-bold italic tracking-tighter text-white"><AnimatedNumber value={totalEarnings} prefix="R$ " /></div>
                 </div>
               </div>
-              <div className="h-[260px] w-full relative overflow-hidden">
+              <div className="h-[300px] w-full relative">
                 <ChartContainer config={{ ganhos: { label: "Valor", color: "hsl(var(--primary))" } }} className="aspect-auto h-full w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                      <defs><linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4}/><stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/></linearGradient></defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.06)" />
+                      <defs>
+                        <linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
                       <XAxis 
                         dataKey="date" 
                         axisLine={false} 
                         tickLine={false}
-                        tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
+                        tick={{ fontSize: 9, fill: 'rgba(255,255,255,0.2)', fontWeight: 'bold' }}
                         interval={9}
-                        dy={8}
+                        dy={10}
                       />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }} tickFormatter={(v) => `R$${v}`} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: 'rgba(255,255,255,0.2)', fontWeight: 'bold' }} tickFormatter={(v) => `R$${v}`} />
                       <Tooltip content={<ChartTooltipContent />} />
                       <Area type="monotone" dataKey="ganhos" stroke="hsl(var(--primary))" strokeWidth={3} fill="url(#colorGanhos)" animationDuration={2000} isAnimationActive={true} />
                     </AreaChart>
@@ -289,51 +362,15 @@ export default function Dashboard() {
               </div>
             </Card>
 
-            <div className="grid gap-6 md:grid-cols-2">
-              <Card className="glass-card p-8 space-y-6 metric-card">
-                <div className="flex justify-between items-center">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-primary">Placar de Caixa</span>
-                  <Badge variant="outline" className="text-[8px] border-primary/20 text-primary">ALVO: R$ {displayGoal.toLocaleString('pt-BR')}</Badge>
-                </div>
-                <div className="text-5xl font-black italic tracking-tighter text-white"><AnimatedNumber value={totalEarnings} prefix="R$ " /></div>
-                <p className="text-[10px] font-bold text-green-500 flex items-center gap-1"><ArrowUpRight className="h-3 w-3" /> +12% HOJE</p>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-[8px] font-black uppercase opacity-50"><span>Progresso</span><span>{Math.min(100, Math.round((totalEarnings/displayGoal)*100))}%</span></div>
-                  <Progress value={(totalEarnings/displayGoal)*100} className="h-2" />
-                </div>
-              </Card>
-
-              <Card className="glass-card p-8 metric-card overflow-hidden">
-                <div className="flex justify-between items-center mb-6">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-accent">Execução Diária</span>
-                  <Badge variant="outline" className="text-[8px] border-accent/20 text-accent">ALTA PERFORMANCE</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-4xl font-black italic tracking-tighter text-white"><AnimatedNumber value={dailyActions} />/{dailyGoal}</div>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase mt-1">Ações do Dia</p>
-                  </div>
-                  <div className="relative h-24 w-24 flex items-center justify-center overflow-hidden">
-                    <svg className="h-full w-full transform -rotate-90">
-                      <circle cx="50%" cy="50%" r="40%" fill="transparent" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
-                      <circle cx="50%" cy="50%" r="40%" fill="transparent" stroke="hsl(var(--primary))" strokeWidth="8" strokeDasharray="251.2" strokeDashoffset={251.2 - (251.2 * Math.min(1, dailyActions / dailyGoal))} strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 8px #7c3aff)' }} />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      {dailyActions >= dailyGoal ? <Flame className="h-8 w-8 text-green-500" /> : <Target className="h-8 w-8 text-primary/40" />}
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </div>
-
+            {/* JORNADA DE MISSÕES */}
             <div className="space-y-8">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white">Sua Jornada de Escala</h2>
-                  <p className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.2em]">O método exato para sua primeira venda em 7 dias</p>
+                  <h2 className="text-3xl font-bold italic uppercase tracking-tighter text-white">Sua Jornada de Escala</h2>
+                  <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.2em]">O método exato para sua primeira venda em 7 dias</p>
                 </div>
-                <Badge className="bg-primary/10 text-primary border-primary/30 text-[10px] font-black uppercase px-4 py-1">
-                  DIA {currentJourneyDay} ATIVO
+                <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px] font-black uppercase px-4 py-1.5 rounded-lg">
+                  DIA {currentJourneyDay} OPERACIONAL
                 </Badge>
               </div>
 
@@ -349,29 +386,29 @@ export default function Dashboard() {
                       href={isLocked ? '#' : `/missions/${m.id}`}
                       className={`block group transition-all ${isLocked ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                     >
-                      <Card className={`glass-card rounded-3xl overflow-hidden transition-all duration-500 ${isCurrent ? 'border-primary/40 bg-primary/5 shadow-lg shadow-primary/5' : ''} ${isCompleted ? 'border-green-500/20' : ''}`}>
+                      <Card className={`bg-white/[0.03] border-white/5 rounded-2xl overflow-hidden transition-all duration-500 ${isCurrent ? 'border-primary/40 bg-primary/5 shadow-lg shadow-primary/5' : ''} ${isCompleted ? 'border-green-500/20' : 'hover:border-white/10 hover:bg-white/[0.05]'}`}>
                         <CardContent className="p-6">
                           <div className="flex items-center justify-between gap-6">
                             <div className="flex items-center gap-6">
-                              <div className={`h-14 w-14 rounded-2xl flex items-center justify-center text-xl font-black italic shrink-0 transition-all ${isCompleted ? 'bg-green-500/20 text-green-500' : isCurrent ? 'bg-primary text-white shadow-lg shadow-primary/30 rotate-3' : 'bg-white/5 text-muted-foreground'}`}>
+                              <div className={`h-14 w-14 rounded-xl flex items-center justify-center text-xl font-bold italic shrink-0 transition-all ${isCompleted ? 'bg-green-500/20 text-green-500' : isCurrent ? 'bg-primary text-white shadow-lg shadow-primary/30 rotate-3' : 'bg-white/5 text-white/30'}`}>
                                 {isCompleted ? <CheckCircle2 className="h-7 w-7" /> : m.order}
                               </div>
                               <div className="space-y-1">
-                                <h4 className={`font-black uppercase italic tracking-tight text-lg ${isLocked ? 'text-muted-foreground' : 'text-white'}`}>{m.title}</h4>
-                                <p className="text-xs text-muted-foreground font-medium">{m.desc}</p>
+                                <h4 className={`font-bold uppercase italic tracking-tight text-lg ${isLocked ? 'text-white/20' : 'text-white'}`}>{m.title}</h4>
+                                <p className="text-sm text-white/40 font-medium">{m.desc}</p>
                               </div>
                             </div>
                             <div className="flex items-center gap-4">
                               {isLocked ? (
-                                <div className="flex flex-col items-end">
-                                  <Lock className="h-5 w-5 text-muted-foreground/30" />
-                                  <span className="text-[8px] font-black uppercase text-muted-foreground/40 mt-1">Aguarde o Tempo Neural</span>
+                                <div className="flex flex-col items-end opacity-20">
+                                  <Lock className="h-5 w-5 text-white" />
+                                  <span className="text-[8px] font-bold uppercase text-white mt-1">Bloqueado</span>
                                 </div>
                               ) : isCompleted ? (
-                                <Badge className="bg-green-500/10 text-green-500 border-green-500/20 text-[8px] font-black uppercase">CONCLUÍDO</Badge>
+                                <Badge className="bg-green-500/10 text-green-500 border-green-500/20 text-[10px] font-bold uppercase px-3 py-1">CONCLUÍDO</Badge>
                               ) : (
-                                <Button size="sm" className="bg-primary hover:bg-primary/90 text-white rounded-xl text-[9px] font-black uppercase px-4 h-9 shadow-lg group-hover:scale-105 transition-all">
-                                  {isCurrent ? 'INICIAR AGORA' : 'EXECUTAR'} <Play className="ml-2 h-3 w-3 fill-white" />
+                                <Button size="sm" className="bg-primary hover:bg-primary/90 text-white rounded-lg text-[10px] font-bold uppercase px-4 h-9 shadow-lg group-hover:scale-105 transition-all">
+                                  {isCurrent ? 'INICIAR AGORA' : 'REVISAR'} <Play className="ml-2 h-3 w-3 fill-white" />
                                 </Button>
                               )}
                             </div>
@@ -385,13 +422,6 @@ export default function Dashboard() {
             </div>
           </div>
         </main>
-
-        <style dangerouslySetInnerHTML={{ __html: `
-          [data-sidebar="sidebar"] { width: 250px !important; overflow: hidden !important; background: rgba(0,0,0,0.4) !important; backdrop-filter: blur(10px); }
-          .status-badge { animation: pulse-green 2s ease-in-out infinite !important; }
-          @keyframes pulse-green { 0%, 100% { box-shadow: 0 0 6px rgba(16, 185, 129, 0.3); } 50% { box-shadow: 0 0 16px rgba(16, 185, 129, 0.7); } }
-          .metric-card:hover { transform: translateY(-2px) !important; box-shadow: 0 8px 32px rgba(124, 58, 255, 0.2) !important; border-top: 1px solid rgba(124, 58, 255, 0.3) !important; transition: 0.25s ease !important; }
-        ` }} />
       </div>
     </SidebarProvider>
   );
