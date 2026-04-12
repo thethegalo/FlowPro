@@ -19,7 +19,15 @@ export const Radar = ({ className, style }: { className?: string; style?: React.
   const circles = new Array(8).fill(1);
   return (
     <div
-      style={style}
+      style={{
+        width: '480px',
+        height: '480px',
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        ...style
+      }}
       className={twMerge(
         "relative flex items-center justify-center rounded-full overflow-hidden",
         className
@@ -39,32 +47,48 @@ export const Radar = ({ className, style }: { className?: string; style?: React.
       <div
         style={{ 
           transformOrigin: "left center",
-          width: "210px",
+          width: "240px",
           left: "50%",
-          top: "50%"
+          top: "50%",
+          position: "absolute",
+          zIndex: 40
         }}
-        className="animate-radar-spin absolute z-40 flex h-[2px] items-center justify-center overflow-hidden bg-transparent"
+        className="animate-radar-spin flex h-[2px] items-center justify-center overflow-hidden bg-transparent"
       >
         <div className="relative z-40 h-[1.5px] w-full bg-gradient-to-r from-purple-400 via-purple-400/40 to-transparent" />
       </div>
 
       {/* Concentric circles */}
       {circles.map((_, idx) => (
-        <Circle
-          style={{
-            height: `${(idx + 1) * 52}px`,
-            width: `${(idx + 1) * 52}px`,
-            borderColor: `rgba(139, 92, 246, ${0.15 - idx * 0.015})`,
-          }}
+        <div
           key={`circle-${idx}`}
-          idx={idx}
+          style={{
+            height: `${(idx + 1) * 56}px`,
+            width: `${(idx + 1) * 56}px`,
+            border: `1px solid rgba(139, 92, 246, ${0.5 - idx * 0.05})`,
+            background: 'transparent',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            borderRadius: '50%',
+          }}
         />
       ))}
 
       {/* Central Point */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
-        <div className="h-2 w-2 bg-[#7c3aed] rounded-full shadow-[0_0_12px_#7c3aed,0_0_24px_rgba(124,58,237,0.5)]" />
-      </div>
+      <div style={{
+        position: 'absolute',
+        width: 10,
+        height: 10,
+        background: '#7c3aed',
+        borderRadius: '50%',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        boxShadow: '0 0 16px #7c3aed, 0 0 32px rgba(124,58,237,0.6)',
+        zIndex: 50
+      }} />
     </div>
   );
 };
