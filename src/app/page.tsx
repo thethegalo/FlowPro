@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -79,7 +80,7 @@ export default function Home() {
         <div className="flex items-center gap-6">
           <Link href="/auth" className="text-[13px] text-white/40 hover:text-white transition-colors font-medium">Fazer login</Link>
           <Button asChild className="bg-[#6d28d9] hover:bg-[#7c3aed] text-white font-medium text-[13px] h-9 px-5 rounded-lg border-none shadow-none">
-            <Link href="/quiz">Quero escalar</Link>
+            <Link href="/quiz">Acessar agora</Link>
           </Button>
         </div>
       </nav>
@@ -87,15 +88,15 @@ export default function Home() {
       <main className="pt-[60px]">
         
         {/* HERO SECTION */}
-        <section className="max-w-[1200px] mx-auto px-6 md:px-12 py-24 md:py-32 overflow-visible">
+        <section className="max-w-[1200px] mx-auto px-6 md:px-12 py-16 md:py-32 overflow-visible">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
             <motion.div 
-              className="flex flex-col items-start text-left space-y-8 max-w-2xl shrink-0 z-20"
+              className="flex flex-col items-start text-left space-y-6 md:space-y-8 max-w-2xl shrink-0 z-20"
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             >
-              <Badge className="bg-[#6d28d9]/15 border border-[#7c3aed]/30 text-[#c4b5fd] text-[12px] font-medium px-4 py-1.5 rounded-full flex items-center gap-2 shadow-none">
+              <Badge className="bg-[#6d28d9]/15 border border-[#7c3aed]/30 text-[#c4b5fd] text-[10px] md:text-[12px] font-medium px-3 md:px-4 py-1 md:py-1.5 rounded-full flex items-center gap-2 shadow-none">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
@@ -103,18 +104,18 @@ export default function Home() {
                 ✦ Mais de 1.800 consultores ativos
               </Badge>
 
-              <h1 className="text-[44px] md:text-[72px] font-extrabold tracking-[-2px] font-headline leading-[0.95] text-white">
+              <h1 className="text-[32px] sm:text-[44px] md:text-[72px] font-extrabold tracking-[-1px] md:tracking-[-2px] font-headline leading-[1.1] md:leading-[0.95] text-white">
                 Seu primeiro cliente<br />
                 <span className="bg-gradient-to-r from-[#a855f7] to-[#6366f1] bg-clip-text text-transparent italic">começa com um script.</span>
               </h1>
 
-              <p className="text-[16px] md:text-[18px] text-white/45 leading-[1.6] max-w-[480px]">
+              <p className="text-[14px] md:text-[18px] text-white/45 leading-[1.6] max-w-[480px]">
                 Encontre leads qualificados, gere abordagens com IA e realize sua primeira venda em tempo recorde.
               </p>
 
-              <div className="flex flex-col sm:flex-row items-center gap-8 pt-4">
-                <Button asChild size="lg" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-medium text-[14px] h-[48px] px-8 rounded-[10px] transition-all hover:-translate-y-0.5 shadow-[0_8px_24px_rgba(124,58,237,0.4)] border-none">
-                  <Link href="/quiz">Começar jornada →</Link>
+              <div className="flex flex-col sm:flex-row items-center gap-6 md:gap-8 pt-4 w-full sm:w-auto">
+                <Button asChild size="lg" className="w-full sm:w-auto bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-medium text-[14px] h-[48px] px-8 rounded-[10px] transition-all hover:-translate-y-0.5 shadow-[0_8px_24px_rgba(124,58,237,0.4)] border-none">
+                  <Link href="/quiz">Acessar agora →</Link>
                 </Button>
 
                 <div className="flex items-center gap-3">
@@ -144,10 +145,10 @@ export default function Home() {
         </section>
 
         {/* METRICS SECTION */}
-        <section className="border-y border-white/5 py-16 md:py-24">
+        <section className="border-y border-white/5 py-12 md:py-24">
           <div className="max-w-[1100px] mx-auto px-6 md:px-12">
             <motion.div 
-              className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0"
+              className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-0"
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -158,9 +159,9 @@ export default function Home() {
                 { val: "R$ 2,6M", label: "Gerado pela base" },
                 { val: "3,8 dias", label: "Para primeira venda" }
               ].map((m, i) => (
-                <div key={i} className={`flex flex-col items-start md:px-12 ${i !== 0 ? 'md:border-l border-white/5' : ''}`}>
-                  <span className="text-[42px] md:text-[52px] font-extrabold text-white tracking-[-1.5px] leading-none">{m.val}</span>
-                  <span className="text-[12px] text-white/30 font-medium uppercase tracking-widest mt-2">{m.label}</span>
+                <div key={i} className={`flex flex-col items-center md:items-start md:px-12 ${i !== 0 ? 'md:border-l border-white/5' : ''}`}>
+                  <span className="text-[36px] md:text-[52px] font-extrabold text-white tracking-[-1.5px] leading-none">{m.val}</span>
+                  <span className="text-[11px] md:text-[12px] text-white/30 font-medium uppercase tracking-widest mt-2">{m.label}</span>
                 </div>
               ))}
             </motion.div>
@@ -168,9 +169,9 @@ export default function Home() {
         </section>
 
         {/* ARSENAL SECTION */}
-        <section id="arsenal" className="max-w-[1100px] mx-auto px-6 md:px-12 py-24 md:py-32">
+        <section id="arsenal" className="max-w-[1100px] mx-auto px-6 md:px-12 py-20 md:py-32">
           <motion.div className="space-y-4 mb-16" {...fadeInUp}>
-            <h2 className="text-[32px] md:text-[36px] font-bold tracking-[-0.5px] text-white">O seu arsenal.</h2>
+            <h2 className="text-[28px] md:text-[36px] font-bold tracking-[-0.5px] text-white">O seu arsenal.</h2>
             <p className="text-[14px] text-white/35">As ferramentas que transformam um "não" em um fechamento.</p>
           </motion.div>
 
@@ -213,10 +214,10 @@ export default function Home() {
         </section>
 
         {/* PAINEL DE CONTROLE */}
-        <section id="painel" className="max-w-[1100px] mx-auto px-6 md:px-12 py-24 md:py-32">
+        <section id="painel" className="max-w-[1100px] mx-auto px-6 md:px-12 py-20 md:py-32">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
             <motion.div className="lg:col-span-7 space-y-12" {...fadeInUp}>
-              <h2 className="text-[32px] md:text-[36px] font-bold tracking-[-0.5px] text-white">O seu painel de controle.</h2>
+              <h2 className="text-[28px] md:text-[36px] font-bold tracking-[-0.5px] text-white">O seu painel de controle.</h2>
               
               <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-[0_32px_80px_rgba(0,0,0,0.5)]">
                 <MacbookShowcase />
@@ -224,7 +225,7 @@ export default function Home() {
             </motion.div>
 
             <motion.div 
-              className="lg:col-span-5 flex flex-col gap-4 pt-12"
+              className="lg:col-span-5 flex flex-col gap-4 pt-4 md:pt-12"
               variants={staggerContainer}
               initial="initial"
               whileInView="whileInView"
@@ -248,8 +249,8 @@ export default function Home() {
         </section>
 
         {/* DEPOIMENTOS */}
-        <section className="max-w-[1100px] mx-auto px-6 md:px-12 py-24 md:py-32">
-          <motion.h2 className="text-[32px] md:text-[36px] font-bold tracking-[-0.5px] text-white mb-16" {...fadeInUp}>
+        <section className="max-w-[1100px] mx-auto px-6 md:px-12 py-20 md:py-32">
+          <motion.h2 className="text-[28px] md:text-[36px] font-bold tracking-[-0.5px] text-white mb-16" {...fadeInUp}>
             Quem já está na jornada.
           </motion.h2>
           
@@ -297,8 +298,8 @@ export default function Home() {
         </section>
 
         {/* FAQ */}
-        <section id="faq" className="max-w-[1100px] mx-auto px-6 md:px-12 py-24 md:py-32">
-          <motion.h2 className="text-[32px] md:text-[36px] font-bold tracking-[-0.5px] text-white mb-12" {...fadeInUp}>
+        <section id="faq" className="max-w-[1100px] mx-auto px-6 md:px-12 py-20 md:py-32">
+          <motion.h2 className="text-[28px] md:text-[36px] font-bold tracking-[-0.5px] text-white mb-12" {...fadeInUp}>
             Dúvidas frequentes.
           </motion.h2>
           
@@ -324,21 +325,21 @@ export default function Home() {
         </section>
 
         {/* CTA FINAL */}
-        <section className="max-w-[1100px] mx-auto px-6 md:px-12 py-32 flex flex-col items-center text-center space-y-10">
+        <section className="max-w-[1100px] mx-auto px-6 md:px-12 py-24 md:py-32 flex flex-col items-center text-center space-y-10">
           <motion.div 
             className="space-y-10 flex flex-col items-center"
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-[42px] md:text-[52px] font-extrabold tracking-[-1.5px] text-white leading-tight max-w-[600px]">
+            <h2 className="text-[36px] md:text-[52px] font-extrabold tracking-[-1.5px] text-white leading-tight max-w-[600px]">
               A escala não espera por você.
             </h2>
             <p className="text-[15px] text-white/40 max-w-[400px]">
               Garanta sua posição no ecossistema e comece a faturar hoje.
             </p>
             <Button asChild size="lg" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-medium text-[14px] h-[48px] px-8 rounded-[10px] shadow-[0_8px_24px_rgba(124,58,237,0.4)] transition-all hover:-translate-y-0.5 border-none">
-              <Link href="/quiz">Entrar no Flow agora →</Link>
+              <Link href="/quiz">Acessar agora →</Link>
             </Button>
           </motion.div>
         </section>
