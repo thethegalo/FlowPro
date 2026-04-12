@@ -24,7 +24,10 @@ import {
   Plus,
   Globe,
   FileText,
-  GraduationCap
+  GraduationCap,
+  Users,
+  MessageSquare,
+  Layout
 } from 'lucide-react';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, query, orderBy, doc, getDoc, limit } from 'firebase/firestore';
@@ -152,6 +155,57 @@ export default function Dashboard() {
     { id: 'dia2', title: 'DIA 2: Ajustar Perfil', desc: 'Prepare suas redes para converter visitas.', order: 2 },
     { id: 'dia3', title: 'DIA 3: Encontrar Leads', desc: 'Identifique clientes com o Radar.', order: 3 },
     { id: 'dia4', title: 'DIA 4: Abordagem IA', desc: 'Inicie conversas estratégicas com IA.', order: 4 },
+  ];
+
+  const ecosystemModules = [
+    { 
+      title: 'Captar Lead', 
+      desc: 'Escaneie o mercado e encontre alvos de alta probabilidade em segundos.', 
+      icon: Search, 
+      color: 'rgba(124,58,237,0.2)', 
+      iconColor: '#a78bfa',
+      url: '/leads' 
+    },
+    { 
+      title: 'CRM Leads', 
+      desc: 'Gerencie seu funil de vendas e organize seus contatos por status.', 
+      icon: Users, 
+      color: 'rgba(59,130,246,0.15)', 
+      iconColor: '#60a5fa',
+      url: '#' 
+    },
+    { 
+      title: 'Contratos', 
+      desc: 'Gere contratos profissionais e feche parcerias com segurança jurídica.', 
+      icon: FileText, 
+      color: 'rgba(34,197,94,0.12)', 
+      iconColor: '#4ade80',
+      url: '#' 
+    },
+    { 
+      title: 'Abordagem', 
+      desc: 'Scripts de WhatsApp otimizados por IA para máxima taxa de resposta.', 
+      icon: MessageSquare, 
+      color: 'rgba(245,158,11,0.12)', 
+      iconColor: '#fbbf24',
+      url: '/abordagens' 
+    },
+    { 
+      title: 'Criar Sites', 
+      desc: 'Desenvolva Landing Pages de luxo sem precisar escrever uma linha de código.', 
+      icon: Globe, 
+      color: 'rgba(236,72,153,0.12)', 
+      iconColor: '#f472b6',
+      url: '/prompts' 
+    },
+    { 
+      title: 'Blueprints', 
+      desc: 'Comandos mestres para escalar sua operação com inteligência artificial.', 
+      icon: Zap, 
+      color: 'rgba(20,184,166,0.12)', 
+      iconColor: '#2dd4bf',
+      url: '/prompts' 
+    },
   ];
 
   const progressQuery = useMemoFirebase(() => {
@@ -360,6 +414,51 @@ export default function Dashboard() {
               </div>
             </div>
 
+            {/* SEÇÃO: ECOSSISTEMA PREMIUM */}
+            <div className="space-y-6 pt-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <h2 className="text-[18px] font-bold text-white tracking-tight uppercase italic">Ecossistema Premium</h2>
+                  <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.2em]">O arsenal tático completo para sua operação digital</p>
+                </div>
+                <Badge className="bg-green-500/10 text-[#4ade80] border-green-500/25 text-[10px] font-black uppercase px-4 py-1.5 rounded-lg shadow-[0_0_15px_rgba(34,197,94,0.1)]">
+                  FULL ACCESS ATIVO
+                </Badge>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {ecosystemModules.map((module, i) => (
+                  <Link key={i} href={module.url}>
+                    <Card className="group relative bg-white/[0.04] border border-[#8b5cf6]/12 rounded-2xl p-5 transition-all duration-300 hover:border-[#a855f7]/40 hover:bg-[#8b5cf6]/[0.08] hover:translate-y-[-3px] hover:shadow-[0_8px_30px_rgba(139,92,246,0.15)] overflow-hidden">
+                      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#a855f7]/40 to-transparent z-10" />
+                      <div className="flex flex-col gap-4">
+                        <div className="flex justify-between items-start">
+                          <div 
+                            className="h-10 w-10 rounded-[10px] flex items-center justify-center transition-all group-hover:scale-110 shadow-lg"
+                            style={{ backgroundColor: module.color }}
+                          >
+                            <module.icon className="h-5 w-5" style={{ color: module.iconColor }} />
+                          </div>
+                          <ArrowRight className="h-4 w-4 text-white/10 group-hover:text-[#a855f7] transition-all group-hover:translate-x-1" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <h4 className="text-[14px] font-bold text-[#e8e6f0] uppercase tracking-tight">{module.title}</h4>
+                          <p className="text-[12px] text-white/45 font-medium leading-[1.5] line-clamp-2">
+                            {module.desc}
+                          </p>
+                        </div>
+                        <div className="pt-2">
+                          <span className="text-[11px] font-black uppercase tracking-widest text-[#a855f7]/80 group-hover:text-[#a855f7] flex items-center gap-2 transition-colors">
+                            INICIAR MÓDULO <ChevronRight className="h-3 w-3" />
+                          </span>
+                        </div>
+                      </div>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
             {/* JORNADA DE MISSÕES (SIMPLIFICADA) */}
             <div className="space-y-6 pt-4">
               <div className="flex items-center justify-between">
@@ -411,4 +510,23 @@ export default function Dashboard() {
       </div>
     </SidebarProvider>
   );
+}
+
+function ChevronRight(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m9 18 6-6-6-6" />
+    </svg>
+  )
 }
