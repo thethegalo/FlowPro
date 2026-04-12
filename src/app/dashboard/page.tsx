@@ -24,7 +24,8 @@ import {
   ChevronRight,
   LayoutDashboard,
   TrendingUp,
-  Menu
+  Menu,
+  X
 } from 'lucide-react';
 import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
 import { collection, query, orderBy, doc } from 'firebase/firestore';
@@ -40,6 +41,15 @@ import {
   Tooltip
 } from 'recharts';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
 
 function AnimatedNumber({ value, duration = 2000, prefix = "", suffix = "" }: { value: number, duration?: number, prefix?: string, suffix?: string }) {
   const [displayValue, setDisplayValue] = useState(0);
@@ -78,6 +88,7 @@ export default function Dashboard() {
   const { user, isUserLoading } = useUser();
   const db = useFirestore();
   const router = useRouter();
+  const [isVipModalOpen, setIsVipModalOpen] = useState(false);
   
   const userDocRef = useMemoFirebase(() => {
     if (!db || !user) return null;
@@ -239,7 +250,7 @@ export default function Dashboard() {
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                       <defs>
-                        <linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1">
+                        <linearGradient id="colorGanhos" x1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#8b5cf6" stopOpacity="0.15"/>
                           <stop offset="95%" stopColor="#8b5cf6" stopOpacity="0"/>
                         </linearGradient>
@@ -272,21 +283,13 @@ export default function Dashboard() {
                     >
                       <Plus className="h-4 w-4" /> Nova prospecção
                     </Button>
-                    <div className="grid grid-cols-2 gap-3">
-                      <Button 
-                        variant="outline" 
-                        className="h-11 bg-white/5 border-white/5 hover:bg-white/10 rounded-xl text-xs"
-                        onClick={() => router.push('/prompts')}
-                      >
-                        <Globe className="h-3.5 w-3.5 mr-2 opacity-40" /> Criar Site
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        className="h-11 bg-white/5 border-white/5 hover:bg-white/10 rounded-xl text-xs"
-                      >
-                        <FileText className="h-3.5 w-3.5 mr-2 opacity-40" /> Contrato
-                      </Button>
-                    </div>
+                    <Button 
+                      variant="outline" 
+                      className="w-full h-11 bg-white/5 border-white/5 hover:bg-white/10 rounded-xl text-xs"
+                      onClick={() => router.push('/prompts')}
+                    >
+                      <Globe className="h-3.5 w-3.5 mr-2 opacity-40" /> Criar Site
+                    </Button>
                   </div>
                 </Card>
 
@@ -301,7 +304,11 @@ export default function Dashboard() {
                         Aprenda o método exato para faturar R$ 50k em 30 dias com IA.
                       </p>
                     </div>
-                    <Button variant="outline" className="w-full mt-4 bg-white/10 border-white/10 text-white hover:bg-white/20 transition-all rounded-xl text-[11px] font-bold uppercase">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setIsVipModalOpen(true)}
+                      className="w-full mt-4 bg-white/10 border-white/10 text-white hover:bg-white/20 transition-all rounded-xl text-[11px] font-bold uppercase"
+                    >
                       Acessar Agora <ArrowRight className="ml-2 h-3 w-3" />
                     </Button>
                   </div>
@@ -419,6 +426,33 @@ export default function Dashboard() {
             </div>
           </div>
         </main>
+
+        {/* MODAL EM BREVE */}
+        <Dialog open={isVipModalOpen} onOpenChange={setIsVipModalOpen}>
+          <DialogContent className="bg-[#0e0e1a] border-white/10 text-white rounded-[2rem] max-w-sm sm:max-w-md p-12 text-center">
+            <DialogHeader className="space-y-6 flex flex-col items-center">
+              <div className="relative h-16 w-48 mb-4">
+                <Image src={LOGO_URL} alt="FlowPro Logo" fill className="object-contain" />
+              </div>
+              <DialogTitle className="text-2xl font-black italic uppercase tracking-tighter">
+                EM BREVE
+              </DialogTitle>
+              <div className="space-y-2">
+                <p className="text-white/60 text-sm font-medium leading-relaxed">
+                  Estamos finalizando o motor neural desta Masterclass. Você será notificado assim que o conteúdo for liberado no seu painel.
+                </p>
+              </div>
+            </DialogHeader>
+            <div className="mt-8">
+              <Button 
+                onClick={() => setIsVipModalOpen(false)}
+                className="w-full h-12 bg-primary hover:bg-primary/90 font-black uppercase tracking-widest rounded-xl"
+              >
+                ENTENDIDO
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </SidebarProvider>
   );
