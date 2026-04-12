@@ -80,7 +80,7 @@ export default function Home() {
       <main className="pt-[60px]">
         
         {/* HERO SECTION */}
-        <section className="max-w-[1200px] mx-auto px-6 md:px-12 py-24 md:py-32">
+        <section className="max-w-[1200px] mx-auto px-6 md:px-12 py-24 md:py-32 overflow-visible">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
             <motion.div 
               className="flex flex-col items-start text-left space-y-8 max-w-2xl shrink-0 z-20"

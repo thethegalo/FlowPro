@@ -36,6 +36,7 @@ export function GlobePulse({
   const phiOffsetRef = useRef(0)
   const thetaOffsetRef = useRef(0)
   const isPausedRef = useRef(false)
+  const globeRef = useRef<any>(null)
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     pointerInteracting.current = { x: e.clientX, y: e.clientY }
@@ -75,46 +76,64 @@ export function GlobePulse({
     if (!canvasRef.current) return
     const canvas = canvasRef.current
     let phi = 0
-    let globe: any
+    let animationId: number
 
-    const updateSize = () => {
+    const init = () => {
       const width = canvas.offsetWidth
       if (width === 0) return
       
-      if (globe) globe.destroy()
+      if (globeRef.current) {
+        globeRef.current.destroy()
+      }
 
-      globe = createGlobe(canvas, {
-        devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
-        width: width * 2,
-        height: width * 2,
-        phi: 0,
-        theta: 0.15,
-        dark,
-        diffuse: 1.2,
-        mapSamples: 16000,
-        mapBrightness: 6,
-        baseColor: [0.1, 0.1, 0.2],
-        markerColor: [124/255, 58/255, 237/255],
-        glowColor: [0.15, 0.15, 0.2],
-        markerElevation: 0.05,
-        markers: markers.map((m) => ({ location: m.location, size: 0.08 })),
-        onRender: (state) => {
-          if (!isPausedRef.current) {
-            phi += speed
-          }
-          state.phi = phi + phiOffsetRef.current + dragOffset.current.phi
-          state.theta = 0.15 + thetaOffsetRef.current + dragOffset.current.theta
-        },
-      })
+      const dpr = window.devicePixelRatio || 1
+
+      try {
+        globeRef.current = createGlobe(canvas, {
+          devicePixelRatio: dpr,
+          width: width, // O COBE usa width e height lógicos e dpr separadamente
+          height: width,
+          phi: 0,
+          theta: 0.15,
+          dark,
+          diffuse: 1.2,
+          mapSamples: 16000,
+          mapBrightness: 6,
+          baseColor: [0.1, 0.1, 0.2],
+          markerColor: [124/255, 58/255, 237/255],
+          glowColor: [0.15, 0.15, 0.2],
+          markerElevation: 0.05,
+          markers: markers.map((m) => ({ location: m.location, size: 0.08 })),
+          onRender: (state) => {
+            if (!isPausedRef.current) {
+              phi += speed
+            }
+            state.phi = phi + phiOffsetRef.current + dragOffset.current.phi
+            state.theta = 0.15 + thetaOffsetRef.current + dragOffset.current.theta
+          },
+        })
+        
+        canvas.style.opacity = "1"
+      } catch (e) {
+        console.error("Globe Error:", e)
+      }
     }
 
-    updateSize()
-    window.addEventListener('resize', updateSize)
-    setTimeout(() => (canvas.style.opacity = "1"))
+    // Inicialização segura com ResizeObserver
+    const resizeObserver = new ResizeObserver((entries) => {
+      if (entries[0].contentRect.width > 0) {
+        init()
+      }
+    })
+    
+    resizeObserver.observe(canvas)
 
     return () => {
-      if (globe) globe.destroy()
-      window.removeEventListener('resize', updateSize)
+      if (globeRef.current) {
+        globeRef.current.destroy()
+        globeRef.current = null
+      }
+      resizeObserver.disconnect()
     }
   }, [markers, speed, dark])
 
