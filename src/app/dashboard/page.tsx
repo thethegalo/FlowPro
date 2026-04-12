@@ -199,9 +199,9 @@ export default function Dashboard() {
               </div>
 
               <div className="flex items-center gap-3">
-                <Badge className="bg-[#581c87]/40 border border-[#7c3aed]/35 text-[#c4b5fd] text-[11px] uppercase tracking-[0.5px] rounded-[6px] px-[10px] py-[4px] font-medium shadow-none hover:bg-[#581c87]/60">
+                <div className="bg-[#581c87]/40 border border-[#7c3aed]/35 text-[#c4b5fd] text-[11px] uppercase tracking-[0.5px] rounded-[6px] px-[10px] py-[4px] font-medium">
                   VITALÍCIO
-                </Badge>
+                </div>
                 
                 <button className="relative w-[34px] h-[34px] flex items-center justify-center rounded-[8px] bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] transition-colors">
                   <Bell className="h-4 w-4 text-white/60" />
@@ -307,51 +307,51 @@ export default function Dashboard() {
               {/* COLUNA DIREITA (35%) */}
               <div className="flex flex-col gap-7">
                 <Card className="glass-card p-6 relative overflow-hidden">
-                  <p className="text-[11px] font-black text-primary/40 uppercase tracking-[1.5px] mb-6 flex items-center gap-2">
-                    <Zap className="h-3 w-3 fill-primary" /> AÇÕES RÁPIDAS
+                  <p className="text-[11px] font-medium text-white/20 uppercase tracking-[1.5px] mb-6">
+                    AÇÕES RÁPIDAS
                   </p>
                   
                   <div className="space-y-3">
                     <Button 
-                      className="w-full h-10 bg-[#7c3aed] hover:bg-[#6d28d9] transition-all rounded-[10px] font-bold uppercase text-[11px] tracking-widest gap-2 shadow-none"
+                      className="w-full h-10 bg-[#7c3aed]/80 hover:bg-[#7c3aed] transition-all rounded-[8px] font-medium text-[13px] gap-2 shadow-none px-5"
                       onClick={() => router.push('/leads')}
                     >
-                      <Plus className="h-4 w-4" /> Nova Prospecção
+                      <Plus className="h-4 w-4" /> Nova prospecção
                     </Button>
                     <div className="grid grid-cols-2 gap-3">
                       <Button 
                         variant="outline" 
-                        className="h-10 bg-white/5 border-[#a855f7]/20 hover:bg-white/10 transition-all rounded-[10px] text-[10px] font-bold uppercase tracking-tight gap-2"
+                        className="h-10 bg-white/[0.04] border-white/5 hover:bg-white/[0.08] transition-all rounded-[8px] text-[12px] font-medium gap-2"
                         onClick={() => router.push('/prompts')}
                       >
-                        <Globe className="h-3.5 w-3.5 text-primary" /> Criar Site IA
+                        <Globe className="h-3.5 w-3.5 text-white/40" /> Criar Site
                       </Button>
                       <Button 
                         variant="outline" 
-                        className="h-10 bg-white/5 border-[#a855f7]/20 hover:bg-white/10 transition-all rounded-[10px] text-[10px] font-bold uppercase tracking-tight gap-2"
+                        className="h-10 bg-white/[0.04] border-white/5 hover:bg-white/[0.08] transition-all rounded-[8px] text-[12px] font-medium gap-2"
                       >
-                        <FileText className="h-3.5 w-3.5 text-primary" /> Gerar Contrato
+                        <FileText className="h-3.5 w-3.5 text-white/40" /> Contrato
                       </Button>
                     </div>
                   </div>
                 </Card>
 
-                <Card className="glass-card flex-1 p-6 relative overflow-hidden shadow-none bg-[#581c87]/20">
+                <Card className="glass-card flex-1 p-6 relative overflow-hidden shadow-none bg-purple-900/20 border-purple-500/20">
                   <div className="relative z-10 space-y-4">
-                    <Badge className="bg-[#c4b5fd] text-[#4c1d95] text-[9px] font-black uppercase px-3 py-1 rounded-md border-none shadow-none">
+                    <Badge className="bg-purple-400/20 text-purple-300 text-[9px] font-semibold uppercase px-2 py-0.5 rounded-md border-none">
                       🎓 CONTEÚDO VIP
                     </Badge>
                     <div className="space-y-2">
-                      <h4 className="text-[16px] font-bold text-white leading-tight">Masterclass: Escala de Leads Infinitos</h4>
-                      <p className="text-xs text-white/50 font-normal leading-relaxed">
-                        Aprenda o método que permitiu ao Lucas faturar R$ 50k em 30 dias usando automação neural.
+                      <h4 className="text-[16px] font-bold text-white leading-tight">Masterclass: Escala Infinitos</h4>
+                      <p className="text-xs text-white/40 font-normal leading-relaxed">
+                        Aprenda o método exato para faturar R$ 50k em 30 dias usando automação neural.
                       </p>
                     </div>
-                    <Button variant="outline" className="w-full mt-4 bg-white/10 border-white/15 text-white hover:bg-white/20 transition-all rounded-lg text-[10px] font-semibold uppercase tracking-widest">
+                    <Button variant="outline" className="w-full mt-4 bg-white/10 border-white/15 text-white hover:bg-white/20 transition-all rounded-lg text-[11px] font-medium">
                       Acessar Agora <ArrowRight className="ml-2 h-3 w-3" />
                     </Button>
                   </div>
-                  <div className="absolute -bottom-4 -right-4 opacity-10">
+                  <div className="absolute -bottom-4 -right-4 opacity-5">
                     <GraduationCap className="h-32 w-32 text-white" />
                   </div>
                 </Card>
@@ -365,24 +365,24 @@ export default function Dashboard() {
                   <h2 className="text-[15px] font-semibold text-white/85 tracking-tight">Ecossistema Premium</h2>
                   <p className="text-white/30 text-[11px] font-normal">O arsenal tático completo para sua operação digital</p>
                 </div>
-                <Badge className="bg-green-500/10 text-[#4ade80] border-green-500/25 text-[10px] font-black uppercase px-4 py-1.5 rounded-[12px] shadow-none">
-                  FULL ACCESS ATIVO
-                </Badge>
+                <div className="bg-green-900/30 border border-green-500/25 text-green-300 text-[10px] font-medium px-3 py-1 rounded-[6px] flex items-center gap-2">
+                  Full access ativo
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {ecosystemModules.map((module, i) => (
                   <Link key={i} href={module.url}>
-                    <Card className="glass-card p-5 group relative overflow-hidden bg-white/[0.02] hover:translate-y-[-2px] hover:border-[#8b5cf6]/25 hover:bg-white/[0.06] transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
+                    <Card className="glass-card p-5 group relative overflow-hidden bg-white/[0.02] border-white/[0.07] hover:translate-y-[-1px] hover:border-white/12 hover:bg-white/[0.06] transition-all duration-200">
                       <div className="flex flex-col gap-4">
                         <div className="flex justify-between items-start">
-                          <div className="h-8 w-8 rounded-lg bg-white/[0.06] flex items-center justify-center transition-all group-hover:scale-105">
-                            <module.icon className="size-4 text-white/50" />
+                          <div className="h-7 w-7 rounded-[7px] bg-white/5 flex items-center justify-center border border-white/5">
+                            <module.icon className="size-3.5 text-white/45" />
                           </div>
-                          <ArrowRight className="h-3.5 w-3.5 text-white/10 group-hover:text-[#a855f7] transition-all group-hover:translate-x-1" />
+                          <ArrowRight className="h-3.5 w-3.5 text-white/10 group-hover:text-white/40 transition-all group-hover:translate-x-1" />
                         </div>
-                        <div className="space-y-1.5">
-                          <h4 className="text-[13px] font-medium text-white/85 tracking-tight">{module.title}</h4>
+                        <div className="space-y-1">
+                          <h4 className="text-[14px] font-medium text-white/80 tracking-tight">{module.title}</h4>
                           <p className="text-[12px] text-white/35 font-normal leading-[1.6] line-clamp-2">
                             {module.desc}
                           </p>
@@ -406,7 +406,7 @@ export default function Dashboard() {
                   <h2 className="text-[15px] font-semibold text-white/85 tracking-[-0.2px]">Sua Jornada de Escala</h2>
                   <p className="text-[11px] font-normal text-white/30 tracking-[0.8px]">O método exato para sua primeira venda em 7 dias</p>
                 </div>
-                <Badge className="bg-[#8b5cf6]/10 border border-[#8b5cf6]/25 text-[#c4b5fd] text-[10px] uppercase rounded-[12px] px-3 py-1 font-medium shadow-none">
+                <Badge className="bg-[#8b5cf6]/10 border border-[#8b5cf6]/25 text-[#c4b5fd] text-[10px] uppercase rounded-[6px] px-3 py-1 font-medium shadow-none">
                   DIA {currentJourneyDay} ATIVO
                 </Badge>
               </div>
@@ -427,7 +427,7 @@ export default function Dashboard() {
                       )}
                     >
                       <Card className={cn(
-                        "glass-card p-[18px] transition-all duration-200 h-full flex flex-col justify-between bg-white/[0.025]",
+                        "glass-card p-[18px] transition-all duration-200 h-full flex flex-col justify-between bg-white/[0.025] border-white/[0.06]",
                         isCurrent && "hover:border-white/12 hover:translate-y-[-1px] hover:bg-white/[0.05]"
                       )}>
                         <div className="space-y-4">
@@ -469,7 +469,7 @@ export default function Dashboard() {
                               className={cn(
                                 "w-full h-[32px] rounded-[6px] text-[11px] font-medium flex items-center justify-center transition-all",
                                 isCurrent 
-                                  ? "bg-[#6d28d9]/30 border border-[#8b5cf6]/40 text-[#c4b5fd]" 
+                                  ? "bg-[#581c87]/30 border border-[#8b5cf6]/40 text-[#c4b5fd]" 
                                   : "bg-white/[0.04] border-white/[0.08] text-white/20"
                               )}
                             >

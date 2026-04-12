@@ -79,25 +79,24 @@ export function AppSidebar() {
       className="border-r border-white/5 bg-transparent"
     >
       <div className="flex h-full flex-col bg-[#080814]/70 backdrop-blur-[24px]">
-        <SidebarHeader className="p-4 pt-5 pb-3">
-          <Link href="/dashboard" className="flex items-center gap-2.5 px-1 group">
-            <div className="relative h-7 w-7 bg-gradient-to-br from-[#7c3aed] to-[#6d28d9] rounded-lg flex items-center justify-center shadow-lg">
+        <SidebarHeader className="p-4 pt-6 pb-2">
+          <Link href="/dashboard" className="flex items-center gap-2 px-1">
+            <div className="relative h-[22px] w-[22px] bg-gradient-to-br from-[#7c3aed] to-[#6d28d9] rounded-lg flex items-center justify-center shadow-lg">
               <Image 
                 src={LOGO_ICON} 
                 alt="Icon" 
-                width={16} 
-                height={16}
+                width={12} 
+                height={12}
                 className="object-contain filter brightness-0 invert"
               />
             </div>
-            <span className="text-white font-semibold text-[14px] tracking-tight leading-none">FlowPro</span>
+            <span className="text-white font-semibold text-[14px] tracking-[-0.2px] leading-none">FlowPro</span>
           </Link>
-          <div className="h-px w-full bg-white/5 mt-4" />
         </SidebarHeader>
 
         <SidebarContent className="px-2 py-2">
-          <SidebarGroup className="p-0">
-            <SidebarGroupLabel className="text-[10px] font-medium uppercase tracking-[1.2px] text-white/25 px-4 pt-4 pb-1.5 h-auto">Sistema de Operação</SidebarGroupLabel>
+          <SidebarGroup className="p-0 mt-[20px]">
+            <SidebarGroupLabel className="text-[10px] font-medium uppercase tracking-[1.2px] text-white/25 px-4 pt-0 pb-1.5 h-auto">Sistema de Operação</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu className="gap-0.5">
                 {menuItems.map((item) => {
@@ -132,8 +131,8 @@ export function AppSidebar() {
           </SidebarGroup>
 
           {isAdmin && (
-            <SidebarGroup className="p-0 mt-2">
-              <SidebarGroupLabel className="text-[10px] font-medium uppercase tracking-[1.2px] text-white/25 px-4 pt-4 pb-1.5 h-auto">Controle Mestre</SidebarGroupLabel>
+            <SidebarGroup className="p-0 mt-[20px]">
+              <SidebarGroupLabel className="text-[10px] font-medium uppercase tracking-[1.2px] text-white/25 px-4 pt-0 pb-1.5 h-auto">Controle Mestre</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu className="gap-0.5">
                   <SidebarMenuItem className="px-2">
