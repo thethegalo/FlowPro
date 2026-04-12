@@ -70,9 +70,9 @@ function AnimatedNumber({ value, duration = 2000, prefix = "", suffix = "" }: { 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-[#1a1a2e] border border-[#a855f7]/30 p-3 rounded-lg shadow-2xl backdrop-blur-md">
-        <p className="text-[10px] font-black uppercase text-white/40 mb-1">{payload[0].payload.date}</p>
-        <p className="text-sm font-bold text-[#a855f7]">
+      <div className="bg-[#0f0f1a] border border-[#8b5cf6]/25 p-[10px_14px] rounded-[8px] shadow-none outline-none">
+        <p className="text-[10px] font-medium uppercase text-white/20 mb-1">{payload[0].payload.date}</p>
+        <p className="text-[12px] font-bold text-white">
           R$ {payload[0].value.toLocaleString('pt-BR')}
         </p>
       </div>
@@ -298,50 +298,54 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
               
               {/* GRÁFICO (65%) */}
-              <div className="relative group">
-                <Card className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-8 h-full">
-                  <div className="flex justify-between items-start mb-8">
+              <div className="lg:col-span-1">
+                <Card className="bg-white/[0.025] border border-white/[0.07] rounded-[12px] p-6 h-full shadow-none overflow-hidden">
+                  <div className="flex justify-between items-start mb-6">
                     <div className="space-y-1">
-                      <h3 className="text-xl font-bold text-white italic uppercase tracking-tight">Ganhos dos Últimos 30 Dias</h3>
-                      <p className="text-xs text-white/30 uppercase font-bold tracking-widest">Análise de fluxo financeiro neural</p>
+                      <h3 className="text-[12px] font-medium text-white/30 uppercase tracking-[1px]">Ganhos dos Últimos 30 Dias</h3>
+                      <p className="text-[11px] text-white/20 font-normal">Análise de performance tática mensal</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-white/20 mb-1">Total Período</p>
-                      <div className="text-2xl font-black italic tracking-tighter text-[#a855f7]">
+                      <p className="text-[11px] text-white/30 mb-1">Total Período</p>
+                      <div className="text-[20px] font-[650] text-[#a78bfa] tracking-[-0.3px]">
                         R$ {totalEarnings.toLocaleString('pt-BR')}
                       </div>
                     </div>
                   </div>
 
-                  <div className="h-[280px] w-full">
+                  <div className="h-[180px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <AreaChart data={chartData} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
                         <defs>
                           <linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#a855f7" stopOpacity={0.3}/>
-                            <stop offset="95%" stopColor="#a855f7" stopOpacity={0}/>
+                            <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.15}/>
+                            <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.04)" />
+                        <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.04)" strokeDasharray="4 4" />
                         <XAxis 
                           dataKey="date" 
                           axisLine={false} 
                           tickLine={false}
-                          tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }}
+                          tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.2)' }}
                           dy={10}
                         />
                         <YAxis 
                           axisLine={false} 
                           tickLine={false} 
-                          tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.3)', fontWeight: 'bold' }} 
+                          tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.2)' }} 
+                          width={45}
                           tickFormatter={(v) => `R$${v}`} 
                         />
-                        <Tooltip content={<CustomTooltip />} />
+                        <Tooltip 
+                          content={<CustomTooltip />} 
+                          cursor={{ stroke: 'rgba(139,92,246,0.3)', strokeWidth: 1, strokeDasharray: '4 4' }}
+                        />
                         <Area 
                           type="monotone" 
                           dataKey="ganhos" 
-                          stroke="#a855f7" 
-                          strokeWidth={2.5} 
+                          stroke="#8b5cf6" 
+                          strokeWidth={1.5} 
                           fill="url(#colorGanhos)" 
                           dot={false}
                           animationDuration={2000}
