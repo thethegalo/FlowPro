@@ -1,23 +1,21 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   ArrowRight, 
-  Cpu,
-  Layers,
-  Search,
-  Zap,
+  MessageSquare, 
+  Target, 
+  Route, 
+  Check, 
   Star,
-  TrendingUp,
-  MessageSquare,
-  Calendar,
-  Quote,
-  ShieldCheck,
-  CheckCircle2
+  Plus,
+  ChevronRight
 } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -26,330 +24,269 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Globe } from '@/components/ui/cobe-globe';
 import { MacbookShowcase } from '@/components/MacbookShowcase';
 
 const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
 
-const stats = [
-  { label: 'Scripts Gerados', value: 3200, prefix: '', suffix: '+', sub: 'Só esta semana', icon: <MessageSquare className="h-4 w-4" /> },
-  { label: 'Vendas Alunos', value: 4.8, prefix: 'R$ ', suffix: 'M', sub: 'Total acumulado', icon: <TrendingUp className="h-4 w-4" /> },
-  { label: 'Primeira Venda', value: 7, prefix: '', suffix: ' DIAS', sub: 'Tempo médio', icon: <Calendar className="h-4 w-4" /> },
-];
-
-const pillars = [
-  { 
-    id: '01',
-    title: 'Script IA Pronto', 
-    icon: <Cpu className="h-6 w-6" />, 
-    desc: 'Cole o nome do lead, a IA escreve a mensagem de abordagem personalizada no WhatsApp para você.', 
-  },
-  { 
-    id: '02',
-    title: 'Radar de Leads', 
-    icon: <Search className="h-6 w-6" />, 
-    desc: 'Encontre donos de negócio em qualquer cidade e nicho em segundos com nosso motor de busca neural.', 
-  },
-  { 
-    id: '03',
-    title: 'Jornada de 7 Dias', 
-    icon: <Layers className="h-6 w-6" />, 
-    desc: 'Um passo por dia até fechar sua primeira venda, com missões guiadas e mentorias automáticas.', 
-  },
-];
-
-const testimonials = [
-  {
-    name: "Bruno Silva",
-    result: "R$ 1.200",
-    subResult: "no 4º dia",
-    text: "Eu nunca tinha vendido nada online. Usei o script de IA para falar com uma pizzaria local e fechei meu primeiro contrato em menos de uma semana.",
-    avatar: "https://picsum.photos/seed/b1/100/100"
-  },
-  {
-    name: "Ana Oliveira",
-    result: "3 clientes",
-    subResult: "em 10 dias",
-    text: "O Radar de Leads é bizarro. Achei 50 dentistas na minha cidade e a IA gerou abordagens que todos responderam. Já faturei R$ 3.500.",
-    avatar: "https://picsum.photos/seed/a2/100/100"
-  },
-  {
-    name: "Marcos Reus",
-    result: "1ª Venda",
-    subResult: "em 48h",
-    text: "A barreira de não saber o que falar sumiu. Copiei o script da IA, mandei no WhatsApp e o cliente fechou na hora. Simples assim.",
-    avatar: "https://picsum.photos/seed/m3/100/100"
-  }
-];
-
-const faqs = [
-  { q: "O sistema funciona para quem não tem experiência?", a: "Totalmente. O FlowPro foi desenhado como uma jornada guiada passo a passo. Você só precisa seguir as missões diárias e copiar os scripts gerados." },
-  { q: "Como a IA ajuda no processo?", a: "Nossa IA analisa o nicho do lead e gera um script de abordagem que não parece spam, aumentando drasticamente suas chances de resposta." },
-  { q: "Em quanto tempo vejo resultados?", a: "Nossa jornada foi feita para você realizar sua primeira venda em até 7 dias, desde que execute todas as tarefas propostas." },
-  { q: "Preciso aparecer nas redes sociais?", a: "Não. Ensinamos estratégias de bastidores onde você pode prospectar e vender sem nunca mostrar o rosto." },
-];
-
-function AnimatedNumber({ value, prefix = "", suffix = "" }: { value: number, prefix?: string, suffix?: string }) {
-  const [displayValue, setDisplayValue] = useState(0);
-
-  useEffect(() => {
-    let start = 0;
-    const end = value;
-    if (start === end) return;
-
-    let totalDuration = 2000;
-    let increment = end / (totalDuration / 16);
-    
-    let timer = setInterval(() => {
-      start += increment;
-      if (start >= end) {
-        setDisplayValue(end);
-        clearInterval(timer);
-      } else {
-        setDisplayValue(start);
-      }
-    }, 16);
-
-    return () => clearInterval(timer);
-  }, [value]);
-
-  return (
-    <span className="tabular-nums">
-      {prefix}
-      {Number.isInteger(displayValue) ? displayValue.toLocaleString('pt-BR') : displayValue.toFixed(1).replace('.', ',')}
-      {suffix}
-    </span>
-  );
-}
+const MotionSection = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+  <motion.section
+    initial={{ opacity: 0, y: 16 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-100px" }}
+    transition={{ duration: 0.5, ease: "easeOut" }}
+    className={className}
+  >
+    {children}
+  </motion.section>
+);
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen text-white overflow-x-hidden bg-transparent">
-      <header className="px-4 md:px-6 h-20 flex items-center justify-between sticky top-0 z-50 bg-[#050508]/40 backdrop-blur-xl border-b border-white/5">
-        <Link href="/" className="flex items-center group relative shrink-0">
-          <div className="relative h-8 w-24 md:h-12 md:w-40 transition-all duration-500 group-hover:scale-105 group-hover:drop-shadow-[0_0_15px_rgba(139,92,246,0.6)]">
-            <Image src={LOGO_URL} alt="FlowPro Logo" fill className="object-contain filter-none" priority />
-          </div>
-        </Link>
-        
-        <div className="flex items-center gap-4 md:gap-10">
-          <Link href="/auth" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-all text-white/70">
-            <span className="hidden md:inline">Área do Aluno</span>
-            <span className="md:hidden">Entrar</span>
+    <div className="flex flex-col min-h-screen text-white bg-transparent">
+      
+      {/* SEÇÃO 1 — NAVBAR */}
+      <nav className="fixed top-0 w-full h-[60px] bg-[#05050f]/70 backdrop-blur-[20px] border-b border-white/5 z-50 px-6 md:px-12 flex items-center justify-between">
+        <div className="flex items-center gap-8">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="relative h-5 w-20">
+              <Image src={LOGO_URL} alt="FlowPro" fill className="object-contain" priority />
+            </div>
           </Link>
-          <Button asChild className="bg-white text-black hover:bg-primary hover:text-white font-black rounded-full px-4 md:px-8 h-9 md:h-10 transition-all duration-500 hover:scale-105 active:scale-95 shadow-xl text-[9px] md:text-sm">
-            <Link href="/quiz">QUERO ESCALAR</Link>
+          
+          <div className="hidden md:flex items-center gap-6">
+            <Link href="#arsenal" className="text-[13px] text-white/50 hover:text-white/85 transition-colors">Arsenal</Link>
+            <Link href="#painel" className="text-[13px] text-white/50 hover:text-white/85 transition-colors">Plataforma</Link>
+            <Link href="#faq" className="text-[13px] text-white/50 hover:text-white/85 transition-colors">Dúvidas</Link>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <Link href="/auth" className="text-[13px] text-white/40 hover:text-white transition-colors">Fazer login</Link>
+          <Button asChild className="bg-[#6d28d9] hover:bg-[#7c3aed] text-white font-medium text-[13px] h-9 px-5 rounded-lg border-none shadow-none">
+            <Link href="/quiz">Quero escalar</Link>
           </Button>
         </div>
-      </header>
+      </nav>
 
-      <main className="relative z-10 bg-transparent">
-        <section className="relative pt-16 pb-24 md:pt-32 md:pb-48">
-          <div className="container px-4 md:px-6 mx-auto">
-            <div className="flex flex-col items-center lg:flex-row lg:items-center gap-12 lg:gap-24">
-              <div className="flex-1 text-center lg:text-left space-y-10">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] mx-auto lg:mx-0 text-primary">
-                  <Zap className="h-3 w-3 animate-pulse" />
-                  Motor Neural de Vendas Ativado
-                </div>
-                
-                <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.95] uppercase">
-                  SEU PRIMEIRO CLIENTE <br />
-                  <span className="bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400 bg-clip-text text-transparent italic inline-block py-1">
-                    COMEÇA COM UM SCRIPT.
-                  </span>
-                </h1>
-                
-                <p className="text-muted-foreground text-sm md:text-2xl max-w-2xl mx-auto lg:mx-0 font-medium leading-relaxed">
-                  Encontre leads qualificados em qualquer nicho, <span className="text-white">gere mensagens prontas com IA</span> e comece a vender em até 7 dias — mesmo sem experiência.
-                </p>
+      <main className="pt-[60px]">
+        
+        {/* SEÇÃO 2 — HERO */}
+        <section className="max-w-[1100px] mx-auto px-6 md:px-12 pt-24 pb-16 md:pt-32 md:pb-24">
+          <div className="flex flex-col items-start text-left space-y-8 max-w-3xl">
+            <Badge className="bg-primary/15 border border-primary/30 text-[#c4b5fd] text-[12px] font-medium px-4 py-1.5 rounded-full flex items-center gap-2 shadow-none">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              ✦ Mais de 1.800 consultores ativos
+            </Badge>
 
-                <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start items-center">
-                  <div className="relative group w-full sm:w-auto">
-                    <div className="absolute -inset-1 bg-primary rounded-[2.5rem] blur-xl opacity-40 group-hover:opacity-100 animate-pulse transition duration-1000"></div>
-                    <Button size="lg" className="relative h-16 md:h-20 px-8 md:px-12 text-lg md:text-xl font-black bg-primary hover:scale-105 transition-all rounded-3xl w-full sm:w-auto group overflow-hidden shadow-[0_0_30px_rgba(139,92,246,0.5)]" asChild>
-                      <Link href="/quiz">
-                        COMEÇAR JORNADA <ArrowRight className="ml-2 h-6 w-6 md:h-7 md:w-7 group-hover:translate-x-2 transition-transform" />
-                      </Link>
-                    </Button>
-                  </div>
-                  
-                  <div className="flex -space-x-3">
-                    {[1,2,3,4].map(i => (
-                      <div key={i} className="h-10 w-10 rounded-full border-2 border-[#050508] bg-white/10 overflow-hidden ring-2 ring-primary/20">
-                        <img src={`https://picsum.photos/seed/${i+50}/100/100`} alt="user" className="w-full h-full object-cover" />
-                      </div>
-                    ))}
-                    <div className="h-10 w-10 rounded-full border-2 border-[#050508] bg-primary flex items-center justify-center text-[10px] font-black ring-2 ring-primary/20">
-                      +12k
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <h1 className="text-[44px] md:text-[72px] font-extrabold tracking-[-2px] leading-[0.95] text-white">
+              Seu primeiro cliente<br />
+              <span className="bg-gradient-to-r from-[#a855f7] to-[#6366f1] bg-clip-text text-transparent">começa com um script.</span>
+            </h1>
 
-              <div className="flex-1 w-full flex justify-center">
-                <div className="hidden lg:flex flex-1 w-full relative aspect-square max-h-[500px] mx-auto max-w-[600px] items-center justify-center z-10 overflow-visible">
-                  <div className="absolute inset-0 bg-primary/50 blur-[180px] rounded-full opacity-40 animate-pulse"></div>
-                  <Globe className="w-full h-full relative z-10" speed={0.008} dark={1} />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="py-16 border-y border-white/5 bg-transparent">
-          <div className="container px-4 md:px-6 mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative max-w-5xl mx-auto">
-              {stats.map((s, i) => (
-                <div key={i} className="flex flex-col items-center text-center space-y-2 group relative p-8 glass-card border-none">
-                  <div className="flex items-center gap-3 text-primary mb-2">
-                    <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 group-hover:scale-110 transition-transform drop-shadow-[0_0_8px_currentColor]">
-                      {s.icon}
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest opacity-70">{s.label}</span>
-                  </div>
-                  <div className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-white">
-                    <AnimatedNumber value={s.value} prefix={s.prefix} suffix={s.suffix} />
-                  </div>
-                  <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{s.sub}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="tecnologia" className="py-24 md:py-48 bg-transparent">
-          <div className="container px-4 md:px-6 mx-auto">
-            <div className="text-center mb-24">
-              <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-6 text-white leading-none">O SEU <span className="text-primary">ARSENAL</span></h2>
-              <p className="text-muted-foreground max-w-xl mx-auto uppercase tracking-[0.2em] text-[10px] font-black">As ferramentas que transformam um "não" em um "fechado"</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {pillars.map((p, i) => (
-                <Card key={i} className="glass-card p-10 md:p-12 group transition-all duration-500 hover:border-white/20 relative overflow-hidden bg-transparent">
-                  <span className="absolute bottom-4 right-6 text-[120px] font-black text-white/[0.03] leading-none select-none">{p.id}</span>
-                  <div className="mb-10 p-5 rounded-2xl bg-primary/10 inline-block transition-transform group-hover:scale-110 group-hover:rotate-6 shadow-2xl border border-primary/20">
-                    {p.icon}
-                  </div>
-                  <h3 className="text-2xl font-black mb-4 italic tracking-tight uppercase text-white">{p.title}</h3>
-                  <p className="text-base text-muted-foreground leading-relaxed font-medium">{p.desc}</p>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="py-24 relative overflow-visible bg-transparent hidden md:block">
-          <div className="text-center mb-16 px-4">
-             <Badge className="bg-primary/20 text-primary border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5 mb-4">Command Center</Badge>
-             <h2 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter">O SEU PAINEL DE CONTROLE</h2>
-             <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest mt-4">Toda a inteligência do mercado na palma da sua mão</p>
-          </div>
-          <div className="scale-75 sm:scale-100 md:scale-125 lg:scale-150 transition-transform py-20">
-            <MacbookShowcase />
-          </div>
-        </section>
-
-        <section className="py-32 bg-transparent">
-          <div className="container px-4 md:px-6 mx-auto">
-            <div className="text-center mb-20">
-              <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-6 text-white leading-none">QUEM <span className="text-primary">EXECUTA</span> GANHA</h2>
-              <p className="text-muted-foreground max-w-xl mx-auto uppercase tracking-[0.2em] text-[10px] font-black">Alunos comuns que começaram com o mesmo script que você vai gerar</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {testimonials.map((t, i) => (
-                <Card key={i} className="glass-card p-10 space-y-6 flex flex-col justify-between relative overflow-hidden bg-transparent">
-                  <div className="absolute top-6 right-6">
-                    <Badge className="bg-primary/20 text-primary border-primary/30 text-[10px] font-black px-3 py-1">
-                      {t.result}
-                    </Badge>
-                  </div>
-                  <div className="space-y-6">
-                    <div className="flex gap-1 text-yellow-400 text-sm">
-                      <Star className="h-3 w-3 fill-current" />
-                      <Star className="h-3 w-3 fill-current" />
-                      <Star className="h-3 w-3 fill-current" />
-                      <Star className="h-3 w-3 fill-current" />
-                      <Star className="h-3 w-3 fill-current" />
-                    </div>
-                    <Quote className="h-10 w-10 text-primary opacity-20" />
-                    <p className="text-lg font-medium italic text-white/80 leading-relaxed">"{t.text}"</p>
-                  </div>
-                  <div className="flex items-center gap-4 pt-6 border-t border-white/5">
-                    <div className="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 overflow-hidden shrink-0">
-                      <img src={t.avatar} alt={t.name} className="w-full h-full object-cover" />
-                    </div>
-                    <div>
-                      <p className="font-black uppercase italic text-white leading-none mb-1">{t.name}</p>
-                      <p className="text-[10px] font-black text-primary uppercase tracking-widest">{t.subResult}</p>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="faq" className="py-24 md:py-48 bg-transparent">
-          <div className="container px-4 md:px-6 mx-auto max-w-4xl">
-            <h2 className="text-4xl md:text-6xl font-black italic mb-16 text-center uppercase tracking-tighter text-white">DÚVIDAS <span className="text-primary">FREQUENTES</span></h2>
-            <Accordion type="single" collapsible className="space-y-6 px-4 md:px-0">
-              {faqs.map((item, i) => (
-                <AccordionItem key={i} value={`item-${i}`} className="glass-card border-none rounded-2xl px-8 md:px-12 hover:bg-white/[0.05] transition-colors bg-transparent">
-                  <AccordionTrigger className="font-black hover:no-underline py-8 md:py-10 uppercase tracking-[0.2em] text-xs md:text-sm text-left text-white">
-                    {item.q}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground text-sm md:text-lg leading-relaxed pb-8 md:pb-10 font-medium italic border-t border-white/5 pt-6">
-                    {item.a}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-        </section>
-
-        <section className="py-32 relative overflow-hidden bg-transparent">
-          <div className="container px-4 md:px-6 mx-auto text-center relative z-10">
-            <h2 className="text-4xl md:text-7xl font-black italic uppercase tracking-tighter mb-10 text-white leading-tight">
-              A ESCALA NÃO <br /><span className="text-primary shimmer-text">ESPERA POR VOCÊ.</span>
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto mb-12 font-medium uppercase tracking-[0.2em] text-[10px] px-4 leading-relaxed">
-              O ecossistema neural está operando em alta frequência. Garanta sua posição agora e gere seu primeiro script.
+            <p className="text-[16px] md:text-[18px] text-white/45 leading-[1.6] max-w-[480px]">
+              Encontre leads qualificados, gere abordagens com IA e realize sua primeira venda em tempo recorde.
             </p>
-            
-            <div className="relative inline-block group w-full sm:w-auto px-4 sm:px-0">
-              <div className="absolute -inset-1 bg-primary rounded-[2.5rem] blur-2xl opacity-30 group-hover:opacity-70 animate-pulse transition duration-1000"></div>
-              <Button asChild size="lg" className="relative h-20 md:h-24 px-8 md:px-16 text-xl md:text-2xl font-black bg-primary hover:scale-105 transition-all rounded-[2.5rem] group w-full sm:w-auto shadow-[0_20px_50px_rgba(139,92,246,0.3)]">
-                <Link href="/quiz">
-                  ENTRAR NO FLOW AGORA <ArrowRight className="ml-3 h-8 w-8 group-hover:translate-x-2 transition-transform" />
-                </Link>
+
+            <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
+              <Button asChild size="lg" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-medium text-[14px] h-[48px] px-8 rounded-[10px] transition-all hover:-translate-y-0.5 shadow-[0_8px_24px_rgba(124,58,237,0.4)] border-none">
+                <Link href="/quiz">Começar jornada →</Link>
               </Button>
-            </div>
 
-            <p className="mt-6 text-[10px] uppercase font-bold tracking-widest opacity-40 px-4">
-              Acesso imediato
-            </p>
-            
-            <div className="mt-20 flex flex-wrap justify-center gap-12 opacity-30 grayscale hover:grayscale-0 transition-all duration-700">
-               <ShieldCheck className="h-10 w-10" />
-               <CheckCircle2 className="h-10 w-10" />
-               <Zap className="h-10 w-10" />
-               <Layers className="h-10 w-10" />
+              <div className="flex items-center gap-3">
+                <div className="flex -space-x-2">
+                  {[ '#7c3aed', '#ec4899', '#3b82f6', '#10b981' ].map((color, i) => (
+                    <div key={i} className="h-7 w-7 rounded-full border-2 border-[#05050f]" style={{ backgroundColor: color }} />
+                  ))}
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[12px] font-semibold text-white">4.9 ★</span>
+                  <span className="text-[11px] text-white/40">847 avaliações</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
-      </main>
 
-      <footer className="py-20 border-t border-white/5 text-center relative z-10 bg-transparent">
-        <div className="relative h-10 w-32 mx-auto mb-8 opacity-50">
-          <Image src={LOGO_URL} alt="FlowPro Logo" width={128} height={40} className="object-contain" />
-        </div>
-        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.5em] px-4 leading-relaxed">
-          © 2026 FLOWPRO NEURAL SYSTEMS • TODOS OS DIREITOS RESERVADOS
-        </p>
-      </footer>
+        {/* SEÇÃO 3 — MÉTRICAS */}
+        <section className="max-w-[1100px] mx-auto px-6 md:px-12 border-y border-white/5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0 py-12">
+            {[
+              { val: "1.817+", label: "Ativos no Flow" },
+              { val: "R$ 2,6M", label: "Gerado pela base" },
+              { val: "3,8 dias", label: "Para primeira venda" }
+            ].map((m, i) => (
+              <div key={i} className={`flex flex-col items-start md:px-12 ${i !== 0 ? 'md:border-l border-white/5' : ''}`}>
+                <span className="text-[42px] md:text-[52px] font-extrabold text-white tracking-[-1.5px] leading-none">{m.val}</span>
+                <span className="text-[12px] text-white/30 font-medium uppercase tracking-widest mt-2">{m.label}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* SEÇÃO 4 — ARSENAL */}
+        <MotionSection id="arsenal" className="max-w-[1100px] mx-auto px-6 md:px-12 py-24 md:py-32">
+          <div className="space-y-4 mb-16">
+            <h2 className="text-[32px] md:text-[36px] font-bold tracking-[-0.5px] text-white">O seu arsenal.</h2>
+            <p className="text-[14px] text-white/35">As ferramentas que transformam um "não" em um fechamento.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { 
+                icon: MessageSquare, 
+                title: "Script IA pronto", 
+                desc: "Cole o nome do lead, a IA escreve a mensagem de abordagem personalizada no WhatsApp para você." 
+              },
+              { 
+                icon: Target, 
+                title: "Radar de leads", 
+                desc: "Encontre donos de negócio em qualquer nicho e região do mundo com nosso motor de busca neural." 
+              },
+              { 
+                icon: Route, 
+                title: "Jornada de 7 dias", 
+                desc: "Processo que já fechou mais de 479 vendas. Com missões guiadas e memória automática." 
+              }
+            ].map((f, i) => (
+              <Card key={i} className="bg-white/[0.03] border-white/[0.07] rounded-2xl p-7 group transition-all duration-300 hover:border-primary/25 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.3)]">
+                <div className="h-9 w-9 rounded-lg bg-primary/15 border border-primary/20 flex items-center justify-center text-primary mb-6">
+                  <f.icon className="h-[18px] w-[18px] text-[#a78bfa]" />
+                </div>
+                <h3 className="text-[15px] font-semibold text-white/90 mb-3">{f.title}</h3>
+                <p className="text-[13px] text-white/40 leading-[1.7]">{f.desc}</p>
+              </Card>
+            ))}
+          </div>
+        </MotionSection>
+
+        {/* SEÇÃO 5 — PAINEL DE CONTROLE */}
+        <MotionSection id="painel" className="max-w-[1100px] mx-auto px-6 md:px-12 py-24 md:py-32">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+            <div className="lg:col-span-7 space-y-12">
+              <h2 className="text-[32px] md:text-[36px] font-bold tracking-[-0.5px] text-white">O seu painel de controle.</h2>
+              
+              <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+                <div className="h-8 bg-white/[0.04] flex items-center px-4 gap-1.5 border-b border-white/10">
+                  <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+                  <div className="flex-1 mx-4 h-4 bg-white/5 rounded-md" />
+                </div>
+                <div className="bg-[#05050f] overflow-hidden">
+                  <MacbookShowcase />
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-5 flex flex-col gap-4">
+              {[
+                { n: "01", t: "Monitoramento Live", d: "Acompanhe seus ganhos e volume de prospecção em tempo real." },
+                { n: "02", t: "Integração WhatsApp", d: "Dispare scripts diretamente para o app sem fricção." },
+                { n: "03", t: "Ranking de Consultores", d: "Veja o faturamento dos maiores players do ecossistema." }
+              ].map((b, i) => (
+                <div key={i} className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-6 flex gap-6">
+                  <span className="text-[11px] font-bold text-primary/50 pt-1">{b.n}</span>
+                  <div className="space-y-1">
+                    <h4 className="text-[14px] font-semibold text-white/85">{b.t}</h4>
+                    <p className="text-[12px] text-white/35 leading-[1.6]">{b.d}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </MotionSection>
+
+        {/* SEÇÃO 6 — DEPOIMENTOS */}
+        <MotionSection className="max-w-[1100px] mx-auto px-6 md:px-12 py-24 md:py-32">
+          <h2 className="text-[32px] md:text-[36px] font-bold tracking-[-0.5px] text-white mb-16">Quem já está na jornada.</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { 
+                text: "Eu nunca tinha vendido nada online. Usei o script de IA para falar com uma pizzaria e fechei meu primeiro contrato em menos de uma semana.",
+                author: "Bruno Silva", context: "Consultor Fase 1"
+              },
+              { 
+                text: "O Radar de Leads é bizarro. Achei 50 dentistas na minha cidade e a IA gerou abordagens que todos responderam. Já faturei R$ 3.500.",
+                author: "Ana Oliveira", context: "Faturamento R$ 12k"
+              },
+              { 
+                text: "A barreira de não saber o que falar sumiu. Copiei o script da IA, mandei no WhatsApp e o cliente fechou na hora. Simples assim.",
+                author: "Marcos Reus", context: "Venda em 48h"
+              }
+            ].map((t, i) => (
+              <Card key={i} className="bg-white/[0.03] border-white/[0.07] rounded-2xl p-8 space-y-6">
+                <div className="flex gap-1">
+                  {[1,2,3,4,5].map(s => <Star key={s} className="h-3.5 w-3.5 fill-[#f59e0b] text-[#f59e0b]" />)}
+                </div>
+                <p className="text-[14px] text-white/70 leading-[1.7]">"{t.text}"</p>
+                <div className="flex items-center gap-3 pt-4 border-t border-white/5">
+                  <div className="h-8 w-8 rounded-full bg-white/10" />
+                  <div>
+                    <p className="text-[13px] font-medium text-white">{t.author}</p>
+                    <p className="text-[11px] text-white/35">{t.context}</p>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </MotionSection>
+
+        {/* SEÇÃO 7 — FAQ */}
+        <MotionSection id="faq" className="max-w-[1100px] mx-auto px-6 md:px-12 py-24 md:py-32">
+          <h2 className="text-[32px] md:text-[36px] font-bold tracking-[-0.5px] text-white mb-8">Dúvidas frequentes.</h2>
+          
+          <Accordion type="single" collapsible className="w-full">
+            {[
+              { q: "O sistema funciona para quem não tem experiência?", a: "Sim. O FlowPro foi desenhado como uma jornada guiada passo a passo. Você só precisa seguir as missões diárias e copiar os scripts gerados." },
+              { q: "Como a IA ajuda no processo de vendas?", a: "Nossa IA analisa o nicho do lead e gera um script de abordagem que não parece spam, aumentando drasticamente suas chances de resposta." },
+              { q: "Em quanto tempo vejo os primeiros resultados?", a: "Nossa jornada foi feita para você realizar sua primeira venda em até 7 dias, desde que execute todas as tarefas propostas." },
+              { q: "Preciso aparecer nas redes sociais?", a: "Não. Ensinamos estratégias de bastidores onde você pode prospectar e vender sem nunca mostrar o rosto." }
+            ].map((item, i) => (
+              <AccordionItem key={i} value={`item-${i}`} className="border-b border-white/[0.07] py-4">
+                <AccordionTrigger className="text-[14px] font-medium text-white/80 hover:no-underline hover:text-white transition-colors py-4">
+                  {item.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-[13px] text-white/45 leading-[1.7] pt-2 pb-4 max-w-2xl">
+                  {item.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </MotionSection>
+
+        {/* SEÇÃO 8 — CTA FINAL */}
+        <MotionSection className="max-w-[1100px] mx-auto px-6 md:px-12 py-32 flex flex-col items-center text-center space-y-10">
+          <h2 className="text-[42px] md:text-[52px] font-extrabold tracking-[-1.5px] text-white leading-tight max-w-[600px]">
+            A escala não espera por você.
+          </h2>
+          <p className="text-[15px] text-white/40 max-w-[400px]">
+            Garanta sua posição no ecossistema e comece a faturar hoje.
+          </p>
+          <Button asChild size="lg" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-medium text-[14px] h-[48px] px-8 rounded-[10px] shadow-[0_8px_24px_rgba(124,58,237,0.4)] transition-all hover:-translate-y-0.5 border-none">
+            <Link href="/quiz">Entrar no Flow agora →</Link>
+          </Button>
+        </MotionSection>
+
+        {/* SEÇÃO 9 — FOOTER */}
+        <footer className="px-12 py-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="relative h-4 w-16 opacity-50 grayscale contrast-200">
+              <Image src={LOGO_URL} alt="FlowPro" fill className="object-contain" />
+            </div>
+            <span className="text-[12px] text-white/20">© 2025 FlowPro. Todos os direitos reservados.</span>
+          </div>
+          
+          <div className="flex items-center gap-6">
+            <Link href="#" className="text-[12px] text-white/25 hover:text-white transition-colors">Termos</Link>
+            <Link href="#" className="text-[12px] text-white/25 hover:text-white transition-colors">Privacidade</Link>
+          </div>
+        </footer>
+
+      </main>
     </div>
   );
 }
