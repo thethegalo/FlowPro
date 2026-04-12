@@ -470,16 +470,16 @@ export default function PromptsPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Button 
                           asChild
-                          className="h-16 rounded-2xl bg-white text-black hover:bg-[#6366f1] hover:text-white font-black uppercase tracking-widest text-sm shadow-xl transition-all"
+                          className="h-16 px-8 rounded-2xl bg-white text-black hover:bg-[#6366f1] hover:text-white font-black uppercase tracking-normal text-xs md:text-sm shadow-xl transition-all"
                         >
-                          <a href="https://lovable.dev" target="_blank" rel="noopener noreferrer">
-                            CRIAR APP NO LOVABLE <ExternalLink className="ml-2 h-5 w-5" />
+                          <a href="https://lovable.dev" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-3">
+                            CRIAR APP NO LOVABLE <ExternalLink className="h-4 w-4 shrink-0" />
                           </a>
                         </Button>
                         <Button 
                           variant="ghost" 
                           onClick={() => setBlueprint(prev => ({ ...prev, isGenerated: false, step: 1 }))}
-                          className="h-16 text-[10px] font-black uppercase text-white/20 hover:text-white transition-colors border border-white/5 rounded-2xl"
+                          className="h-16 text-[11px] font-black uppercase text-white/30 hover:text-white transition-colors border border-white/5 rounded-2xl"
                         >
                           Novo Projeto
                         </Button>
