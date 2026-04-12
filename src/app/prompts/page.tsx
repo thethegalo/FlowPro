@@ -29,7 +29,11 @@ import {
   Menu,
   Star,
   Smartphone,
-  CheckCircle2
+  CheckCircle2,
+  Home,
+  Search,
+  User,
+  ShoppingBag
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -156,9 +160,7 @@ export default function PromptsPage() {
         <main className="flex-1 flex flex-col min-w-0 bg-transparent">
           <header className="h-[52px] border-b border-white/5 flex items-center justify-between px-6 bg-transparent sticky top-0 z-50">
             <div className="flex items-center gap-3">
-              <SidebarTrigger className="md:hidden">
-                <Menu className="h-5 w-5 text-white/50" />
-              </SidebarTrigger>
+              <SidebarTrigger className="md:hidden" />
               <Terminal className="h-[14px] w-[14px] text-primary/70" />
               <h1 className="text-[13px] font-medium text-white/50">Blueprint Workstation</h1>
             </div>
@@ -167,7 +169,6 @@ export default function PromptsPage() {
             </div>
           </header>
 
-          {/* MOBILE PROGRESS BAR */}
           <div className="md:hidden h-1 w-full bg-white/5">
             <motion.div 
               className="h-full bg-primary"
@@ -177,7 +178,6 @@ export default function PromptsPage() {
           </div>
 
           <div className="flex-1 flex flex-col lg:flex-row overflow-hidden bg-transparent">
-            {/* STEPS LIST (DESKTOP) */}
             <aside className="w-64 border-r border-white/5 bg-white/[0.02] p-6 hidden lg:block overflow-y-auto">
               <div className="space-y-8">
                 <div className="space-y-1">
@@ -200,14 +200,19 @@ export default function PromptsPage() {
               </div>
             </aside>
 
-            {/* FORM AREA */}
             <section className="flex-1 overflow-y-auto p-6 md:p-12 relative flex flex-col items-center">
               <div className="w-full max-w-2xl space-y-10">
                 <AnimatePresence mode="wait">
                   {!blueprint.isGenerated ? (
-                    <motion.div key={blueprint.step} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-10 pb-24 md:pb-0">
+                    <motion.div 
+                      key={blueprint.step} 
+                      initial={{ opacity: 0, y: 10 }} 
+                      animate={{ opacity: 1, y: 0 }} 
+                      exit={{ opacity: 0, y: -10 }} 
+                      className="space-y-10 pb-24 md:pb-0"
+                    >
                       <div className="space-y-2">
-                        <h2 className="text-2xl md:text-3xl font-semibold text-white tracking-tight italic uppercase">{STEPS[blueprint.step - 1].title}</h2>
+                        <h2 className="text-[28px] font-extrabold text-white tracking-tighter uppercase italic leading-none">{STEPS[blueprint.step - 1].title}</h2>
                         <p className="text-white/30 text-[11px] uppercase tracking-[0.2em] font-black">{STEPS[blueprint.step - 1].sub}</p>
                       </div>
 
@@ -368,16 +373,15 @@ export default function PromptsPage() {
               </div>
             </section>
 
-            {/* REAL-TIME VISUALIZER (DESKTOP) */}
-            <aside className="w-[35%] border-l border-white/5 bg-white/[0.01] p-10 flex flex-col items-center justify-start hidden lg:flex">
-              <div className="sticky top-1/2 -translate-y-1/2 w-full flex flex-col items-center gap-8">
+            <aside className="w-[35%] border-l border-white/5 bg-white/[0.01] p-10 hidden lg:flex flex-col items-center justify-center relative overflow-hidden">
+              <div className="w-full flex flex-col items-center gap-8 relative z-10">
                 
                 <div className="px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/10 flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
                   <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">Real-time Visualizer</span>
                 </div>
 
-                <div className="relative group">
+                <div className="relative">
                   <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-48 h-6 bg-black/60 blur-xl rounded-full scale-x-150 animate-shadow-pulse pointer-events-none" />
                   
                   <motion.div 
@@ -422,23 +426,58 @@ export default function PromptsPage() {
                                 </div>
                               </div>
                             )}
-                            {/* Further steps logic remains consistent with step rendering... */}
-                            <div className="pt-4 space-y-4">
-                               <div className="h-2 w-20 rounded-full bg-white/10" />
-                               <div className="space-y-2">
-                                 <div className="h-1 w-full bg-white/5 rounded-full" />
-                                 <div className="h-1 w-3/4 bg-white/5 rounded-full" />
-                               </div>
-                               <div className="h-10 w-full rounded-xl" style={{ backgroundColor: currentTheme.primary }} />
-                            </div>
+
+                            {blueprint.step === 2 && (
+                              <div className="space-y-4 pt-4">
+                                <Badge variant="outline" className="border-white/10 text-[8px] font-black uppercase" style={{ color: currentTheme.text }}>{blueprint.objective}</Badge>
+                                <h3 className="text-xl font-black uppercase italic" style={{ color: currentTheme.text }}>Estratégia Neural</h3>
+                                <div className="space-y-2">
+                                  <div className="h-12 w-full rounded-xl bg-white/5 border border-white/5 flex items-center px-4 gap-3">
+                                    <Target className="h-4 w-4 opacity-40" />
+                                    <div className="h-1.5 w-20 bg-white/10 rounded-full" />
+                                  </div>
+                                  <div className="h-12 w-full rounded-xl bg-white/5 border border-white/5 flex items-center px-4 gap-3">
+                                    <Zap className="h-4 w-4 opacity-40" />
+                                    <div className="h-1.5 w-24 bg-white/10 rounded-full" />
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {blueprint.step === 3 && (
+                              <div className="space-y-6 pt-4">
+                                <div className="h-32 w-full rounded-3xl relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${currentTheme.primary}40, transparent)` }}>
+                                  <div className="absolute bottom-4 left-4 h-8 w-8 rounded-full" style={{ backgroundColor: currentTheme.primary }} />
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                  <div className="h-20 rounded-2xl bg-white/5 border border-white/5" />
+                                  <div className="h-20 rounded-2xl bg-white/5 border border-white/5" />
+                                </div>
+                                <div className="h-12 w-full rounded-xl shadow-lg" style={{ backgroundColor: currentTheme.primary }} />
+                              </div>
+                            )}
+
+                            {blueprint.step >= 4 && (
+                              <div className="pt-4 space-y-4">
+                                <div className="h-2 w-20 rounded-full bg-white/10" />
+                                <div className="space-y-2">
+                                  <div className="h-1 w-full bg-white/5 rounded-full" />
+                                  <div className="h-1 w-3/4 bg-white/5 rounded-full" />
+                                  <div className="h-1 w-1/2 bg-white/5 rounded-full" />
+                                </div>
+                                <div className="h-24 w-full rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center">
+                                  <Sparkles className="h-6 w-6 opacity-20" style={{ color: currentTheme.primary }} />
+                                </div>
+                                <div className="h-10 w-full rounded-xl" style={{ backgroundColor: currentTheme.primary }} />
+                              </div>
+                            )}
                           </div>
 
                           <div className="h-16 border-t border-white/5 flex items-center justify-around px-4">
-                            {[1,2,3,4].map(i => (
-                              <div key={i} className="h-8 w-8 rounded-xl bg-white/[0.03] flex items-center justify-center">
-                                <div className="h-3 w-3 rounded-full opacity-20" style={{ backgroundColor: currentTheme.text }} />
-                              </div>
-                            ))}
+                            <Home className="h-4 w-4 opacity-40" style={{ color: currentTheme.text }} />
+                            <Search className="h-4 w-4 opacity-20" style={{ color: currentTheme.text }} />
+                            <ShoppingBag className="h-4 w-4 opacity-20" style={{ color: currentTheme.text }} />
+                            <User className="h-4 w-4 opacity-20" style={{ color: currentTheme.text }} />
                           </div>
                         </motion.div>
                       </AnimatePresence>
