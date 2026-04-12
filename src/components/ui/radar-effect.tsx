@@ -5,11 +5,8 @@ import React from "react";
 
 export const Circle = ({ className, idx, ...rest }: any) => {
   return (
-    <motion.div
+    <div
       {...rest}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: idx * 0.1, duration: 0.2 }}
       className={twMerge(
         "absolute inset-0 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-full border",
         className
@@ -18,12 +15,13 @@ export const Circle = ({ className, idx, ...rest }: any) => {
   );
 };
 
-export const Radar = ({ className }: { className?: string }) => {
+export const Radar = ({ className, style }: { className?: string; style?: React.CSSProperties }) => {
   const circles = new Array(8).fill(1);
   return (
     <div
+      style={style}
       className={twMerge(
-        "relative flex h-20 w-20 items-center justify-center rounded-full",
+        "relative flex items-center justify-center rounded-full overflow-hidden",
         className
       )}
     >
@@ -36,25 +34,37 @@ export const Radar = ({ className }: { className?: string }) => {
           animation: radar-spin 4s linear infinite;
         }
       `}</style>
+      
       {/* Rotating sweep line */}
       <div
-        style={{ transformOrigin: "right center" }}
-        className="animate-radar-spin absolute right-1/2 top-1/2 z-40 flex h-[2px] w-[200px] items-end justify-center overflow-hidden bg-transparent"
+        style={{ 
+          transformOrigin: "left center",
+          width: "210px",
+          left: "50%",
+          top: "50%"
+        }}
+        className="animate-radar-spin absolute z-40 flex h-[2px] items-center justify-center overflow-hidden bg-transparent"
       >
-        <div className="relative z-40 h-[1px] w-full bg-gradient-to-r from-transparent via-purple-500 to-transparent" />
+        <div className="relative z-40 h-[1.5px] w-full bg-gradient-to-r from-purple-400 via-purple-400/40 to-transparent" />
       </div>
+
       {/* Concentric circles */}
       {circles.map((_, idx) => (
         <Circle
           style={{
-            height: `${(idx + 1) * 4}rem`,
-            width: `${(idx + 1) * 4}rem`,
-            borderColor: `rgba(139, 92, 246, ${1 - (idx + 1) * 0.12})`,
+            height: `${(idx + 1) * 52}px`,
+            width: `${(idx + 1) * 52}px`,
+            borderColor: `rgba(139, 92, 246, ${0.15 - idx * 0.015})`,
           }}
           key={`circle-${idx}`}
           idx={idx}
         />
       ))}
+
+      {/* Central Point */}
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
+        <div className="h-2 w-2 bg-[#7c3aed] rounded-full shadow-[0_0_12px_#7c3aed,0_0_24px_rgba(124,58,237,0.5)]" />
+      </div>
     </div>
   );
 };
@@ -62,31 +72,26 @@ export const Radar = ({ className }: { className?: string }) => {
 export const IconContainer = ({
   icon,
   text,
-  delay,
   className
 }: {
   icon?: React.ReactNode;
   text?: string;
-  delay?: number;
   className?: string;
 }) => {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3, delay: delay ?? 0 }}
-      className={twMerge("relative z-50 flex flex-col items-center justify-center space-y-1.5", className)}
+    <div
+      className={twMerge("absolute z-50 flex flex-col items-center justify-center space-y-1.5", className)}
     >
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-purple-500/20 bg-white/5 shadow-inner backdrop-blur-md">
-        <div className="text-purple-400">
+      <div className="flex h-[44px] w-[44px] items-center justify-center rounded-[10px] border border-purple-500/25 bg-[#0f0a23]/80 shadow-inner backdrop-blur-md">
+        <div className="text-[#a78bfa]">
           {icon}
         </div>
       </div>
-      <div className="rounded-md px-2 py-0.5">
-        <div className="text-center text-[10px] font-bold text-white/40 uppercase tracking-tighter">
+      <div className="px-2">
+        <div className="text-center text-[9px] font-bold text-white/40 uppercase tracking-[0.5px]">
           {text}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
