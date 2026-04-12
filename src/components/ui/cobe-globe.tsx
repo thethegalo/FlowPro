@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useEffect, useRef, useCallback } from "react"
@@ -64,6 +63,7 @@ export function Globe({
   const phiOffsetRef = useRef(0)
   const thetaOffsetRef = useRef(0)
   const isPausedRef = useRef(false)
+  const globeInstance = useRef<any>(null)
 
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
@@ -122,76 +122,41 @@ export function Globe({
   useEffect(() => {
     if (!canvasRef.current) return
     const canvas = canvasRef.current
-    let globe: any = null
     let animationId: number
     let phi = 0
 
     function init() {
       const width = canvas.offsetWidth
-      if (width === 0 || globe) return
+      if (width === 0 || globeInstance.current) return
+
+      // WebGL Context Safety Check
+      try {
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
+        if (!gl) {
+          console.warn('Globe: WebGL context not available.')
+          return
+        }
+      } catch (e) {
+        console.warn('Globe: Error testing WebGL context', e)
+        return
+      }
 
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      globe = createGlobe(canvas, {
-        devicePixelRatio: dpr,
-        width,
-        height: width,
-        phi: 0,
-        theta,
-        dark,
-        diffuse,
-        mapSamples,
-        mapBrightness,
-        baseColor,
-        markerColor,
-        glowColor,
-        markerElevation,
-        markers: markers.map((m) => ({
-          location: m.location,
-          size: markerSize,
-          id: m.id,
-        })),
-        arcs: arcs.map((a) => ({
-          from: a.from,
-          to: a.to,
-          id: a.id,
-        })),
-        arcColor,
-        arcWidth,
-        arcHeight,
-        opacity: 0.7,
-      })
-
-      function animate() {
-        if (!globe || typeof globe.update !== 'function') return;
-        
-        if (!isPausedRef.current) {
-          phi += speed
-          if (
-            Math.abs(velocity.current.phi) > 0.0001 ||
-            Math.abs(velocity.current.theta) > 0.0001
-          ) {
-            phiOffsetRef.current += velocity.current.phi
-            thetaOffsetRef.current += velocity.current.theta
-            velocity.current.phi *= 0.95
-            velocity.current.theta *= 0.95
-          }
-          const thetaMin = -0.4,
-            thetaMax = 0.4
-          if (thetaOffsetRef.current < thetaMin) {
-            thetaOffsetRef.current += (thetaMin - thetaOffsetRef.current) * 0.1
-          } else if (thetaOffsetRef.current > thetaMax) {
-            thetaOffsetRef.current += (thetaMax - thetaOffsetRef.current) * 0.1
-          }
-        }
-        
-        globe.update({
-          phi: phi + phiOffsetRef.current + dragOffset.current.phi,
-          theta: theta + thetaOffsetRef.current + dragOffset.current.theta,
+      
+      try {
+        globeInstance.current = createGlobe(canvas, {
+          devicePixelRatio: dpr,
+          width,
+          height: width,
+          phi: 0,
+          theta,
           dark,
+          diffuse,
+          mapSamples,
           mapBrightness,
-          markerColor,
           baseColor,
-          arcColor,
+          markerColor,
+          glowColor,
           markerElevation,
           markers: markers.map((m) => ({
             location: m.location,
@@ -203,28 +168,80 @@ export function Globe({
             to: a.to,
             id: a.id,
           })),
+          arcColor,
+          arcWidth,
+          arcHeight,
+          opacity: 0.7,
         })
-        animationId = requestAnimationFrame(animate)
+
+        function animate() {
+          if (!globeInstance.current) return
+          
+          if (!isPausedRef.current) {
+            phi += speed
+            if (
+              Math.abs(velocity.current.phi) > 0.0001 ||
+              Math.abs(velocity.current.theta) > 0.0001
+            ) {
+              phiOffsetRef.current += velocity.current.phi
+              thetaOffsetRef.current += velocity.current.theta
+              velocity.current.phi *= 0.95
+              velocity.current.theta *= 0.95
+            }
+            const thetaMin = -0.4,
+              thetaMax = 0.4
+            if (thetaOffsetRef.current < thetaMin) {
+              thetaOffsetRef.current += (thetaMin - thetaOffsetRef.current) * 0.1
+            } else if (thetaOffsetRef.current > thetaMax) {
+              thetaOffsetRef.current += (thetaMax - thetaOffsetRef.current) * 0.1
+            }
+          }
+          
+          if (globeInstance.current?.update) {
+            globeInstance.current.update({
+              phi: phi + phiOffsetRef.current + dragOffset.current.phi,
+              theta: theta + thetaOffsetRef.current + dragOffset.current.theta,
+              dark,
+              mapBrightness,
+              markerColor,
+              baseColor,
+              arcColor,
+              markerElevation,
+              markers: markers.map((m) => ({
+                location: m.location,
+                size: markerSize,
+                id: m.id,
+              })),
+              arcs: arcs.map((a) => ({
+                from: a.from,
+                to: a.to,
+                id: a.id,
+              })),
+            })
+          }
+          animationId = requestAnimationFrame(animate)
+        }
+        animate()
+        canvas.style.opacity = "1"
+      } catch (err) {
+        console.error('Globe: Error during initialization', err)
       }
-      animate()
-      setTimeout(() => canvas && (canvas.style.opacity = "1"))
     }
 
-    if (canvas.offsetWidth > 0) {
-      init()
-    } else {
-      const ro = new ResizeObserver((entries) => {
-        if (entries[0]?.contentRect.width > 0) {
-          ro.disconnect()
-          init()
-        }
-      })
-      ro.observe(canvas)
-    }
+    const resizeObserver = new ResizeObserver((entries) => {
+      if (entries[0]?.contentRect.width > 0) {
+        init()
+      }
+    })
+    resizeObserver.observe(canvas)
 
     return () => {
+      resizeObserver.disconnect()
       if (animationId) cancelAnimationFrame(animationId)
-      if (globe) globe.destroy()
+      if (globeInstance.current) {
+        globeInstance.current.destroy()
+        globeInstance.current = null
+      }
     }
   }, [markers, arcs, markerColor, baseColor, arcColor, glowColor, dark, mapBrightness, markerSize, markerElevation, arcWidth, arcHeight, speed, theta, diffuse, mapSamples])
 
