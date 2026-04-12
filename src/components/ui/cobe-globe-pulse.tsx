@@ -28,6 +28,7 @@ export function GlobePulse({
   speed = 0.003,
 }: GlobePulseProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const globeRef = useRef<any>(null)
   const pointerInteracting = useRef<{ x: number; y: number } | null>(null)
   const dragOffset = useRef({ phi: 0, theta: 0 })
   const phiOffsetRef = useRef(0)
@@ -71,15 +72,26 @@ export function GlobePulse({
   useEffect(() => {
     if (!canvasRef.current) return
     const canvas = canvasRef.current
-    let globe: any = null
     let animationId: number
     let phi = 0
 
     function init() {
       const width = canvas.offsetWidth
-      if (width === 0 || globe) return
+      if (width === 0 || globeRef.current) return
 
-      globe = createGlobe(canvas, {
+      // WebGL Context Safety Check
+      try {
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
+        if (!gl) {
+          console.warn('GlobePulse: WebGL context not available.')
+          return
+        }
+      } catch (e) {
+        console.warn('GlobePulse: Error testing WebGL context', e)
+        return
+      }
+
+      globeRef.current = createGlobe(canvas, {
         devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
         width, height: width,
         phi: 0, theta: 0.2, dark: 1, diffuse: 1.5,
@@ -92,10 +104,11 @@ export function GlobePulse({
         arcs: [], arcColor: [0.3, 0.85, 0.95],
         arcWidth: 0.5, arcHeight: 0.25, opacity: 0.7,
       })
+
       function animate() {
         if (!isPausedRef.current) phi += speed
-        if (globe) {
-          globe.update({
+        if (globeRef.current && typeof globeRef.current.update === 'function') {
+          globeRef.current.update({
             phi: phi + phiOffsetRef.current + dragOffset.current.phi,
             theta: 0.2 + thetaOffsetRef.current + dragOffset.current.theta,
           })
@@ -120,7 +133,10 @@ export function GlobePulse({
 
     return () => {
       if (animationId) cancelAnimationFrame(animationId)
-      if (globe) globe.destroy()
+      if (globeRef.current) {
+        globeRef.current.destroy()
+        globeRef.current = null
+      }
     }
   }, [markers, speed])
 
