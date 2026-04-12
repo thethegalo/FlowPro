@@ -47,15 +47,21 @@ import { Textarea } from '@/components/ui/textarea';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
-const STATES = ["SP", "RJ", "MG", "PR", "SC", "RS", "BA", "CE", "PE", "GO"];
+// Lista completa de estados brasileiros
+const STATES = [
+  "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", 
+  "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", 
+  "RS", "RO", "RR", "SC", "SP", "SE", "TO"
+];
+
 const ADMIN_EMAIL = "thethegalo@gmail.com";
 
 const SUGGESTIONS = [
   { niche: 'Barbearia', city: 'São Paulo', state: 'SP', country: 'Brasil' },
   { niche: 'Dentista', city: 'Curitiba', state: 'PR', country: 'Brasil' },
-  { niche: 'Restaurante Japonês', city: 'Rio de Janeiro', state: 'RJ', country: 'Brasil' },
-  { niche: 'Escola de Inglês', city: 'Belo Horizonte', state: 'MG', country: 'Brasil' },
-  { niche: 'Pet Shop', city: 'Florianópolis', state: 'SC', country: 'Brasil' },
+  { niche: 'Restaurante Japonês', city: 'Rio de Janeiro', state: 'RJ', country: 'Brasil' },
+  { niche: 'Escola de Inglês', city: 'Belo Horizonte', state: 'MG', country: 'Brasil' },
+  { niche: 'Pet Shop', city: 'Florianópolis', state: 'SC', country: 'Brasil' },
 ];
 
 export default function LeadsPage() {
@@ -210,8 +216,8 @@ export default function LeadsPage() {
       <div className="flex min-h-screen w-full bg-[#050508] relative overflow-hidden">
         {/* Radar Background Effects */}
         <div className="fixed inset-0 pointer-events-none z-0">
-          <div className="absolute top-0 right-0 w-[60%] h-[60%] bg-primary/10 rounded-full blur-[180px] animate-pulse"></div>
-          <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-cyan-500/5 rounded-full blur-[150px]"></div>
+          <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-primary/5 rounded-full blur-[180px] animate-pulse"></div>
+          <div className="absolute bottom-0 left-0 w-[40%] h-[40%] bg-cyan-500/3 rounded-full blur-[150px]"></div>
           {/* Dotted World Map Mockup */}
           <div 
             className="absolute inset-0 opacity-[0.03] mix-blend-overlay"
@@ -252,7 +258,7 @@ export default function LeadsPage() {
                     <div className="space-y-2">
                       <Label className="text-[10px] font-black uppercase opacity-50">Nome do Alvo</Label>
                       <Input 
-                        placeholder="Ex: João da Silva" 
+                        placeholder="Ex: João da Silva" 
                         className="bg-white/5 border-white/10 rounded-xl"
                         value={manualLead.name}
                         onChange={e => setManualLead({...manualLead, name: e.target.value})}
@@ -300,7 +306,7 @@ export default function LeadsPage() {
               </Dialog>
 
               <Badge className="bg-primary/20 text-primary border-primary/30 text-[8px] font-black uppercase px-3 py-1">
-                {isProMember ? 'ACESSO VITALÍCIO' : 'MODO TESTE'}
+                {isProMember ? 'ACESSO VITALÍCIO' : 'MODO TESTE'}
               </Badge>
             </div>
           </header>
@@ -320,13 +326,13 @@ export default function LeadsPage() {
                 <Globe className="h-64 w-64 text-primary opacity-10 absolute animate-slow-spin" />
               </div>
 
-              <Card className="glass-card border-white/10 bg-white/[0.03] backdrop-blur-xl rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.5)]">
+              <Card className="glass-card border-primary/20 bg-white/[0.03] backdrop-blur-xl rounded-[2.5rem] overflow-hidden shadow-[0_0_60px_rgba(124,58,255,0.08)]">
                 <CardHeader className="bg-white/5 border-b border-white/5 p-8 flex flex-row items-center justify-between">
                   <div className="space-y-1">
                     <CardTitle className="text-lg font-black uppercase tracking-widest italic flex items-center gap-2">
-                      <Zap className="h-5 w-5 text-primary" /> Configuração de Varredura
+                      <Zap className="h-5 w-5 text-primary" /> Configuração de Varredura
                     </CardTitle>
-                    <CardDescription className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Preencha os parâmetros para o radar neural</CardDescription>
+                    <CardDescription className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">Preencha os parâmetros para o radar neural</CardDescription>
                   </div>
                   <Button 
                     variant="ghost" 
@@ -340,7 +346,7 @@ export default function LeadsPage() {
                 <CardContent className="p-10">
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
                     <div className="md:col-span-6 space-y-3">
-                      <label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">O que você busca? (Nicho)</label>
+                      <label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">O que você busca? (Nicho)</label>
                       <div className="relative group">
                         <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                         <Input 
@@ -358,7 +364,7 @@ export default function LeadsPage() {
                       <div className="relative group">
                         <Navigation className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                         <Input 
-                          placeholder="Ex: São Paulo" 
+                          placeholder="Ex: São Paulo" 
                           className="bg-white/5 border-white/10 h-16 pl-12 rounded-2xl focus-visible:ring-primary focus-visible:shadow-[0_0_20px_rgba(124,58,255,0.2)] transition-all text-base font-medium"
                           value={city}
                           onChange={e => setCity(e.target.value)}
@@ -375,7 +381,7 @@ export default function LeadsPage() {
                           <SelectTrigger className="bg-white/5 border-white/10 h-16 pl-12 rounded-2xl focus:ring-primary text-base font-medium">
                             <SelectValue placeholder="Selecione UF" />
                           </SelectTrigger>
-                          <SelectContent className="bg-[#0b0b14] border-white/10 text-white">
+                          <SelectContent className="bg-[#0b0b14] border-white/10 text-white max-h-[300px]">
                             {STATES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                           </SelectContent>
                         </Select>
@@ -383,7 +389,7 @@ export default function LeadsPage() {
                     </div>
 
                     <div className="md:col-span-8 space-y-3">
-                      <label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">País</label>
+                      <label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">País</label>
                       <div className="relative group">
                         <Flag className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                         <Input 
@@ -400,7 +406,7 @@ export default function LeadsPage() {
                       <Button 
                         onClick={handleSearch} 
                         disabled={loading}
-                        className="w-full h-20 bg-gradient-to-r from-primary to-pink-600 hover:scale-[1.01] transition-all rounded-[2rem] font-black uppercase tracking-[0.3em] text-lg shadow-[0_20px_50px_rgba(124,58,255,0.3)] active:scale-95 relative overflow-hidden group"
+                        className="w-full h-20 bg-gradient-to-r from-primary to-pink-600 hover:scale-[1.01] transition-all rounded-[2rem] font-black uppercase tracking-[0.3em] text-lg shadow-[0_20px_50px_rgba(124,58,255,0.3)] active:scale-95 relative overflow-hidden group before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:-translate-x-full hover:before:translate-x-full before:transition-transform before:duration-700"
                       >
                         {loading ? (
                           <div className="flex items-center gap-4">
@@ -409,10 +415,9 @@ export default function LeadsPage() {
                           </div>
                         ) : (
                           <span className="flex items-center gap-3">
-                            <Search className="h-6 w-6" /> INICIAR PROSPECÇÃO
+                            <Search className="h-6 w-6" /> INICIAR PROSPECÇÃO
                           </span>
                         )}
-                        <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 skew-x-12" />
                       </Button>
                     </div>
                   </div>
@@ -425,10 +430,10 @@ export default function LeadsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white">
-                    {leads.length > 0 ? `Relatório de Varredura` : 'Alvos Identificados'}
+                    {leads.length > 0 ? `Relatório de Varredura` : 'Alvos Identificados'}
                   </h2>
                   <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest">
-                    {leads.length > 0 ? `${leads.length} alvos encontrados na região de ${city || state}` : 'O radar está aguardando o comando de inicialização'}
+                    {leads.length > 0 ? `${leads.length} alvos encontrados na região de ${city || state}` : 'O radar está aguardando o comando de inicialização'}
                   </p>
                 </div>
                 {leads.length > 0 && (
@@ -452,7 +457,7 @@ export default function LeadsPage() {
                     <p className="text-sm text-white/80 font-medium">Sua conta atual permite visualizar apenas 5 alvos por busca. Libere a varredura completa agora.</p>
                   </div>
                   <Button asChild className="h-14 px-10 bg-primary text-white font-black uppercase tracking-widest rounded-2xl shadow-xl hover:scale-105 active:scale-95 transition-all">
-                    <Link href="/paywall">UPGRADE VITALÍCIO</Link>
+                    <Link href="/paywall">UPGRADE VITALÍCIO</Link>
                   </Button>
                 </motion.div>
               )}
@@ -473,7 +478,7 @@ export default function LeadsPage() {
                       </div>
                       <p className="text-muted-foreground uppercase text-[11px] font-black tracking-[0.5em] px-8 leading-relaxed">
                         SISTEMA AGUARDANDO COORDENADAS... <br />
-                        <span className="opacity-50 mt-2 block font-bold tracking-widest text-[9px]">Insira o nicho e a localização acima</span>
+                        <span className="opacity-50 mt-2 block font-bold tracking-widest text-[9px]">Insira o nicho e a localização acima</span>
                       </p>
                     </motion.div>
                   ) : loading ? (
@@ -484,7 +489,7 @@ export default function LeadsPage() {
                       </div>
                       <div className="space-y-2">
                         <p className="text-primary uppercase text-[11px] font-black tracking-[0.5em] animate-pulse">Sincronizando Banco de Dados Neural...</p>
-                        <p className="text-white/30 text-[8px] font-bold uppercase tracking-widest">Identificando padrões de consumo e faturamento</p>
+                        <p className="text-white/30 text-[8px] font-bold uppercase tracking-widest">Identificando padrões de consumo e faturamento</p>
                       </div>
                     </div>
                   ) : (
@@ -495,7 +500,7 @@ export default function LeadsPage() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.1 }}
                       >
-                        <Card className={`glass-card border-white/10 transition-all duration-500 rounded-[2.5rem] overflow-hidden group hover:shadow-[0_0_40px_rgba(124,58,255,0.15)] hover:border-primary/40 ${approachedLeads.includes(lead.id) ? 'opacity-60 grayscale' : ''}`}>
+                        <Card className={`glass-card border-white/10 transition-all duration-500 rounded-[2.5rem] overflow-hidden group hover:shadow-[0_0_30px_rgba(124,58,255,0.12)] hover:border-primary/30 ${approachedLeads.includes(lead.id) ? 'opacity-60 grayscale' : ''}`}>
                           <CardContent className="p-10">
                             <div className="flex flex-col xl:flex-row justify-between gap-10">
                               <div className="flex gap-8 items-start flex-1">
@@ -506,7 +511,7 @@ export default function LeadsPage() {
                                   <div className="flex items-center gap-4 flex-wrap">
                                     <h4 className="font-black text-2xl italic leading-none text-white uppercase tracking-tight">{lead.name}</h4>
                                     {lead.rating && lead.rating !== '0' && (
-                                      <Badge variant="outline" className="bg-yellow-500/10 border-yellow-500/30 text-yellow-500 text-[10px] font-black py-1 px-3 shadow-[0_0_15px_rgba(234,179,8,0.2)]">
+                                      <Badge variant="outline" className="bg-yellow-500/10 border-yellow-500/30 text-yellow-500 text-[10px] font-black py-1 px-3 shadow-[0_0_10px_rgba(234,179,8,0.3)]">
                                         ★ {lead.rating}
                                       </Badge>
                                     )}
@@ -527,7 +532,7 @@ export default function LeadsPage() {
                                 </div>
                               </div>
 
-                              <div className="flex flex-col sm:flex-row xl:flex-col 2xl:flex-row gap-3 items-center min-w-[200px]">
+                              <div className="flex flex-col md:flex-col lg:flex-row xl:flex-col 2xl:flex-row gap-3 items-center min-w-[200px]">
                                 <Button 
                                   variant="default" 
                                   size="lg"
