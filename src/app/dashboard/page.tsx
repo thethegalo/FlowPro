@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useEffect, useState } from 'react';
@@ -140,6 +141,9 @@ export default function Dashboard() {
     { id: 'dia2', title: 'DIA 2: Ajustar Perfil', desc: 'Prepare suas redes para converter visitas.', order: 2 },
     { id: 'dia3', title: 'DIA 3: Encontrar Leads', desc: 'Identifique clientes com o Radar.', order: 3 },
     { id: 'dia4', title: 'DIA 4: Abordagem IA', desc: 'Inicie conversas estratégicas com IA.', order: 4 },
+    { id: 'dia5', title: 'DIA 5: Conversar & Nutrir', desc: 'Gerencie respostas e mostre o valor.', order: 5 },
+    { id: 'dia6', title: 'DIA 6: Fechar Venda', desc: 'Transforme conversas em dinheiro.', order: 6 },
+    { id: 'dia7', title: 'DIA 7: Escalar Flow', desc: 'Sua estrutura está pronta. Repita.', order: 7 },
   ];
 
   const ecosystemModules = [
@@ -367,7 +371,7 @@ export default function Dashboard() {
                 </Badge>
               </div>
 
-              <div className="flex md:grid md:grid-cols-4 overflow-x-auto gap-4 no-scrollbar pb-4 snap-x snap-mandatory">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4 pb-4">
                 {missions.map((m) => {
                   const isCompleted = completedMissionIds.includes(m.id);
                   const isLocked = !isAdmin && m.order > currentJourneyDay && !isCompleted;
@@ -378,13 +382,13 @@ export default function Dashboard() {
                       key={m.id} 
                       href={isLocked ? '#' : `/missions/${m.id}`}
                       className={cn(
-                        "block min-w-[260px] md:min-w-0 snap-start",
+                        "block",
                         isLocked ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
                       )}
                     >
                       <Card className={cn(
                         "glass-card p-5 h-full flex flex-col justify-between transition-all",
-                        isCurrent && "border-primary/40 bg-primary/5"
+                        isCurrent && "border-primary/40 bg-primary/5 shadow-[0_0_20px_rgba(139,92,246,0.1)]"
                       )}>
                         <div className="space-y-4">
                           <div className="flex justify-between items-start">
@@ -400,10 +404,10 @@ export default function Dashboard() {
                           </div>
                           
                           <div className="space-y-1">
-                            <h4 className={cn("text-xs font-bold uppercase", isCompleted ? 'text-white/40' : 'text-white/90')}>
+                            <h4 className={cn("text-[10px] font-black uppercase tracking-tight", isCompleted ? 'text-white/40' : 'text-white/90')}>
                               {m.title}
                             </h4>
-                            <p className="text-[11px] text-white/30 leading-relaxed">
+                            <p className="text-[9px] text-white/30 leading-relaxed font-medium">
                               {m.desc}
                             </p>
                           </div>
@@ -411,11 +415,11 @@ export default function Dashboard() {
 
                         <div className="pt-4">
                           <div className={cn(
-                            "w-full h-9 rounded-lg text-[10px] font-bold uppercase flex items-center justify-center transition-all",
+                            "w-full h-8 rounded-lg text-[9px] font-black uppercase tracking-widest flex items-center justify-center transition-all",
                             isCompleted ? "border border-white/5 text-white/30 hover:bg-white/5" : 
                             isCurrent ? "bg-primary text-white" : "bg-white/5 text-white/20"
                           )}>
-                            {isCompleted ? 'revisar' : isLocked ? 'bloqueado' : 'iniciar etapa'}
+                            {isCompleted ? 'revisar' : isLocked ? 'bloqueado' : 'iniciar'}
                           </div>
                         </div>
                       </Card>
