@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useEffect, useState } from 'react';
@@ -6,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -52,20 +51,7 @@ import {
   Tooltip
 } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { DashboardParticles } from '@/components/DashboardParticles';
 
-const LOGO_ICON = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/d5tqr6czngeukjb8r6whrs5s?v=1774318273085";
 const ADMIN_EMAIL = "thethegalo@gmail.com";
 
 function AnimatedNumber({ value, duration = 2000, prefix = "", suffix = "" }: { value: number, duration?: number, prefix?: string, suffix?: string }) {
@@ -93,10 +79,6 @@ export default function Dashboard() {
   const router = useRouter();
   const { toast } = useToast();
   
-  const [isAddingEarning, setIsAddingEarning] = useState(false);
-  const [showEarningModal, setShowEarningModal] = useState(false);
-  const [earningAmount, setEarningAmount] = useState("");
-  const [earningDate, setEarningDate] = useState(new Date().toISOString().split('T')[0]);
   const [userGoal, setUserGoal] = useState(5000);
 
   const userDocRef = useMemoFirebase(() => {
@@ -179,21 +161,16 @@ export default function Dashboard() {
   }, [progressData]);
 
   const totalEarnings = useMemo(() => {
-    // Prioridade 1: Estatísticas Simuladas pelo Admin
     if (userData?.simulatedStats?.total !== undefined) return userData.simulatedStats.total;
-
-    // Prioridade 2: Valores hardcoded para usuários especiais
     const raw = userData?.totalEarnings || 0;
     if (isSpecialUser) return 21564 + raw;
     if (isGrayUser) return 17594 + raw;
-    
     return raw;
   }, [userData?.totalEarnings, userData?.simulatedStats, isSpecialUser, isGrayUser]);
 
   const displayGoal = isSpecialUser ? 50000 : isGrayUser ? 25000 : userGoal;
   
   const chartData = useMemo(() => {
-    // Prioridade 1: Gráfico Simulado pelo Admin
     if (userData?.simulatedStats?.chart) {
       return userData.simulatedStats.chart.map((p: any) => ({
         date: new Date(p.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
@@ -207,10 +184,7 @@ export default function Dashboard() {
     const earningsByDate: Record<string, number> = {};
     earningsData?.forEach(e => { earningsByDate[e.date] = (earningsByDate[e.date] || 0) + (e.amount || 0); });
     
-    // Lucas distribution - Sum: 21564
     const lucasValues = [5874,420,380,650,290,810,0,1200,340,290,480,0,920,670,410,380,0,1100,590,430,280,0,1340,480,670,0,1200,890,430,0,630];
-    
-    // Gray distribution - Sum: 17594
     const grayValues = [0,600,0,800,1200,0,1500,0,700,900,0,1900,0,800,600,0,1700,0,1000,0,2000,0,700,1300,0,1600,0,294,0,0,0];
 
     for (let i = days; i >= 0; i--) {
@@ -247,16 +221,15 @@ export default function Dashboard() {
     if (!isUserLoading && !user) router.push('/auth');
   }, [user, isUserLoading, router]);
 
-  if (isUserLoading || isUserDocLoading) return <div className="min-h-screen bg-[#050508] flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  if (isUserLoading || isUserDocLoading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-[#050508] relative dashboard-root overflow-x-hidden">
-        <DashboardParticles />
+      <div className="flex min-h-screen w-full relative overflow-x-hidden">
         <AppSidebar />
         
         <main className="flex-1 flex flex-col min-w-0 relative z-10">
-          <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-40 overflow-hidden">
+          <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-black/40 backdrop-blur-md sticky top-0 z-40 overflow-hidden">
             <div className="flex items-center gap-4">
               <SidebarTrigger className="text-muted-foreground hover:text-white" />
               <div className="h-6 w-px bg-white/10 hidden md:block" />
@@ -270,7 +243,6 @@ export default function Dashboard() {
           </header>
 
           <div className="flex-1 p-8 space-y-12 max-w-5xl mx-auto w-full">
-            {/* Boas Vindas */}
             <div className="flex flex-col md:flex-row justify-between items-end gap-6">
               <div className="space-y-3">
                 <h1 className="text-4xl font-black italic uppercase tracking-tighter text-white">{displayName}</h1>
@@ -286,8 +258,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Gráfico de Performance */}
-            <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] p-10 space-y-10 metric-card mb-8 overflow-hidden">
+            <Card className="glass-card p-10 space-y-10 metric-card mb-8 overflow-hidden">
               <div className="flex justify-between items-end">
                 <h3 className="text-2xl font-black italic uppercase tracking-tight text-white">Performance 30 Dias</h3>
                 <div className="text-right">
@@ -318,9 +289,8 @@ export default function Dashboard() {
               </div>
             </Card>
 
-            {/* Grades de Métricas */}
             <div className="grid gap-6 md:grid-cols-2">
-              <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] p-8 space-y-6 metric-card">
+              <Card className="glass-card p-8 space-y-6 metric-card">
                 <div className="flex justify-between items-center">
                   <span className="text-[10px] font-black uppercase tracking-widest text-primary">Placar de Caixa</span>
                   <Badge variant="outline" className="text-[8px] border-primary/20 text-primary">ALVO: R$ {displayGoal.toLocaleString('pt-BR')}</Badge>
@@ -333,7 +303,7 @@ export default function Dashboard() {
                 </div>
               </Card>
 
-              <Card className="bg-white/[0.02] border-white/5 rounded-[2rem] p-8 metric-card overflow-hidden">
+              <Card className="glass-card p-8 metric-card overflow-hidden">
                 <div className="flex justify-between items-center mb-6">
                   <span className="text-[10px] font-black uppercase tracking-widest text-accent">Execução Diária</span>
                   <Badge variant="outline" className="text-[8px] border-accent/20 text-accent">ALTA PERFORMANCE</Badge>
@@ -356,7 +326,6 @@ export default function Dashboard() {
               </Card>
             </div>
 
-            {/* JORNADA DE 7 DIAS */}
             <div className="space-y-8">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
@@ -380,7 +349,7 @@ export default function Dashboard() {
                       href={isLocked ? '#' : `/missions/${m.id}`}
                       className={`block group transition-all ${isLocked ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                     >
-                      <Card className={`glass-card border-white/5 rounded-3xl overflow-hidden transition-all duration-500 ${isCurrent ? 'border-primary/40 bg-primary/5 shadow-lg shadow-primary/5' : ''} ${isCompleted ? 'border-green-500/20' : ''}`}>
+                      <Card className={`glass-card rounded-3xl overflow-hidden transition-all duration-500 ${isCurrent ? 'border-primary/40 bg-primary/5 shadow-lg shadow-primary/5' : ''} ${isCompleted ? 'border-green-500/20' : ''}`}>
                         <CardContent className="p-6">
                           <div className="flex items-center justify-between gap-6">
                             <div className="flex items-center gap-6">
@@ -418,20 +387,10 @@ export default function Dashboard() {
         </main>
 
         <style dangerouslySetInnerHTML={{ __html: `
-          [data-sidebar="sidebar"] { width: 250px !important; overflow: hidden !important; }
-          [data-sidebar="menu-button"] span { white-space: nowrap !important; }
-          [data-sidebar="sidebar"]::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(124, 58, 255, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(124, 58, 255, 0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
-          [data-sidebar="menu-button"]:hover { background: rgba(124, 58, 255, 0.08) !important; border-left: 2px solid #7c3aff !important; }
-          [data-sidebar="menu-button"][data-active="true"] { border-left: 2px solid #7c3aff !important; box-shadow: inset 4px 0 12px -2px rgba(124, 58, 255, 0.2) !important; }
-          .animate-gradient-text { background: linear-gradient(90deg, #fff, #a855f7, #22d3ee, #fff) !important; background-size: 300% auto !important; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; animation: gradMove 4s linear infinite !important; }
-          @keyframes gradMove { 0% { background-position: 0% center; } 100% { background-position: 100% center; } }
+          [data-sidebar="sidebar"] { width: 250px !important; overflow: hidden !important; background: rgba(0,0,0,0.4) !important; backdrop-filter: blur(10px); }
           .status-badge { animation: pulse-green 2s ease-in-out infinite !important; }
           @keyframes pulse-green { 0%, 100% { box-shadow: 0 0 6px rgba(16, 185, 129, 0.3); } 50% { box-shadow: 0 0 16px rgba(16, 185, 129, 0.7); } }
           .metric-card:hover { transform: translateY(-2px) !important; box-shadow: 0 8px 32px rgba(124, 58, 255, 0.2) !important; border-top: 1px solid rgba(124, 58, 255, 0.3) !important; transition: 0.25s ease !important; }
-          .bg-green-500.absolute { animation: pulse-dot 2s infinite !important; }
-          @keyframes pulse-dot { 0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); } 50% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } }
-          .dashboard-root::after { content: ""; position: fixed; inset: -5%; z-index: 0; pointer-events: none; background: radial-gradient(ellipse 50% 40% at 15% 10%, rgba(124, 58, 255, 0.07) 0%, transparent 60%), radial-gradient(ellipse 40% 35% at 85% 90%, rgba(34, 211, 238, 0.04) 0%, transparent 55%); animation: orbMove 12s ease-in-out infinite alternate; }
-          @keyframes orbMove { 0% { background-position: 0% 0%, 100% 100%; opacity: 0.8; } 50% { background-position: 8% 12%, 92% 88%; opacity: 1; } 100% { background-position: 15% 5%, 85% 95%; opacity: 0.9; } }
         ` }} />
       </div>
     </SidebarProvider>

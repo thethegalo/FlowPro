@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -31,7 +30,6 @@ import {
 } from "@/components/ui/accordion";
 import { Globe } from '@/components/ui/cobe-globe';
 import { MacbookShowcase } from '@/components/MacbookShowcase';
-import { DashboardParticles } from '@/components/DashboardParticles';
 
 const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
 
@@ -134,16 +132,8 @@ function AnimatedNumber({ value, prefix = "", suffix = "" }: { value: number, pr
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-[#050508] text-white overflow-x-hidden relative">
-      <DashboardParticles />
-      
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[140px] animate-pulse-glow"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent/10 rounded-full blur-[120px]"></div>
-        <div className="absolute inset-0 grid-background opacity-20"></div>
-      </div>
-
-      <header className="px-4 md:px-6 h-20 flex items-center justify-between sticky top-0 z-50 bg-[#050508]/70 backdrop-blur-xl border-b border-white/5">
+    <div className="flex flex-col min-h-screen text-white overflow-x-hidden relative">
+      <header className="px-4 md:px-6 h-20 flex items-center justify-between sticky top-0 z-50 bg-[#050508]/40 backdrop-blur-xl border-b border-white/5">
         <Link href="/" className="flex items-center group relative shrink-0">
           <div className="relative h-8 w-24 md:h-12 md:w-40 transition-all duration-500 group-hover:scale-105 group-hover:drop-shadow-[0_0_15px_rgba(139,92,246,0.6)]">
             <Image src={LOGO_URL} alt="FlowPro Logo" fill className="object-contain filter-none" priority />
@@ -162,7 +152,7 @@ export default function Home() {
       </header>
 
       <main className="relative z-10">
-        <section className="relative pt-16 pb-24 md:pt-32 md:pb-48 overflow-visible backdrop-blur-sm bg-white/[0.01]">
+        <section className="relative pt-16 pb-24 md:pt-32 md:pb-48 overflow-visible">
           <div className="container px-4 md:px-6 mx-auto relative z-20">
             <div className="flex flex-col items-center lg:flex-row lg:items-center gap-6 lg:gap-24 min-h-[600px] overflow-visible">
               <div className="flex-1 text-center lg:text-left space-y-10 relative z-30 px-2 order-1 lg:order-1">
@@ -206,8 +196,6 @@ export default function Home() {
               </div>
 
               <div className="flex-1 w-full flex justify-center order-2 lg:order-2">
-                <div className="h-1 w-full lg:hidden" />
-                
                 <div className="hidden lg:flex flex-1 w-full relative aspect-square max-h-[500px] mx-auto max-w-[600px] items-center justify-center z-10 overflow-visible">
                   <div className="absolute inset-0 bg-primary/50 blur-[180px] rounded-full opacity-40 animate-pulse"></div>
                   
@@ -249,8 +237,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="tecnologia" className="py-24 md:py-48 relative overflow-hidden bg-[radial-gradient(circle_at_center,rgba(124,58,255,0.08),transparent_70%)]">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(124,58,237,0.1),transparent_50%)]"></div>
+        <section id="tecnologia" className="py-24 md:py-48 relative overflow-hidden">
           <div className="container px-4 md:px-6 mx-auto relative z-10">
             <div className="text-center mb-24">
               <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-6 text-white leading-none">O SEU <span className="text-primary">ARSENAL</span></h2>
@@ -324,7 +311,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="faq" className="py-24 md:py-48 bg-gradient-to-t from-primary/5 to-transparent">
+        <section id="faq" className="py-24 md:py-48">
           <div className="container px-4 md:px-6 mx-auto max-w-4xl">
             <h2 className="text-4xl md:text-6xl font-black italic mb-16 text-center uppercase tracking-tighter text-white">DÚVIDAS <span className="text-primary">FREQUENTES</span></h2>
             <Accordion type="single" collapsible className="space-y-6 px-4 md:px-0">
@@ -342,23 +329,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="py-32 relative overflow-hidden border-t border-white/5 bg-[#030305]">
-          <div className="absolute inset-0 pointer-events-none">
-            {[...Array(15)].map((_, i) => (
-              <div 
-                key={i}
-                className="absolute h-1 w-1 bg-primary rounded-full animate-float-up opacity-20"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  bottom: `-${Math.random() * 20}%`,
-                  animationDuration: `${5 + Math.random() * 10}s`,
-                  animationDelay: `${Math.random() * 5}s`
-                }}
-              />
-            ))}
-          </div>
-
-          <div className="absolute inset-0 bg-primary/5 blur-3xl rounded-full scale-150 pointer-events-none"></div>
+        <section className="py-32 relative overflow-hidden">
           <div className="container px-4 md:px-6 mx-auto text-center relative z-10">
             <h2 className="text-4xl md:text-7xl font-black italic uppercase tracking-tighter mb-10 text-white leading-tight">
               A ESCALA NÃO <br /><span className="text-primary shimmer-text">ESPERA POR VOCÊ.</span>
@@ -390,7 +361,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="py-20 border-t border-white/5 bg-[#030305] text-center relative z-10 bg-gradient-to-t from-primary/5 to-transparent">
+      <footer className="py-20 border-t border-white/5 text-center relative z-10">
         <div className="relative h-10 w-32 mx-auto mb-8 opacity-50">
           <Image src={LOGO_URL} alt="FlowPro Logo" fill className="object-contain" />
         </div>
@@ -400,15 +371,6 @@ export default function Home() {
       </footer>
 
       <style jsx global>{`
-        @keyframes float-up {
-          from { transform: translateY(0); opacity: 0; }
-          20% { opacity: 0.4; }
-          80% { opacity: 0.4; }
-          to { transform: translateY(-100vh); opacity: 0; }
-        }
-        .animate-float-up {
-          animation: float-up linear infinite;
-        }
         @keyframes spin-slow {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
