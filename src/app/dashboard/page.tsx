@@ -45,6 +45,7 @@ import {
   Tooltip
 } from 'recharts';
 import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 const ADMIN_EMAIL = "thethegalo@gmail.com";
 
@@ -318,8 +319,8 @@ export default function Dashboard() {
                       <AreaChart data={chartData} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
                         <defs>
                           <linearGradient id="colorGanhos" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.15}/>
-                            <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                            <stop offset="5%" stopColor="#8b5cf6" stopOpacity="0.15"/>
+                            <stop offset="95%" stopColor="#8b5cf6" stopOpacity="0"/>
                           </linearGradient>
                         </defs>
                         <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.04)" strokeDasharray="4 4" />
@@ -458,19 +459,19 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* JORNADA DE MISSÕES (SIMPLIFICADA) */}
+            {/* JORNADA DE MISSÕES (REESTRUTURADA) */}
             <div className="space-y-6 pt-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <h2 className="text-2xl font-bold italic uppercase tracking-tighter text-white">Sua Jornada de Escala</h2>
-                  <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.2em]">O método exato para sua primeira venda em 7 dias</p>
+                  <h2 className="text-[16px] font-semibold text-white tracking-[-0.2px]">Sua Jornada de Escala</h2>
+                  <p className="text-[11px] font-medium text-white/30 uppercase tracking-[0.8px]">O método exato para sua primeira venda em 7 dias</p>
                 </div>
-                <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px] font-black uppercase px-4 py-1.5 rounded-lg shadow-none">
+                <Badge className="bg-[#8b5cf6]/10 border border-[#8b5cf6]/25 text-[#c4b5fd] text-[10px] uppercase rounded-md px-3 py-1 font-medium shadow-none">
                   DIA {currentJourneyDay} ATIVO
                 </Badge>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[12px]">
                 {missions.map((m) => {
                   const isCompleted = completedMissionIds.includes(m.id);
                   const isLocked = !isSpecialUser && !isGrayUser && m.order > currentJourneyDay && !isCompleted;
@@ -480,23 +481,61 @@ export default function Dashboard() {
                     <Link 
                       key={m.id} 
                       href={isLocked ? '#' : `/missions/${m.id}`}
-                      className={`block group transition-all ${isLocked ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                      className={cn(
+                        "block transition-all",
+                        isLocked ? 'cursor-not-allowed' : 'cursor-pointer'
+                      )}
                     >
-                      <Card className={`bg-white/[0.03] border-white/5 rounded-xl p-5 transition-all duration-500 ${isCurrent ? 'border-primary/40 bg-primary/5 shadow-lg' : ''} ${isCompleted ? 'border-green-500/20' : 'hover:border-white/10'}`}>
-                        <div className="flex flex-col gap-4">
+                      <Card className={cn(
+                        "bg-white/[0.025] border border-white/[0.06] rounded-[10px] p-[18px] transition-all duration-200 h-full flex flex-col justify-between",
+                        isCurrent && "hover:border-[#8b5cf6]/30 hover:translate-y-[-1px]"
+                      )}>
+                        <div className="space-y-4">
                           <div className="flex justify-between items-start">
-                            <div className={`h-10 w-10 rounded-xl flex items-center justify-center text-sm font-black italic transition-all ${isCompleted ? 'bg-green-500/20 text-green-500' : isCurrent ? 'bg-primary text-white shadow-lg rotate-3' : 'bg-white/5 text-white/30'}`}>
-                              {isCompleted ? <CheckCircle2 className="h-5 w-5" /> : m.order}
+                            <div className={cn(
+                              "h-7 w-7 rounded-[8px] border flex items-center justify-center text-[13px] font-semibold transition-all",
+                              isCompleted ? "bg-[#22c55e]/10 border-[#22c55e]/20 text-[#4ade80]" : 
+                              isCurrent ? "bg-[#8b5cf6]/15 border-[#8b5cf6]/30 text-[#a78bfa] shadow-[0_0_10px_rgba(139,92,246,0.2)]" : 
+                              "bg-white/[0.04] border-white/[0.08] text-white/20"
+                            )}>
+                              {isCompleted ? <CheckCircle2 className="h-[14px] w-[14px]" /> : m.order}
                             </div>
-                            {isLocked ? <Lock className="h-4 w-4 text-white/20" /> : isCompleted && <Badge className="bg-green-500/10 text-green-500 border-none text-[8px] font-black uppercase shadow-none">OK</Badge>}
+                            {isLocked && <Lock className="h-3.5 w-3.5 text-white/10" />}
                           </div>
-                          <div className="space-y-1">
-                            <h4 className={`font-bold uppercase italic tracking-tight text-xs ${isLocked ? 'text-white/20' : 'text-white'}`}>{m.title}</h4>
-                            <p className="text-[10px] text-white/40 font-medium line-clamp-1">{m.desc}</p>
+                          
+                          <div className="space-y-1.5">
+                            <h4 className={cn(
+                              "text-[12px] font-semibold uppercase tracking-[0.3px] transition-colors",
+                              isCompleted ? "text-white/40" : isCurrent ? "text-white/90" : "text-white/25"
+                            )}>
+                              {m.title}
+                            </h4>
+                            <p className={cn(
+                              "text-[11px] leading-[1.5] transition-colors",
+                              isCompleted ? "text-white/20" : "text-white/35"
+                            )}>
+                              {m.desc}
+                            </p>
                           </div>
-                          <Button size="sm" className={`w-full h-8 rounded-lg text-[9px] font-bold uppercase transition-all ${isCompleted ? 'bg-white/5 text-white/40' : 'bg-primary text-white'}`} disabled={isLocked}>
-                            {isCompleted ? 'REVISAR' : 'INICIAR'}
-                          </Button>
+                        </div>
+
+                        <div className="pt-4">
+                          {isCompleted ? (
+                            <div className="w-full h-[32px] rounded-[6px] border border-white/10 text-white/40 text-[11px] font-medium flex items-center justify-center transition-colors hover:bg-white/5">
+                              REVISAR
+                            </div>
+                          ) : (
+                            <div 
+                              className={cn(
+                                "w-full h-[32px] rounded-[6px] text-[11px] font-medium flex items-center justify-center transition-all",
+                                isCurrent 
+                                  ? "bg-[#581c87] border border-[#7c3aed] text-[#e9d5ff]" 
+                                  : "bg-white/[0.04] border border-white/[0.08] text-white/20"
+                              )}
+                            >
+                              {isLocked ? 'BLOQUEADO' : 'INICIAR'}
+                            </div>
+                          )}
                         </div>
                       </Card>
                     </Link>
