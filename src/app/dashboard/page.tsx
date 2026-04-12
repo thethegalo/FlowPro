@@ -23,7 +23,8 @@ import {
   GraduationCap,
   Users,
   MessageSquare,
-  ChevronRight
+  ChevronRight,
+  LayoutDashboard
 } from 'lucide-react';
 import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
 import { collection, query, orderBy, doc } from 'firebase/firestore';
@@ -149,11 +150,11 @@ export default function Dashboard() {
   ];
 
   const ecosystemModules = [
-    { title: 'Captar Lead', desc: 'Escaneie o mercado e encontre alvos em segundos.', icon: Search, url: '/leads' },
-    { title: 'CRM Leads', desc: 'Gerencie seu funil de vendas e organize contatos.', icon: Users, url: '#' },
+    { title: 'Captar lead', desc: 'Escaneie o mercado e encontre alvos em segundos.', icon: Search, url: '/leads' },
+    { title: 'CRM leads', desc: 'Gerencie seu funil de vendas e organize contatos.', icon: Users, url: '#' },
     { title: 'Contratos', desc: 'Gere contratos profissionais e feche parcerias.', icon: FileText, url: '#' },
     { title: 'Abordagem', desc: 'Scripts de WhatsApp otimizados por IA.', icon: MessageSquare, url: '/abordagens' },
-    { title: 'Criar Sites', desc: 'Desenvolva Landing Pages sem código.', icon: Globe, url: '/prompts' },
+    { title: 'Criar sites', desc: 'Desenvolva Landing Pages sem código.', icon: Globe, url: '/prompts' },
     { title: 'Blueprints', desc: 'Comandos mestres para escalar sua operação.', icon: Zap, url: '/prompts' },
   ];
 
@@ -179,8 +180,20 @@ export default function Dashboard() {
         <AppSidebar />
         
         <main className="flex-1 flex flex-col min-w-0 relative z-0 bg-transparent">
-          <header className="px-[32px] pt-[28px] pb-6 flex items-center justify-between sticky top-0 z-50 bg-transparent">
-            <div className="space-y-0.5">
+          <header className="h-[52px] border-b border-white/5 flex items-center justify-between px-6 bg-transparent sticky top-0 z-50">
+            <div className="flex items-center gap-2">
+              <LayoutDashboard className="h-[14px] w-[14px] text-[#8b5cf6]/70" />
+              <h1 className="text-[13px] font-medium text-white/50">Dashboard</h1>
+            </div>
+
+            <div className="bg-[#581c87]/40 border border-[#7c3aed]/30 text-[#c4b5fd] text-[11px] font-medium rounded-[6px] px-[10px] py-[4px] uppercase tracking-[0.5px]">
+              VITALÍCIO
+            </div>
+          </header>
+
+          <div className="flex-1 p-[32px] pt-8 space-y-7 max-w-7xl mx-auto w-full bg-transparent">
+            
+            <div className="mb-8 space-y-0.5">
               <h1 className="text-[22px] font-semibold text-white tracking-[-0.3px] leading-tight">
                 Olá, {displayName} 👋
               </h1>
@@ -189,30 +202,6 @@ export default function Dashboard() {
               </p>
             </div>
 
-            <div className="flex items-center gap-4">
-              <div className="hidden md:flex relative group w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-[14px] w-[14px] text-white/30" />
-                <Input 
-                  placeholder="Pesquisar ferramentas..." 
-                  className="h-[36px] bg-white/[0.04] border-white/[0.08] pl-9 text-[13px] rounded-[8px] focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-white/20 transition-all"
-                />
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="bg-[#581c87]/40 border border-[#7c3aed]/35 text-[#c4b5fd] text-[11px] uppercase tracking-[0.5px] rounded-[6px] px-[10px] py-[4px] font-medium">
-                  VITALÍCIO
-                </div>
-                
-                <button className="relative w-[34px] h-[34px] flex items-center justify-center rounded-[8px] bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] transition-colors">
-                  <Bell className="h-4 w-4 text-white/60" />
-                  <span className="absolute top-2 right-2 h-1.5 w-1.5 bg-red-500 rounded-full" />
-                </button>
-              </div>
-            </div>
-          </header>
-
-          <div className="flex-1 p-[28px_32px] pt-2 space-y-7 max-w-7xl mx-auto w-full bg-transparent">
-            
             {/* GRID DE MÉTRICAS */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
               {[
@@ -363,9 +352,9 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <h2 className="text-[15px] font-semibold text-white/85 tracking-tight">Ecossistema Premium</h2>
-                  <p className="text-white/30 text-[11px] font-normal">O arsenal tático completo para sua operação digital</p>
+                  <p className="text-white/30 text-[11px] font-normal">o arsenal tático completo para sua operação digital</p>
                 </div>
-                <div className="bg-green-900/30 border border-green-500/25 text-green-300 text-[10px] font-medium px-3 py-1 rounded-[6px] flex items-center gap-2">
+                <div className="bg-[#14532d]/30 border border-[#22c55e]/25 text-[#86efac]/90 text-[10px] font-medium px-3 py-1 rounded-[6px] flex items-center gap-2">
                   Full access ativo
                 </div>
               </div>
@@ -404,7 +393,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <h2 className="text-[15px] font-semibold text-white/85 tracking-[-0.2px]">Sua Jornada de Escala</h2>
-                  <p className="text-[11px] font-normal text-white/30 tracking-[0.8px]">O método exato para sua primeira venda em 7 dias</p>
+                  <p className="text-[11px] font-normal text-white/30 tracking-[0.8px]">o método exato para sua primeira venda em 7 dias</p>
                 </div>
                 <Badge className="bg-[#8b5cf6]/10 border border-[#8b5cf6]/25 text-[#c4b5fd] text-[10px] uppercase rounded-[6px] px-3 py-1 font-medium shadow-none">
                   DIA {currentJourneyDay} ATIVO
@@ -462,18 +451,18 @@ export default function Dashboard() {
                         <div className="pt-4">
                           {isCompleted ? (
                             <div className="w-full h-[32px] rounded-[6px] border border-white/10 text-white/35 text-[11px] font-normal flex items-center justify-center transition-colors hover:bg-white/5">
-                              Revisar
+                              revisar
                             </div>
                           ) : (
                             <div 
                               className={cn(
                                 "w-full h-[32px] rounded-[6px] text-[11px] font-medium flex items-center justify-center transition-all",
                                 isCurrent 
-                                  ? "bg-[#581c87]/30 border border-[#8b5cf6]/40 text-[#c4b5fd]" 
+                                  ? "bg-[#6d28d9]/30 border border-[#8b5cf6]/40 text-[#c4b5fd]" 
                                   : "bg-white/[0.04] border-white/[0.08] text-white/20"
                               )}
                             >
-                              {isLocked ? 'Bloqueado' : 'Iniciar'}
+                              {isLocked ? 'bloqueado' : 'iniciar'}
                             </div>
                           )}
                         </div>

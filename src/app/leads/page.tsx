@@ -172,21 +172,18 @@ export default function LeadsPage() {
         <AppSidebar />
         
         <main className="flex-1 flex flex-col min-w-0 relative z-10">
-          <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-50">
-            <div className="flex items-center gap-4">
-              <SidebarTrigger className="text-muted-foreground hover:text-white" />
-              <div className="h-4 w-px bg-white/10" />
-              <h1 className="text-sm font-semibold tracking-tight flex items-center gap-2">
-                <Target className="h-4 w-4 text-primary" /> Radar Neural
-              </h1>
+          <header className="h-[52px] border-b border-white/5 flex items-center justify-between px-6 bg-transparent sticky top-0 z-50">
+            <div className="flex items-center gap-2">
+              <Target className="h-[14px] w-[14px] text-[#8b5cf6]/70" />
+              <h1 className="text-[13px] font-medium text-white/50">Radar Neural</h1>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-8 rounded-lg border-white/10 text-white/70 text-[11px] font-medium px-3 gap-2 hover:bg-white/5">
-                    <UserPlus className="h-3.5 w-3.5" /> Manual
-                  </Button>
+                  <button className="text-white/35 text-[12px] font-normal hover:text-white/60 transition-colors">
+                    Manual
+                  </button>
                 </DialogTrigger>
                 <DialogContent className="bg-[#0e0e1a] border-white/10 text-white rounded-2xl">
                   <DialogHeader>
@@ -214,9 +211,9 @@ export default function LeadsPage() {
                   </form>
                 </DialogContent>
               </Dialog>
-              <Badge className="bg-primary/10 border-primary/20 text-primary text-[9px] font-semibold px-2 py-0.5">
-                {isProMember ? 'VITALÍCIO' : 'TESTE'}
-              </Badge>
+              <div className="bg-[#581c87]/40 border border-[#7c3aed]/30 text-[#c4b5fd] text-[11px] font-medium rounded-[6px] px-[10px] py-[4px] uppercase tracking-[0.5px]">
+                VITALÍCIO
+              </div>
             </div>
           </header>
 

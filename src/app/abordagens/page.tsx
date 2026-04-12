@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from 'react';
@@ -79,7 +78,7 @@ const NICHES = {
     icon: <Globe className="h-4 w-4" />,
     templates: {
       pt: "Oi! Vi que a [Empresa] ainda não tem um site focado em vendas. Hoje, 80% das pessoas compram após pesquisar no Google. Faz sentido aumentar seu lucro com uma Landing Page nova?",
-      en: "Hi! I saw that [Empresa] doesn't have a sales-focused website yet. Today, 80% of people buy after searching on Google. Does it make sense to increase your profit with a new Landing Page?",
+      en: "Hi! I saw that [Empresa]'s doesn't have a sales-focused website yet. Today, 80% of people buy after searching on Google. Does it make sense to increase your profit with a new Landing Page?",
       es: "¡Hola! Vi que [Empresa] aún no tiene un sitio web enfocado en ventas. Hoy, el 80% de las personas compran después de buscar en Google. ¿Tiene sentido aumentar sus ganancias con una nueva Landing Page?"
     }
   },
@@ -98,7 +97,7 @@ const NICHES = {
     templates: {
       pt: "Olá pessoal da [Empresa]! Vi seus produtos e a qualidade é incrível. Já pensaram em ter uma loja virtual própria para parar de depender apenas do direct? Posso te mostrar como escalar?",
       en: "Hello [Empresa] team! I saw your products and the quality is amazing. Have you thought about having your own online store to stop relying only on direct messages? Can I show you how to scale?",
-      es: "¡Hola equipo de [Empresa]! Vi sus productos y la calidad es increíble. ¿Han pensado en tener su propia tienda virtual para dejar de depender solo de los mensajes directos? ¿Puedo mostrarles cómo escalar?"
+      es: "¡Hola equipo de [Empresa]! Vi sus productos y la calidad es increíble. ¿Han pensado en tener su propia tienda virtual para dejar de depender solo de los mensagens directos? ¿Puedo mostrarles cómo escalar?"
     }
   },
   redes: {
@@ -179,27 +178,17 @@ export default function AbordagensPage() {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-[#050508] relative overflow-hidden font-body">
-        {/* Background Atmosphere */}
-        <div className="fixed inset-0 pointer-events-none z-0">
-          <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-green-500/5 rounded-full blur-[150px]"></div>
-          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px]"></div>
-        </div>
-
+      <div className="flex min-h-screen w-full bg-transparent relative overflow-hidden font-body">
         <AppSidebar />
         
         <main className="flex-1 flex flex-col min-w-0 relative z-10">
-          <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-50">
-            <div className="flex items-center gap-4">
-              <SidebarTrigger className="text-muted-foreground hover:text-white" />
-              <div className="h-4 w-px bg-white/10 hidden md:block" />
-              <h1 className="text-sm font-black italic uppercase tracking-widest flex items-center gap-2">
-                <Target className="h-4 w-4 text-primary" /> Configuração de Abordagem
-              </h1>
-            </div>
+          <header className="h-[52px] border-b border-white/5 flex items-center justify-between px-6 bg-transparent sticky top-0 z-50">
             <div className="flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-[8px] font-black uppercase tracking-widest text-white/40">AI Neural Link Active</span>
+              <MessageSquare className="h-[14px] w-[14px] text-[#8b5cf6]/70" />
+              <h1 className="text-[13px] font-medium text-white/50">Configuração de Abordagem</h1>
+            </div>
+            <div className="bg-[#581c87]/40 border border-[#7c3aed]/30 text-[#c4b5fd] text-[11px] font-medium rounded-[6px] px-[10px] py-[4px] uppercase tracking-[0.5px]">
+              VITALÍCIO
             </div>
           </header>
 
@@ -445,7 +434,7 @@ export default function AbordagensPage() {
 
                     <div className="flex gap-3">
                       <Button 
-                        variant="outline"
+                        variant="outline" 
                         onClick={handleCopyMessage}
                         className="flex-1 h-14 rounded-2xl border-white/10 bg-white/5 font-black uppercase text-[10px] tracking-widest gap-2 hover:bg-white/10 hover:border-primary/30 transition-all"
                       >
@@ -453,7 +442,7 @@ export default function AbordagensPage() {
                         {copied ? 'COPIADO' : 'COPIAR SCRIPT IA'}
                       </Button>
                       <Button 
-                        variant="outline"
+                        variant="outline" 
                         className="h-14 w-14 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10"
                       >
                         <Smartphone className="h-4 w-4 opacity-50" />
