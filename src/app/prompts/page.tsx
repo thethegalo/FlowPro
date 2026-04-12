@@ -370,7 +370,7 @@ export default function PromptsPage() {
                 </div>
 
                 <div className="relative group">
-                  {/* Floating Sadow */}
+                  {/* Floating Shadow */}
                   <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-48 h-6 bg-black/60 blur-xl rounded-full scale-x-150 animate-shadow-pulse pointer-events-none" />
                   
                   {/* iPhone 14 Pro Mockup */}
@@ -618,6 +618,6 @@ export default function PromptsPage() {
           animation: shadow-pulse 4s ease-in-out infinite;
         }
       `}</style>
-    </div>
+    </SidebarProvider>
   );
 }
