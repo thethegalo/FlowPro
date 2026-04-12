@@ -221,7 +221,7 @@ export default function Dashboard() {
                 { label: "Status Jornada", val: currentJourneyDay, prefix: "Dia ", icon: TrendingUp, badge: "Ativo", sub: `${completedMissionIds.length} concluídas` },
               ].map((m, i) => (
                 <div key={i} className="group relative">
-                  <Card className="glass-card p-[20px_24px] hover:border-white/[0.2] relative overflow-hidden">
+                  <Card className="glass-card p-[20px_24px] hover:border-white/[0.2] hover:translate-y-[-1px] relative overflow-hidden transition-all duration-150">
                     <m.icon className="h-4 w-4 text-white/20 absolute top-5 right-6" />
                     <div className="space-y-4">
                       <div>
@@ -296,7 +296,7 @@ export default function Dashboard() {
                           strokeWidth={1.5} 
                           fill="url(#colorGanhos)" 
                           dot={false}
-                          animationDuration={2000}
+                          isAnimationActive={false}
                         />
                       </AreaChart>
                     </ResponsiveContainer>
@@ -373,7 +373,7 @@ export default function Dashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {ecosystemModules.map((module, i) => (
                   <Link key={i} href={module.url}>
-                    <Card className="glass-card p-5 group relative transition-all duration-200 hover:border-white/12 hover:translate-y-[-1px] overflow-hidden bg-white/[0.02]">
+                    <Card className="glass-card p-5 group relative overflow-hidden bg-white/[0.02] hover:translate-y-[-2px] hover:border-[#8b5cf6]/25 hover:bg-white/[0.06] transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]">
                       <div className="flex flex-col gap-4">
                         <div className="flex justify-between items-start">
                           <div className="h-8 w-8 rounded-lg bg-white/[0.06] flex items-center justify-center transition-all group-hover:scale-105">
@@ -428,7 +428,7 @@ export default function Dashboard() {
                     >
                       <Card className={cn(
                         "glass-card p-[18px] transition-all duration-200 h-full flex flex-col justify-between bg-white/[0.025]",
-                        isCurrent && "hover:border-white/12 hover:translate-y-[-1px]"
+                        isCurrent && "hover:border-white/12 hover:translate-y-[-1px] hover:bg-white/[0.05]"
                       )}>
                         <div className="space-y-4">
                           <div className="flex justify-between items-start">

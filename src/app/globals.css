@@ -30,7 +30,12 @@
 @layer base {
   * {
     @apply border-border;
-    transition: all 150ms ease;
+  }
+
+  *, *::before, *::after {
+    transition-property: background-color, border-color, color, opacity, transform, box-shadow;
+    transition-duration: 150ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   *:focus-visible {
@@ -66,7 +71,7 @@
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  @apply relative overflow-hidden transition-all duration-150 ease-out;
+  @apply relative overflow-hidden;
 }
 
 .grid-background {
