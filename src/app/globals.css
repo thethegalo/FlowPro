@@ -32,7 +32,7 @@
     @apply border-border selection:bg-primary/30 selection:text-white;
   }
   body {
-    @apply bg-[#080810] text-foreground font-body overflow-x-hidden;
+    @apply bg-[#05050f] text-foreground font-body overflow-x-hidden;
   }
 }
 

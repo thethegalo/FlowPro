@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from '@/firebase';
 import { CustomCursor } from '@/components/CustomCursor';
 import { FloatingMentor } from '@/components/FloatingMentor';
-import { AnimatedBackground } from '@/components/AnimatedBackground';
+import { EtheralShadow } from '@/components/ui/etheral-shadow';
 
 export const metadata: Metadata = {
   title: 'FlowPro | AI Sales Companion',
@@ -30,7 +30,14 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased min-h-screen bg-[#05050f]">
         <FirebaseClientProvider>
-          <AnimatedBackground />
+          <div style={{ position: 'fixed', inset: 0, zIndex: 0 }}>
+            <EtheralShadow
+              color="rgba(109, 40, 217, 0.85)"
+              animation={{ scale: 60, speed: 70 }}
+              noise={{ opacity: 0.4, scale: 1.5 }}
+              sizing="fill"
+            />
+          </div>
           <div className="relative z-10 flex flex-col min-h-screen">
             <CustomCursor />
             {children}
