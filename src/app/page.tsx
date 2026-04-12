@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -81,7 +82,7 @@ export default function Home() {
         
         {/* HERO SECTION */}
         <section className="max-w-[1100px] mx-auto px-6 md:px-12 py-24 md:py-32">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-12">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
             <motion.div 
               className="flex flex-col items-start text-left space-y-8 max-w-2xl"
               initial={{ opacity: 0, y: 24 }}
@@ -124,10 +125,12 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* GLOBE PULSE - HIDDEN ON MOBILE */}
-            <div className="hidden md:block flex-1 max-w-[450px] relative">
-              <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full animate-pulse pointer-events-none" />
-              <GlobePulse className="w-full h-full relative z-10" />
+            {/* GLOBE PULSE - LARGER AND MORE DYNAMIC */}
+            <div className="hidden lg:block flex-1 max-w-[600px] w-full relative">
+              <div className="absolute inset-0 bg-primary/15 blur-[120px] rounded-full animate-pulse pointer-events-none" />
+              <div className="relative z-10 w-full h-full scale-110 lg:scale-125">
+                <GlobePulse className="w-full h-full" speed={0.004} />
+              </div>
             </div>
           </div>
         </section>

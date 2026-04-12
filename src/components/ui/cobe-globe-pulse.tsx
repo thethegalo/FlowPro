@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useEffect, useRef, useCallback } from "react"
@@ -20,12 +21,13 @@ const defaultMarkers: PulseMarker[] = [
   { id: "pulse-2", location: [40.71, -74.01], delay: 0.5 },
   { id: "pulse-3", location: [35.68, 139.65], delay: 1 },
   { id: "pulse-4", location: [-33.87, 151.21], delay: 1.5 },
+  { id: "pulse-5", location: [-23.55, -46.63], delay: 2.0 }, // São Paulo
 ]
 
 export function GlobePulse({
   markers = defaultMarkers,
   className = "",
-  speed = 0.003,
+  speed = 0.004,
 }: GlobePulseProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const globeRef = useRef<any>(null)
@@ -74,6 +76,7 @@ export function GlobePulse({
     const canvas = canvasRef.current
     let animationId: number
     let phi = 0
+    let time = 0
 
     function init() {
       const width = canvas.offsetWidth
@@ -93,30 +96,47 @@ export function GlobePulse({
 
       globeRef.current = createGlobe(canvas, {
         devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
-        width, height: width,
-        phi: 0, theta: 0.2, dark: 1, diffuse: 1.5,
-        mapSamples: 16000, mapBrightness: 10,
+        width, 
+        height: width,
+        phi: 0, 
+        theta: 0.2, 
+        dark: 1, 
+        diffuse: 1.5,
+        mapSamples: 16000, 
+        mapBrightness: 10,
         baseColor: [0.5, 0.5, 0.5],
         markerColor: [0.2, 0.8, 0.9],
         glowColor: [0.05, 0.05, 0.05],
         markerElevation: 0,
         markers: markers.map((m) => ({ location: m.location, size: 0.025, id: m.id })),
-        arcs: [], arcColor: [0.3, 0.85, 0.95],
-        arcWidth: 0.5, arcHeight: 0.25, opacity: 0.7,
+        arcs: [], 
+        arcColor: [0.3, 0.85, 0.95],
+        arcWidth: 0.5, 
+        arcHeight: 0.25, 
+        opacity: 0.7,
       })
 
       function animate() {
-        if (!isPausedRef.current) phi += speed
+        if (!isPausedRef.current) {
+          phi += speed
+          time += 0.01
+        }
+        
+        // Add a slight oscillation to make the globe feel more "alive"
+        const oscillation = Math.sin(time) * 0.05
+
         if (globeRef.current && typeof globeRef.current.update === 'function') {
           globeRef.current.update({
             phi: phi + phiOffsetRef.current + dragOffset.current.phi,
-            theta: 0.2 + thetaOffsetRef.current + dragOffset.current.theta,
+            theta: 0.2 + oscillation + thetaOffsetRef.current + dragOffset.current.theta,
           })
         }
         animationId = requestAnimationFrame(animate)
       }
       animate()
-      setTimeout(() => canvas && (canvas.style.opacity = "1"))
+      setTimeout(() => {
+        if (canvas) canvas.style.opacity = "1"
+      })
     }
 
     if (canvas.offsetWidth > 0) {
