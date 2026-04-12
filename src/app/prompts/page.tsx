@@ -33,7 +33,9 @@ import {
   Home,
   Search,
   User,
-  ShoppingBag
+  ShoppingBag,
+  ExternalLink,
+  Wrench
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -88,8 +90,12 @@ export default function PromptsPage() {
 
   const currentTheme = useMemo(() => {
     const nicheData = NICHES.find(n => n.value === blueprint.niche);
-    return nicheData?.theme || { bg: '#05050f', primary: '#7c3aed', text: '#f4f4f5' };
-  }, [blueprint.niche]);
+    return {
+      bg: blueprint.palette[2] || nicheData?.theme.bg || '#05050f',
+      primary: blueprint.palette[0] || nicheData?.theme.primary || '#7c3aed',
+      text: blueprint.palette[1] || nicheData?.theme.text || '#f4f4f5'
+    };
+  }, [blueprint.niche, blueprint.palette]);
 
   const handleNext = () => {
     if (blueprint.step < 8) {
@@ -254,13 +260,28 @@ export default function PromptsPage() {
                           )}
 
                           {blueprint.step === 3 && (
-                            <div className="space-y-6">
-                              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {STYLES.map(s => (
-                                  <button key={s} onClick={() => setBlueprint({...blueprint, style: s})} className={cn("px-4 py-3 rounded-xl text-[10px] font-black uppercase transition-all border", blueprint.style === s ? "bg-primary/25 border-primary/40 text-[#c4b5fd]" : "bg-white/[0.04] border-white/5 text-white/40")}>
-                                    {s}
-                                  </button>
-                                ))}
+                            <div className="space-y-8">
+                              <div className="space-y-4">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Estilo Visual</Label>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                  {STYLES.map(s => (
+                                    <button key={s} onClick={() => setBlueprint({...blueprint, style: s})} className={cn("px-4 py-3 rounded-xl text-[10px] font-black uppercase transition-all border", blueprint.style === s ? "bg-primary/25 border-primary/40 text-[#c4b5fd]" : "bg-white/[0.04] border-white/5 text-white/40")}>
+                                      {s}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                              <div className="space-y-4">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Cor Primária (HEX)</Label>
+                                <div className="flex gap-3">
+                                  <div className="h-14 w-14 rounded-xl border border-white/10 shrink-0" style={{ backgroundColor: blueprint.palette[0] }} />
+                                  <Input 
+                                    placeholder="#7C3AED" 
+                                    className="h-14 bg-white/[0.04] border-white/5 rounded-xl font-mono" 
+                                    value={blueprint.palette[0]} 
+                                    onChange={e => setBlueprint({...blueprint, palette: [e.target.value, blueprint.palette[1], blueprint.palette[2]]})} 
+                                  />
+                                </div>
                               </div>
                             </div>
                           )}
@@ -299,14 +320,25 @@ export default function PromptsPage() {
                           )}
 
                           {blueprint.step === 7 && (
-                            <div className="space-y-4">
-                              <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Diferencial Único (USP)</Label>
-                              <Textarea 
-                                placeholder="O que torna este projeto diferente dos concorrentes?" 
-                                className="min-h-[150px] bg-white/[0.04] border-white/5 rounded-2xl p-6 text-base font-medium"
-                                value={blueprint.differential}
-                                onChange={e => setBlueprint({...blueprint, differential: e.target.value})}
-                              />
+                            <div className="space-y-6">
+                              <div className="space-y-4">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Diferencial Único (USP)</Label>
+                                <Textarea 
+                                  placeholder="O que torna este projeto diferente dos concorrentes?" 
+                                  className="min-h-[120px] bg-white/[0.04] border-white/5 rounded-2xl p-6 text-base font-medium"
+                                  value={blueprint.differential}
+                                  onChange={e => setBlueprint({...blueprint, differential: e.target.value})}
+                                />
+                              </div>
+                              <div className="space-y-4">
+                                <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Requisitos Técnicos / Extras (IA Options)</Label>
+                                <Textarea 
+                                  placeholder="Ex: Integrar com API do Google Maps, sistema de chat em tempo real..." 
+                                  className="min-h-[100px] bg-white/[0.04] border-white/5 rounded-2xl p-6 text-sm"
+                                  value={blueprint.extras}
+                                  onChange={e => setBlueprint({...blueprint, extras: e.target.value})}
+                                />
+                              </div>
                             </div>
                           )}
 
@@ -356,26 +388,35 @@ export default function PromptsPage() {
                         </div>
                       </div>
 
-                      <div className="bg-white/[0.03] backdrop-blur-xl p-6 md:p-8 rounded-[2rem] border border-white/5 font-mono text-[13px] text-white/70 leading-relaxed whitespace-pre-wrap max-h-[600px] overflow-y-auto no-scrollbar shadow-inner">
+                      <div className="bg-white/[0.03] backdrop-blur-xl p-6 md:p-8 rounded-[2rem] border border-white/5 font-mono text-[13px] text-white/70 leading-relaxed whitespace-pre-wrap max-h-[500px] overflow-y-auto no-scrollbar shadow-inner">
                         {generatedPrompt}
                       </div>
 
-                      <Button 
-                        variant="ghost" 
-                        onClick={() => setBlueprint(prev => ({ ...prev, isGenerated: false, step: 1 }))}
-                        className="w-full text-[10px] font-black uppercase text-white/20 hover:text-white transition-colors"
-                      >
-                        Resetar e Criar Novo Projeto
-                      </Button>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Button 
+                          asChild
+                          className="h-16 rounded-2xl bg-white text-black hover:bg-[#6366f1] hover:text-white font-black uppercase tracking-widest text-sm shadow-xl transition-all"
+                        >
+                          <a href="https://lovable.dev" target="_blank" rel="noopener noreferrer">
+                            CRIAR APP NO LOVABLE <ExternalLink className="ml-2 h-5 w-5" />
+                          </a>
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          onClick={() => setBlueprint(prev => ({ ...prev, isGenerated: false, step: 1 }))}
+                          className="h-16 text-[10px] font-black uppercase text-white/20 hover:text-white transition-colors border border-white/5 rounded-2xl"
+                        >
+                          Novo Projeto
+                        </Button>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
             </section>
 
-            <aside className="w-[35%] border-l border-white/5 bg-white/[0.01] p-10 hidden lg:flex flex-col items-center justify-center relative overflow-hidden">
-              <div className="w-full flex flex-col items-center gap-8 relative z-10">
-                
+            <aside className="w-[35%] border-l border-white/5 bg-white/[0.01] p-10 hidden lg:flex flex-col items-center justify-center relative">
+              <div className="sticky top-1/2 -translate-y-1/2 w-full flex flex-col items-center gap-8">
                 <div className="px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/10 flex items-center gap-2">
                   <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
                   <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">Real-time Visualizer</span>
@@ -399,14 +440,14 @@ export default function PromptsPage() {
                     >
                       <AnimatePresence mode="wait">
                         <motion.div
-                          key={blueprint.step + blueprint.niche}
+                          key={blueprint.step + blueprint.niche + blueprint.palette[0]}
                           initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -8 }}
                           transition={{ duration: 0.25 }}
                           className="flex-1 flex flex-col"
                         >
-                          <div className="h-14 flex items-center justify-between px-6 pt-6">
+                          <div className="h-14 flex items-center justify-between px-6 pt-6 shrink-0">
                             <Menu className="h-4 w-4" style={{ color: currentTheme.text }} />
                             <span className="text-[9px] font-bold uppercase tracking-widest truncate max-w-[120px]" style={{ color: currentTheme.text }}>
                               {blueprint.name || 'Your App'}
@@ -473,7 +514,7 @@ export default function PromptsPage() {
                             )}
                           </div>
 
-                          <div className="h-16 border-t border-white/5 flex items-center justify-around px-4">
+                          <div className="h-16 border-t border-white/5 flex items-center justify-around px-4 shrink-0">
                             <Home className="h-4 w-4 opacity-40" style={{ color: currentTheme.text }} />
                             <Search className="h-4 w-4 opacity-20" style={{ color: currentTheme.text }} />
                             <ShoppingBag className="h-4 w-4 opacity-20" style={{ color: currentTheme.text }} />
