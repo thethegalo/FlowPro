@@ -263,15 +263,15 @@ export default function Home() {
             {[
               { 
                 text: "Eu nunca tinha vendido nada online. Usei o script de IA para falar com uma pizzaria e fechei meu primeiro contrato em menos de uma semana.",
-                author: "Bruno Silva", context: "Consultor Fase 1", image: TESTIMONIAL_IMAGES[0]
+                author: "Ana Oliveira", context: "Especialista em Escala", image: TESTIMONIAL_IMAGES[0]
               },
               { 
                 text: "O Radar de Leads é bizarro. Achei 50 dentistas na minha cidade e a IA gerou abordagens que todos responderam. Já faturei R$ 3.500.",
-                author: "Ana Oliveira", context: "Faturamento R$ 12k", image: TESTIMONIAL_IMAGES[1]
+                author: "Bruno Silva", context: "Consultor Fase 1", image: TESTIMONIAL_IMAGES[1]
               },
               { 
                 text: "A barreira de não saber o que falar sumiu. Copiei o script da IA, mandei no WhatsApp e o cliente fechou na hora. Simples assim.",
-                author: "Marcos Reus", context: "Venda em 48h", image: TESTIMONIAL_IMAGES[2]
+                author: "Juliana Reus", context: "Venda em 48h", image: TESTIMONIAL_IMAGES[2]
               }
             ].map((t, i) => (
               <motion.div key={i} variants={cardIn}>

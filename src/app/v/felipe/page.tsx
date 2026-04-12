@@ -34,20 +34,20 @@ const TESTIMONIAL_IMAGES = [
 
 const TESTIMONIALS = [
   {
-    name: "Ricardo Mendes",
-    role: "Gestor de Tráfego",
+    name: "Ana Oliveira",
+    role: "Especialista em Escala",
     text: "O Radar de Leads mudou meu jogo. Consegui fechar 3 contratos de R$ 1.500 logo na primeira semana seguindo a jornada.",
     avatar: TESTIMONIAL_IMAGES[0]
   },
   {
-    name: "Juliana Costa",
-    role: "Social Media",
+    name: "Bruno Silva",
+    role: "Consultor Fase 1",
     text: "As IAs do FlowPro geram abordagens que não parecem robóticas. Minha taxa de resposta no Direct subiu de 5% para 22%.",
     avatar: TESTIMONIAL_IMAGES[1]
   },
   {
-    name: "Marcos Paulo",
-    role: "Vendedor Digital",
+    name: "Juliana Reus",
+    role: "Venda em 48h",
     text: "O Plano Vitalício foi o melhor investimento que fiz. Ter o Mentor IA 24h para tirar dúvidas de scripts é bizarro!",
     avatar: TESTIMONIAL_IMAGES[2]
   }

@@ -76,21 +76,21 @@ const pillars = [
 
 const testimonials = [
   {
-    name: "Bruno Silva",
+    name: "Ana Oliveira",
     result: "R$ 1.200",
     subResult: "no 4º dia",
     text: "Eu nunca tinha vendido nada online. Usei o script de IA para falar com uma pizzaria local e fechei meu primeiro contrato em menos de uma semana.",
     avatar: TESTIMONIAL_IMAGES[0]
   },
   {
-    name: "Ana Oliveira",
+    name: "Bruno Silva",
     result: "3 clientes",
     subResult: "em 10 dias",
     text: "O Radar de Leads é bizarro. Achei 50 dentistas na minha cidade e a IA gerou abordagens que todos responderam. Já faturei R$ 3.500.",
     avatar: TESTIMONIAL_IMAGES[1]
   },
   {
-    name: "Marcos Reus",
+    name: "Juliana Reus",
     result: "1ª Venda",
     subResult: "em 48h",
     text: "A barreira de não saber o que falar sumiu. Copiei o script da IA, mandei no WhatsApp e o cliente fechou na hora. Simples assim.",
