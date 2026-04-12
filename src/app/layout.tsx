@@ -22,23 +22,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className="dark">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased min-h-screen bg-[#05050f]">
+      <body className="font-body antialiased min-h-screen bg-[#05050f] text-foreground selection:bg-primary/30 selection:text-white">
         <FirebaseClientProvider>
-          <div style={{ position: 'fixed', inset: 0, zIndex: 0 }}>
+          <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
             <EtheralShadow
-              color="rgba(109, 40, 217, 0.85)"
-              animation={{ scale: 60, speed: 70 }}
-              noise={{ opacity: 0.4, scale: 1.5 }}
+              color="rgba(109, 40, 217, 0.9)"
+              animation={{ scale: 55, speed: 65 }}
+              noise={{ opacity: 0.35, scale: 1.5 }}
               sizing="fill"
             />
           </div>
-          <div className="relative z-10 flex flex-col min-h-screen">
+          <div className="relative z-10 flex flex-col min-h-screen bg-transparent">
             <CustomCursor />
             {children}
             <FloatingMentor />

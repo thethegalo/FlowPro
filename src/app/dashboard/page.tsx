@@ -171,15 +171,15 @@ export default function Dashboard() {
     if (!isUserLoading && !user) router.push('/auth');
   }, [user, isUserLoading, router]);
 
-  if (isUserLoading || isUserDocLoading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  if (isUserLoading || isUserDocLoading) return <div className="min-h-screen flex items-center justify-center bg-transparent"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full relative overflow-x-hidden">
+      <div className="flex min-h-screen w-full relative overflow-x-hidden bg-transparent">
         <AppSidebar />
         
-        <main className="flex-1 flex flex-col min-w-0 relative z-0">
-          <header className="px-[32px] pt-[28px] pb-6 flex items-center justify-between sticky top-0 z-50">
+        <main className="flex-1 flex flex-col min-w-0 relative z-0 bg-transparent">
+          <header className="px-[32px] pt-[28px] pb-6 flex items-center justify-between sticky top-0 z-50 bg-transparent">
             <div className="space-y-0.5">
               <h1 className="text-[22px] font-semibold text-white tracking-[-0.3px] leading-tight">
                 Olá, {displayName} 👋
@@ -211,7 +211,7 @@ export default function Dashboard() {
             </div>
           </header>
 
-          <div className="flex-1 p-[28px_32px] pt-2 space-y-7 max-w-7xl mx-auto w-full">
+          <div className="flex-1 p-[28px_32px] pt-2 space-y-7 max-w-7xl mx-auto w-full bg-transparent">
             
             {/* GRID DE MÉTRICAS */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
@@ -243,7 +243,7 @@ export default function Dashboard() {
             </div>
 
             {/* SEÇÃO CENTRAL (GRÁFICO + AÇÕES) */}
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-7">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-7 bg-transparent">
               
               {/* GRÁFICO (65%) */}
               <div className="lg:col-span-1">
@@ -251,7 +251,7 @@ export default function Dashboard() {
                   <div className="flex justify-between items-start mb-6">
                     <div className="space-y-1">
                       <h3 className="text-[12px] font-medium text-white/30 uppercase tracking-[1px]">Ganhos dos últimos 30 dias</h3>
-                      <p className="text-[11px] text-white/20 font-normal">Análise de performance tática mensal</p>
+                      <p className="text-[11px] font-normal text-white/20">Análise de performance tática mensal</p>
                     </div>
                     <div className="text-right">
                       <p className="text-[11px] text-white/30 mb-1">Total Período</p>
@@ -336,7 +336,7 @@ export default function Dashboard() {
                   </div>
                 </Card>
 
-                <Card className="glass-card flex-1 p-6 relative overflow-hidden shadow-none">
+                <Card className="glass-card flex-1 p-6 relative overflow-hidden shadow-none bg-[#581c87]/20">
                   <div className="relative z-10 space-y-4">
                     <Badge className="bg-[#c4b5fd] text-[#4c1d95] text-[9px] font-black uppercase px-3 py-1 rounded-md border-none shadow-none">
                       🎓 CONTEÚDO VIP
@@ -359,7 +359,7 @@ export default function Dashboard() {
             </div>
 
             {/* SEÇÃO: ECOSSISTEMA PREMIUM */}
-            <div className="space-y-7 pt-4">
+            <div className="space-y-7 pt-4 bg-transparent">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <h2 className="text-[15px] font-semibold text-white/85 tracking-tight">Ecossistema Premium</h2>
@@ -373,7 +373,7 @@ export default function Dashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {ecosystemModules.map((module, i) => (
                   <Link key={i} href={module.url}>
-                    <Card className="glass-card p-5 group relative transition-all duration-200 hover:border-white/12 hover:translate-y-[-1px] overflow-hidden">
+                    <Card className="glass-card p-5 group relative transition-all duration-200 hover:border-white/12 hover:translate-y-[-1px] overflow-hidden bg-white/[0.02]">
                       <div className="flex flex-col gap-4">
                         <div className="flex justify-between items-start">
                           <div className="h-8 w-8 rounded-lg bg-white/[0.06] flex items-center justify-center transition-all group-hover:scale-105">
@@ -400,7 +400,7 @@ export default function Dashboard() {
             </div>
 
             {/* JORNADA DE MISSÕES */}
-            <div className="space-y-7 pt-4">
+            <div className="space-y-7 pt-4 bg-transparent">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <h2 className="text-[15px] font-semibold text-white/85 tracking-[-0.2px]">Sua Jornada de Escala</h2>
@@ -427,7 +427,7 @@ export default function Dashboard() {
                       )}
                     >
                       <Card className={cn(
-                        "glass-card p-[18px] transition-all duration-200 h-full flex flex-col justify-between",
+                        "glass-card p-[18px] transition-all duration-200 h-full flex flex-col justify-between bg-white/[0.025]",
                         isCurrent && "hover:border-white/12 hover:translate-y-[-1px]"
                       )}>
                         <div className="space-y-4">

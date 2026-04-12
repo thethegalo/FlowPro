@@ -10,16 +10,14 @@ import {
   Cpu,
   Layers,
   Search,
-  User,
-  Star,
   Zap,
-  CheckCircle2,
+  Star,
   TrendingUp,
-  ShieldCheck,
   MessageSquare,
-  MapPin,
   Calendar,
-  Quote
+  Quote,
+  ShieldCheck,
+  CheckCircle2
 } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -45,24 +43,18 @@ const pillars = [
     title: 'Script IA Pronto', 
     icon: <Cpu className="h-6 w-6" />, 
     desc: 'Cole o nome do lead, a IA escreve a mensagem de abordagem personalizada no WhatsApp para você.', 
-    color: 'text-purple-400',
-    glow: 'shadow-purple-500/20'
   },
   { 
     id: '02',
     title: 'Radar de Leads', 
     icon: <Search className="h-6 w-6" />, 
     desc: 'Encontre donos de negócio em qualquer cidade e nicho em segundos com nosso motor de busca neural.', 
-    color: 'text-blue-400',
-    glow: 'shadow-blue-500/20'
   },
   { 
     id: '03',
     title: 'Jornada de 7 Dias', 
     icon: <Layers className="h-6 w-6" />, 
     desc: 'Um passo por dia até fechar sua primeira venda, com missões guiadas e mentorias automáticas.', 
-    color: 'text-cyan-400',
-    glow: 'shadow-cyan-500/20'
   },
 ];
 
@@ -132,7 +124,7 @@ function AnimatedNumber({ value, prefix = "", suffix = "" }: { value: number, pr
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen text-white overflow-x-hidden relative bg-transparent">
+    <div className="flex flex-col min-h-screen text-white overflow-x-hidden bg-transparent">
       <header className="px-4 md:px-6 h-20 flex items-center justify-between sticky top-0 z-50 bg-[#050508]/40 backdrop-blur-xl border-b border-white/5">
         <Link href="/" className="flex items-center group relative shrink-0">
           <div className="relative h-8 w-24 md:h-12 md:w-40 transition-all duration-500 group-hover:scale-105 group-hover:drop-shadow-[0_0_15px_rgba(139,92,246,0.6)]">
@@ -152,16 +144,16 @@ export default function Home() {
       </header>
 
       <main className="relative z-10 bg-transparent">
-        <section className="relative pt-16 pb-24 md:pt-32 md:pb-48 overflow-visible">
-          <div className="container px-4 md:px-6 mx-auto relative z-20">
-            <div className="flex flex-col items-center lg:flex-row lg:items-center gap-6 lg:gap-24 min-h-[600px] overflow-visible">
-              <div className="flex-1 text-center lg:text-left space-y-10 relative z-30 px-2 order-1 lg:order-1">
+        <section className="relative pt-16 pb-24 md:pt-32 md:pb-48">
+          <div className="container px-4 md:px-6 mx-auto">
+            <div className="flex flex-col items-center lg:flex-row lg:items-center gap-12 lg:gap-24">
+              <div className="flex-1 text-center lg:text-left space-y-10">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] mx-auto lg:mx-0 text-primary">
                   <Zap className="h-3 w-3 animate-pulse" />
                   Motor Neural de Vendas Ativado
                 </div>
                 
-                <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.95] uppercase px-2 md:px-0">
+                <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.95] uppercase">
                   SEU PRIMEIRO CLIENTE <br />
                   <span className="bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400 bg-clip-text text-transparent italic inline-block py-1">
                     COMEÇA COM UM SCRIPT.
@@ -195,17 +187,9 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="flex-1 w-full flex justify-center order-2 lg:order-2">
+              <div className="flex-1 w-full flex justify-center">
                 <div className="hidden lg:flex flex-1 w-full relative aspect-square max-h-[500px] mx-auto max-w-[600px] items-center justify-center z-10 overflow-visible">
                   <div className="absolute inset-0 bg-primary/50 blur-[180px] rounded-full opacity-40 animate-pulse"></div>
-                  
-                  <div className="absolute w-[110%] h-[110%] border border-primary/10 rounded-full animate-spin-slow pointer-events-none">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 h-2 w-2 bg-primary rounded-full shadow-[0_0_10px_#8b5cf6]"></div>
-                  </div>
-                  <div className="absolute w-[90%] h-[90%] border border-blue-500/10 rounded-full animate-reverse-spin-slow pointer-events-none">
-                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-1.5 w-1.5 bg-blue-400 rounded-full shadow-[0_0_10px_#60a5fa]"></div>
-                  </div>
-                  
                   <Globe className="w-full h-full relative z-10" speed={0.008} dark={1} />
                 </div>
               </div>
@@ -213,14 +197,11 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="py-16 border-y border-white/5 relative z-20 bg-transparent">
+        <section className="py-16 border-y border-white/5 bg-transparent">
           <div className="container px-4 md:px-6 mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0 relative max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative max-w-5xl mx-auto">
               {stats.map((s, i) => (
-                <div key={i} className="flex flex-col items-center text-center space-y-2 group relative md:px-12 glass-card p-6 border-none">
-                  {i < stats.length - 1 && (
-                    <div className="hidden md:block absolute -right-[1px] top-1/2 -translate-y-1/2 h-16 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
-                  )}
+                <div key={i} className="flex flex-col items-center text-center space-y-2 group relative p-8 glass-card border-none">
                   <div className="flex items-center gap-3 text-primary mb-2">
                     <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 group-hover:scale-110 transition-transform drop-shadow-[0_0_8px_currentColor]">
                       {s.icon}
@@ -237,8 +218,8 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="tecnologia" className="py-24 md:py-48 relative overflow-hidden bg-transparent">
-          <div className="container px-4 md:px-6 mx-auto relative z-10">
+        <section id="tecnologia" className="py-24 md:py-48 bg-transparent">
+          <div className="container px-4 md:px-6 mx-auto">
             <div className="text-center mb-24">
               <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-6 text-white leading-none">O SEU <span className="text-primary">ARSENAL</span></h2>
               <p className="text-muted-foreground max-w-xl mx-auto uppercase tracking-[0.2em] text-[10px] font-black">As ferramentas que transformam um "não" em um "fechado"</p>
@@ -246,7 +227,7 @@ export default function Home() {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {pillars.map((p, i) => (
-                <Card key={i} className="glass-card p-10 md:p-12 group transition-all duration-500 hover:border-white/20 hover:shadow-2xl relative overflow-hidden bg-transparent">
+                <Card key={i} className="glass-card p-10 md:p-12 group transition-all duration-500 hover:border-white/20 relative overflow-hidden bg-transparent">
                   <span className="absolute bottom-4 right-6 text-[120px] font-black text-white/[0.03] leading-none select-none">{p.id}</span>
                   <div className="mb-10 p-5 rounded-2xl bg-primary/10 inline-block transition-transform group-hover:scale-110 group-hover:rotate-6 shadow-2xl border border-primary/20">
                     {p.icon}
@@ -265,12 +246,12 @@ export default function Home() {
              <h2 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter">O SEU PAINEL DE CONTROLE</h2>
              <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest mt-4">Toda a inteligência do mercado na palma da sua mão</p>
           </div>
-          <div className="scale-75 sm:scale-100 md:scale-125 lg:scale-150 transition-transform py-20 overflow-hidden">
+          <div className="scale-75 sm:scale-100 md:scale-125 lg:scale-150 transition-transform py-20">
             <MacbookShowcase />
           </div>
         </section>
 
-        <section className="py-32 relative bg-transparent">
+        <section className="py-32 bg-transparent">
           <div className="container px-4 md:px-6 mx-auto">
             <div className="text-center mb-20">
               <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-6 text-white leading-none">QUEM <span className="text-primary">EXECUTA</span> GANHA</h2>
@@ -279,7 +260,7 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {testimonials.map((t, i) => (
-                <Card key={i} className="glass-card p-10 space-y-6 flex flex-col justify-between relative overflow-hidden hover:shadow-[0_0_40px_rgba(139,92,246,0.15)] transition-shadow duration-500 bg-transparent">
+                <Card key={i} className="glass-card p-10 space-y-6 flex flex-col justify-between relative overflow-hidden bg-transparent">
                   <div className="absolute top-6 right-6">
                     <Badge className="bg-primary/20 text-primary border-primary/30 text-[10px] font-black px-3 py-1">
                       {t.result}
@@ -340,7 +321,7 @@ export default function Home() {
             
             <div className="relative inline-block group w-full sm:w-auto px-4 sm:px-0">
               <div className="absolute -inset-1 bg-primary rounded-[2.5rem] blur-2xl opacity-30 group-hover:opacity-70 animate-pulse transition duration-1000"></div>
-              <Button asChild size="lg" className="relative h-20 md:h-24 px-8 md:px-16 text-xl md:text-2xl font-black bg-primary hover:scale-105 transition-all rounded-[2.5rem] group w-full sm:w-auto shadow-[0_0_50px_rgba(139,92,246,0.4)] relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:-translate-x-full hover:before:translate-x-full before:transition-transform before:duration-700">
+              <Button asChild size="lg" className="relative h-20 md:h-24 px-8 md:px-16 text-xl md:text-2xl font-black bg-primary hover:scale-105 transition-all rounded-[2.5rem] group w-full sm:w-auto shadow-[0_20px_50px_rgba(139,92,246,0.3)]">
                 <Link href="/quiz">
                   ENTRAR NO FLOW AGORA <ArrowRight className="ml-3 h-8 w-8 group-hover:translate-x-2 transition-transform" />
                 </Link>
@@ -363,29 +344,12 @@ export default function Home() {
 
       <footer className="py-20 border-t border-white/5 text-center relative z-10 bg-transparent">
         <div className="relative h-10 w-32 mx-auto mb-8 opacity-50">
-          <Image src={LOGO_URL} alt="FlowPro Logo" fill className="object-contain" />
+          <Image src={LOGO_URL} alt="FlowPro Logo" width={128} height={40} className="object-contain" />
         </div>
         <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.5em] px-4 leading-relaxed">
           © 2026 FLOWPRO NEURAL SYSTEMS • TODOS OS DIREITOS RESERVADOS
         </p>
       </footer>
-
-      <style jsx global>{`
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        @keyframes reverse-spin-slow {
-          from { transform: rotate(360deg); }
-          to { transform: rotate(0deg); }
-        }
-        .animate-spin-slow {
-          animation: spin-slow 20s linear infinite;
-        }
-        .animate-reverse-spin-slow {
-          animation: reverse-spin-slow 15s linear infinite;
-        }
-      `}</style>
     </div>
   );
 }
