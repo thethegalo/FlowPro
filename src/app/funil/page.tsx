@@ -27,6 +27,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { DashboardParticles } from '@/components/DashboardParticles';
 
 const FUNNEL_STEPS = [
   { 
@@ -113,14 +114,19 @@ export default function FunnelPage() {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-[#050508] relative overflow-hidden">
-        {/* Background Orbs */}
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[140px] animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-cyan-500/5 rounded-full blur-[120px]" />
+        <DashboardParticles />
+        
+        {/* Fundo Atmosférico Oficial */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+          <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[140px] animate-pulse-glow"></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent/10 rounded-full blur-[120px]"></div>
+          <div className="absolute inset-0 grid-background opacity-20"></div>
+        </div>
         
         <AppSidebar />
         
         <main className="flex-1 flex flex-col min-w-0 relative z-10">
-          <header className="h-[52px] border-b border-white/5 flex items-center justify-between px-6 bg-[#050508]/80 backdrop-blur-md sticky top-0 z-50">
+          <header className="h-[52px] border-b border-white/5 flex items-center justify-between px-6 bg-transparent sticky top-0 z-50">
             <div className="flex items-center gap-3">
               <SidebarTrigger className="md:hidden">
                 <Menu className="h-5 w-5 text-white/50" />
