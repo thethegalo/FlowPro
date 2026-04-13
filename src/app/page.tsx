@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -103,9 +104,9 @@ export default function Home() {
                 ✦ 1.800+ consultores ativos
               </Badge>
 
-              <h1 className="text-[34px] sm:text-[44px] md:text-[64px] lg:text-[72px] font-extrabold tracking-[-0.02em] font-headline leading-[1.1] md:leading-[0.95] text-white">
-                Seu primeiro cliente<br />
-                <span className="bg-gradient-to-r from-[#a855f7] to-[#6366f1] bg-clip-text text-transparent italic">começa com um script.</span>
+              <h1 className="text-[30px] sm:text-[44px] md:text-[64px] lg:text-[72px] font-extrabold tracking-[-0.02em] font-headline leading-[1.2] md:leading-[1.1] text-white overflow-visible">
+                Seu primeiro cliente<br className="hidden sm:block" />
+                <span className="bg-gradient-to-r from-[#a855f7] to-[#6366f1] bg-clip-text text-transparent italic inline-block pb-4">começa com um script.</span>
               </h1>
 
               <p className="text-[14px] md:text-[18px] text-white/45 leading-[1.6] max-w-[480px]">
@@ -114,7 +115,7 @@ export default function Home() {
 
               <div className="flex flex-col sm:flex-row items-center gap-6 md:gap-8 pt-4 w-full sm:w-auto">
                 <Button asChild size="lg" className="w-full sm:w-auto bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-medium text-[14px] h-[48px] px-8 rounded-[10px] transition-all hover:-translate-y-0.5 shadow-[0_8px_24px_rgba(124,58,237,0.4)] border-none">
-                  <Link href="/quiz">Acessar agora →</Link>
+                  <Link href="/quiz">Acessar agora</Link>
                 </Button>
 
                 <div className="flex items-center gap-3">
@@ -338,7 +339,7 @@ export default function Home() {
               Garanta sua posição no ecossistema e comece a faturar hoje.
             </p>
             <Button asChild size="lg" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-medium text-[14px] h-[48px] px-8 rounded-[10px] shadow-[0_8px_24px_rgba(124,58,237,0.4)] transition-all hover:-translate-y-0.5 border-none">
-              <Link href="/quiz">Acessar agora →</Link>
+              <Link href="/quiz">Acessar agora</Link>
             </Button>
           </motion.div>
         </section>
