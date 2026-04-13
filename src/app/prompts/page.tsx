@@ -96,6 +96,18 @@ const TEMPLATE_PRESETS = [
   { name: 'Consultoria Digital', niche: 'Consultoria', style: 'Futurista', icon: TrendingUp, color: '#7c3aed', palette: ['#7c3aed', '#f4f4f5', '#05050f'], tone: 'Profissional', badge: 'Futurista' },
 ];
 
+const TEMPLATE_DATA: Record<string, any> = {
+  'Barbearia Moderna': { name: 'Barbearia Moderna', niche: 'Barbearia', objective: 'Agendar Reunião', style: 'Minimalista', tone: 'Luxuoso', sections: ['Hero', 'Benefícios', 'Depoimentos', 'CTA Final'], differential: 'Atendimento premium e ambiente masculino exclusivo' },
+  'Clínica Odontológica': { name: 'Clínica Sorriso', niche: 'Clínica', objective: 'Agendar Reunião', style: 'Clean White', tone: 'Profissional', sections: ['Hero', 'Benefícios', 'Sobre', 'FAQ', 'CTA Final'], differential: 'Tecnologia de ponta e equipe especializada' },
+  'Restaurante Premium': { name: 'Restaurante Gourmet', niche: 'Restaurante', objective: 'Agendar Reunião', style: 'Luxo Profundo', tone: 'Amigável', sections: ['Hero', 'Benefícios', 'Portfólio', 'Depoimentos', 'CTA Final'], differential: 'Gastronomia autoral e experiência única' },
+  'Academia Fitness': { name: 'Iron Fitness', niche: 'Academia', objective: 'Capturar Leads', style: 'Bold', tone: 'Urgente', sections: ['Hero', 'Benefícios', 'Preços', 'Depoimentos', 'CTA Final'], differential: 'Resultados em 30 dias ou dinheiro de volta' },
+  'Loja de Roupas': { name: 'Exclusive Store', niche: 'E-commerce', objective: 'Vender Direto', style: 'Moderno & Dark', tone: 'Descontraído', sections: ['Hero', 'Portfólio', 'Depoimentos', 'CTA Final'], differential: 'Moda exclusiva com entrega expressa' },
+  'Advocacia de Elite': { name: 'Escritório Jurídico', niche: 'Advocacia', objective: 'Agendar Reunião', style: 'Corporativo', tone: 'Profissional', sections: ['Hero', 'Sobre', 'Benefícios', 'FAQ', 'CTA Final'], differential: 'Mais de 10 anos de experiência e 500 casos ganhos' },
+  'Pet Shop VIP': { name: 'Love Pet', niche: 'Pet Shop', objective: 'Capturar Leads', style: 'Playful & Bold', tone: 'Amigável', sections: ['Hero', 'Benefícios', 'Depoimentos', 'CTA Final'], differential: 'Cuidado e amor para seu pet' },
+  'Estética Glow': { name: 'Estética Glow', niche: 'Estética', objective: 'Agendar Reunião', style: 'Glassmorphism', tone: 'Luxuoso', sections: ['Hero', 'Benefícios', 'Portfólio', 'Depoimentos', 'CTA Final'], differential: 'Transformação completa com produtos premium' },
+  'Consultoria Digital': { name: 'Digital Strategy', niche: 'Consultoria', objective: 'Capturar Leads', style: 'Futurista', tone: 'Profissional', sections: ['Hero', 'Benefícios', 'Sobre', 'Depoimentos', 'Preços', 'CTA Final'], differential: 'Resultados mensuráveis em 60 dias' },
+};
+
 const OBJECTIVES = ["Capturar Leads", "Vender Direto", "Agendar Reunião", "Distribuição de Conteúdo"];
 const STYLES = [
   "Moderno & Dark", "Minimalista", "Corporativo", "Futurista", "Cyberpunk", "Clean White", 
@@ -130,19 +142,30 @@ export default function PromptsPage() {
     };
   }, [blueprint.niche, blueprint.palette]);
 
-  const handleUseTemplate = (template: typeof TEMPLATE_PRESETS[0]) => {
+  const handleUseTemplate = (templateName: string) => {
+    const data = TEMPLATE_DATA[templateName];
+    if (!data) return;
+
     setBlueprint({
       ...blueprint,
-      step: 1,
-      name: template.name,
-      niche: template.niche,
-      style: template.style,
-      palette: template.palette,
-      tone: template.tone,
-      isGenerated: false
+      name: data.name,
+      niche: data.niche,
+      objective: data.objective,
+      style: data.style,
+      tone: data.tone,
+      sections: data.sections,
+      differential: data.differential,
+      isGenerated: false,
+      step: 1
     });
+
     setActiveMainTab('create');
-    toast.success("Template Aplicado", `Base para ${template.name} carregada.`);
+    toast.success("Template Carregado!", "Prompt sendo gerado automaticamente...");
+    
+    // Auto generate after a small delay to ensure state update
+    setTimeout(() => {
+      handleFinalGeneration();
+    }, 150);
   };
 
   const handleNext = () => {
@@ -333,7 +356,7 @@ export default function PromptsPage() {
                           </div>
 
                           <Button 
-                            onClick={() => handleUseTemplate(t)}
+                            onClick={() => handleUseTemplate(t.name)}
                             className="w-full h-11 bg-white text-black hover:bg-primary hover:text-white rounded-xl font-black uppercase tracking-widest text-[9px] shadow-lg transition-all"
                           >
                             USAR TEMPLATE
@@ -410,16 +433,14 @@ export default function PromptsPage() {
                                   <div className="space-y-4">
                                     <div className="flex items-center justify-between mb-2">
                                       <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Estilo Visual</Label>
-                                      <Button 
-                                        variant="ghost" 
-                                        size="sm" 
+                                      <button 
                                         onClick={handleAIPalette}
                                         disabled={isGeneratingPalette}
-                                        className="h-7 text-[9px] font-black uppercase text-primary hover:bg-primary/10 rounded-lg gap-2"
+                                        className="h-7 px-3 text-[9px] font-black uppercase text-primary hover:bg-primary/10 rounded-lg flex items-center gap-2 border border-primary/20 transition-all"
                                       >
                                         {isGeneratingPalette ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
                                         Gerar Paleta com IA
-                                      </Button>
+                                      </button>
                                     </div>
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                                       {STYLES.map(s => (
