@@ -23,7 +23,8 @@ import {
   Dumbbell,
   Stethoscope,
   ShoppingBag,
-  Menu
+  Menu,
+  Globe
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { generateLeadMessage } from '@/ai/flows/generate-lead-message';
@@ -244,7 +245,7 @@ export default function LeadsPage() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-white/30">Cidade</label>
                       <Input 
@@ -257,7 +258,7 @@ export default function LeadsPage() {
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-white/30">Estado (UF)</label>
                       <Select onValueChange={setState} value={state}>
-                        <SelectTrigger className="bg-white/[0.04] border-white/[0.08] h-11 text-sm">
+                        <SelectTrigger className="bg-white/[0.04] border-white/[0.08] h-11 text-sm w-full">
                           <SelectValue placeholder="UF" />
                         </SelectTrigger>
                         <SelectContent className="bg-[#0b0b14] border-white/10 text-white max-h-[300px]">
@@ -359,19 +360,38 @@ export default function LeadsPage() {
                                 <div className="h-10 w-10 bg-white/5 rounded-lg flex items-center justify-center text-white/40 shrink-0 border border-white/5 group-hover:border-primary/30 transition-all">
                                   <MapPin className="h-5 w-5" />
                                 </div>
-                                <div className="space-y-1.5 flex-1">
+                                <div className="space-y-1.5 flex-1 min-w-0">
                                   <div className="flex items-center gap-3">
-                                    <h4 className="font-bold text-sm text-white/90">{lead.name}</h4>
-                                    {lead.rating && lead.rating !== '0' && <Badge variant="outline" className="bg-yellow-500/5 border-yellow-500/20 text-yellow-500 text-[9px] font-bold">★ {lead.rating}</Badge>}
+                                    <h4 className="font-bold text-sm text-white/90 truncate">{lead.name}</h4>
+                                    {lead.rating && lead.rating !== '0' && <Badge variant="outline" className="bg-yellow-500/5 border-yellow-500/20 text-yellow-500 text-[9px] font-bold shrink-0">★ {lead.rating}</Badge>}
                                   </div>
                                   <div className="flex items-center gap-3 text-[10px] text-white/30 uppercase font-black tracking-widest">
                                     <span className="text-primary/60">{lead.type}</span>
                                     <span>•</span>
                                     <span>{lead.city}, {lead.state}</span>
                                   </div>
-                                  <div className="flex flex-col gap-1 pt-1">
-                                    <div className="flex items-center gap-2 text-[12px] font-medium text-white/60"><Phone className="h-3.5 w-3.5 opacity-40 text-primary" /> {lead.phone}</div>
-                                    <div className="flex items-center gap-2 text-[11px] text-white/25"><Navigation className="h-3 w-3 opacity-30" /> {lead.address}</div>
+                                  <div className="flex flex-col gap-1.5 pt-1">
+                                    <div className="flex items-center gap-2 text-[12px] font-medium text-white/60">
+                                      <Phone className="h-3.5 w-3.5 opacity-40 text-primary" /> {lead.phone}
+                                    </div>
+                                    
+                                    {lead.website && (
+                                      <div className="flex items-center gap-2 text-[11px] text-white/40 hover:text-primary transition-colors group/link">
+                                        <Globe className="h-3.5 w-3.5 opacity-40 text-primary" />
+                                        <a 
+                                          href={lead.website} 
+                                          target="_blank" 
+                                          rel="noopener noreferrer" 
+                                          className="truncate underline underline-offset-2 decoration-white/10 group-hover/link:decoration-primary/40"
+                                        >
+                                          {lead.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
+                                        </a>
+                                      </div>
+                                    )}
+
+                                    <div className="flex items-center gap-2 text-[11px] text-white/25">
+                                      <Navigation className="h-3 w-3 opacity-30" /> {lead.address}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
