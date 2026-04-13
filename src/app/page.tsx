@@ -27,10 +27,10 @@ import { GlobePulse } from '@/components/ui/cobe-globe-pulse';
 const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
 
 const TESTIMONIAL_IMAGES = [
-  "https://media.inlead.cloud/uploads/44422/2026-01-05/md-vOR05-design-sem-nome-36.png",
-  "https://media.inlead.cloud/uploads/44422/2026-01-03/md-soixE-design-sem-nome-31.png",
-  "https://media.inlead.cloud/uploads/44422/2026-01-03/md-jztVV-design-sem-nome-30.png",
-  "https://media.inlead.cloud/uploads/44422/2026-01-05/md-flBj3-design-sem-nome-38.png"
+  "https://media.inlead.cloud/uploads/44422/2026-01-05/md-vOR05-design-sem-nome-36.png", // Ana
+  "https://media.inlead.cloud/uploads/44422/2026-01-03/md-soixE-design-sem-nome-31.png", // Bruno
+  "https://media.inlead.cloud/uploads/44422/2026-01-03/md-jztVV-design-sem-nome-30.png", // Juliana
+  "https://media.inlead.cloud/uploads/44422/2026-01-05/md-flBj3-design-sem-nome-38.png"  // Extra
 ];
 
 const fadeInUp = {
@@ -90,7 +90,7 @@ export default function Home() {
         <section className="max-w-[1200px] mx-auto px-6 md:px-12 py-12 md:py-32 overflow-visible">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
             <motion.div 
-              className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-6 md:space-y-8 max-w-2xl shrink-0 z-20"
+              className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-6 md:space-y-8 flex-1 max-w-2xl z-20"
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -103,7 +103,7 @@ export default function Home() {
                 ✦ 1.800+ consultores ativos
               </Badge>
 
-              <h1 className="text-[32px] sm:text-[44px] md:text-[72px] font-extrabold tracking-[-1px] md:tracking-[-2px] font-headline leading-[1.1] md:leading-[0.95] text-white">
+              <h1 className="text-[34px] sm:text-[44px] md:text-[64px] lg:text-[72px] font-extrabold tracking-[-0.02em] font-headline leading-[1.1] md:leading-[0.95] text-white">
                 Seu primeiro cliente<br />
                 <span className="bg-gradient-to-r from-[#a855f7] to-[#6366f1] bg-clip-text text-transparent italic">começa com um script.</span>
               </h1>
