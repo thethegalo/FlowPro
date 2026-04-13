@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -11,6 +10,7 @@ import {
   Wrench,
   Terminal,
   Trophy,
+  GitBranch
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -74,6 +74,7 @@ export function AppSidebar() {
 
   const menuItems = [
     { title: "Dashboard", icon: LayoutDashboard, url: "/dashboard" },
+    { title: "Funil de Vendas", icon: GitBranch, url: "/funil" },
     { title: "Ranking Vendedores", icon: Trophy, url: "/vendedores" },
     { title: "Captar Leads", icon: Search, url: "/leads" },
     { title: "Scripts WhatsApp", icon: MessageSquare, url: "/abordagens" },
