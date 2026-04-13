@@ -113,14 +113,12 @@ export default function FunnelPage() {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-[#050508] relative overflow-hidden">
+      <div className="flex min-h-screen w-full bg-[#050508] relative overflow-x-hidden">
         <DashboardParticles />
         
-        {/* Fundo Atmosférico Oficial */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-          <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[140px] animate-pulse-glow"></div>
+          <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[140px] animate-pulse"></div>
           <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent/10 rounded-full blur-[120px]"></div>
-          <div className="absolute inset-0 grid-background opacity-20"></div>
         </div>
         
         <AppSidebar />
@@ -147,10 +145,10 @@ export default function FunnelPage() {
               <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest">Acompanhe seu lead do primeiro oi ao fechamento.</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8 items-start">
               
               {/* CADASTRO LEAD */}
-              <div className="lg:col-span-4 space-y-6">
+              <div className="w-full lg:col-span-4 space-y-6">
                 <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden">
                   <CardHeader className="bg-white/5 border-b border-white/5 p-6">
                     <CardTitle className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
@@ -188,7 +186,7 @@ export default function FunnelPage() {
               </div>
 
               {/* FUNIL GUIADO */}
-              <div className="lg:col-span-8 space-y-6">
+              <div className="w-full lg:col-span-8 space-y-6">
                 <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden">
                   {/* Stepper */}
                   <div className="p-6 bg-white/5 border-b border-white/5 overflow-x-auto no-scrollbar">
@@ -241,13 +239,13 @@ export default function FunnelPage() {
                         <button
                           key={i}
                           onClick={() => handleSelectTemplate(t)}
-                          className="text-left p-5 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-primary/20 transition-all group relative overflow-hidden"
+                          className="text-left p-5 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-primary/20 transition-all group relative overflow-hidden min-h-[140px]"
                         >
                           <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
                             <Zap className="h-3 w-3 text-primary fill-primary" />
                           </div>
-                          <p className="text-[11px] text-white/60 leading-relaxed italic font-medium">
-                            "{t.substring(0, 100)}..."
+                          <p className="text-[11px] text-white/60 leading-relaxed italic font-medium line-clamp-4">
+                            "{t}"
                           </p>
                           <div className="mt-4 flex items-center gap-2 text-[8px] font-black uppercase text-primary tracking-widest">
                             <MessageSquare className="h-2.5 w-2.5" /> Selecionar Modelo {i + 1}
@@ -280,7 +278,7 @@ export default function FunnelPage() {
                             >
                               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                               {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
-                              {copied ? 'COPIADO' : 'COPIAR PARA WHATSAPP'}
+                              {copied ? 'COPIADO' : 'COPIAR MENSAGEM'}
                             </Button>
                             <Button 
                               onClick={handleNext}
