@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -55,6 +56,13 @@ const STATES = [
 
 const ADMIN_EMAIL = "thethegalo@gmail.com";
 
+interface Particle {
+  left: string;
+  top: string;
+  duration: number;
+  delay: number;
+}
+
 export default function LeadsPage() {
   const { user } = useUser();
   const db = useFirestore();
@@ -72,6 +80,18 @@ export default function LeadsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [manualLead, setManualLead] = useState({ name: '', email: '', phone: '', businessType: '' });
   const [isSavingManual, setIsManualSaving] = useState(false);
+  const [particles, setParticles] = useState<Particle[]>([]);
+
+  useEffect(() => {
+    // Generate particles only on the client to avoid hydration mismatch
+    const newParticles = Array.from({ length: 12 }).map(() => ({
+      left: `${15 + Math.random() * 70}%`,
+      top: `${15 + Math.random() * 70}%`,
+      duration: 4 + Math.random() * 2,
+      delay: Math.random() * 5
+    }));
+    setParticles(newParticles);
+  }, []);
 
   const userDocRef = useMemoFirebase(() => {
     if (!db || !user) return null;
@@ -161,7 +181,7 @@ export default function LeadsPage() {
       if (res?.message) {
         setActiveScript({ id: lead.id, message: res.message, phone: lead.phone });
         success("Script Gerado", "Mensagem composta pelo motor de IA.");
-        if (!approachedLeads.includes(lead.id)) setApproachedLeads(prev => [...prev, lead.id]);
+        if (!approachedLeads.includes(lead.id)) setApproachedLeads(prev => [...prev, { id: lead.id, timestamp: Date.now() }].map(item => typeof item === 'string' ? item : item.id));
       }
     } catch (e: any) {
       error("Erro na IA", "Falha ao compor script personalizado.");
@@ -315,13 +335,13 @@ export default function LeadsPage() {
                 <IconContainer icon={<Stethoscope className="h-4 w-4" />} text="Clínicas" className="bottom-[20%] left-[10%]" />
                 <IconContainer icon={<ShoppingBag className="h-4 w-4" />} text="Lojas" className="bottom-[5%] left-1/2 -translate-x-1/2" />
 
-                {[...Array(12)].map((_, i) => (
+                {particles.map((p, i) => (
                   <motion.div
                     key={i}
                     className="absolute h-[3px] w-[3px] bg-primary/40 rounded-full"
                     animate={{ y: [0, -30, 0], x: [0, 10, 0], opacity: [0.2, 0.5, 0.2] }}
-                    transition={{ duration: 4 + Math.random() * 2, repeat: Infinity, delay: Math.random() * 5 }}
-                    style={{ left: `${15 + Math.random() * 70}%`, top: `${15 + Math.random() * 70}%` }}
+                    transition={{ duration: p.duration, repeat: Infinity, delay: p.delay }}
+                    style={{ left: p.left, top: p.top }}
                   />
                 ))}
               </div>
