@@ -113,9 +113,10 @@ export default function FunnelPage() {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-[#050508] relative overflow-x-hidden">
+      <div className="flex min-h-screen w-full bg-transparent relative overflow-x-hidden">
         <DashboardParticles />
         
+        {/* Fundo Atmosférico Vibrante */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
           <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[140px] animate-pulse"></div>
           <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent/10 rounded-full blur-[120px]"></div>
