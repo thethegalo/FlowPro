@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
@@ -281,8 +280,12 @@ export default function LeadsPage() {
                         <SelectTrigger className="bg-white/[0.04] border-white/[0.08] h-11 text-sm w-full">
                           <SelectValue placeholder="UF" />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#0b0b14] border-white/10 text-white max-h-[300px]">
-                          {STATES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                        <SelectContent className="bg-[#0b0b14] border-white/10 text-white max-h-[280px] w-[var(--radix-select-trigger-width)]">
+                          {STATES.map(s => (
+                            <SelectItem key={s} value={s} className="uppercase font-bold">
+                              {s}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -434,7 +437,7 @@ export default function LeadsPage() {
                                 </div>
                                 <Textarea className="bg-black/20 border-white/5 text-white/80 text-sm mb-4 min-h-[120px] p-4 resize-none leading-relaxed font-medium" value={activeScript.message} readOnly />
                                 <Button onClick={() => handleWhatsApp(activeScript.phone, activeScript.message)} className="w-full h-12 bg-green-600/20 border border-green-500/30 text-green-400 font-black uppercase text-xs rounded-xl hover:bg-green-600/30 transition-all">Abrir no WhatsApp <ExternalLink className="ml-2 h-4 w-4" /></Button>
-                              </motion.div>
+                            </motion.div>
                             )}
                           </CardContent>
                         </Card>
