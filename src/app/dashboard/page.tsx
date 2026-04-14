@@ -3,7 +3,6 @@
 import { useMemo, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import { 
   AreaChart, 
   Area, 
@@ -27,21 +26,17 @@ import {
   ArrowRight,
   Plus,
   Globe,
-  FileText,
   GraduationCap,
-  Users,
   MessageSquare,
   ChevronRight,
   LayoutDashboard,
   TrendingUp,
-  Menu,
-  X
+  Menu
 } from 'lucide-react';
 import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
 import { collection, query, orderBy, doc } from 'firebase/firestore';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
-import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import {
   Dialog,
@@ -121,7 +116,6 @@ export default function Dashboard() {
         ganhos: p.amount
       }));
     }
-    // Default mock data
     return Array.from({ length: 30 }).map((_, i) => ({
       date: `${i + 1}/03`,
       ganhos: Math.floor(Math.random() * 1000)
@@ -195,7 +189,6 @@ export default function Dashboard() {
           </header>
 
           <div className="flex-1 p-6 md:p-8 space-y-8 max-w-7xl mx-auto w-full">
-            
             <div className="space-y-1">
               <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight">
                 Olá, {displayName} 👋
@@ -205,14 +198,13 @@ export default function Dashboard() {
               </p>
             </div>
 
-            {/* GRID DE MÉTRICAS */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               {[
                 { label: "Placar de Caixa", val: totalEarnings, prefix: "R$ ", icon: DollarSign, badge: "+12% hoje", sub: `Alvo R$ ${isAdmin ? '50.000' : '5.000'}` },
                 { label: "Execução Diária", val: userData?.dailyActions || 0, suffix: " / 10", icon: Activity, badge: "Alta Performance", sub: "Ritmo constante" },
                 { label: "Status Jornada", val: currentJourneyDay, prefix: "Dia ", icon: TrendingUp, badge: "Ativo", sub: `${completedMissionIds.length} concluídas` },
               ].map((m, i) => (
-                <Card key={i} className="glass-card p-6 flex flex-col justify-between hover:border-primary/20 transition-all">
+                <Card key={m.label} className="glass-card p-6 flex flex-col justify-between hover:border-primary/20 transition-all">
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1">{m.label}</p>
@@ -232,10 +224,7 @@ export default function Dashboard() {
               ))}
             </div>
 
-            {/* SEÇÃO CENTRAL */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              
-              {/* GRÁFICO */}
               <Card className="lg:col-span-8 glass-card p-6 min-h-[300px] flex flex-col">
                 <div className="flex justify-between items-center mb-8">
                   <div>
@@ -276,7 +265,6 @@ export default function Dashboard() {
                 </div>
               </Card>
 
-              {/* AÇÕES E VIP */}
               <div className="lg:col-span-4 flex flex-col gap-6">
                 <Card className="glass-card p-6">
                   <p className="text-[10px] font-black uppercase tracking-widest text-white/20 mb-6">Comandos Rápidos</p>
@@ -323,7 +311,6 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* ECOSSISTEMA */}
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
@@ -337,7 +324,7 @@ export default function Dashboard() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {ecosystemModules.map((module, i) => (
-                  <Link key={i} href={module.url}>
+                  <Link key={module.title} href={module.url} prefetch={false}>
                     <Card className="glass-card p-5 group hover:border-primary/30 transition-all">
                       <div className="flex flex-col gap-4">
                         <div className="flex justify-between items-start">
@@ -359,7 +346,6 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* JORNADA */}
             <div className="space-y-6 pb-20">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
@@ -381,6 +367,7 @@ export default function Dashboard() {
                     <Link 
                       key={m.id} 
                       href={isLocked ? '#' : `/missions/${m.id}`}
+                      prefetch={false}
                       className={cn(
                         "block",
                         isLocked ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
@@ -431,7 +418,6 @@ export default function Dashboard() {
           </div>
         </main>
 
-        {/* MODAL EM BREVE */}
         <Dialog open={isVipModalOpen} onOpenChange={setIsVipModalOpen}>
           <DialogContent className="bg-[#0e0e1a] border-white/10 text-white rounded-[2rem] max-w-sm sm:max-w-md p-12 text-center">
             <DialogHeader className="space-y-6 flex flex-col items-center">

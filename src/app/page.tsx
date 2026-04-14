@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -80,13 +79,10 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen text-white bg-[#05050f] overflow-x-hidden relative">
-      
-      {/* BACKGROUND ORBS OPTIMIZED - REDUCED TO 1 STATIC ORB */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[100px]"></div>
       </div>
 
-      {/* NAVBAR */}
       <nav className="fixed top-0 w-full h-[60px] bg-[#05050f]/70 backdrop-blur-[20px] border-b border-white/5 z-50 px-6 md:px-12 flex items-center justify-between">
         <div className="flex items-center gap-12">
           <Link href="/" className="flex items-center gap-2">
@@ -96,14 +92,14 @@ export default function Home() {
           </Link>
           
           <div className="hidden md:flex items-center gap-8">
-            <Link href="#arsenal" className="text-[13px] text-white/50 hover:text-white transition-colors">Arsenal</Link>
+            <Link href="#arsenal" prefetch={false} className="text-[13px] text-white/50 hover:text-white transition-colors">Arsenal</Link>
             <button onClick={scrollToPricing} className="text-[13px] text-white/50 hover:text-white transition-colors">Preços</button>
-            <Link href="#faq" className="text-[13px] text-white/50 hover:text-white transition-colors">Dúvidas</Link>
+            <Link href="#faq" prefetch={false} className="text-[13px] text-white/50 hover:text-white transition-colors">Dúvidas</Link>
           </div>
         </div>
 
         <div className="flex items-center gap-6">
-          <Link href="/auth" className="text-[13px] text-white/40 hover:text-white transition-colors font-medium">Fazer login</Link>
+          <Link href="/auth" prefetch={false} className="text-[13px] text-white/40 hover:text-white transition-colors font-medium">Fazer login</Link>
           <Button onClick={scrollToPricing} className="bg-[#6d28d9] hover:bg-[#7c3aed] text-white font-medium text-[13px] h-9 px-5 rounded-lg border-none shadow-none">
             Acessar agora
           </Button>
@@ -111,8 +107,6 @@ export default function Home() {
       </nav>
 
       <main className="pt-[60px] relative z-10">
-        
-        {/* HERO SECTION */}
         <section className="max-w-[1200px] mx-auto px-6 md:px-12 py-12 md:py-32 overflow-visible">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
             <motion.div 
@@ -146,7 +140,7 @@ export default function Home() {
                 <div className="flex items-center gap-3">
                   <div className="flex -space-x-2">
                     {['A', 'B', 'J', 'L'].map((initial, i) => (
-                      <div key={i} className="h-7 w-7 rounded-full border-2 border-[#05050f] bg-primary/20 flex items-center justify-center text-[10px] font-black text-primary relative">
+                      <div key={initial} className="h-7 w-7 rounded-full border-2 border-[#05050f] bg-primary/20 flex items-center justify-center text-[10px] font-black text-primary relative">
                         {initial}
                       </div>
                     ))}
@@ -159,7 +153,6 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* CSS PURE OPTIMIZED GLOBE REPLACEMENT */}
             <div className="hidden lg:flex flex-1 items-center justify-center relative">
               <div className="relative w-72 h-72">
                 <div className="absolute inset-0 bg-primary/20 rounded-full blur-[80px]"></div>
@@ -174,7 +167,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* METRICS SECTION */}
         <section className="border-y border-white/5 py-12 md:py-24">
           <div className="max-w-[1100px] mx-auto px-6 md:px-12">
             <motion.div 
@@ -189,7 +181,7 @@ export default function Home() {
                 { val: "R$ 2,6M", label: "Gerado pela base" },
                 { val: "3,8 dias", label: "Para primeira venda" }
               ].map((m, i) => (
-                <div key={i} className={`flex flex-col items-center md:items-start md:px-12 ${i !== 0 ? 'md:border-l border-white/5' : ''}`}>
+                <div key={m.label} className={`flex flex-col items-center md:items-start md:px-12 ${i !== 0 ? 'md:border-l border-white/5' : ''}`}>
                   <span className="text-[36px] md:text-[52px] font-extrabold text-white tracking-[-1px] md:tracking-[-1.5px] leading-none">{m.val}</span>
                   <span className="text-[11px] md:text-[12px] text-white/30 font-medium uppercase tracking-widest mt-2">{m.label}</span>
                 </div>
@@ -198,7 +190,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ARSENAL SECTION */}
         <section id="arsenal" className="max-w-[1100px] mx-auto px-6 md:px-12 py-20 md:py-32">
           <motion.div className="space-y-4 mb-16 text-center md:text-left" {...fadeInUp}>
             <h2 className="text-[28px] md:text-[36px] font-bold tracking-[-0.5px] text-white">O seu arsenal.</h2>
@@ -229,7 +220,7 @@ export default function Home() {
                 desc: "Processo que já fechou mais de 479 vendas. Com missões guiadas e memória automática." 
               }
             ].map((f, i) => (
-              <motion.div key={i} variants={cardIn}>
+              <motion.div key={f.title} variants={cardIn}>
                 <Card className="bg-white/[0.03] border-white/[0.07] backdrop-blur-none rounded-2xl p-8 group transition-all duration-300 hover:border-primary/25 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.3)] min-h-[200px] relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
                   <div className="h-9 w-9 rounded-lg bg-primary/15 border border-primary/20 flex items-center justify-center text-primary mb-8">
@@ -243,7 +234,6 @@ export default function Home() {
           </motion.div>
         </section>
 
-        {/* PRICING SECTION */}
         <section id="precos" className="max-w-[1200px] mx-auto px-6 md:px-12 py-24 md:py-48">
           <div className="text-center space-y-6 mb-20">
             <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5">Escolha sua Rota de Escala</Badge>
@@ -256,8 +246,6 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
-            
-            {/* PLANO MENSAL */}
             <motion.div {...fadeInUp} transition={{ delay: 0.1 }}>
               <Card className="h-full bg-white/[0.03] border-amber-500/40 backdrop-blur-none p-8 flex flex-col justify-between relative overflow-hidden">
                 <div className="space-y-8 relative z-10">
@@ -287,7 +275,7 @@ export default function Home() {
                       'Scripts de Elite', 
                       'Acesso à Fase de Escala'
                     ].map((f, i) => (
-                      <li key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white/80">
+                      <li key={f} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white/80">
                         <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" /> {f}
                       </li>
                     ))}
@@ -299,7 +287,6 @@ export default function Home() {
               </Card>
             </motion.div>
 
-            {/* PLANO TRIMESTRAL */}
             <motion.div {...fadeInUp} transition={{ delay: 0.2 }}>
               <Card className="h-full bg-white/[0.03] border-cyan-500/50 backdrop-blur-none p-8 flex flex-col justify-between relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-4">
@@ -333,7 +320,7 @@ export default function Home() {
                       'Acesso à Fase de Escala',
                       '3 Meses de Acesso Pro'
                     ].map((f, i) => (
-                      <li key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white">
+                      <li key={f} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white">
                         <CheckCircle2 className="h-3.5 w-3.5 text-cyan-500" /> {f}
                       </li>
                     ))}
@@ -345,7 +332,6 @@ export default function Home() {
               </Card>
             </motion.div>
 
-            {/* PLANO VITALÍCIO */}
             <motion.div {...fadeInUp} transition={{ delay: 0.3 }} className="relative p-[2px] rounded-[2rem] overflow-hidden shadow-[0_0_100px_rgba(139,92,246,0.4)]">
               <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-pulse" style={{ willChange: 'transform' }}></div>
               <Card className="h-full relative bg-[#050508] p-8 flex flex-col justify-between border-none rounded-[calc(2.5rem-2px)]">
@@ -386,7 +372,7 @@ export default function Home() {
                       'Sem Mensalidades ou Taxas',
                       'Garantia Blindada de 7 Dias'
                     ].map((f, i) => (
-                      <li key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white">
+                      <li key={f} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white">
                         <CheckCircle2 className="h-4 w-4 text-primary fill-primary" /> {f}
                       </li>
                     ))}
@@ -403,7 +389,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* DEPOIMENTOS */}
         <section className="max-w-[1100px] mx-auto px-6 md:px-12 py-20 md:py-32">
           <motion.h2 className="text-[28px] md:text-[36px] font-bold tracking-[-0.5px] text-white mb-16" {...fadeInUp}>
             Quem já está na jornada.
@@ -417,7 +402,7 @@ export default function Home() {
             viewport={{ once: true }}
           >
             {TESTIMONIALS.map((t, i) => (
-              <motion.div key={i} variants={cardIn}>
+              <motion.div key={t.author} variants={cardIn}>
                 <Card className="bg-white/[0.03] border-white/[0.07] backdrop-blur-none rounded-2xl p-8 space-y-6 hover:-translate-y-1.5 transition-all hover:border-primary/30 hover:shadow-[0_16px_48px_rgba(0,0,0,0.3)] h-full flex flex-col">
                   <div className="text-[48px] text-primary/30 font-serif leading-none h-6">“</div>
                   <div className="flex gap-1 mb-2">
@@ -439,7 +424,6 @@ export default function Home() {
           </motion.div>
         </section>
 
-        {/* FAQ */}
         <section id="faq" className="max-w-[1100px] mx-auto px-6 md:px-12 py-20 md:py-32">
           <motion.h2 className="text-[28px] md:text-[36px] font-bold tracking-[-0.5px] text-white mb-12" {...fadeInUp}>
             Dúvidas frequentes.
@@ -453,7 +437,7 @@ export default function Home() {
                 { q: "Em quanto tempo vejo os primeiros resultados?", a: "Nossa jornada foi feita para você realizar sua primeira venda em até 7 dias, desde que execute todas as tarefas propostas." },
                 { q: "Preciso aparecer nas redes sociais?", a: "Não. Ensinamos estratégias de bastidores onde você pode prospectar e vender sem nunca mostrar o rosto." }
               ].map((item, i) => (
-                <AccordionItem key={i} value={`item-${i}`} className="border-b border-white/[0.07] py-4">
+                <AccordionItem key={item.q} value={`item-${i}`} className="border-b border-white/[0.07] py-4">
                   <AccordionTrigger className="text-[14px] font-medium text-white/80 hover:no-underline hover:text-white transition-colors py-4 text-left">
                     {item.q}
                   </AccordionTrigger>
@@ -466,7 +450,6 @@ export default function Home() {
           </motion.div>
         </section>
 
-        {/* CTA FINAL */}
         <section className="max-w-[1100px] mx-auto px-6 md:px-12 py-24 md:py-32 flex flex-col items-center text-center space-y-10">
           <motion.div 
             className="space-y-10 flex flex-col items-center"
@@ -486,7 +469,6 @@ export default function Home() {
           </motion.div>
         </section>
 
-        {/* FOOTER */}
         <footer className="max-w-[1100px] mx-auto px-6 md:px-12 py-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="relative h-4 w-16 opacity-50 grayscale contrast-200">
@@ -496,11 +478,10 @@ export default function Home() {
           </div>
           
           <div className="flex items-center gap-8">
-            <Link href="#" className="text-[12px] text-white/25 hover:text-white transition-colors">Termos</Link>
-            <Link href="#" className="text-[12px] text-white/25 hover:text-white transition-colors">Privacidade</Link>
+            <Link href="#" prefetch={false} className="text-[12px] text-white/25 hover:text-white transition-colors">Termos</Link>
+            <Link href="#" prefetch={false} className="text-[12px] text-white/25 hover:text-white transition-colors">Privacidade</Link>
           </div>
         </footer>
-
       </main>
     </div>
   );
