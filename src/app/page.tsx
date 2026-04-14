@@ -12,8 +12,6 @@ import {
   Target, 
   Route, 
   Star,
-  ChevronRight,
-  Plus,
   Zap,
   CheckCircle2,
   CreditCard,
@@ -30,26 +28,22 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import dynamic from 'next/dynamic';
-
-// Dynamic imports for performance optimization
-const GlobePulse = dynamic(() => import('@/components/ui/cobe-globe-pulse').then(m => ({ default: m.GlobePulse })), { 
-  ssr: false, 
-  loading: () => <div className="w-full h-full bg-primary/5 rounded-full blur-xl animate-pulse" /> 
-});
-
-const MacbookShowcase = dynamic(() => import('@/components/MacbookShowcase').then(m => ({ default: m.MacbookShowcase })), { 
-  ssr: false, 
-  loading: () => null 
-});
 
 const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
 
-const TESTIMONIAL_IMAGES = [
-  "https://media.inlead.cloud/uploads/44422/2026-01-05/md-vOR05-design-sem-nome-36.png", // Ana
-  "https://media.inlead.cloud/uploads/44422/2026-01-03/md-soixE-design-sem-nome-31.png", // Bruno
-  "https://media.inlead.cloud/uploads/44422/2026-01-03/md-jztVV-design-sem-nome-30.png", // Juliana
-  "https://media.inlead.cloud/uploads/44422/2026-01-05/md-flBj3-design-sem-nome-38.png"  // Extra
+const TESTIMONIALS = [
+  { 
+    text: "Eu nunca tinha vendido nada online. Usei o script de IA para falar com uma pizzaria e fechei meu primeiro contrato em menos de uma semana.",
+    author: "Ana Oliveira", context: "Especialista em Escala"
+  },
+  { 
+    text: "O Radar de Leads é bizarro. Achei 50 dentistas na minha cidade e a IA gerou abordagens que todos responderam. Já faturei R$ 3.500.",
+    author: "Bruno Silva", context: "Consultor Fase 1"
+  },
+  { 
+    text: "A barreira de não saber o que falar sumiu. Copiei o script da IA, mandei no WhatsApp e o cliente fechou na hora. Simples assim.",
+    author: "Juliana Reus", context: "Venda em 48h"
+  }
 ];
 
 const CHECKOUT_MENSAL = "https://checkout.flowproia.shop/pay/PPU38CQ9FQU";
@@ -85,8 +79,14 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen text-white bg-transparent overflow-x-hidden">
+    <div className="flex flex-col min-h-screen text-white bg-transparent overflow-x-hidden relative">
       
+      {/* BACKGROUND ORBS OPTIMIZED */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[100px] animate-pulse" style={{ willChange: 'transform' }}></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/5 rounded-full blur-[80px]"></div>
+      </div>
+
       {/* NAVBAR */}
       <nav className="fixed top-0 w-full h-[60px] bg-[#05050f]/70 backdrop-blur-[20px] border-b border-white/5 z-50 px-6 md:px-12 flex items-center justify-between">
         <div className="flex items-center gap-12">
@@ -98,7 +98,6 @@ export default function Home() {
           
           <div className="hidden md:flex items-center gap-8">
             <Link href="#arsenal" className="text-[13px] text-white/50 hover:text-white transition-colors">Arsenal</Link>
-            <Link href="#painel" className="text-[13px] text-white/50 hover:text-white transition-colors">Plataforma</Link>
             <button onClick={scrollToPricing} className="text-[13px] text-white/50 hover:text-white transition-colors">Preços</button>
             <Link href="#faq" className="text-[13px] text-white/50 hover:text-white transition-colors">Dúvidas</Link>
           </div>
@@ -112,7 +111,7 @@ export default function Home() {
         </div>
       </nav>
 
-      <main className="pt-[60px]">
+      <main className="pt-[60px] relative z-10">
         
         {/* HERO SECTION */}
         <section className="max-w-[1200px] mx-auto px-6 md:px-12 py-12 md:py-32 overflow-visible">
@@ -131,7 +130,7 @@ export default function Home() {
                 ✦ 1.800+ consultores ativos
               </Badge>
 
-              <h1 className="text-[34px] sm:text-[44px] md:text-[64px] lg:text-[72px] font-extrabold tracking-[-0.02em] font-headline leading-[1.1] text-white overflow-visible">
+              <h1 className="text-[34px] sm:text-[44px] md:text-[64px] lg:text-[72px] font-extrabold tracking-[-0.02em] font-headline leading-[1.1] text-white">
                 Seu primeiro cliente<br className="hidden sm:block" />
                 <span className="bg-gradient-to-r from-[#a855f7] to-[#6366f1] bg-clip-text text-transparent italic inline-block pb-4">começa com um script.</span>
               </h1>
@@ -147,9 +146,9 @@ export default function Home() {
 
                 <div className="flex items-center gap-3">
                   <div className="flex -space-x-2">
-                    {TESTIMONIAL_IMAGES.map((img, i) => (
-                      <div key={i} className="h-7 w-7 rounded-full border-2 border-[#05050f] overflow-hidden relative bg-white/5">
-                        <Image src={img} alt={`User ${i}`} fill className="object-cover" loading="lazy" />
+                    {['A', 'B', 'J', 'L'].map((initial, i) => (
+                      <div key={i} className="h-7 w-7 rounded-full border-2 border-[#05050f] bg-primary/20 flex items-center justify-center text-[10px] font-black text-primary relative">
+                        {initial}
                       </div>
                     ))}
                   </div>
@@ -161,11 +160,16 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* GLOBE PULSE CONTAINER */}
+            {/* LIGHTWEIGHT DECORATIVE ELEMENT */}
             <div className="hidden lg:flex flex-1 items-center justify-center relative min-h-[600px] overflow-visible">
-              <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full animate-pulse pointer-events-none scale-110" style={{ willChange: 'transform' }} />
-              <div className="relative z-10 w-full max-w-[600px] aspect-square flex items-center justify-center">
-                <GlobePulse className="w-full h-full" speed={0.008} />
+              <div className="absolute inset-0 bg-primary/5 blur-[100px] rounded-full animate-pulse pointer-events-none scale-110" style={{ willChange: 'transform' }} />
+              <div className="relative w-full max-w-[350px] aspect-square mx-auto lg:mx-0">
+                <div className="absolute inset-0 bg-primary/20 rounded-full blur-[80px] animate-pulse"></div>
+                <div className="absolute inset-8 border border-white/10 rounded-full animate-spin" style={{animationDuration:'20s'}}></div>
+                <div className="absolute inset-16 border border-primary/20 rounded-full animate-spin" style={{animationDuration:'15s', animationDirection:'reverse'}}></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="h-32 w-32 bg-primary/10 rounded-full blur-2xl"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -238,41 +242,6 @@ export default function Home() {
               </motion.div>
             ))}
           </motion.div>
-        </section>
-
-        {/* PAINEL DE CONTROLE */}
-        <section id="painel" className="max-w-[1100px] mx-auto px-6 md:px-12 py-20 md:py-32">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
-            <motion.div className="lg:col-span-7 space-y-12" {...fadeInUp}>
-              <h2 className="text-[28px] md:text-[36px] font-bold tracking-[-0.5px] text-white">O seu painel de controle.</h2>
-              
-              <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-[0_32px_80px_rgba(0,0,0,0.5)]">
-                <MacbookShowcase />
-              </div>
-            </motion.div>
-
-            <motion.div 
-              className="lg:col-span-5 flex flex-col gap-4 pt-4 md:pt-12"
-              variants={staggerContainer}
-              initial="initial"
-              whileInView="whileInView"
-              viewport={{ once: true }}
-            >
-              {[
-                { n: "01", t: "Monitoramento Live", d: "Acompanhe seus ganhos e volume de prospecção em tempo real." },
-                { n: "02", t: "Integração WhatsApp", d: "Dispare scripts diretamente para o app sem fricção." },
-                { n: "03", t: "Ranking de Consultores", d: "Veja o faturamento dos maiores players do ecossistema." }
-              ].map((b, i) => (
-                <motion.div key={i} variants={cardIn} className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-6 flex gap-6">
-                  <span className="text-[11px] font-bold text-primary/50 pt-1">{b.n}</span>
-                  <div className="space-y-1">
-                    <h4 className="text-[14px] font-semibold text-white/85">{b.t}</h4>
-                    <p className="text-[12px] text-white/35 leading-[1.6]">{b.d}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
         </section>
 
         {/* PRICING SECTION */}
@@ -448,20 +417,7 @@ export default function Home() {
             whileInView="whileInView"
             viewport={{ once: true }}
           >
-            {[
-              { 
-                text: "Eu nunca tinha vendido nada online. Usei o script de IA para falar com uma pizzaria e fechei meu primeiro contrato em menos de uma semana.",
-                author: "Ana Oliveira", context: "Especialista em Escala", image: TESTIMONIAL_IMAGES[0]
-              },
-              { 
-                text: "O Radar de Leads é bizarro. Achei 50 dentistas na minha cidade e a IA gerou abordagens que todos responderam. Já faturei R$ 3.500.",
-                author: "Bruno Silva", context: "Consultor Fase 1", image: TESTIMONIAL_IMAGES[1]
-              },
-              { 
-                text: "A barreira de não saber o que falar sumiu. Copiei o script da IA, mandei no WhatsApp e o cliente fechou na hora. Simples assim.",
-                author: "Juliana Reus", context: "Venda em 48h", image: TESTIMONIAL_IMAGES[2]
-              }
-            ].map((t, i) => (
+            {TESTIMONIALS.map((t, i) => (
               <motion.div key={i} variants={cardIn}>
                 <Card className="bg-white/[0.03] border-white/[0.07] rounded-2xl p-8 space-y-6 hover:-translate-y-1.5 transition-all hover:border-primary/30 hover:shadow-[0_16px_48px_rgba(0,0,0,0.3)] h-full flex flex-col">
                   <div className="text-[48px] text-primary/30 font-serif leading-none h-6">“</div>
@@ -470,12 +426,12 @@ export default function Home() {
                   </div>
                   <p className="text-[15px] text-white/65 leading-[1.8] italic flex-1">"{t.text}"</p>
                   <div className="flex items-center gap-3 pt-4 border-t border-white/5">
-                    <div className="h-10 w-10 rounded-full border border-white/10 overflow-hidden relative bg-white/5">
-                      <Image src={t.image} alt={t.author} fill className="object-cover" loading="lazy" />
+                    <div className="h-10 w-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center font-black text-primary text-xs shrink-0 relative overflow-hidden">
+                      {t.author.charAt(0)}
                     </div>
                     <div>
                       <p className="text-[13px] font-bold text-white">{t.author}</p>
-                      <p className="text-[11px] text-white/30 font-medium">{t.author.includes('Ana') ? 'Especialista em Escala' : t.author.includes('Bruno') ? 'Consultor Fase 1' : 'Venda em 48h'}</p>
+                      <p className="text-[11px] text-white/30 font-medium">{t.context}</p>
                     </div>
                   </div>
                 </Card>
