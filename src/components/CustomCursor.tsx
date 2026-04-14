@@ -1,14 +1,21 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export function CustomCursor() {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const cursorRef = useRef<HTMLDivElement>(null);
   const [isActive, setIsActive] = useState(false);
+  const rafRef = useRef<number>(0);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      setPosition({ x: e.clientX, y: e.clientY });
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        if (cursorRef.current) {
+          cursorRef.current.style.left = e.clientX + 'px';
+          cursorRef.current.style.top = e.clientY + 'px';
+        }
+      });
     };
 
     const handleMouseDown = () => setIsActive(true);
@@ -29,12 +36,13 @@ export function CustomCursor() {
       }
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('mouseover', handleMouseOver);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('mousedown', handleMouseDown, { passive: true });
+    window.addEventListener('mouseup', handleMouseUp, { passive: true });
+    window.addEventListener('mouseover', handleMouseOver, { passive: true });
 
     return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
@@ -44,11 +52,11 @@ export function CustomCursor() {
 
   return (
     <div
-      className={`cursor-glow hidden md:block ${isActive ? 'active' : ''}`}
+      ref={cursorRef}
+      className={`cursor-glow hidden md:block fixed pointer-events-none z-[9999] w-8 h-8 rounded-full border border-primary/50 transition-all duration-200 ${isActive ? 'scale-150 bg-primary/10' : 'scale-100'}`}
       style={{
-        left: `${position.x}px`,
-        top: `${position.y}px`,
         transform: `translate(-50%, -50%)`,
+        willChange: 'left, top, transform'
       }}
     />
   );

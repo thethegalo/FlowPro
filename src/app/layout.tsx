@@ -2,9 +2,7 @@ import type {Metadata, Viewport} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from '@/firebase';
-import { CustomCursor } from '@/components/CustomCursor';
-import { FloatingMentor } from '@/components/FloatingMentor';
-import { EtheralShadow } from '@/components/ui/etheral-shadow';
+import { ClientVisualEffects } from '@/components/ClientVisualEffects';
 import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -52,23 +50,12 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preload" href="https://framerusercontent.com/images/ceBGguIpUU8luwByxuQz79t7To.png" as="image" />
       </head>
       <body className="font-body antialiased min-h-screen bg-[#05050f] text-foreground selection:bg-primary/30 selection:text-white margin-0 overflow-x-hidden">
         <FirebaseClientProvider>
-          <div className="fixed inset-0 z-0 pointer-events-none">
-            <EtheralShadow
-              color="rgba(109, 40, 217, 0.9)"
-              animation={{ scale: 45, speed: 55 }}
-              noise={{ opacity: 0.35, scale: 1.5 }}
-              sizing="fill"
-            />
-          </div>
-
+          <ClientVisualEffects />
           <div className="relative z-10 flex flex-col min-h-screen bg-transparent">
-            <CustomCursor />
             {children}
-            <FloatingMentor />
             <Toaster />
           </div>
         </FirebaseClientProvider>
