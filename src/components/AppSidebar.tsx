@@ -76,11 +76,11 @@ export function AppSidebar() {
   const menuItems = [
     { title: "Dashboard", icon: LayoutDashboard, url: "/dashboard" },
     { title: "Funil de Vendas", icon: GitBranch, url: "/funil" },
-    { title: "Cartão Digital", icon: CreditCard, url: "/cartao" },
     { title: "Ranking Vendedores", icon: Trophy, url: "/vendedores" },
     { title: "Captar Leads", icon: Search, url: "/leads" },
     { title: "Scripts WhatsApp", icon: MessageSquare, url: "/abordagens" },
     { title: "Gerador Prompts", icon: Terminal, url: "/prompts" },
+    { title: "Cartão Digital", icon: CreditCard, url: "/cartao" },
     { title: "Ferramentas", icon: Wrench, url: "/tools" },
   ];
 
@@ -103,7 +103,7 @@ export function AppSidebar() {
                 className="object-contain filter brightness-0 invert"
               />
             </div>
-            <span className="text-white font-semibold text-[14px] tracking-[-0.2px] leading-none">FlowPro</span>
+            <span className="text-white font-semibold text-[14px] tracking-[-0.2px] font-headline leading-none">FlowPro</span>
           </Link>
         </SidebarHeader>
 
