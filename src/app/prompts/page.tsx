@@ -40,9 +40,8 @@ import {
   Scissors,
   Stethoscope,
   Utensils,
+  UtensilsCrossed,
   Dumbbell,
-  Scale,
-  Bone,
   TrendingUp
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -73,27 +72,13 @@ const NICHES = [
   { label: "Clínica", value: "Clínica", theme: { bg: '#f0f7ff', primary: '#0077b6', text: '#023e8a' } },
   { label: "Academia", value: "Academia", theme: { bg: '#0a0a0a', primary: '#ff6b00', text: '#ffffff' } },
   { label: "SaaS/Tech", value: "SaaS/Tech", theme: { bg: '#05050f', primary: '#7c3aed', text: '#f4f4f5' } },
-  { label: "E-commerce", value: "E-commerce", theme: { bg: '#ffffff', primary: '#635bff', text: '#0a2540' } },
-  { label: "Consultoria", value: "Consultoria", theme: { bg: '#f8f9fa', primary: '#1a1a2e', text: '#16213e' } },
-  { label: "Advocacia", value: "Advocacia", theme: { bg: '#0a0e1a', primary: '#1e3a8a', text: '#e2e8f0' } },
-  { label: "Imobiliária", value: "Imobiliária", theme: { bg: '#ffffff', primary: '#dc2626', text: '#1f2937' } },
-  { label: "Pet Shop", value: "Pet Shop", theme: { bg: '#fff7ed', primary: '#f97316', text: '#431407' } },
-  { label: "Estética", value: "Estética", theme: { bg: '#fff5f5', primary: '#ec4899', text: '#742a2a' } },
-  { label: "Workshop", value: "Workshop", theme: { bg: '#0f172a', primary: '#10b981', text: '#f8fafc' } },
-  { label: "LP Vendas", value: "LP Vendas", theme: { bg: '#000000', primary: '#8b5cf6', text: '#ffffff' } },
-  { label: "Portfólio", value: "Portfólio", theme: { bg: '#020617', primary: '#38bdf8', text: '#f1f5f9' } },
 ];
 
 const TEMPLATE_PRESETS = [
-  { name: 'Barbearia Moderna', niche: 'Barbearia', style: 'Minimalista', icon: Scissors, color: '#c9a84c', palette: ['#c9a84c', '#f5f5f5', '#0d0d0d'], tone: 'Luxuoso', badge: 'Minimalista', previewUrl: 'https://id-preview--48a0d930-0296-4a9f-83f4-6afa2dce8457.lovable.app/' },
-  { name: 'Clínica Odontológica', niche: 'Clínica', style: 'Clean White', icon: Stethoscope, color: '#0077b6', palette: ['#0077b6', '#023e8a', '#f0f7ff'], tone: 'Profissional', badge: 'Elegante', previewUrl: 'https://id-preview--48e9af26-62e7-4ea3-b49c-953edc1b70ff.lovable.app/' },
-  { name: 'Restaurante Premium', niche: 'Restaurante', style: 'Luxo Profundo', icon: Utensils, color: '#e85d04', palette: ['#e85d04', '#fff8f0', '#1a0a00'], tone: 'Amigável', badge: 'Luxuoso', previewUrl: '' },
-  { name: 'Academia Fitness', niche: 'Academia', style: 'Bold', icon: Dumbbell, color: '#ff6b00', palette: ['#ff6b00', '#ffffff', '#0a0a0a'], tone: 'Urgente', badge: 'Bold', previewUrl: 'https://id-preview--c6f3fa37-7270-4f58-91f0-545e796152ba.lovable.app/' },
-  { name: 'Loja de Roupas', niche: 'E-commerce', style: 'Moderno & Dark', icon: ShoppingBag, color: '#635bff', palette: ['#635bff', '#0a2540', '#ffffff'], tone: 'Descontraído', badge: 'Moderno', previewUrl: '' },
-  { name: 'Advocacia de Elite', niche: 'Advocacia', style: 'Corporativo', icon: Scale, color: '#1e3a8a', palette: ['#1e3a8a', '#e2e8f0', '#0a0e1a'], tone: 'Profissional', badge: 'Elegante', previewUrl: '' },
-  { name: 'Pet Shop VIP', niche: 'Pet Shop', style: 'Playful & Bold', icon: Bone, color: '#f97316', palette: ['#f97316', '#431407', '#fff7ed'], tone: 'Amigável', badge: 'Playful', previewUrl: '' },
-  { name: 'Estética Glow', niche: 'Estética', style: 'Glassmorphism', icon: Sparkles, color: '#ec4899', palette: ['#ec4899', '#742a2a', '#fff5f5'], tone: 'Luxuoso', badge: 'Elegante', previewUrl: '' },
-  { name: 'Consultoria Digital', niche: 'Consultoria', style: 'Futurista', icon: TrendingUp, color: '#7c3aed', palette: ['#7c3aed', '#f4f4f5', '#05050f'], tone: 'Profissional', badge: 'Futurista', previewUrl: '' },
+  { name: 'Barbearia Moderna', niche: 'Barbearia', style: 'Minimalista', icon: Scissors, color: '#c9a84c', palette: ['#c9a84c', '#f5f5f5', '#0d0d0d'], tone: 'Luxuoso', badge: 'Minimalista', previewUrl: 'https://luxe-hair-blueprint.lovable.app' },
+  { name: 'Clínica Odontológica', niche: 'Clínica', style: 'Clean White', icon: Stethoscope, color: '#0077b6', palette: ['#0077b6', '#023e8a', '#f0f7ff'], tone: 'Profissional', badge: 'Elegante', previewUrl: 'https://smile-arc-plan.lovable.app' },
+  { name: 'Restaurante Premium', niche: 'Restaurante', style: 'Luxo Profundo', icon: UtensilsCrossed, color: '#e85d04', palette: ['#e85d04', '#fff8f0', '#1a0a00'], tone: 'Amigável', badge: 'Luxuoso', previewUrl: 'https://prompt-alchemy-21.lovable.app' },
+  { name: 'Academia Fitness', niche: 'Academia', style: 'Bold', icon: Dumbbell, color: '#ff6b00', palette: ['#ff6b00', '#ffffff', '#0a0a0a'], tone: 'Urgente', badge: 'Bold', previewUrl: 'https://gym-guide-grow.lovable.app' },
 ];
 
 const TEMPLATE_DATA: Record<string, any> = {
@@ -137,63 +122,39 @@ const TEMPLATE_DATA: Record<string, any> = {
     differential: 'Equipamentos modernos, personal trainers, resultados em 30 dias',
     extras: 'Site para academia de musculação. Hero com foto da academia, modalidades oferecidas, planos mensais com preços, transformações de alunos, botão de aula experimental grátis. Design energético com vermelho ou laranja.'
   },
-  'Loja de Roupas': {
-    businessName: 'Loja de Roupas',
-    niche: 'Moda & Beleza',
-    objective: 'Vender Direto',
-    visualStyle: 'Moderno',
-    tone: 'Dinâmico',
-    sections: ['Hero', 'Portfólio', 'Depoimentos', 'CTA Final'],
-    differential: 'Moda exclusiva, tendências atuais, entrega expressa',
-    extras: 'Site para loja de roupas femininas. Hero com lookbook, grade de produtos com fotos, categorias (casual, festa, trabalho), botão comprar via WhatsApp. Design moderno com fundo branco e detalhes coloridos.'
-  },
-  'Advocacia de Elite': {
-    businessName: 'Escritório de Advocacia',
-    niche: 'Jurídico',
-    objective: 'Agendar Consulta',
-    visualStyle: 'Corporativo',
-    tone: 'Profissional',
-    sections: ['Hero', 'Sobre', 'Benefícios', 'FAQ', 'CTA Final'],
-    differential: 'Mais de 10 anos de experiência, 500 casos ganhos, atendimento personalizado',
-    extras: 'Site para escritório de advocacia. Hero sóbrio com foto do advogado, áreas de atuação (trabalhista, civil, criminal), diferenciais, formulário de consulta gratuita. Design sério em preto e dourado.'
-  },
-  'Pet Shop VIP': {
-    businessName: 'Pet Shop',
-    niche: 'Outro',
-    objective: 'Capturar Leads',
-    visualStyle: 'Natural',
-    tone: 'Empático',
-    sections: ['Hero', 'Benefícios', 'Depoimentos', 'CTA Final'],
-    differential: 'Banho e tosa, veterinário, produtos premium para pets',
-    extras: 'Site para pet shop e clínica veterinária. Hero com foto de pets, serviços (banho, tosa, consulta, vacinas), produtos, agendamento online. Design colorido e alegre com verde e amarelo.'
-  },
-  'Estética Glow': {
-    businessName: 'Studio de Estética',
-    niche: 'Moda & Beleza',
-    objective: 'Agendar Consulta',
-    visualStyle: 'Elegante',
-    tone: 'Luxuoso',
-    sections: ['Hero', 'Benefícios', 'Portfólio', 'Depoimentos', 'Preços', 'CTA Final'],
-    differential: 'Procedimentos estéticos avançados, resultados visíveis, ambiente luxuoso',
-    extras: 'Site para studio de estética e beleza. Hero com foto do ambiente, procedimentos (limpeza de pele, design de sobrancelha, micropigmentação), antes e depois, agendamento WhatsApp. Design rosé e dourado.'
-  },
-  'Consultoria Digital': {
-    businessName: 'Consultoria Digital',
-    niche: 'Marketing/Agências',
-    objective: 'Capturar Leads',
-    visualStyle: 'Futurista',
-    tone: 'Profissional',
-    sections: ['Hero', 'Benefícios', 'Sobre', 'Depoimentos', 'Preços', 'CTA Final'],
-    differential: 'Resultados mensuráveis em 60 dias, estratégia personalizada, ROI garantido',
-    extras: 'Site para agência ou consultoria de marketing digital. Hero com métricas de resultado, serviços (tráfego pago, SEO, social media), cases de sucesso, planos de serviço. Design tecnológico em roxo e azul.'
-  },
 };
+
+const PROMPTS_FIXOS: Record<string, string> = Object.keys(TEMPLATE_DATA).reduce((acc, key) => {
+  const data = TEMPLATE_DATA[key];
+  acc[key] = `Crie uma landing page completa e profissional para ${data.businessName} no nicho de ${data.niche}.
+
+OBJETIVO: ${data.objective}
+TOM DE VOZ: ${data.tone}
+ESTILO VISUAL: ${data.visualStyle}
+DIFERENCIAL: ${data.differential}
+
+SEÇÕES OBRIGATÓRIAS (nesta ordem):
+${data.sections.map((s: string, i: number) => `${i + 1}. ${s}`).join('\n')}
+
+INSTRUÇÕES ESPECÍFICAS:
+${data.extras}
+
+REQUISITOS TÉCNICOS:
+- Next.js 15 com React e Tailwind CSS
+- Totalmente responsivo (mobile-first)
+- Botão de WhatsApp fixo no canto
+- Animações suaves nas seções
+- SEO otimizado com meta tags
+- Fonte moderna
+
+Gere o código completo da página em um único arquivo.`;
+  return acc;
+}, {} as Record<string, string>);
 
 const OBJECTIVES = ["Capturar Leads", "Vender Direto", "Agendar Reunião", "Agendar Consulta", "Distribuição de Conteúdo"];
 const STYLES = [
   "Moderno & Dark", "Minimalista", "Corporativo", "Futurista", "Cyberpunk", "Clean White", 
-  "Luxo Profundo", "Glassmorphism", "Neumorphism", "Retro & Vintage", "Elegante Serif", 
-  "Playful & Bold", "Industrial", "Boho & Nature", "Bold", "Moderno", "Elegante", "Natural"
+  "Luxo Profundo", "Glassmorphism", "Bold", "Elegante", "Natural"
 ];
 const TONES = ["Profissional", "Amigável", "Urgente", "Luxuoso", "Descontraído", "Dinâmico", "Empático"];
 const SECTIONS = ["Hero", "Problema/Dor", "Solução", "Benefícios", "Depoimentos", "Preços", "FAQ", "CTA Final", "Portfólio", "Sobre"];
@@ -210,7 +171,6 @@ export default function PromptsPage() {
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [wordCount, setWordCount] = useState(0);
   const [isCopied, setIsCopied] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingPalette, setIsGeneratingPalette] = useState(false);
   const { toast } = useToast();
 
@@ -390,7 +350,7 @@ Gere o código completo da página em um único arquivo.`;
             )}
 
             <section className="flex-1 overflow-y-auto p-6 md:p-12 relative flex flex-col items-center">
-              <div className="w-full max-w-4xl space-y-10">
+              <div className="w-full max-w-5xl space-y-10">
                 
                 <div className="flex justify-center mb-8">
                   <div className="bg-white/5 p-1.5 rounded-2xl border border-white/10 flex gap-2">
@@ -422,7 +382,7 @@ Gere o código completo da página em um único arquivo.`;
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20"
+                      className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-20"
                     >
                       {TEMPLATE_PRESETS.map((t, idx) => (
                         <Card 
@@ -432,25 +392,35 @@ Gere o código completo da página em um único arquivo.`;
                           {/* MacBook Preview */}
                           <div className="relative w-full">
                             {/* Tela do MacBook */}
-                            <div className="w-full bg-zinc-900 rounded-t-xl border border-zinc-700 overflow-hidden">
+                            <div className="w-full bg-zinc-900 rounded-t-xl border border-zinc-700 overflow-hidden relative">
                               {/* Barra superior com dots */}
                               <div className="h-5 bg-zinc-800 flex items-center px-2 gap-1 border-b border-zinc-700">
                                 <div className="h-2 w-2 rounded-full bg-red-500/70" />
                                 <div className="h-2 w-2 rounded-full bg-yellow-500/70" />
                                 <div className="h-2 w-2 rounded-full bg-green-500/70" />
                               </div>
+                              
+                              <a 
+                                href={t.previewUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="absolute top-2 right-2 z-50 px-2 py-1 bg-black/60 backdrop-blur-sm border border-white/10 rounded-lg text-[8px] font-black uppercase text-white hover:bg-primary/80 transition-all"
+                              >
+                                VER SITE
+                              </a>
+
                               {/* iframe do preview */}
-                              <div className="relative h-36 overflow-hidden">
+                              <div className="relative h-52 overflow-hidden">
                                 {t.previewUrl ? (
                                   <iframe
                                     src={t.previewUrl}
-                                    className="w-full h-full scale-[0.5] origin-top-left pointer-events-none"
-                                    style={{ width: '200%', height: '200%' }}
+                                    className="w-full h-52 border-0 pointer-events-none"
                                     loading="lazy"
+                                    sandbox="allow-scripts allow-same-origin"
                                     title={t.name}
                                   />
                                 ) : (
-                                  <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/10 flex items-center justify-center">
+                                  <div className="w-full h-52 bg-gradient-to-br from-primary/20 to-accent/10 flex items-center justify-center">
                                     <span className="text-[10px] font-black uppercase text-white/30 tracking-widest">Preview em breve</span>
                                   </div>
                                 )}
@@ -477,12 +447,24 @@ Gere o código completo da página em um único arquivo.`;
                               </Badge>
                             </div>
 
-                            <Button 
-                              onClick={() => handleUseTemplate(t.name)}
-                              className="w-full h-11 bg-white text-black hover:bg-primary hover:text-white rounded-xl font-black uppercase tracking-widest text-[9px] shadow-lg transition-all"
-                            >
-                              USAR TEMPLATE
-                            </Button>
+                            <div className="w-full space-y-2">
+                              <Button 
+                                onClick={() => handleUseTemplate(t.name)}
+                                className="w-full h-11 bg-white text-black hover:bg-primary hover:text-white rounded-xl font-black uppercase tracking-widest text-[9px] shadow-lg transition-all"
+                              >
+                                USAR TEMPLATE
+                              </Button>
+                              <Button
+                                variant="outline"
+                                className="w-full h-10 rounded-xl border-white/10 text-[9px] font-black uppercase hover:bg-white/5 gap-2"
+                                onClick={() => {
+                                  navigator.clipboard.writeText(PROMPTS_FIXOS[t.name]);
+                                  toast({ title: "Prompt Copiado!", description: "Cole direto no Lovable." });
+                                }}
+                              >
+                                <Copy className="h-3 w-3" /> COPIAR PROMPT
+                              </Button>
+                            </div>
                           </div>
                         </Card>
                       ))}
@@ -683,18 +665,13 @@ Gere o código completo da página em um único arquivo.`;
                           <div className="flex gap-4 sticky bottom-0 md:relative bg-[#05050f]/80 md:bg-transparent backdrop-blur-md md:backdrop-blur-0 p-4 md:p-0 -mx-6 md:mx-0 border-t border-white/5 md:border-none z-50">
                             <button 
                               onClick={handleBack} 
-                              disabled={blueprint.step === 1 || isGenerating} 
+                              disabled={blueprint.step === 1} 
                               className="h-12 md:h-14 w-20 rounded-xl border border-white/5 bg-white/[0.04] flex items-center justify-center text-white/40 disabled:opacity-30"
                             >
                               <ChevronLeft className="h-6 w-6" />
                             </button>
-                            <Button onClick={handleNext} disabled={isGenerating || (blueprint.step === 1 && (!blueprint.name || !blueprint.niche))} className="flex-1 h-12 md:h-14 rounded-xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/20">
-                              {isGenerating ? (
-                                <div className="flex items-center gap-3">
-                                  <Loader2 className="h-4 w-4 animate-spin" style={{ willChange: 'transform' }} />
-                                  <span>Processando...</span>
-                                </div>
-                              ) : blueprint.step === 8 ? "Gerar Blueprint" : "Próximo Passo"}
+                            <Button onClick={handleNext} disabled={(blueprint.step === 1 && (!blueprint.name || !blueprint.niche))} className="flex-1 h-12 md:h-14 rounded-xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/20">
+                              {blueprint.step === 8 ? "Gerar Blueprint" : "Próximo Passo"}
                             </Button>
                           </div>
                         </motion.div>
