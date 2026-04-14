@@ -73,6 +73,7 @@ export default function LeadsPage() {
   const [city, setCity] = useState('');
   const [state, setState] = useState('');
   const [country] = useState('Brasil');
+  const [serviceValue, setServiceValue] = useState(297);
   const [generatingMsg, setGeneratingMsg] = useState<string | null>(null);
   const [approachedLeads, setApproachedLeads] = useState<string[]>([]);
   const [activeScript, setActiveScript] = useState<{ id: string, message: string, phone: string } | null>(null);
@@ -301,6 +302,22 @@ export default function LeadsPage() {
                     />
                   </div>
 
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest opacity-50">Quanto você quer cobrar? (R$)</label>
+                    <div className="flex flex-wrap gap-2">
+                      {[97, 197, 297, 497, 697, 997, 1299].map(val => (
+                        <button
+                          key={val}
+                          type="button"
+                          onClick={() => setServiceValue(val)}
+                          className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase border transition-all ${serviceValue === val ? 'bg-primary border-primary text-white' : 'bg-white/5 border-white/10 text-muted-foreground hover:bg-white/10'}`}
+                        >
+                          R$ {val}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   <Button 
                     onClick={handleSearch} 
                     disabled={loading}
@@ -374,75 +391,84 @@ export default function LeadsPage() {
                       <p className="text-primary/60 text-[10px] font-black uppercase tracking-widest animate-pulse">Escaneando Mercado...</p>
                     </div>
                   ) : (
-                    leads.map((lead, i) => (
-                      <motion.div key={lead.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                        <Card className={`glass-card transition-all group ${approachedLeads.includes(lead.id) ? 'opacity-50 grayscale' : ''}`}>
-                          <CardContent className="p-6">
-                            <div className="flex flex-col xl:flex-row justify-between gap-6">
-                              <div className="flex gap-5 items-start flex-1">
-                                <div className="h-10 w-10 bg-white/5 rounded-lg flex items-center justify-center text-white/40 shrink-0 border border-white/5 group-hover:border-primary/30 transition-all">
-                                  <MapPin className="h-5 w-5" />
-                                </div>
-                                <div className="space-y-1.5 flex-1 min-w-0">
-                                  <div className="flex items-center gap-3">
-                                    <h4 className="font-bold text-sm text-white/90 truncate">{lead.name}</h4>
-                                    {lead.rating && lead.rating !== '0' && <Badge variant="outline" className="bg-yellow-500/5 border-yellow-500/20 text-yellow-500 text-[9px] font-bold shrink-0">★ {lead.rating}</Badge>}
+                    leads.map((lead, i) => {
+                      const potential = Math.floor(serviceValue * (1 + ((lead.id.charCodeAt(0) % 30) / 100)));
+                      
+                      return (
+                        <motion.div key={lead.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                          <Card className={`glass-card transition-all group ${approachedLeads.includes(lead.id) ? 'opacity-50 grayscale' : ''}`}>
+                            <CardContent className="p-6">
+                              <div className="flex flex-col xl:flex-row justify-between gap-6">
+                                <div className="flex gap-5 items-start flex-1">
+                                  <div className="h-10 w-10 bg-white/5 rounded-lg flex items-center justify-center text-white/40 shrink-0 border border-white/5 group-hover:border-primary/30 transition-all">
+                                    <MapPin className="h-5 w-5" />
                                   </div>
-                                  <div className="flex items-center gap-3 text-[10px] text-white/30 uppercase font-black tracking-widest">
-                                    <span className="text-primary/60">{lead.type}</span>
-                                    <span>•</span>
-                                    <span>{lead.city}, {lead.state}</span>
-                                  </div>
-                                  <div className="flex flex-col gap-1.5 pt-1">
-                                    <div className="flex items-center gap-2 text-[12px] font-medium text-white/60">
-                                      <Phone className="h-3.5 w-3.5 opacity-40 text-primary" /> {lead.phone}
-                                    </div>
-                                    
-                                    {lead.website && (
-                                      <div className="flex items-center gap-2 text-[11px] text-white/40 hover:text-primary transition-colors group/link">
-                                        <Globe className="h-3.5 w-3.5 opacity-40 text-primary" />
-                                        <a 
-                                          href={lead.website} 
-                                          target="_blank" 
-                                          rel="noopener noreferrer" 
-                                          className="truncate underline underline-offset-2 decoration-white/10 group-hover/link:decoration-primary/40"
-                                        >
-                                          {lead.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
-                                        </a>
+                                  <div className="space-y-1.5 flex-1 min-w-0">
+                                    <div className="flex items-center justify-between gap-4">
+                                      <div className="flex items-center gap-3">
+                                        <h4 className="font-bold text-sm text-white/90 truncate">{lead.name}</h4>
+                                        {lead.rating && lead.rating !== '0' && <Badge variant="outline" className="bg-yellow-500/5 border-yellow-500/20 text-yellow-500 text-[9px] font-bold shrink-0">★ {lead.rating}</Badge>}
                                       </div>
-                                    )}
+                                      <div className="px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-xl shrink-0">
+                                        <p className="text-[9px] font-black uppercase text-green-400">💰 Potencial: R$ {potential}</p>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-3 text-[10px] text-white/30 uppercase font-black tracking-widest">
+                                      <span className="text-primary/60">{lead.type}</span>
+                                      <span>•</span>
+                                      <span>{lead.city}, {lead.state}</span>
+                                    </div>
+                                    <div className="flex flex-col gap-1.5 pt-1">
+                                      <div className="flex items-center gap-2 text-[12px] font-medium text-white/60">
+                                        <Phone className="h-3.5 w-3.5 opacity-40 text-primary" /> {lead.phone}
+                                      </div>
+                                      
+                                      {lead.website && (
+                                        <div className="flex items-center gap-2 text-[11px] text-white/40 hover:text-primary transition-colors group/link">
+                                          <Globe className="h-3.5 w-3.5 opacity-40 text-primary" />
+                                          <a 
+                                            href={lead.website} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer" 
+                                            className="truncate underline underline-offset-2 decoration-white/10 group-hover/link:decoration-primary/40"
+                                          >
+                                            {lead.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
+                                          </a>
+                                        </div>
+                                      )}
 
-                                    <div className="flex items-center gap-2 text-[11px] text-white/25">
-                                      <Navigation className="h-3 w-3 opacity-30" /> {lead.address}
+                                      <div className="flex items-center gap-2 text-[11px] text-white/25">
+                                        <Navigation className="h-3 w-3 opacity-30" /> {lead.address}
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
-                              </div>
 
-                              <div className="flex flex-row xl:flex-col gap-2 min-w-[180px]">
-                                <Button onClick={() => handleGenMessage(lead)} disabled={generatingMsg === lead.id} className="flex-1 h-10 bg-primary/20 border border-primary/30 text-primary-foreground rounded-xl text-[10px] font-black uppercase tracking-widest gap-2 hover:bg-primary/30">
-                                  {generatingMsg === lead.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Zap className="h-3.5 w-3.5" />} Gerar script
-                                </Button>
-                                <Button variant="ghost" onClick={() => setApproachedLeads(prev => prev.includes(lead.id) ? prev.filter(id => id !== lead.id) : [...prev, lead.id])} className={`flex-1 h-10 rounded-xl text-[10px] font-black uppercase tracking-widest ${approachedLeads.includes(lead.id) ? 'text-green-500 bg-green-500/5' : 'text-white/20'}`}>
-                                  {approachedLeads.includes(lead.id) ? <><Check className="h-4 w-4 mr-2" /> Abordado</> : <><Target className="h-4 w-4 mr-2" /> Marcar alvo</>}
-                                </Button>
-                              </div>
-                            </div>
-
-                            {activeScript?.id === lead.id && (
-                              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-6 p-6 bg-black/40 border border-primary/20 rounded-2xl">
-                                <div className="flex items-center justify-between mb-4">
-                                  <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/80 italic">Script de Abordagem Sugerido</h5>
-                                  <Button variant="ghost" size="sm" onClick={() => setActiveScript(null)} className="h-8 w-8 rounded-full text-white/20 hover:text-white"><X className="h-4 w-4" /></Button>
+                                <div className="flex flex-row xl:flex-col gap-2 min-w-[180px]">
+                                  <Button onClick={() => handleGenMessage(lead)} disabled={generatingMsg === lead.id} className="flex-1 h-10 bg-primary/20 border border-primary/30 text-primary-foreground rounded-xl text-[10px] font-black uppercase tracking-widest gap-2 hover:bg-primary/30">
+                                    {generatingMsg === lead.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Zap className="h-3.5 w-3.5" />} Gerar script
+                                  </Button>
+                                  <Button variant="ghost" onClick={() => setApproachedLeads(prev => prev.includes(lead.id) ? prev.filter(id => id !== lead.id) : [...prev, lead.id])} className={`flex-1 h-10 rounded-xl text-[10px] font-black uppercase tracking-widest ${approachedLeads.includes(lead.id) ? 'text-green-500 bg-green-500/5' : 'text-white/20'}`}>
+                                    {approachedLeads.includes(lead.id) ? <><Check className="h-4 w-4 mr-2" /> Abordado</> : <><Target className="h-4 w-4 mr-2" /> Marcar alvo</>}
+                                  </Button>
                                 </div>
-                                <Textarea className="bg-black/20 border-white/5 text-white/80 text-sm mb-4 min-h-[120px] p-4 resize-none leading-relaxed font-medium" value={activeScript.message} readOnly />
-                                <Button onClick={() => handleWhatsApp(activeScript.phone, activeScript.message)} className="w-full h-12 bg-green-600/20 border border-green-500/30 text-green-400 font-black uppercase text-xs rounded-xl hover:bg-green-600/30 transition-all">Abrir no WhatsApp <ExternalLink className="ml-2 h-4 w-4" /></Button>
-                            </motion.div>
-                            )}
-                          </CardContent>
-                        </Card>
-                      </motion.div>
-                    ))
+                              </div>
+
+                              {activeScript?.id === lead.id && (
+                                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-6 p-6 bg-black/40 border border-primary/20 rounded-2xl">
+                                  <div className="flex items-center justify-between mb-4">
+                                    <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/80 italic">Script de Abordagem Sugerido</h5>
+                                    <Button variant="ghost" size="sm" onClick={() => setActiveScript(null)} className="h-8 w-8 rounded-full text-white/20 hover:text-white"><X className="h-4 w-4" /></Button>
+                                  </div>
+                                  <Textarea className="bg-black/20 border-white/5 text-white/80 text-sm mb-4 min-h-[120px] p-4 resize-none leading-relaxed font-medium" value={activeScript.message} readOnly />
+                                  <Button onClick={() => handleWhatsApp(activeScript.phone, activeScript.message)} className="w-full h-12 bg-green-600/20 border border-green-500/30 text-green-400 font-black uppercase text-xs rounded-xl hover:bg-green-600/30 transition-all">Abrir no WhatsApp <ExternalLink className="ml-2 h-4 w-4" /></Button>
+                              </motion.div>
+                              )}
+                            </CardContent>
+                          </Card>
+                        </motion.div>
+                      );
+                    })
                   )}
                 </AnimatePresence>
               </div>
