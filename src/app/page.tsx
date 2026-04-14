@@ -22,12 +22,19 @@ import {
   Sparkles
 } from 'lucide-react';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+
+// Carregamento dinâmico do Globo para performance
+const Globe = dynamic(() => import('@/components/ui/cobe-globe').then(m => ({ default: m.Globe })), { 
+  ssr: false, 
+  loading: () => <div className="w-full h-full bg-primary/5 rounded-full blur-xl animate-pulse" /> 
+});
 
 const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
 
@@ -160,16 +167,21 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* LIGHTWEIGHT DECORATIVE ELEMENT */}
+            {/* OPTIMIZED GLOBE SECTION */}
             <div className="hidden lg:flex flex-1 items-center justify-center relative min-h-[600px] overflow-visible">
               <div className="absolute inset-0 bg-primary/5 blur-[100px] rounded-full animate-pulse pointer-events-none scale-110" style={{ willChange: 'transform' }} />
-              <div className="relative w-full max-w-[350px] aspect-square mx-auto lg:mx-0">
-                <div className="absolute inset-0 bg-primary/20 rounded-full blur-[80px] animate-pulse"></div>
-                <div className="absolute inset-8 border border-white/10 rounded-full animate-spin" style={{animationDuration:'20s'}}></div>
-                <div className="absolute inset-16 border border-primary/20 rounded-full animate-spin" style={{animationDuration:'15s', animationDirection:'reverse'}}></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="h-32 w-32 bg-primary/10 rounded-full blur-2xl"></div>
-                </div>
+              <div className="relative w-full max-w-[420px] aspect-square mx-auto lg:mx-0 z-10">
+                <Globe 
+                  className="w-full h-full"
+                  speed={0.005}
+                  dark={1}
+                  diffuse={1.2}
+                  mapSamples={6000}
+                  markerSize={0.05}
+                  baseColor={[0.1, 0.1, 0.2]}
+                  markerColor={[124/255, 58/255, 237/255]}
+                  glowColor={[0.1, 0.1, 0.2]}
+                />
               </div>
             </div>
           </div>
