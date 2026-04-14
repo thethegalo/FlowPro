@@ -90,32 +90,113 @@ const TEMPLATE_PRESETS = [
   { name: 'Restaurante Premium', niche: 'Restaurante', style: 'Luxo Profundo', icon: Utensils, color: '#e85d04', palette: ['#e85d04', '#fff8f0', '#1a0a00'], tone: 'Amigável', badge: 'Luxuoso' },
   { name: 'Academia Fitness', niche: 'Academia', style: 'Bold', icon: Dumbbell, color: '#ff6b00', palette: ['#ff6b00', '#ffffff', '#0a0a0a'], tone: 'Urgente', badge: 'Bold' },
   { name: 'Loja de Roupas', niche: 'E-commerce', style: 'Moderno & Dark', icon: ShoppingBag, color: '#635bff', palette: ['#635bff', '#0a2540', '#ffffff'], tone: 'Descontraído', badge: 'Moderno' },
-  { name: 'Advocacia de Elite', niche: 'Advocacia', style: 'Corporativo', icon: Scale, color: '#1e3a8a', palette: ['#1e3a8a', '#e2e8f0', '#0a0e1a'], tone: 'Profissional', badge: 'Elegante' },
-  { name: 'Pet Shop VIP', niche: 'Pet Shop', style: 'Playful & Bold', icon: Bone, color: '#f97316', palette: ['#f97316', '#431407', '#fff7ed'], tone: 'Amigável', badge: 'Playful' },
-  { name: 'Estética Glow', niche: 'Estética', style: 'Glassmorphism', icon: Sparkles, color: '#ec4899', palette: ['#ec4899', '#742a2a', '#fff5f5'], tone: 'Luxuoso', badge: 'Elegante' },
+  { name: 'Escritório de Advocacia', niche: 'Advocacia', style: 'Corporativo', icon: Scale, color: '#1e3a8a', palette: ['#1e3a8a', '#e2e8f0', '#0a0e1a'], tone: 'Profissional', badge: 'Elegante' },
+  { name: 'Pet Shop', niche: 'Pet Shop', style: 'Playful & Bold', icon: Bone, color: '#f97316', palette: ['#f97316', '#431407', '#fff7ed'], tone: 'Amigável', badge: 'Playful' },
+  { name: 'Salão de Beleza', niche: 'Estética', style: 'Glassmorphism', icon: Sparkles, color: '#ec4899', palette: ['#ec4899', '#742a2a', '#fff5f5'], tone: 'Luxuoso', badge: 'Elegante' },
   { name: 'Consultoria Digital', niche: 'Consultoria', style: 'Futurista', icon: TrendingUp, color: '#7c3aed', palette: ['#7c3aed', '#f4f4f5', '#05050f'], tone: 'Profissional', badge: 'Futurista' },
 ];
 
 const TEMPLATE_DATA: Record<string, any> = {
-  'Barbearia Moderna': { name: 'Barbearia Moderna', niche: 'Barbearia', objective: 'Agendar Reunião', style: 'Minimalista', tone: 'Luxuoso', sections: ['Hero', 'Benefícios', 'Depoimentos', 'CTA Final'], differential: 'Atendimento premium e ambiente masculino exclusivo' },
-  'Clínica Odontológica': { name: 'Clínica Sorriso', niche: 'Clínica', objective: 'Agendar Reunião', style: 'Clean White', tone: 'Profissional', sections: ['Hero', 'Benefícios', 'Sobre', 'FAQ', 'CTA Final'], differential: 'Tecnologia de ponta e equipe especializada' },
-  'Restaurante Premium': { name: 'Restaurante Gourmet', niche: 'Restaurante', objective: 'Agendar Reunião', style: 'Luxo Profundo', tone: 'Amigável', sections: ['Hero', 'Benefícios', 'Portfólio', 'Depoimentos', 'CTA Final'], differential: 'Gastronomia autoral e experiência única' },
-  'Academia Fitness': { name: 'Iron Fitness', niche: 'Academia', objective: 'Capturar Leads', style: 'Bold', tone: 'Urgente', sections: ['Hero', 'Benefícios', 'Preços', 'Depoimentos', 'CTA Final'], differential: 'Resultados em 30 dias ou dinheiro de volta' },
-  'Loja de Roupas': { name: 'Exclusive Store', niche: 'E-commerce', objective: 'Vender Direto', style: 'Moderno & Dark', tone: 'Descontraído', sections: ['Hero', 'Portfólio', 'Depoimentos', 'CTA Final'], differential: 'Moda exclusiva com entrega expressa' },
-  'Advocacia de Elite': { name: 'Escritório Jurídico', niche: 'Advocacia', objective: 'Agendar Reunião', style: 'Corporativo', tone: 'Profissional', sections: ['Hero', 'Sobre', 'Benefícios', 'FAQ', 'CTA Final'], differential: 'Mais de 10 anos de experiência e 500 casos ganhos' },
-  'Pet Shop VIP': { name: 'Love Pet', niche: 'Pet Shop', objective: 'Capturar Leads', style: 'Playful & Bold', tone: 'Amigável', sections: ['Hero', 'Benefícios', 'Depoimentos', 'CTA Final'], differential: 'Cuidado e amor para seu pet' },
-  'Estética Glow': { name: 'Estética Glow', niche: 'Estética', objective: 'Agendar Reunião', style: 'Glassmorphism', tone: 'Luxuoso', sections: ['Hero', 'Benefícios', 'Portfólio', 'Depoimentos', 'CTA Final'], differential: 'Transformação completa com produtos premium' },
-  'Consultoria Digital': { name: 'Digital Strategy', niche: 'Consultoria', objective: 'Capturar Leads', style: 'Futurista', tone: 'Profissional', sections: ['Hero', 'Benefícios', 'Sobre', 'Depoimentos', 'Preços', 'CTA Final'], differential: 'Resultados mensuráveis em 60 dias' },
+  'Barbearia Moderna': {
+    businessName: 'Barbearia',
+    niche: 'Saúde & Bem-estar',
+    objective: 'Agendar Consulta',
+    visualStyle: 'Bold',
+    tone: 'Dinâmico',
+    sections: ['Hero', 'Benefícios', 'Depoimentos', 'Preços', 'CTA Final'],
+    differential: 'Cortes modernos, ambiente masculino premium, agendamento online',
+    extras: 'Site para barbearia masculina. Hero com foto de ambiente, seção de serviços com preços (corte, barba, combo), galeria de cortes, botão de agendamento via WhatsApp. Cores escuras, tipografia forte.'
+  },
+  'Clínica Odontológica': {
+    businessName: 'Clínica Odontológica',
+    niche: 'Saúde & Bem-estar',
+    objective: 'Agendar Consulta',
+    visualStyle: 'Corporativo',
+    tone: 'Profissional',
+    sections: ['Hero', 'Benefícios', 'Sobre', 'Depoimentos', 'FAQ', 'CTA Final'],
+    differential: 'Tecnologia de ponta, equipe especializada, ambiente acolhedor',
+    extras: 'Site para clínica odontológica. Hero com foto da clínica, seção de especialidades (implante, clareamento, ortodontia), equipe de dentistas, formulário de agendamento. Design clean branco e azul.'
+  },
+  'Restaurante Premium': {
+    businessName: 'Restaurante',
+    niche: 'Gastronomia',
+    objective: 'Agendar Consulta',
+    visualStyle: 'Elegante',
+    tone: 'Luxuoso',
+    sections: ['Hero', 'Benefícios', 'Portfólio', 'Depoimentos', 'CTA Final'],
+    differential: 'Gastronomia autoral, ingredientes selecionados, experiência única',
+    extras: 'Site para restaurante premium. Hero com foto dos pratos, cardápio com fotos e preços, seção de ambiente, reservas online via WhatsApp. Design escuro e sofisticado com dourado.'
+  },
+  'Academia Fitness': {
+    businessName: 'Academia',
+    niche: 'Esporte/Fitness',
+    objective: 'Capturar Leads',
+    visualStyle: 'Bold',
+    tone: 'Urgente',
+    sections: ['Hero', 'Benefícios', 'Preços', 'Depoimentos', 'CTA Final'],
+    differential: 'Equipamentos modernos, personal trainers, resultados em 30 dias',
+    extras: 'Site para academia de musculação. Hero com foto da academia, modalidades oferecidas, planos mensais com preços, transformações de alunos, botão de aula experimental grátis. Design energético com vermelho ou laranja.'
+  },
+  'Loja de Roupas': {
+    businessName: 'Loja de Roupas',
+    niche: 'Moda & Beleza',
+    objective: 'Vender Direto',
+    visualStyle: 'Moderno',
+    tone: 'Dinâmico',
+    sections: ['Hero', 'Portfólio', 'Depoimentos', 'CTA Final'],
+    differential: 'Moda exclusiva, tendências atuais, entrega expressa',
+    extras: 'Site para loja de roupas femininas. Hero com lookbook, grade de produtos com fotos, categorias (casual, festa, trabalho), botão comprar via WhatsApp. Design moderno com fundo branco e detalhes coloridos.'
+  },
+  'Escritório de Advocacia': {
+    businessName: 'Escritório de Advocacia',
+    niche: 'Jurídico',
+    objective: 'Agendar Consulta',
+    visualStyle: 'Corporativo',
+    tone: 'Profissional',
+    sections: ['Hero', 'Sobre', 'Benefícios', 'FAQ', 'CTA Final'],
+    differential: 'Mais de 10 anos de experiência, 500 casos ganhos, atendimento personalizado',
+    extras: 'Site para escritório de advocacia. Hero sóbrio com foto do advogado, áreas de atuação (trabalhista, civil, criminal), diferenciais, formulário de consulta gratuita. Design sério em preto e dourado.'
+  },
+  'Pet Shop': {
+    businessName: 'Pet Shop',
+    niche: 'Outro',
+    objective: 'Capturar Leads',
+    visualStyle: 'Natural',
+    tone: 'Empático',
+    sections: ['Hero', 'Benefícios', 'Depoimentos', 'CTA Final'],
+    differential: 'Banho e tosa, veterinário, produtos premium para pets',
+    extras: 'Site para pet shop e clínica veterinária. Hero com foto de pets, serviços (banho, tosa, consulta, vacinas), produtos, agendamento online. Design colorido e alegre com verde e amarelo.'
+  },
+  'Salão de Beleza': {
+    businessName: 'Studio de Estética',
+    niche: 'Moda & Beleza',
+    objective: 'Agendar Consulta',
+    visualStyle: 'Elegante',
+    tone: 'Luxuoso',
+    sections: ['Hero', 'Benefícios', 'Portfólio', 'Depoimentos', 'Preços', 'CTA Final'],
+    differential: 'Procedimentos estéticos avançados, resultados visíveis, ambiente luxuoso',
+    extras: 'Site para studio de estética e beleza. Hero com foto do ambiente, procedimentos (limpeza de pele, design de sobrancelha, micropigmentação), antes e depois, agendamento WhatsApp. Design rosé e dourado.'
+  },
+  'Consultoria Digital': {
+    businessName: 'Consultoria Digital',
+    niche: 'Marketing/Agências',
+    objective: 'Capturar Leads',
+    visualStyle: 'Futurista',
+    tone: 'Profissional',
+    sections: ['Hero', 'Benefícios', 'Sobre', 'Depoimentos', 'Preços', 'CTA Final'],
+    differential: 'Resultados mensuráveis em 60 dias, estratégia personalizada, ROI garantido',
+    extras: 'Site para agência ou consultoria de marketing digital. Hero com métricas de resultado, serviços (tráfego pago, SEO, social media), cases de sucesso, planos de serviço. Design tecnológico em roxo e azul.'
+  },
 };
 
-const OBJECTIVES = ["Capturar Leads", "Vender Direto", "Agendar Reunião", "Distribuição de Conteúdo"];
+const OBJECTIVES = ["Capturar Leads", "Vender Direto", "Agendar Reunião", "Agendar Consulta", "Distribuição de Conteúdo"];
 const STYLES = [
   "Moderno & Dark", "Minimalista", "Corporativo", "Futurista", "Cyberpunk", "Clean White", 
   "Luxo Profundo", "Glassmorphism", "Neumorphism", "Retro & Vintage", "Elegante Serif", 
-  "Playful & Bold", "Industrial", "Boho & Nature"
+  "Playful & Bold", "Industrial", "Boho & Nature", "Bold", "Moderno", "Elegante", "Natural"
 ];
-const TONES = ["Profissional", "Amigável", "Urgente", "Luxuoso", "Descontraído"];
-const SECTIONS = ["Hero", "Problema/Dor", "Solução", "Benefícios", "Depoimentos", "Preços", "FAQ", "CTA Final"];
+const TONES = ["Profissional", "Amigável", "Urgente", "Luxuoso", "Descontraído", "Dinâmico", "Empático"];
+const SECTIONS = ["Hero", "Problema/Dor", "Solução", "Benefícios", "Depoimentos", "Preços", "FAQ", "CTA Final", "Portfólio", "Sobre"];
 
 export default function PromptsPage() {
   const [activeMainTab, setActiveMainTab] = useState<'templates' | 'create'>('templates');
@@ -148,13 +229,14 @@ export default function PromptsPage() {
 
     setBlueprint({
       ...blueprint,
-      name: data.name,
+      name: data.businessName,
       niche: data.niche,
       objective: data.objective,
-      style: data.style,
+      style: data.visualStyle,
       tone: data.tone,
       sections: data.sections,
       differential: data.differential,
+      extras: data.extras || '',
       isGenerated: false,
       step: 1
     });
