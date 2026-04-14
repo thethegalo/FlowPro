@@ -39,10 +39,8 @@ import {
   Globe,
   Scissors,
   Stethoscope,
-  Utensils,
   UtensilsCrossed,
-  Dumbbell,
-  TrendingUp
+  Dumbbell
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -121,57 +119,7 @@ const TEMPLATE_DATA: Record<string, any> = {
     sections: ['Hero', 'Benefícios', 'Preços', 'Depoimentos', 'CTA Final'],
     differential: 'Equipamentos modernos, personal trainers, resultados em 30 dias',
     extras: 'Site para academia de musculação. Hero com foto da academia, modalidades oferecidas, planos mensais com preços, transformações de alunos, botão de aula experimental grátis. Design energético com vermelho ou laranja.'
-  },
-  'Loja de Roupas': {
-    businessName: 'Loja de Roupas',
-    niche: 'Moda & Beleza',
-    objective: 'Vender Direto',
-    visualStyle: 'Moderno',
-    tone: 'Dinâmico',
-    sections: ['Hero', 'Portfólio', 'Depoimentos', 'CTA Final'],
-    differential: 'Moda exclusiva, tendências atuais, entrega expressa',
-    extras: 'Site para loja de roupas femininas. Hero com lookbook, grade de produtos com fotos, categorias (casual, festa, trabalho), botão comprar via WhatsApp. Design moderno com fundo branco e detalhes coloridos.'
-  },
-  'Advocacia de Elite': {
-    businessName: 'Escritório de Advocacia',
-    niche: 'Jurídico',
-    objective: 'Agendar Consulta',
-    visualStyle: 'Corporativo',
-    tone: 'Profissional',
-    sections: ['Hero', 'Sobre', 'Benefícios', 'FAQ', 'CTA Final'],
-    differential: 'Mais de 10 anos de experiência, 500 casos ganhos, atendimento personalizado',
-    extras: 'Site para escritório de advocacia. Hero sóbrio com foto do advogado, áreas de atuação (trabalhista, civil, criminal), diferenciais, formulário de consulta gratuita. Design sério em preto e dourado.'
-  },
-  'Pet Shop VIP': {
-    businessName: 'Pet Shop',
-    niche: 'Outro',
-    objective: 'Capturar Leads',
-    visualStyle: 'Natural',
-    tone: 'Empático',
-    sections: ['Hero', 'Benefícios', 'Depoimentos', 'CTA Final'],
-    differential: 'Banho e tosa, veterinário, produtos premium para pets',
-    extras: 'Site para pet shop e clínica veterinária. Hero com foto de pets, serviços (banho, tosa, consulta, vacinas), produtos, agendamento online. Design colorido e alegre com verde e amarelo.'
-  },
-  'Estética Glow': {
-    businessName: 'Studio de Estética',
-    niche: 'Moda & Beleza',
-    objective: 'Agendar Consulta',
-    visualStyle: 'Elegante',
-    tone: 'Luxuoso',
-    sections: ['Hero', 'Benefícios', 'Portfólio', 'Depoimentos', 'Preços', 'CTA Final'],
-    differential: 'Procedimentos estéticos avançados, resultados visíveis, ambiente luxuoso',
-    extras: 'Site para studio de estética e beleza. Hero com foto do ambiente, procedimentos (limpeza de pele, design de sobrancelha, micropigmentação), antes e depois, agendamento WhatsApp. Design rosé e dourado.'
-  },
-  'Consultoria Digital': {
-    businessName: 'Consultoria Digital',
-    niche: 'Marketing/Agências',
-    objective: 'Capturar Leads',
-    visualStyle: 'Futurista',
-    tone: 'Profissional',
-    sections: ['Hero', 'Benefícios', 'Sobre', 'Depoimentos', 'Preços', 'CTA Final'],
-    differential: 'Resultados mensuráveis em 60 dias, estratégia personalizada, ROI garantido',
-    extras: 'Site para agência ou consultoria de marketing digital. Hero com métricas de resultado, serviços (tráfego pago, SEO, social media), cases de sucesso, planos de serviço. Design tecnológico em roxo e azul.'
-  },
+  }
 };
 
 const PROMPTS_FIXOS: Record<string, string> = Object.keys(TEMPLATE_DATA).reduce((acc, key) => {
@@ -270,10 +218,7 @@ Gere o código completo da página em um único arquivo.`;
   const handleUseTemplate = (name: string) => {
     console.log('template selecionado:', name);
     const data = TEMPLATE_DATA[name];
-    if (!data) {
-      console.warn('Template não encontrado:', name);
-      return;
-    }
+    if (!data) return;
 
     setBlueprint({
       ...blueprint,
@@ -290,10 +235,7 @@ Gere o código completo da página em um único arquivo.`;
     });
 
     setActiveMainTab('create');
-    
-    setTimeout(() => {
-      generatePrompt();
-    }, 150);
+    setTimeout(() => generatePrompt(), 150);
   };
 
   const handleNext = () => {
@@ -324,7 +266,7 @@ Gere o código completo da página em um único arquivo.`;
       }));
       toast.success("Paleta IA Criada", "Cores sugeridas aplicadas ao projeto.");
     } catch (e) {
-      toast.error("Erro na Paleta", "Falha ao consultar designer neural.");
+      toast.error("Paleta Offline", "Falha ao consultar designer neural.");
     } finally {
       setIsGeneratingPalette(false);
     }
@@ -337,7 +279,7 @@ Gere o código completo da página em um único arquivo.`;
     element.download = `briefing-${blueprint.name || 'projeto'}.txt`;
     document.body.appendChild(element);
     element.click();
-    toast.success("Download Concluído", "Briefing salvo localmente.");
+    toast.success("Download Concluído");
   };
 
   const toggleSection = (section: string) => {
@@ -433,18 +375,16 @@ Gere o código completo da página em um único arquivo.`;
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-20"
+                      className="flex flex-col gap-12 items-center pb-20"
                     >
                       {TEMPLATE_PRESETS.map((t, idx) => (
                         <Card 
                           key={idx} 
-                          className="glass-card border-white/10 rounded-[2rem] p-6 flex flex-col space-y-6 group hover:border-primary/40 transition-all hover:shadow-[0_0_40px_rgba(124,58,255,0.15)] relative overflow-hidden"
+                          className="glass-card border-white/10 rounded-[2rem] p-8 flex flex-col space-y-8 group hover:border-primary/40 transition-all hover:shadow-[0_0_40px_rgba(124,58,255,0.15)] relative overflow-hidden w-full max-w-2xl"
                         >
                           {/* MacBook Preview */}
                           <div className="relative w-full">
-                            {/* Tela do MacBook */}
                             <div className="w-full bg-zinc-900 rounded-t-xl border border-zinc-700 overflow-hidden relative">
-                              {/* Barra superior com dots */}
                               <div className="h-5 bg-zinc-800 flex items-center px-2 gap-1 border-b border-zinc-700">
                                 <div className="h-2 w-2 rounded-full bg-red-500/70" />
                                 <div className="h-2 w-2 rounded-full bg-yellow-500/70" />
@@ -458,7 +398,6 @@ Gere o código completo da página em um único arquivo.`;
                                 VER SITE
                               </button>
 
-                              {/* iframe do preview */}
                               <div className="relative h-52 overflow-hidden">
                                 {t.previewUrl ? (
                                   <iframe
@@ -475,45 +414,36 @@ Gere o código completo da página em um único arquivo.`;
                                 )}
                               </div>
                             </div>
-                            {/* Base do MacBook */}
                             <div className="h-2 bg-zinc-700 rounded-b-xl w-full" />
                             <div className="h-1 bg-zinc-600 rounded-b-xl w-[80%] mx-auto" />
                           </div>
 
-                          <div className="flex flex-col items-center text-center space-y-4">
+                          <div className="flex flex-col items-center text-center space-y-6">
                             <div 
-                              className="h-12 w-12 rounded-2xl flex items-center justify-center relative transition-transform duration-500 group-hover:scale-110"
+                              className="h-14 w-14 rounded-2xl flex items-center justify-center relative transition-transform duration-500 group-hover:scale-110"
                               style={{ backgroundColor: `${t.color}15`, border: `1px solid ${t.color}30` }}
                             >
                               <div className="absolute inset-0 blur-xl opacity-20" style={{ backgroundColor: t.color }} />
-                              <t.icon className="h-6 w-6 relative z-10" style={{ color: t.color }} />
+                              <t.icon className="h-7 w-7 relative z-10" style={{ color: t.color }} />
                             </div>
                             
                             <div className="space-y-2">
-                              <h3 className="text-sm font-black italic uppercase tracking-tight text-white/90">{t.name}</h3>
-                              <Badge variant="outline" className="bg-white/5 border-white/10 text-[8px] font-black uppercase tracking-widest opacity-60">
+                              <h3 className="text-xl font-black italic uppercase tracking-tight text-white/90">{t.name}</h3>
+                              <Badge variant="outline" className="bg-white/5 border-white/10 text-[9px] font-black uppercase tracking-widest opacity-60">
                                 {t.badge}
                               </Badge>
                             </div>
 
-                            <div className="w-full space-y-2">
-                              <Button 
-                                onClick={() => handleUseTemplate(t.name)}
-                                className="w-full h-11 bg-white text-black hover:bg-primary hover:text-white rounded-xl font-black uppercase tracking-widest text-[9px] shadow-lg transition-all"
-                              >
-                                USAR TEMPLATE
-                              </Button>
-                              <Button
-                                variant="outline"
-                                className="w-full h-10 rounded-xl border-white/10 text-[9px] font-black uppercase hover:bg-white/5 gap-2"
-                                onClick={() => {
-                                  navigator.clipboard.writeText(PROMPTS_FIXOS[t.name]);
-                                  toast({ title: "Prompt Copiado!", description: "Cole direto no Lovable." });
-                                }}
-                              >
-                                <Copy className="h-3 w-3" /> COPIAR PROMPT
-                              </Button>
-                            </div>
+                            <Button
+                              variant="outline"
+                              className="w-full h-12 rounded-xl border-white/10 text-[10px] font-black uppercase hover:bg-white/5 gap-2"
+                              onClick={() => {
+                                navigator.clipboard.writeText(PROMPTS_FIXOS[t.name]);
+                                toast({ title: "Prompt Copiado!", description: "Cole direto no Lovable." });
+                              }}
+                            >
+                              <Copy className="h-4 w-4" /> COPIAR PROMPT
+                            </Button>
                           </div>
                         </Card>
                       ))}
@@ -947,7 +877,6 @@ Gere o código completo da página em um único arquivo.`;
 
         {previewModal.open && (
           <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-4">
-            {/* Header do modal */}
             <div className="w-full max-w-6xl flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="flex gap-1.5">
@@ -974,7 +903,6 @@ Gere o código completo da página em um único arquivo.`;
                 </button>
               </div>
             </div>
-            {/* Frame estilo MacBook */}
             <div className="w-full max-w-6xl bg-zinc-900 rounded-2xl border border-zinc-700 overflow-hidden shadow-2xl shadow-primary/20">
               <div className="h-8 bg-zinc-800 border-b border-zinc-700 flex items-center px-4 gap-2">
                 <div className="flex gap-1.5">
