@@ -13,7 +13,15 @@ import {
   Route, 
   Star,
   ChevronRight,
-  Plus
+  Plus,
+  Zap,
+  CheckCircle2,
+  CreditCard,
+  Infinity,
+  ArrowRight,
+  AlertCircle,
+  Timer,
+  Sparkles
 } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -33,6 +41,10 @@ const TESTIMONIAL_IMAGES = [
   "https://media.inlead.cloud/uploads/44422/2026-01-03/md-jztVV-design-sem-nome-30.png", // Juliana
   "https://media.inlead.cloud/uploads/44422/2026-01-05/md-flBj3-design-sem-nome-38.png"  // Extra
 ];
+
+const CHECKOUT_MENSAL = "https://checkout.flowproia.shop/pay/PPU38CQ9FQU";
+const CHECKOUT_TRIMESTRAL = "https://checkout.flowproia.shop/pay/PPU38CQ9N8O";
+const CHECKOUT_VITALICIO = "https://checkout.flowproia.shop/pay/PPU38CQ9FCP";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -58,6 +70,10 @@ const cardIn = {
 };
 
 export default function Home() {
+  const scrollToPricing = () => {
+    document.getElementById('precos')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <div className="flex flex-col min-h-screen text-white bg-transparent overflow-x-hidden">
       
@@ -73,14 +89,15 @@ export default function Home() {
           <div className="hidden md:flex items-center gap-8">
             <Link href="#arsenal" className="text-[13px] text-white/50 hover:text-white transition-colors">Arsenal</Link>
             <Link href="#painel" className="text-[13px] text-white/50 hover:text-white transition-colors">Plataforma</Link>
+            <button onClick={scrollToPricing} className="text-[13px] text-white/50 hover:text-white transition-colors">Preços</button>
             <Link href="#faq" className="text-[13px] text-white/50 hover:text-white transition-colors">Dúvidas</Link>
           </div>
         </div>
 
         <div className="flex items-center gap-6">
           <Link href="/auth" className="text-[13px] text-white/40 hover:text-white transition-colors font-medium">Fazer login</Link>
-          <Button asChild className="bg-[#6d28d9] hover:bg-[#7c3aed] text-white font-medium text-[13px] h-9 px-5 rounded-lg border-none shadow-none">
-            <Link href="/quiz">Acessar agora</Link>
+          <Button onClick={scrollToPricing} className="bg-[#6d28d9] hover:bg-[#7c3aed] text-white font-medium text-[13px] h-9 px-5 rounded-lg border-none shadow-none">
+            Acessar agora
           </Button>
         </div>
       </nav>
@@ -104,7 +121,7 @@ export default function Home() {
                 ✦ 1.800+ consultores ativos
               </Badge>
 
-              <h1 className="text-[30px] sm:text-[44px] md:text-[64px] lg:text-[72px] font-extrabold tracking-[-0.02em] font-headline leading-[1.2] md:leading-[1.1] text-white overflow-visible">
+              <h1 className="text-[34px] sm:text-[44px] md:text-[64px] lg:text-[72px] font-extrabold tracking-[-0.02em] font-headline leading-[1.1] text-white overflow-visible">
                 Seu primeiro cliente<br className="hidden sm:block" />
                 <span className="bg-gradient-to-r from-[#a855f7] to-[#6366f1] bg-clip-text text-transparent italic inline-block pb-4">começa com um script.</span>
               </h1>
@@ -114,8 +131,8 @@ export default function Home() {
               </p>
 
               <div className="flex flex-col sm:flex-row items-center gap-6 md:gap-8 pt-4 w-full sm:w-auto">
-                <Button asChild size="lg" className="w-full sm:w-auto bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-medium text-[14px] h-[48px] px-8 rounded-[10px] transition-all hover:-translate-y-0.5 shadow-[0_8px_24px_rgba(124,58,237,0.4)] border-none">
-                  <Link href="/quiz">Acessar agora</Link>
+                <Button onClick={scrollToPricing} size="lg" className="w-full sm:w-auto bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-medium text-[14px] h-[48px] px-8 rounded-[10px] transition-all hover:-translate-y-0.5 shadow-[0_8px_24px_rgba(124,58,237,0.4)] border-none">
+                  Acessar agora
                 </Button>
 
                 <div className="flex items-center gap-3">
@@ -248,6 +265,166 @@ export default function Home() {
           </div>
         </section>
 
+        {/* PRICING SECTION - REPLACING QUIZ */}
+        <section id="precos" className="max-w-[1200px] mx-auto px-6 md:px-12 py-24 md:py-48">
+          <div className="text-center space-y-6 mb-20">
+            <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5">Escolha sua Rota de Escala</Badge>
+            <h2 className="text-[36px] md:text-[64px] font-black italic uppercase tracking-tighter leading-tight">
+              Domine o mercado <br /><span className="text-primary shimmer-text">com poder IA.</span>
+            </h2>
+            <p className="text-white/40 text-sm md:text-lg max-w-2xl mx-auto font-medium">
+              Libere o arsenal completo e comece a faturar em escala agora mesmo.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+            
+            {/* PLANO MENSAL */}
+            <motion.div {...fadeInUp} transition={{ delay: 0.1 }}>
+              <Card className="h-full glass-card p-8 flex flex-col justify-between border-amber-500/40 relative overflow-hidden bg-white/[0.02]">
+                <div className="space-y-8 relative z-10">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 px-3 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full w-fit">
+                      <AlertCircle className="h-3 w-3 text-amber-500" />
+                      <span className="text-[8px] font-black uppercase tracking-widest text-amber-500">Uso Diário Limitado</span>
+                    </div>
+                    <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-white/70 flex items-center gap-2">
+                      <Zap className="h-4 w-4 text-amber-500 fill-amber-500" /> Flow Mensal
+                    </h3>
+                    <div className="flex items-baseline gap-1">
+                      <p className="text-5xl md:text-6xl font-black italic text-white tracking-tighter">R$ 97</p>
+                      <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/mês</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center gap-3">
+                      <CreditCard className="h-4 w-4 text-amber-500" />
+                      <p className="text-[10px] font-black uppercase text-amber-500 tracking-widest">OU 12x DE R$ 9,74</p>
+                    </div>
+                  </div>
+
+                  <ul className="space-y-4">
+                    {[
+                      'Radar: 20 Buscas/Dia', 
+                      'IA Mentor: 10 Perguntas/Dia', 
+                      'IA Prospecção: 10 Mensagens/Dia', 
+                      'Scripts de Elite', 
+                      'Acesso à Fase de Escala'
+                    ].map((f, i) => (
+                      <li key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white/80">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" /> {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <Button asChild className="w-full h-16 mt-10 rounded-2xl bg-amber-500 text-black hover:bg-amber-400 font-black uppercase tracking-widest shadow-lg shadow-amber-500/20">
+                  <a href={CHECKOUT_MENSAL} target="_blank" rel="noopener noreferrer">ATIVAR MENSAL</a>
+                </Button>
+              </Card>
+            </motion.div>
+
+            {/* PLANO TRIMESTRAL */}
+            <motion.div {...fadeInUp} transition={{ delay: 0.2 }}>
+              <Card className="h-full glass-card p-8 flex flex-col justify-between border-cyan-500/50 relative overflow-hidden bg-white/[0.02]">
+                <div className="absolute top-0 right-0 p-4">
+                  <Badge className="bg-cyan-500 text-black font-black text-[8px] uppercase px-3 py-1">POPULAR</Badge>
+                </div>
+                <div className="space-y-8 relative z-10">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 px-3 py-1 bg-cyan-500/20 border border-cyan-500/30 rounded-full w-fit">
+                      <Timer className="h-3 w-3 text-cyan-500" />
+                      <span className="text-[8px] font-black uppercase tracking-widest text-cyan-500">Melhor Custo-Benefício</span>
+                    </div>
+                    <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-white/70 flex items-center gap-2">
+                      <Zap className="h-4 w-4 text-cyan-500 fill-cyan-500" /> Flow Trimestral
+                    </h3>
+                    <div className="flex items-baseline gap-1">
+                      <p className="text-5xl md:text-6xl font-black italic text-white tracking-tighter">R$ 197</p>
+                      <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/tri</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center gap-3">
+                      <CreditCard className="h-4 w-4 text-cyan-500" />
+                      <p className="text-[10px] font-black uppercase text-cyan-500 tracking-widest">OU 12x DE R$ 19,78</p>
+                    </div>
+                  </div>
+
+                  <ul className="space-y-4">
+                    {[
+                      'Radar: 20 Buscas/Dia', 
+                      'IA Mentor: 10 Perguntas/Dia', 
+                      'IA Prospecção: 10 Mensagens/Dia', 
+                      'Scripts de Elite (Volume)', 
+                      'Acesso à Fase de Escala',
+                      '3 Meses de Acesso Pro'
+                    ].map((f, i) => (
+                      <li key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-cyan-500" /> {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <Button asChild className="w-full h-16 mt-10 rounded-2xl bg-cyan-500 text-black hover:bg-cyan-400 font-black uppercase tracking-widest shadow-lg shadow-cyan-500/20">
+                  <a href={CHECKOUT_TRIMESTRAL} target="_blank" rel="noopener noreferrer">ATIVAR TRIMESTRAL</a>
+                </Button>
+              </Card>
+            </motion.div>
+
+            {/* PLANO VITALÍCIO */}
+            <motion.div {...fadeInUp} transition={{ delay: 0.3 }} className="relative p-[2px] rounded-[2rem] overflow-hidden shadow-[0_0_100px_rgba(139,92,246,0.4)]">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-pulse"></div>
+              <Card className="h-full relative bg-[#050508] p-8 flex flex-col justify-between border-none rounded-[calc(2.5rem-2px)]">
+                <div className="absolute top-5 right-5 bg-primary text-white text-[8px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg flex items-center gap-1">
+                  <Star className="h-2.5 w-2.5 fill-white" /> RECOMENDADO
+                </div>
+                
+                <div className="space-y-8 relative z-10">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 px-3 py-1 bg-primary/20 border border-primary/30 rounded-full w-fit">
+                      <Sparkles className="h-3 w-3 text-primary" />
+                      <span className="text-[8px] font-black uppercase tracking-widest text-primary">Acesso Vitalício Ilimitado</span>
+                    </div>
+                    <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2">
+                      <Infinity className="h-4 w-4 fill-primary text-black" /> Pagamento Único
+                    </h3>
+                    <div className="flex items-baseline gap-1">
+                      <p className="text-6xl md:text-7xl font-black italic text-white tracking-tighter">R$ 287</p>
+                    </div>
+                    <div className="bg-primary/10 border border-primary/20 rounded-xl px-4 py-4 border-dashed relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors"></div>
+                      <div className="relative flex items-center gap-3">
+                        <CreditCard className="h-5 w-5 text-primary" /> 
+                        <div>
+                          <p className="text-[10px] font-black uppercase text-primary tracking-widest leading-none mb-1">Parcelamento no Cartão</p>
+                          <p className="text-[14px] font-black text-white italic tracking-tight">Até 12x de R$ 28,82</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <ul className="space-y-4">
+                    {[
+                      'Radar de Leads ILIMITADO', 
+                      'IA Mentor 24h ILIMITADO', 
+                      'IA de Prospecção ILIMITADA', 
+                      'Jornada de 7 Dias Vitalícia',
+                      'Sem Mensalidades ou Taxas',
+                      'Garantia Blindada de 7 Dias'
+                    ].map((f, i) => (
+                      <li key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white">
+                        <CheckCircle2 className="h-4 w-4 text-primary fill-primary" /> {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <Button asChild className="w-full h-16 mt-10 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest shadow-[0_15px_40px_rgba(139,92,246,0.5)] transition-all hover:scale-[1.02] group text-sm md:text-base">
+                  <a href={CHECKOUT_VITALICIO} target="_blank" rel="noopener noreferrer">
+                    GARANTIR ILIMITADO <ArrowRight className="ml-2 h-5 w-5 md:h-6 md:w-6 group-hover:translate-x-1 transition-transform" />
+                  </a>
+                </Button>
+              </Card>
+            </motion.div>
+          </div>
+        </section>
+
         {/* DEPOIMENTOS */}
         <section className="max-w-[1100px] mx-auto px-6 md:px-12 py-20 md:py-32">
           <motion.h2 className="text-[28px] md:text-[36px] font-bold tracking-[-0.5px] text-white mb-16" {...fadeInUp}>
@@ -288,7 +465,7 @@ export default function Home() {
                     </div>
                     <div>
                       <p className="text-[13px] font-bold text-white">{t.author}</p>
-                      <p className="text-[11px] text-white/30 font-medium">{t.context}</p>
+                      <p className="text-[11px] text-white/30 font-medium">{t.author.includes('Ana') ? 'Especialista em Escala' : t.author.includes('Bruno') ? 'Consultor Fase 1' : 'Venda em 48h'}</p>
                     </div>
                   </div>
                 </Card>
@@ -338,8 +515,8 @@ export default function Home() {
             <p className="text-[15px] text-white/40 max-w-[400px]">
               Garanta sua posição no ecossistema e comece a faturar hoje.
             </p>
-            <Button asChild size="lg" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-medium text-[14px] h-[48px] px-8 rounded-[10px] shadow-[0_8px_24px_rgba(124,58,237,0.4)] transition-all hover:-translate-y-0.5 border-none">
-              <Link href="/quiz">Acessar agora</Link>
+            <Button onClick={scrollToPricing} size="lg" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-medium text-[14px] h-[48px] px-8 rounded-[10px] shadow-[0_8px_24px_rgba(124,58,237,0.4)] transition-all hover:-translate-y-0.5 border-none">
+              Acessar agora
             </Button>
           </motion.div>
         </section>
