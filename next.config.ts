@@ -1,3 +1,4 @@
+
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -53,6 +54,10 @@ const nextConfig: NextConfig = {
   experimental: {
     // Reduz o bundle size importando apenas o necessário
     optimizePackageImports: ['lucide-react', 'recharts', 'framer-motion', 'date-fns'],
+  },
+  compiler: {
+    // Remove console.log em produção para performance e segurança
+    removeConsole: process.env.NODE_ENV === 'production',
   },
 };
 

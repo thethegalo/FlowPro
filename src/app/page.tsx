@@ -1,10 +1,11 @@
+
 "use client";
 
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   MessageSquare, 
@@ -21,19 +22,12 @@ import {
   Sparkles
 } from 'lucide-react';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-
-// Carregamento dinâmico otimizado
-const Globe = dynamic(() => import('@/components/ui/cobe-globe').then(m => ({ default: m.Globe })), { 
-  ssr: false, 
-  loading: () => <div className="w-full h-full rounded-full bg-primary/10 animate-pulse" style={{ willChange: 'transform' }} /> 
-});
 
 const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
 
@@ -85,12 +79,11 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen text-white bg-transparent overflow-x-hidden relative">
+    <div className="flex flex-col min-h-screen text-white bg-[#05050f] overflow-x-hidden relative">
       
-      {/* BACKGROUND ORBS OPTIMIZED */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[100px] animate-pulse" style={{ willChange: 'transform' }}></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/5 rounded-full blur-[80px]"></div>
+      {/* BACKGROUND ORBS OPTIMIZED - REDUCED TO 1 STATIC ORB */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[100px]"></div>
       </div>
 
       {/* NAVBAR */}
@@ -166,21 +159,16 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* OPTIMIZED GLOBE SECTION */}
-            <div className="hidden lg:flex flex-1 items-center justify-center relative min-h-[600px] overflow-visible">
-              <div className="absolute inset-0 bg-primary/5 blur-[100px] rounded-full animate-pulse pointer-events-none scale-110" style={{ willChange: 'transform' }} />
-              <div className="relative w-full max-w-[420px] aspect-square mx-auto lg:mx-0 z-10">
-                <Globe 
-                  className="w-full h-full"
-                  speed={0.005}
-                  dark={1}
-                  diffuse={1.2}
-                  mapSamples={6000}
-                  markerSize={0.05}
-                  baseColor={[0.1, 0.1, 0.2]}
-                  markerColor={[124/255, 58/255, 237/255]}
-                  glowColor={[0.1, 0.1, 0.2]}
-                />
+            {/* CSS PURE OPTIMIZED GLOBE REPLACEMENT */}
+            <div className="hidden lg:flex flex-1 items-center justify-center relative">
+              <div className="relative w-72 h-72">
+                <div className="absolute inset-0 bg-primary/20 rounded-full blur-[80px]"></div>
+                <div className="absolute inset-4 border border-white/10 rounded-full animate-spin" style={{animationDuration:'25s', willChange: 'transform'}}></div>
+                <div className="absolute inset-10 border border-primary/20 rounded-full animate-spin" style={{animationDuration:'18s', animationDirection:'reverse', willChange: 'transform'}}></div>
+                <div className="absolute inset-16 border border-primary/30 rounded-full animate-spin" style={{animationDuration:'12s', willChange: 'transform'}}></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="h-20 w-20 bg-primary/20 rounded-full blur-xl animate-pulse" style={{ willChange: 'transform' }}></div>
+                </div>
               </div>
             </div>
           </div>
@@ -242,7 +230,7 @@ export default function Home() {
               }
             ].map((f, i) => (
               <motion.div key={i} variants={cardIn}>
-                <Card className="bg-white/[0.03] border-white/[0.07] rounded-2xl p-8 group transition-all duration-300 hover:border-primary/25 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.3)] min-h-[200px] relative overflow-hidden">
+                <Card className="bg-white/[0.03] border-white/[0.07] backdrop-blur-none rounded-2xl p-8 group transition-all duration-300 hover:border-primary/25 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.3)] min-h-[200px] relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
                   <div className="h-9 w-9 rounded-lg bg-primary/15 border border-primary/20 flex items-center justify-center text-primary mb-8">
                     <f.icon className="h-[18px] w-[18px] text-[#a78bfa]" />
@@ -271,7 +259,7 @@ export default function Home() {
             
             {/* PLANO MENSAL */}
             <motion.div {...fadeInUp} transition={{ delay: 0.1 }}>
-              <Card className="h-full glass-card p-8 flex flex-col justify-between border-amber-500/40 relative overflow-hidden bg-white/[0.02]">
+              <Card className="h-full bg-white/[0.03] border-amber-500/40 backdrop-blur-none p-8 flex flex-col justify-between relative overflow-hidden">
                 <div className="space-y-8 relative z-10">
                   <div className="space-y-4">
                     <div className="flex items-center gap-2 px-3 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full w-fit">
@@ -313,7 +301,7 @@ export default function Home() {
 
             {/* PLANO TRIMESTRAL */}
             <motion.div {...fadeInUp} transition={{ delay: 0.2 }}>
-              <Card className="h-full glass-card p-8 flex flex-col justify-between border-cyan-500/50 relative overflow-hidden bg-white/[0.02]">
+              <Card className="h-full bg-white/[0.03] border-cyan-500/50 backdrop-blur-none p-8 flex flex-col justify-between relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-4">
                   <Badge className="bg-cyan-500 text-black font-black text-[8px] uppercase px-3 py-1">POPULAR</Badge>
                 </div>
@@ -430,7 +418,7 @@ export default function Home() {
           >
             {TESTIMONIALS.map((t, i) => (
               <motion.div key={i} variants={cardIn}>
-                <Card className="bg-white/[0.03] border-white/[0.07] rounded-2xl p-8 space-y-6 hover:-translate-y-1.5 transition-all hover:border-primary/30 hover:shadow-[0_16px_48px_rgba(0,0,0,0.3)] h-full flex flex-col">
+                <Card className="bg-white/[0.03] border-white/[0.07] backdrop-blur-none rounded-2xl p-8 space-y-6 hover:-translate-y-1.5 transition-all hover:border-primary/30 hover:shadow-[0_16px_48px_rgba(0,0,0,0.3)] h-full flex flex-col">
                   <div className="text-[48px] text-primary/30 font-serif leading-none h-6">“</div>
                   <div className="flex gap-1 mb-2">
                     {[1,2,3,4,5].map(s => <Star key={s} className="h-3.5 w-3.5 fill-[#f59e0b] text-[#f59e0b]" />)}
