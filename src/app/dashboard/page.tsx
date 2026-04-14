@@ -31,14 +31,18 @@ import {
   ChevronRight,
   LayoutDashboard,
   TrendingUp,
-  Menu
+  Menu,
+  Pencil,
+  Check,
+  X
 } from 'lucide-react';
 import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
-import { collection, query, orderBy, doc } from 'firebase/firestore';
+import { collection, query, orderBy, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 import {
   Dialog,
   DialogContent,
@@ -85,7 +89,10 @@ export default function Dashboard() {
   const { user, isUserLoading } = useUser();
   const db = useFirestore();
   const router = useRouter();
+  const { success, error } = useToast();
   const [isVipModalOpen, setIsVipModalOpen] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editNameValue, setEditNameValue] = useState('');
   
   const userDocRef = useMemoFirebase(() => {
     if (!db || !user) return null;
@@ -158,6 +165,29 @@ export default function Dashboard() {
     return progressData ? progressData.filter(p => p.isCompleted).map(p => p.missionId) : [];
   }, [progressData]);
 
+  const startEditing = () => {
+    setEditNameValue(displayName);
+    setIsEditingName(true);
+  };
+
+  const cancelEditing = () => {
+    setIsEditingName(false);
+  };
+
+  const saveName = async () => {
+    if (!db || !user || !editNameValue.trim()) return;
+    try {
+      await updateDoc(doc(db, 'users', user.uid), {
+        name: editNameValue.trim(),
+        updatedAt: serverTimestamp()
+      });
+      setIsEditingName(false);
+      success("Perfil Atualizado", "Seu nome de operador foi sincronizado.");
+    } catch (e) {
+      error("Erro na Sincronização", "Não foi possível salvar seu novo nome.");
+    }
+  };
+
   useEffect(() => {
     if (!isUserLoading && !user) router.push('/auth');
   }, [user, isUserLoading, router]);
@@ -191,9 +221,40 @@ export default function Dashboard() {
 
           <div className="flex-1 p-6 md:p-8 space-y-8 max-w-7xl mx-auto w-full">
             <div className="space-y-1">
-              <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight">
-                Olá, {displayName} 👋
-              </h1>
+              {isEditingName ? (
+                <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2 duration-300">
+                  <input
+                    type="text"
+                    value={editNameValue}
+                    onChange={(e) => setEditNameValue(e.target.value)}
+                    className="bg-white/5 border border-white/10 rounded-lg px-3 py-1 text-xl md:text-2xl font-semibold text-white focus:outline-none focus:ring-1 focus:ring-primary w-full max-w-[240px]"
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') saveName();
+                      if (e.key === 'Escape') cancelEditing();
+                    }}
+                  />
+                  <button onClick={saveName} className="p-2 bg-green-500/10 text-green-500 rounded-lg hover:bg-green-500/20 transition-all">
+                    <Check className="h-4 w-4" />
+                  </button>
+                  <button onClick={cancelEditing} className="p-2 bg-white/5 text-white/30 rounded-lg hover:bg-white/10 transition-all">
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 group">
+                  <h1 className="text-xl md:text-2xl font-semibold text-white tracking-tight flex items-center gap-2">
+                    Olá, {displayName} 👋
+                  </h1>
+                  <button 
+                    onClick={startEditing}
+                    className="opacity-0 group-hover:opacity-100 transition-all p-1.5 text-white/20 hover:text-primary hover:bg-primary/10 rounded-md"
+                    title="Editar nome"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              )}
               <p className="text-xs md:text-sm text-white/30">
                 Seja bem-vindo ao seu centro de comando tático.
               </p>
