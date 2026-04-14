@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -30,10 +29,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-// Carregamento dinâmico do Globo para performance
+// Carregamento dinâmico otimizado
 const Globe = dynamic(() => import('@/components/ui/cobe-globe').then(m => ({ default: m.Globe })), { 
   ssr: false, 
-  loading: () => <div className="w-full h-full bg-primary/5 rounded-full blur-xl animate-pulse" /> 
+  loading: () => <div className="w-full h-full rounded-full bg-primary/10 animate-pulse" style={{ willChange: 'transform' }} /> 
 });
 
 const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
@@ -131,7 +130,7 @@ export default function Home() {
             >
               <Badge className="bg-[#6d28d9]/15 border border-[#7c3aed]/30 text-[#c4b5fd] text-[10px] md:text-[12px] font-medium px-3 md:px-4 py-1 md:py-1.5 rounded-full flex items-center gap-2 shadow-none">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" style={{ willChange: 'transform' }}></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                 </span>
                 ✦ 1.800+ consultores ativos
@@ -280,7 +279,7 @@ export default function Home() {
                       <span className="text-[8px] font-black uppercase tracking-widest text-amber-500">Uso Diário Limitado</span>
                     </div>
                     <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-white/70 flex items-center gap-2">
-                      <Zap className="h-4 w-4 text-amber-500 fill-amber-500" /> Flow Mensal
+                      <Zap className="h-4 w-4 text-amber-500 fill-amber-500" style={{ willChange: 'transform' }} /> Flow Mensal
                     </h3>
                     <div className="flex items-baseline gap-1">
                       <p className="text-5xl md:text-6xl font-black italic text-white tracking-tighter">R$ 97</p>
@@ -321,10 +320,10 @@ export default function Home() {
                 <div className="space-y-8 relative z-10">
                   <div className="space-y-4">
                     <div className="flex items-center gap-2 px-3 py-1 bg-cyan-500/20 border border-cyan-500/30 rounded-full w-fit">
-                      <Timer className="h-3 w-3 text-cyan-500" />
+                      <Timer className="h-3 w-3 text-cyan-500" style={{ willChange: 'transform' }} />
                       <span className="text-[8px] font-black uppercase tracking-widest text-cyan-500">Melhor Custo-Benefício</span>
                     </div>
-                    <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-white/70 flex items-center gap-2">
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70 flex items-center gap-2">
                       <Zap className="h-4 w-4 text-cyan-500 fill-cyan-500" /> Flow Trimestral
                     </h3>
                     <div className="flex items-baseline gap-1">
@@ -369,7 +368,7 @@ export default function Home() {
                 <div className="space-y-8 relative z-10">
                   <div className="space-y-4">
                     <div className="flex items-center gap-2 px-3 py-1 bg-primary/20 border border-primary/30 rounded-full w-fit">
-                      <Sparkles className="h-3 w-3 text-primary" />
+                      <Sparkles className="h-3 w-3 text-primary" style={{ willChange: 'transform' }} />
                       <span className="text-[8px] font-black uppercase tracking-widest text-primary">Acesso Vitalício Ilimitado</span>
                     </div>
                     <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2">
@@ -503,7 +502,7 @@ export default function Home() {
         <footer className="max-w-[1100px] mx-auto px-6 md:px-12 py-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="relative h-4 w-16 opacity-50 grayscale contrast-200">
-              <Image src={LOGO_URL} alt="FlowPro" fill className="object-contain" />
+              <Image src={LOGO_URL} alt="FlowPro" fill className="object-contain" loading="lazy" />
             </div>
             <span className="text-[12px] text-white/20 font-medium">© 2025 FlowPro. Todos os direitos reservados.</span>
           </div>

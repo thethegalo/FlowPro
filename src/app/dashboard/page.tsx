@@ -1,9 +1,9 @@
-
 "use client";
 
 import { useMemo, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -30,17 +30,8 @@ import {
 } from 'lucide-react';
 import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
 import { collection, query, orderBy, doc } from 'firebase/firestore';
-import { SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
-import { 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Area,
-  AreaChart,
-  ResponsiveContainer,
-  Tooltip
-} from 'recharts';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import {
@@ -49,6 +40,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
+// Dynamic imports for Recharts
+const AreaChart = dynamic(() => import('recharts').then(m => ({ default: m.AreaChart })), { ssr: false });
+const Area = dynamic(() => import('recharts').then(m => ({ default: m.Area })), { ssr: false });
+const ResponsiveContainer = dynamic(() => import('recharts').then(m => ({ default: m.ResponsiveContainer })), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then(m => ({ default: m.XAxis })), { ssr: false });
+const YAxis = dynamic(() => import('recharts').then(m => ({ default: m.YAxis })), { ssr: false });
+const CartesianGrid = dynamic(() => import('recharts').then(m => ({ default: m.CartesianGrid })), { ssr: false });
+const Tooltip = dynamic(() => import('recharts').then(m => ({ default: m.Tooltip })), { ssr: false });
 
 const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
 
@@ -167,7 +167,7 @@ export default function Dashboard() {
     if (!isUserLoading && !user) router.push('/auth');
   }, [user, isUserLoading, router]);
 
-  if (isUserLoading || isUserDocLoading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  if (isUserLoading || isUserDocLoading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" style={{ willChange: 'transform' }} /></div>;
 
   return (
     <SidebarProvider>
@@ -436,7 +436,7 @@ export default function Dashboard() {
           <DialogContent className="bg-[#0e0e1a] border-white/10 text-white rounded-[2rem] max-w-sm sm:max-w-md p-12 text-center">
             <DialogHeader className="space-y-6 flex flex-col items-center">
               <div className="relative h-16 w-48 mb-4">
-                <Image src={LOGO_URL} alt="FlowPro Logo" fill className="object-contain" />
+                <Image src={LOGO_URL} alt="FlowPro Logo" fill className="object-contain" loading="lazy" />
               </div>
               <DialogTitle className="text-2xl font-black italic uppercase tracking-tighter">
                 EM BREVE

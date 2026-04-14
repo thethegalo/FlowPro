@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,7 +28,12 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { DashboardParticles } from '@/components/DashboardParticles';
+
+// Dynamic import for performance
+const DashboardParticles = dynamic(() => import('@/components/DashboardParticles').then(m => m.DashboardParticles), { 
+  ssr: false, 
+  loading: () => null 
+});
 
 const FUNNEL_STEPS = [
   { 
@@ -57,7 +63,7 @@ const FUNNEL_STEPS = [
     hint: "Objetivo: Apresentar a solução, prazos e ancorar o preço inicial.",
     templates: [
       "Que bom! Basicamente criamos um site profissional pra [Empresa] em até 48h, com domínio, hospedagem e design exclusivo. O investimento é a partir de R$ 497. Posso te mandar a proposta completa?",
-      "Show! O processo é simples: você me manda logo e informações, a gente cria o site em 48h e você já começa a receber clientes pelo Google. Quer agendar 10 min pra eu te mostrar?"
+      "Show! O processo é simples: você me manda logo e informações, a gente cria o site in 48h e você já começa a receber clientes pelo Google. Quer agendar 10 min pra eu te mostrar?"
     ]
   },
   { 
@@ -118,10 +124,10 @@ export default function FunnelPage() {
       <div className="flex min-h-screen w-full bg-transparent relative overflow-x-hidden">
         <DashboardParticles />
         
-        {/* Fundo Atmosférico Vibrante */}
+        {/* Background Atmospheric */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-          <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[140px] animate-pulse"></div>
-          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent/10 rounded-full blur-[120px]"></div>
+          <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[100px] animate-pulse" style={{ willChange: 'transform' }}></div>
+          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent/10 rounded-full blur-[80px]"></div>
         </div>
         
         <AppSidebar />
@@ -202,7 +208,7 @@ export default function FunnelPage() {
                               currentStep === step.id 
                                 ? "bg-primary border-primary text-white shadow-[0_0_20px_rgba(124,58,255,0.4)]" 
                                 : "bg-white/5 border-white/10 text-white/40"
-                            )}>
+                            )} style={{ willChange: 'transform' }}>
                               {step.icon}
                             </div>
                             <span className="text-[8px] font-black uppercase tracking-widest whitespace-nowrap">{step.title}</span>
