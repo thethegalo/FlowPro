@@ -181,7 +181,7 @@ export default function LeadsPage() {
       if (res?.message) {
         setActiveScript({ id: lead.id, message: res.message, phone: lead.phone });
         success("Script Gerado", "Mensagem composta pelo motor de IA.");
-        if (!approachedLeads.includes(lead.id)) setApproachedLeads(prev => [...prev, { id: lead.id, timestamp: Date.now() }].map(item => typeof item === 'string' ? item : item.id));
+        if (!approachedLeads.includes(lead.id)) setApproachedLeads(prev => [...prev, lead.id]);
       }
     } catch (e: any) {
       error("Erro na IA", "Falha ao compor script personalizado.");
@@ -391,11 +391,11 @@ export default function LeadsPage() {
                       <p className="text-primary/60 text-[10px] font-black uppercase tracking-widest animate-pulse">Escaneando Mercado...</p>
                     </div>
                   ) : (
-                    leads.map((lead, i) => {
-                      const potential = Math.floor(serviceValue * (1 + ((lead.id.charCodeAt(0) % 30) / 100)));
+                    leads.map((lead, index) => {
+                      const potential = Math.floor(serviceValue * (1 + ((index * 7 + 13) % 30) / 100));
                       
                       return (
-                        <motion.div key={lead.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                        <motion.div key={lead.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
                           <Card className={`glass-card transition-all group ${approachedLeads.includes(lead.id) ? 'opacity-50 grayscale' : ''}`}>
                             <CardContent className="p-6">
                               <div className="flex flex-col xl:flex-row justify-between gap-6">
