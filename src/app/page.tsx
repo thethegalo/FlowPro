@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -50,26 +51,26 @@ const CHECKOUT_TRIMESTRAL = "https://checkout.flowproia.shop/pay/PPU38CQ9N8O";
 const CHECKOUT_VITALICIO = "https://checkout.flowproia.shop/pay/PPU38CQ9FCP";
 
 const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
+  initial: { opacity: 0, y: 16 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-100px" },
-  transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] }
+  viewport: { once: true, margin: "-50px" },
+  transition: { duration: 0.4, ease: "easeOut" }
 };
 
 const staggerContainer = {
   initial: {},
   whileInView: {
     transition: {
-      staggerChildren: 0.1
+      staggerChildren: 0.05
     }
   },
   viewport: { once: true }
 };
 
 const cardIn = {
-  initial: { opacity: 0, y: 16 },
+  initial: { opacity: 0, y: 12 },
   whileInView: { opacity: 1, y: 0 },
-  transition: { duration: 0.5, ease: "easeOut" }
+  transition: { duration: 0.3, ease: "easeOut" }
 };
 
 export default function Home() {
@@ -85,9 +86,16 @@ export default function Home() {
 
       <nav className="fixed top-0 w-full h-[60px] bg-[#05050f]/70 backdrop-blur-[20px] border-b border-white/5 z-50 px-6 md:px-12 flex items-center justify-between">
         <div className="flex items-center gap-12">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2" prefetch={false}>
             <div className="relative h-5 w-20">
-              <Image src={LOGO_URL} alt="FlowPro" fill className="object-contain" sizes="80px" priority />
+              <Image 
+                src={LOGO_URL} 
+                alt="FlowPro" 
+                fill 
+                className="object-contain" 
+                sizes="80px" 
+                priority 
+              />
             </div>
           </Link>
           
@@ -111,9 +119,9 @@ export default function Home() {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
             <motion.div 
               className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-6 md:space-y-8 flex-1 max-w-2xl z-20"
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             >
               <Badge className="bg-[#6d28d9]/15 border border-[#7c3aed]/30 text-[#c4b5fd] text-[10px] md:text-[12px] font-medium px-3 md:px-4 py-1 md:py-1.5 rounded-full flex items-center gap-2 shadow-none">
                 <span className="relative flex h-2 w-2">
@@ -139,7 +147,7 @@ export default function Home() {
 
                 <div className="flex items-center gap-3">
                   <div className="flex -space-x-2">
-                    {['A', 'B', 'J', 'L'].map((initial, i) => (
+                    {['A', 'B', 'J', 'L'].map((initial) => (
                       <div key={initial} className="h-7 w-7 rounded-full border-2 border-[#05050f] bg-primary/20 flex items-center justify-center text-[10px] font-black text-primary relative">
                         {initial}
                       </div>
@@ -171,10 +179,10 @@ export default function Home() {
           <div className="max-w-[1100px] mx-auto px-6 md:px-12">
             <motion.div 
               className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-0"
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.98 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.4 }}
             >
               {[
                 { val: "1.817+", label: "Ativos no Flow" },
@@ -219,7 +227,7 @@ export default function Home() {
                 title: "Jornada de 7 dias", 
                 desc: "Processo que já fechou mais de 479 vendas. Com missões guiadas e memória automática." 
               }
-            ].map((f, i) => (
+            ].map((f) => (
               <motion.div key={f.title} variants={cardIn}>
                 <Card className="bg-white/[0.03] border-white/[0.07] backdrop-blur-none rounded-2xl p-8 group transition-all duration-300 hover:border-primary/25 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.3)] min-h-[200px] relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
@@ -246,7 +254,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
-            <motion.div {...fadeInUp} transition={{ delay: 0.1 }}>
+            <motion.div {...fadeInUp} transition={{ delay: 0.05 }}>
               <Card className="h-full bg-white/[0.03] border-amber-500/40 backdrop-blur-none p-8 flex flex-col justify-between relative overflow-hidden">
                 <div className="space-y-8 relative z-10">
                   <div className="space-y-4">
@@ -274,7 +282,7 @@ export default function Home() {
                       'IA Prospecção: 10 Mensagens/Dia', 
                       'Scripts de Elite', 
                       'Acesso à Fase de Escala'
-                    ].map((f, i) => (
+                    ].map((f) => (
                       <li key={f} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white/80">
                         <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" /> {f}
                       </li>
@@ -287,7 +295,7 @@ export default function Home() {
               </Card>
             </motion.div>
 
-            <motion.div {...fadeInUp} transition={{ delay: 0.2 }}>
+            <motion.div {...fadeInUp} transition={{ delay: 0.1 }}>
               <Card className="h-full bg-white/[0.03] border-cyan-500/50 backdrop-blur-none p-8 flex flex-col justify-between relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-4">
                   <Badge className="bg-cyan-500 text-black font-black text-[8px] uppercase px-3 py-1">POPULAR</Badge>
@@ -319,7 +327,7 @@ export default function Home() {
                       'Scripts de Elite (Volume)', 
                       'Acesso à Fase de Escala',
                       '3 Meses de Acesso Pro'
-                    ].map((f, i) => (
+                    ].map((f) => (
                       <li key={f} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white">
                         <CheckCircle2 className="h-3.5 w-3.5 text-cyan-500" /> {f}
                       </li>
@@ -332,7 +340,7 @@ export default function Home() {
               </Card>
             </motion.div>
 
-            <motion.div {...fadeInUp} transition={{ delay: 0.3 }} className="relative p-[2px] rounded-[2rem] overflow-hidden shadow-[0_0_100px_rgba(139,92,246,0.4)]">
+            <motion.div {...fadeInUp} transition={{ delay: 0.15 }} className="relative p-[2px] rounded-[2rem] overflow-hidden shadow-[0_0_100px_rgba(139,92,246,0.4)]">
               <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-pulse" style={{ willChange: 'transform' }}></div>
               <Card className="h-full relative bg-[#050508] p-8 flex flex-col justify-between border-none rounded-[calc(2.5rem-2px)]">
                 <div className="absolute top-5 right-5 bg-primary text-white text-[8px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg flex items-center gap-1">
@@ -371,7 +379,7 @@ export default function Home() {
                       'Jornada de 7 Dias Vitalícia',
                       'Sem Mensalidades ou Taxas',
                       'Garantia Blindada de 7 Dias'
-                    ].map((f, i) => (
+                    ].map((f) => (
                       <li key={f} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white">
                         <CheckCircle2 className="h-4 w-4 text-primary fill-primary" /> {f}
                       </li>
@@ -401,7 +409,7 @@ export default function Home() {
             whileInView="whileInView"
             viewport={{ once: true }}
           >
-            {TESTIMONIALS.map((t, i) => (
+            {TESTIMONIALS.map((t) => (
               <motion.div key={t.author} variants={cardIn}>
                 <Card className="bg-white/[0.03] border-white/[0.07] backdrop-blur-none rounded-2xl p-8 space-y-6 hover:-translate-y-1.5 transition-all hover:border-primary/30 hover:shadow-[0_16px_48px_rgba(0,0,0,0.3)] h-full flex flex-col">
                   <div className="text-[48px] text-primary/30 font-serif leading-none h-6">“</div>
@@ -453,9 +461,10 @@ export default function Home() {
         <section className="max-w-[1100px] mx-auto px-6 md:px-12 py-24 md:py-32 flex flex-col items-center text-center space-y-10">
           <motion.div 
             className="space-y-10 flex flex-col items-center"
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.98 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.4 }}
           >
             <h2 className="text-[32px] md:text-[52px] font-extrabold tracking-[-1px] md:tracking-[-1.5px] text-white leading-tight max-w-[600px]">
               A escala não espera por você.
