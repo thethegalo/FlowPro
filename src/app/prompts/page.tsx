@@ -49,7 +49,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { generateMasterPrompt, generateAIPalette } from '@/ai/flows/generate-master-prompt';
+import { generateAIPalette } from '@/ai/flows/generate-master-prompt';
 
 const STEPS = [
   { id: 1, title: 'Identidade', sub: 'Nome & Nicho', icon: Briefcase },
@@ -223,6 +223,39 @@ export default function PromptsPage() {
     };
   }, [blueprint.niche, blueprint.palette]);
 
+  const generatePrompt = () => {
+    const prompt = `Crie uma landing page completa e profissional para ${blueprint.name || 'o negócio'} no nicho de ${blueprint.niche}.
+
+OBJETIVO: ${blueprint.objective}
+PÚBLICO-ALVO: ${blueprint.audience || 'Clientes locais'}
+TOM DE VOZ: ${blueprint.tone}
+ESTILO VISUAL: ${blueprint.style}
+CORES: ${blueprint.palette?.join(', ') || blueprint.palette[0]}
+DIFERENCIAL: ${blueprint.differential || 'Qualidade e atendimento'}
+
+SEÇÕES OBRIGATÓRIAS (nesta ordem):
+${blueprint.sections.map((s: string, i: number) => `${i + 1}. ${s}`).join('\n')}
+
+INSTRUÇÕES ESPECÍFICAS:
+${blueprint.extras || `Site para ${blueprint.name} com design ${blueprint.style.toLowerCase()}.`}
+
+REQUISITOS TÉCNICOS:
+- Next.js 15 com React e Tailwind CSS
+- Totalmente responsivo (mobile-first)
+- Botão de WhatsApp fixo no canto
+- Animações suaves nas seções
+- SEO otimizado com meta tags
+- Fonte moderna (Inter ou Poppins)
+- Design ${blueprint.style.toLowerCase()} com cor primária ${blueprint.palette?.[0] || blueprint.palette[0]}
+
+Gere o código completo da página em um único arquivo.`;
+
+    setGeneratedPrompt(prompt);
+    setWordCount(prompt.split(/\s+/).length);
+    setBlueprint(prev => ({ ...prev, isGenerated: true }));
+    toast({ title: "Prompt Gerado!", description: "Comando neural pronto para o campo de batalha." });
+  };
+
   const handleUseTemplate = (templateName: string) => {
     const data = TEMPLATE_DATA[templateName];
     if (!data) return;
@@ -242,11 +275,9 @@ export default function PromptsPage() {
     });
 
     setActiveMainTab('create');
-    toast.success("Template Carregado!", "Prompt sendo gerado automaticamente...");
     
-    // Auto generate after a small delay to ensure state update
     setTimeout(() => {
-      handleFinalGeneration();
+      generatePrompt();
     }, 150);
   };
 
@@ -254,7 +285,7 @@ export default function PromptsPage() {
     if (blueprint.step < 8) {
       setBlueprint(prev => ({ ...prev, step: prev.step + 1 }));
     } else {
-      handleFinalGeneration();
+      generatePrompt();
     }
   };
 
@@ -281,33 +312,6 @@ export default function PromptsPage() {
       toast.error("Erro na Paleta", "Falha ao consultar designer neural.");
     } finally {
       setIsGeneratingPalette(false);
-    }
-  };
-
-  const handleFinalGeneration = async () => {
-    setIsGenerating(true);
-    try {
-      const result = await generateMasterPrompt({
-        name: blueprint.name || 'Projeto Sem Nome',
-        niche: blueprint.niche || 'Geral',
-        language: blueprint.language,
-        objective: blueprint.objective,
-        style: blueprint.style,
-        palette: [currentTheme.primary, currentTheme.text, currentTheme.bg],
-        audience: blueprint.audience || 'Geral',
-        tone: blueprint.tone,
-        sections: blueprint.sections,
-        differential: blueprint.differential || 'Qualidade e Inovação',
-      });
-
-      setGeneratedPrompt(result.prompt);
-      setWordCount(result.wordCount);
-      setBlueprint(prev => ({ ...prev, isGenerated: true }));
-      toast.success("Blueprint Gerado", "O briefing técnico está pronto para uso.");
-    } catch (error: any) {
-      toast.error("Erro na Geração", "Falha ao processar blueprint neural.");
-    } finally {
-      setIsGenerating(false);
     }
   };
 
@@ -384,7 +388,6 @@ export default function PromptsPage() {
             <section className="flex-1 overflow-y-auto p-6 md:p-12 relative flex flex-col items-center">
               <div className="w-full max-w-4xl space-y-10">
                 
-                {/* TABS SELECTOR */}
                 <div className="flex justify-center mb-8">
                   <div className="bg-white/5 p-1.5 rounded-2xl border border-white/10 flex gap-2">
                     <button 
@@ -706,7 +709,6 @@ export default function PromptsPage() {
               </div>
             </section>
 
-            {/* PREVIEW COL (STICKY) */}
             {activeMainTab === 'create' && (
               <aside className="w-[35%] border-l border-white/5 bg-white/[0.01] p-10 hidden lg:flex flex-col items-center relative">
                 <div className="sticky top-12 w-full flex flex-col items-center gap-8">
@@ -723,7 +725,6 @@ export default function PromptsPage() {
                       transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                       className="w-[260px] h-[520px] bg-[#1a1a1a] border-[3px] border-white/12 rounded-[44px] shadow-[0_40px_80px_rgba(0,0,0,0.6)] relative overflow-hidden flex flex-col"
                     >
-                      {/* Dynamic Island */}
                       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100px] h-[30px] bg-black rounded-[99px] mt-3 z-50 flex items-center justify-center">
                         <div className="h-1 w-1 bg-white/5 rounded-full ml-10" />
                       </div>
@@ -741,7 +742,6 @@ export default function PromptsPage() {
                             transition={{ duration: 0.25 }}
                             className="flex-1 flex flex-col"
                           >
-                            {/* App Nav */}
                             <div className="h-14 flex items-center justify-between px-6 pt-6 shrink-0">
                               <Menu className="h-4 w-4" style={{ color: currentTheme.text }} />
                               <span className="text-[9px] font-bold uppercase tracking-widest truncate max-w-[120px]" style={{ color: currentTheme.text }}>
@@ -860,7 +860,6 @@ export default function PromptsPage() {
                               )}
                             </div>
 
-                            {/* App Bottom Nav */}
                             <div className="h-16 border-t border-white/5 flex items-center justify-around px-4 shrink-0">
                               <Home className="h-4 w-4 opacity-40" style={{ color: currentTheme.text }} />
                               <Search className="h-4 w-4 opacity-20" style={{ color: currentTheme.text }} />
