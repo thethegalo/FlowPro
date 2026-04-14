@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -7,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Zap, Loader2, ShieldCheck, Lock } from 'lucide-react';
+import { Zap, Loader2, ShieldCheck, Lock, ShieldAlert, AlertTriangle } from 'lucide-react';
 import { useAuth, useFirestore } from '@/firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -65,26 +66,39 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen bg-transparent flex flex-col items-center justify-center p-4 relative z-10">
-      <Card className="w-full max-w-md glass-card border-white/10 relative z-10 rounded-[2rem] overflow-hidden">
+      <Card className="w-full max-w-md glass-card border-white/10 relative z-10 rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(124,58,237,0.15)]">
         <CardHeader className="space-y-1 text-center p-8 bg-white/5 border-b border-white/5">
           <div className="flex justify-center mb-4">
-            <Zap className="h-10 w-10 text-primary animate-pulse" />
+            <Zap className="h-12 w-12 text-primary animate-pulse" style={{ willChange: 'transform' }} />
           </div>
-          <CardTitle className="text-2xl font-black italic uppercase tracking-tighter">
-            {isLogin ? 'Bem-vindo ao FlowPro' : 'Solicitar Acesso'}
+          <CardTitle className="text-3xl font-black italic uppercase tracking-tighter">
+            {isLogin ? 'BEM-VINDO AO FLOWPRO' : 'SOLICITAR ACESSO'}
           </CardTitle>
-          <CardDescription className="text-muted-foreground uppercase text-[10px] font-bold tracking-[0.2em]">
-            {isLogin ? 'Acesse sua conta de operador' : 'O acesso é restrito e sujeito a aprovação'}
+          <CardDescription className="text-muted-foreground uppercase text-[10px] font-bold tracking-[0.25em]">
+            {isLogin ? 'ACESSE SUA CONTA DE OPERADOR' : 'O ACESSO É RESTRITO E SUJEITO A APROVAÇÃO'}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 p-8">
+        <CardContent className="space-y-6 p-8">
+          
+          {!isLogin && (
+            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+              <ShieldAlert className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="text-[10px] font-black uppercase text-amber-500 tracking-widest">Protocolo de Auditoria</p>
+                <p className="text-[11px] text-white/60 font-medium leading-relaxed italic">
+                  Sua conta será criada como <span className="text-white font-bold">PENDENTE</span>. O acesso só será liberado após autorização manual do administrador.
+                </p>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleAuth} className="space-y-4">
             {!isLogin && (
-              <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+              <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest opacity-70">Seu Nome</Label>
                 <Input 
-                  placeholder="Como quer ser chamado" 
-                  className="bg-white/5 border-white/10 rounded-xl h-12"
+                  placeholder="Como quer ser chamado?" 
+                  className="bg-white/5 border-white/10 h-12 rounded-xl focus-visible:ring-primary"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
@@ -96,7 +110,7 @@ export default function AuthPage() {
               <Input 
                 type="email" 
                 placeholder="seu@email.com" 
-                className="bg-white/5 border-white/10 rounded-xl h-12"
+                className="bg-white/5 border-white/10 h-12 rounded-xl focus-visible:ring-primary"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -106,7 +120,8 @@ export default function AuthPage() {
               <Label className="text-[10px] font-black uppercase tracking-widest opacity-70">Senha</Label>
               <Input 
                 type="password" 
-                className="bg-white/5 border-white/10 rounded-xl h-12"
+                placeholder="••••••••"
+                className="bg-white/5 border-white/10 h-12 rounded-xl focus-visible:ring-primary"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -123,27 +138,27 @@ export default function AuthPage() {
               </div>
             )}
             
-            <Button className="w-full bg-primary hover:bg-primary/90 h-14 font-black uppercase tracking-widest rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98]" disabled={isLoading}>
-              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : isLogin ? 'ENTRAR' : 'SOLICITAR ACESSO'}
+            <Button className="w-full bg-primary hover:bg-primary/90 h-14 font-black uppercase tracking-widest rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] mt-4" disabled={isLoading}>
+              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : isLogin ? 'ENTRAR' : 'ENVIAR SOLICITAÇÃO'}
             </Button>
           </form>
 
-          {!isLogin ? (
-            <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/5 border border-primary/10 text-[10px] font-bold text-primary uppercase text-center justify-center">
-              <ShieldCheck className="h-3 w-3" /> Liberação manual em até 24h
+          {isLogin ? (
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold text-muted-foreground uppercase text-center justify-center">
+              <Lock className="h-4 w-4 text-primary/40" /> Acesso restrito a membros aprovados
             </div>
           ) : (
-            <div className="flex items-center gap-2 p-3 rounded-lg bg-white/5 border border-white/10 text-[9px] font-bold text-muted-foreground uppercase text-center justify-center">
-              <Lock className="h-3 w-3" /> Acesso restrito a membros aprovados
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-primary/10 border border-primary/30 text-[10px] font-bold text-primary uppercase text-center justify-center">
+              <ShieldCheck className="h-4 w-4" /> Liberação manual em até 24h
             </div>
           )}
 
-          <div className="text-center mt-4">
+          <div className="text-center">
             <button 
               onClick={() => setIsLogin(!isLogin)}
-              className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline transition-all"
+              className="text-[11px] font-black uppercase tracking-widest text-white/40 hover:text-primary transition-all underline underline-offset-4 decoration-white/5"
             >
-              {isLogin ? 'Não tem conta? Peça acesso' : 'Já tem conta? Faça Login'}
+              {isLogin ? 'NÃO TEM CONTA? PEÇA ACESSO' : 'JÁ TEM CONTA? FAÇA LOGIN'}
             </button>
           </div>
         </CardContent>

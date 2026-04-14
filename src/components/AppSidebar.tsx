@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -11,7 +12,9 @@ import {
   Terminal,
   Trophy,
   GitBranch,
-  CreditCard
+  CreditCard,
+  Lock,
+  Clock
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -21,6 +24,7 @@ import Image from "next/image";
 import { doc } from "firebase/firestore";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 import {
   Sidebar,
@@ -54,6 +58,9 @@ export function AppSidebar() {
   }, [db, user]);
   const { data: userData } = useDoc(userDocRef);
 
+  const isApproved = userData?.status === 'approved' || isAdmin;
+  const isPending = userData?.status === 'pending' && !isAdmin;
+
   const formattedName = React.useMemo(() => {
     if (isAdmin) return 'Lucas';
     if (userData?.name) return userData.name;
@@ -69,7 +76,7 @@ export function AppSidebar() {
   const handleLockedClick = (e: React.MouseEvent) => {
     if (!isApproved) {
       e.preventDefault();
-      warning("Acesso Pendente", "Seu perfil está em análise manual. Aguarde a liberação do mestre.");
+      warning("Acesso Pendente", "Seu perfil está em análise manual. Aguarde a liberação do mestre para usar as ferramentas.");
     }
   };
 
@@ -83,8 +90,6 @@ export function AppSidebar() {
     { title: "Cartão Digital", icon: CreditCard, url: "/cartao" },
     { title: "Ferramentas", icon: Wrench, url: "/tools" },
   ];
-
-  const isApproved = userData?.status === 'approved' || isAdmin;
 
   return (
     <Sidebar 
@@ -108,6 +113,14 @@ export function AppSidebar() {
         </SidebarHeader>
 
         <SidebarContent className="px-2 py-2">
+          {isPending && (
+            <div className="mx-4 mt-4 p-3 rounded-xl bg-destructive/10 border border-destructive/20 flex flex-col items-center text-center gap-2">
+              <Lock className="h-4 w-4 text-destructive" />
+              <p className="text-[9px] font-black uppercase text-destructive tracking-widest">Acesso Bloqueado</p>
+              <p className="text-[8px] text-white/40 font-medium uppercase leading-tight">Aguardando liberação manual</p>
+            </div>
+          )}
+
           <SidebarGroup className="p-0 mt-[20px]">
             <SidebarGroupLabel className="text-[10px] font-medium uppercase tracking-[1.2px] text-white/25 px-4 pt-0 pb-1.5 h-auto">Sistema de Operação</SidebarGroupLabel>
             <SidebarGroupContent>
@@ -121,7 +134,7 @@ export function AppSidebar() {
                         isActive={isActive}
                         className={cn(
                           "h-8 rounded-md px-3 flex items-center gap-2.5 transition-all duration-120 group border-none",
-                          !isApproved ? 'opacity-20 cursor-not-allowed' : '',
+                          !isApproved ? 'opacity-25 grayscale cursor-not-allowed' : '',
                           isActive 
                             ? 'bg-[#8b5cf6]/12 text-white/90' 
                             : 'text-white/55 hover:bg-white/5 hover:text-white/75'
@@ -133,6 +146,7 @@ export function AppSidebar() {
                             isActive ? 'text-[#a78bfa]' : 'text-white/35'
                           )} />
                           <span className="text-[13px] font-[450] leading-none">{item.title}</span>
+                          {!isApproved && <Lock className="ml-auto h-2.5 w-2.5 opacity-20" />}
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -170,29 +184,40 @@ export function AppSidebar() {
           )}
         </SidebarContent>
 
-        <SidebarFooter className="p-4 mt-auto">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="h-[26px] w-[26px] rounded-full bg-[#4c1d95] flex items-center justify-center text-white text-[10px] font-bold shrink-0">
-                {formattedName.charAt(0).toUpperCase()}
-              </div>
-              <div className="flex flex-col min-w-0">
-                <p className="text-[12px] font-medium text-white/90 truncate leading-none mb-1">
-                  {formattedName}
-                </p>
-                <span className="text-[10px] font-medium text-[#a78bfa] tracking-tight leading-none uppercase">
-                  {isAdmin ? 'VITALÍCIO' : (userData?.plan?.toUpperCase() || 'BUSCANDO...')}
-                </span>
-              </div>
-            </div>
+        <SidebarFooter className="p-4 mt-auto border-t border-white/5">
+          <div className="flex flex-col gap-4">
+            {isPending && (
+              <Badge variant="outline" className="w-fit border-amber-500/20 text-amber-500 text-[8px] font-black uppercase bg-amber-500/5 gap-1.5 px-2">
+                <Clock className="h-2.5 w-2.5" /> Sob Auditoria
+              </Badge>
+            )}
             
-            <button 
-              onClick={handleSignOut}
-              className="p-1 text-white/40 hover:text-white transition-colors ml-2"
-              title="Sair"
-            >
-              <LogOut className="h-3.5 w-3.5" />
-            </button>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="h-[26px] w-[26px] rounded-full bg-[#4c1d95] flex items-center justify-center text-white text-[10px] font-bold shrink-0">
+                  {formattedName.charAt(0).toUpperCase()}
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <p className="text-[12px] font-medium text-white/90 truncate leading-none mb-1">
+                    {formattedName}
+                  </p>
+                  <span className={cn(
+                    "text-[9px] font-black tracking-tight leading-none uppercase",
+                    isPending ? "text-destructive" : "text-[#a78bfa]"
+                  )}>
+                    {isAdmin ? 'ADMIN MASTER' : isPending ? 'PENDENTE' : (userData?.plan?.toUpperCase() || 'FREE')}
+                  </span>
+                </div>
+              </div>
+              
+              <button 
+                onClick={handleSignOut}
+                className="p-1 text-white/40 hover:text-white transition-colors ml-2"
+                title="Sair"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+              </button>
+            </div>
           </div>
         </SidebarFooter>
       </div>

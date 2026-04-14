@@ -1,8 +1,8 @@
+
 "use client";
 
 import dynamic from 'next/dynamic';
 
-const CustomCursor = dynamic(() => import('@/components/CustomCursor').then(mod => ({ default: mod.CustomCursor })), { ssr: false });
 const FloatingMentor = dynamic(() => import('@/components/FloatingMentor').then(mod => ({ default: mod.FloatingMentor })), { ssr: false });
 const EtheralShadow = dynamic(() => import('@/components/ui/etheral-shadow').then(mod => ({ default: mod.EtheralShadow })), { ssr: false });
 
@@ -17,7 +17,6 @@ export function ClientVisualEffects() {
           sizing="fill"
         />
       </div>
-      <CustomCursor />
       <FloatingMentor />
     </>
   );
