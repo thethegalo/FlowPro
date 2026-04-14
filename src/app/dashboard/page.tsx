@@ -38,6 +38,7 @@ import { collection, query, orderBy, doc } from 'firebase/firestore';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 import {
   Dialog,
   DialogContent,
