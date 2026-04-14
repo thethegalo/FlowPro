@@ -90,9 +90,9 @@ const TEMPLATE_PRESETS = [
   { name: 'Restaurante Premium', niche: 'Restaurante', style: 'Luxo Profundo', icon: Utensils, color: '#e85d04', palette: ['#e85d04', '#fff8f0', '#1a0a00'], tone: 'Amigável', badge: 'Luxuoso' },
   { name: 'Academia Fitness', niche: 'Academia', style: 'Bold', icon: Dumbbell, color: '#ff6b00', palette: ['#ff6b00', '#ffffff', '#0a0a0a'], tone: 'Urgente', badge: 'Bold' },
   { name: 'Loja de Roupas', niche: 'E-commerce', style: 'Moderno & Dark', icon: ShoppingBag, color: '#635bff', palette: ['#635bff', '#0a2540', '#ffffff'], tone: 'Descontraído', badge: 'Moderno' },
-  { name: 'Escritório de Advocacia', niche: 'Advocacia', style: 'Corporativo', icon: Scale, color: '#1e3a8a', palette: ['#1e3a8a', '#e2e8f0', '#0a0e1a'], tone: 'Profissional', badge: 'Elegante' },
-  { name: 'Pet Shop', niche: 'Pet Shop', style: 'Playful & Bold', icon: Bone, color: '#f97316', palette: ['#f97316', '#431407', '#fff7ed'], tone: 'Amigável', badge: 'Playful' },
-  { name: 'Salão de Beleza', niche: 'Estética', style: 'Glassmorphism', icon: Sparkles, color: '#ec4899', palette: ['#ec4899', '#742a2a', '#fff5f5'], tone: 'Luxuoso', badge: 'Elegante' },
+  { name: 'Advocacia de Elite', niche: 'Advocacia', style: 'Corporativo', icon: Scale, color: '#1e3a8a', palette: ['#1e3a8a', '#e2e8f0', '#0a0e1a'], tone: 'Profissional', badge: 'Elegante' },
+  { name: 'Pet Shop VIP', niche: 'Pet Shop', style: 'Playful & Bold', icon: Bone, color: '#f97316', palette: ['#f97316', '#431407', '#fff7ed'], tone: 'Amigável', badge: 'Playful' },
+  { name: 'Estética Glow', niche: 'Estética', style: 'Glassmorphism', icon: Sparkles, color: '#ec4899', palette: ['#ec4899', '#742a2a', '#fff5f5'], tone: 'Luxuoso', badge: 'Elegante' },
   { name: 'Consultoria Digital', niche: 'Consultoria', style: 'Futurista', icon: TrendingUp, color: '#7c3aed', palette: ['#7c3aed', '#f4f4f5', '#05050f'], tone: 'Profissional', badge: 'Futurista' },
 ];
 
@@ -147,7 +147,7 @@ const TEMPLATE_DATA: Record<string, any> = {
     differential: 'Moda exclusiva, tendências atuais, entrega expressa',
     extras: 'Site para loja de roupas femininas. Hero com lookbook, grade de produtos com fotos, categorias (casual, festa, trabalho), botão comprar via WhatsApp. Design moderno com fundo branco e detalhes coloridos.'
   },
-  'Escritório de Advocacia': {
+  'Advocacia de Elite': {
     businessName: 'Escritório de Advocacia',
     niche: 'Jurídico',
     objective: 'Agendar Consulta',
@@ -157,7 +157,7 @@ const TEMPLATE_DATA: Record<string, any> = {
     differential: 'Mais de 10 anos de experiência, 500 casos ganhos, atendimento personalizado',
     extras: 'Site para escritório de advocacia. Hero sóbrio com foto do advogado, áreas de atuação (trabalhista, civil, criminal), diferenciais, formulário de consulta gratuita. Design sério em preto e dourado.'
   },
-  'Pet Shop': {
+  'Pet Shop VIP': {
     businessName: 'Pet Shop',
     niche: 'Outro',
     objective: 'Capturar Leads',
@@ -167,7 +167,7 @@ const TEMPLATE_DATA: Record<string, any> = {
     differential: 'Banho e tosa, veterinário, produtos premium para pets',
     extras: 'Site para pet shop e clínica veterinária. Hero com foto de pets, serviços (banho, tosa, consulta, vacinas), produtos, agendamento online. Design colorido e alegre com verde e amarelo.'
   },
-  'Salão de Beleza': {
+  'Estética Glow': {
     businessName: 'Studio de Estética',
     niche: 'Moda & Beleza',
     objective: 'Agendar Consulta',
@@ -256,9 +256,13 @@ Gere o código completo da página em um único arquivo.`;
     toast({ title: "Prompt Gerado!", description: "Comando neural pronto para o campo de batalha." });
   };
 
-  const handleUseTemplate = (templateName: string) => {
-    const data = TEMPLATE_DATA[templateName];
-    if (!data) return;
+  const handleUseTemplate = (name: string) => {
+    console.log('template selecionado:', name);
+    const data = TEMPLATE_DATA[name];
+    if (!data) {
+      console.warn('Template não encontrado:', name);
+      return;
+    }
 
     setBlueprint({
       ...blueprint,
@@ -632,7 +636,7 @@ Gere o código completo da página em um único arquivo.`;
 
                               {blueprint.step === 8 && (
                                 <div className="text-center space-y-6 py-6">
-                                  <Binary className="h-12 w-12 text-primary mx-auto animate-pulse" />
+                                  <Binary className="h-12 w-12 text-primary mx-auto animate-pulse" style={{ willChange: 'transform' }} />
                                   <div className="space-y-2">
                                     <p className="text-[11px] text-white/40 font-black uppercase tracking-[0.3em]">Sincronização Neural Ativa</p>
                                     <p className="text-[10px] text-white/20 font-bold uppercase">Clique para processar o briefing técnico final.</p>
@@ -653,7 +657,7 @@ Gere o código completo da página em um único arquivo.`;
                             <Button onClick={handleNext} disabled={isGenerating || (blueprint.step === 1 && (!blueprint.name || !blueprint.niche))} className="flex-1 h-12 md:h-14 rounded-xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/20">
                               {isGenerating ? (
                                 <div className="flex items-center gap-3">
-                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                  <Loader2 className="h-4 w-4 animate-spin" style={{ willChange: 'transform' }} />
                                   <span>Processando...</span>
                                 </div>
                               ) : blueprint.step === 8 ? "Gerar Blueprint" : "Próximo Passo"}
@@ -713,7 +717,7 @@ Gere o código completo da página em um único arquivo.`;
               <aside className="w-[35%] border-l border-white/5 bg-white/[0.01] p-10 hidden lg:flex flex-col items-center relative">
                 <div className="sticky top-12 w-full flex flex-col items-center gap-8">
                   <div className="px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/10 flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+                    <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" style={{ willChange: 'transform' }} />
                     <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">Real-time Visualizer</span>
                   </div>
 
