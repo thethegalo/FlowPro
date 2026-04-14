@@ -10,9 +10,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['"Plus Jakarta Sans"', 'sans-serif'],
-        headline: ['"Plus Jakarta Sans"', 'sans-serif'],
-        code: ['monospace'],
+        // Vinculando às variáveis de fonte do Next.js para performance
+        body: ['var(--font-plus-jakarta)', 'sans-serif'],
+        headline: ['var(--font-plus-jakarta)', 'sans-serif'],
+        code: ['var(--font-jetbrains-mono)', 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',

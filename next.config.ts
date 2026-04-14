@@ -1,7 +1,8 @@
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  /* Otimizações de Performance */
+  compress: true, // Ativa compressão gzip/brotli
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -9,7 +10,7 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    formats: ['image/avif', 'image/webp'],
+    formats: ['image/avif', 'image/webp'], // Formatos de imagem de alta performance
     remotePatterns: [
       {
         protocol: 'https',
@@ -41,10 +42,17 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'framerusercontent.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   experimental: {
-    optimizePackageImports: ['lucide-react', 'recharts', 'framer-motion'],
+    // Reduz o bundle size importando apenas o necessário
+    optimizePackageImports: ['lucide-react', 'recharts', 'framer-motion', 'date-fns'],
   },
 };
 

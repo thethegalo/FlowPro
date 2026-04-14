@@ -5,6 +5,20 @@ import { FirebaseClientProvider } from '@/firebase';
 import { CustomCursor } from '@/components/CustomCursor';
 import { FloatingMentor } from '@/components/FloatingMentor';
 import { EtheralShadow } from '@/components/ui/etheral-shadow';
+import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
+
+// Configuração de fontes local para evitar render-blocking
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-plus-jakarta',
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-jetbrains-mono',
+});
 
 export const metadata: Metadata = {
   title: 'FlowPro | AI Sales Companion',
@@ -22,11 +36,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className="dark">
+    <html lang="pt-BR" className={`dark ${plusJakartaSans.variable} ${jetBrainsMono.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
+        {/* Preload da imagem de fundo crítica para o LCP */}
+        <link rel="preload" href="https://framerusercontent.com/images/ceBGguIpUU8luwByxuQz79t7To.png" as="image" />
       </head>
       <body className="font-body antialiased min-h-screen bg-[#05050f] text-foreground selection:bg-primary/30 selection:text-white margin-0 overflow-x-hidden">
         <FirebaseClientProvider>

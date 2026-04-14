@@ -188,7 +188,7 @@ export default function PaywallPage() {
 
             {/* PLANO VITALÍCIO */}
             <div className="relative p-[2px] rounded-2xl overflow-hidden shadow-[0_0_100px_rgba(139,92,246,0.4)] z-20">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-pulse"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-pulse" style={{ willChange: 'transform' }}></div>
               <Card className="glass-card p-8 flex flex-col justify-between h-full border-none bg-transparent">
                 <div className="absolute top-5 right-5 bg-primary text-white text-[8px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg flex items-center gap-1">
                   <Star className="h-2.5 w-2.5 fill-white" /> RECOMENDADO
@@ -197,7 +197,7 @@ export default function PaywallPage() {
                 <div className="space-y-8 relative z-10 bg-transparent">
                   <div className="space-y-3 bg-transparent">
                     <div className="flex items-center gap-2 px-3 py-1 bg-primary/20 border border-primary/30 rounded-full w-fit">
-                      <Sparkles className="h-3 w-3 text-primary" />
+                      <Sparkles className="h-3 w-3 text-primary" style={{ willChange: 'transform' }} />
                       <span className="text-[8px] font-black uppercase tracking-widest text-primary">Acesso Vitalício Ilimitado</span>
                     </div>
                     <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2">
@@ -280,7 +280,7 @@ export default function PaywallPage() {
                   <p className="text-sm font-medium leading-relaxed italic text-white/80 flex-1">"{t.text}"</p>
                   <div className="flex items-center gap-4 bg-transparent pt-4 border-t border-white/5">
                     <div className="h-10 w-10 rounded-full bg-white/10 border border-white/10 overflow-hidden relative">
-                      <Image src={t.avatar} alt={t.name} fill className="object-cover" />
+                      <Image src={t.avatar} alt={t.name} fill className="object-cover" loading="lazy" sizes="40px" />
                     </div>
                     <div className="bg-transparent">
                       <p className="text-xs font-black uppercase text-white leading-none mb-1">{t.name}</p>

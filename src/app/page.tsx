@@ -98,7 +98,7 @@ export default function Home() {
         <div className="flex items-center gap-12">
           <Link href="/" className="flex items-center gap-2">
             <div className="relative h-5 w-20">
-              <Image src={LOGO_URL} alt="FlowPro" fill className="object-contain" priority />
+              <Image src={LOGO_URL} alt="FlowPro" fill className="object-contain" sizes="80px" priority />
             </div>
           </Link>
           
@@ -502,7 +502,7 @@ export default function Home() {
         <footer className="max-w-[1100px] mx-auto px-6 md:px-12 py-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="relative h-4 w-16 opacity-50 grayscale contrast-200">
-              <Image src={LOGO_URL} alt="FlowPro" fill className="object-contain" loading="lazy" />
+              <Image src={LOGO_URL} alt="FlowPro" fill className="object-contain" loading="lazy" sizes="64px" />
             </div>
             <span className="text-[12px] text-white/20 font-medium">© 2025 FlowPro. Todos os direitos reservados.</span>
           </div>

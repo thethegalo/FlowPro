@@ -28,6 +28,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 const COLORS = [
   { hex: '#7c3aff', label: 'Roxo' },
@@ -105,7 +106,7 @@ Design responsivo e moderno.`;
       <div className="flex min-h-screen w-full bg-transparent relative overflow-x-hidden">
         {/* Background Atmospheric */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-          <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[140px] animate-pulse"></div>
+          <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[140px] animate-pulse" style={{ willChange: 'transform' }}></div>
           <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent/10 rounded-full blur-[120px]"></div>
         </div>
 
@@ -151,11 +152,11 @@ Design responsivo e moderno.`;
 
                     <div className="p-8 flex-1 flex flex-col items-center text-center space-y-6 z-10">
                       <div 
-                        className="h-24 w-24 rounded-full border-4 flex items-center justify-center overflow-hidden shrink-0 shadow-xl"
+                        className="h-24 w-24 rounded-full border-4 flex items-center justify-center overflow-hidden shrink-0 shadow-xl relative"
                         style={{ borderColor: formData.cor }}
                       >
                         {photo ? (
-                          <img src={photo} alt="Profile" className="h-full w-full object-cover" />
+                          <Image src={photo} alt="Profile" fill className="object-cover" unoptimized />
                         ) : (
                           <div className="h-full w-full bg-white/5 flex items-center justify-center">
                             <User className="h-10 w-10 opacity-20" />
@@ -198,7 +199,7 @@ Design responsivo e moderno.`;
                   </motion.div>
                 </div>
                 
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 animate-pulse">Simulação em Tempo Real</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 animate-pulse" style={{ willChange: 'transform' }}>Simulação em Tempo Real</p>
               </div>
 
               {/* FORMULARIO */}
@@ -214,7 +215,7 @@ Design responsivo e moderno.`;
                     <div className="flex flex-col items-center sm:flex-row sm:items-center gap-6">
                       <div className="h-20 w-20 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center overflow-hidden relative group shrink-0">
                         {photo ? (
-                          <img src={photo} alt="Preview" className="h-full w-full object-cover" />
+                          <Image src={photo} alt="Preview" fill className="object-cover" unoptimized />
                         ) : (
                           <Upload className="h-6 w-6 opacity-20" />
                         )}
@@ -299,7 +300,7 @@ Design responsivo e moderno.`;
 
                     <Button 
                       onClick={handleGenerate}
-                      className="w-full h-16 bg-primary hover:bg-primary/90 text-white rounded-2xl font-black uppercase tracking-widest text-base shadow-[0_15px_40px_rgba(124,58,255,0.3)] transition-all"
+                      className="w-full h-16 bg-primary hover:bg-primary/90 text-white rounded-2xl font-black uppercase tracking-widest text-base shadow-[0_15px_40px_rgba(124,58,237,0.3)] transition-all"
                     >
                       GERAR BLUEPRINT <Sparkles className="h-5 w-5 ml-2" />
                     </Button>
