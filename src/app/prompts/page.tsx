@@ -85,15 +85,15 @@ const NICHES = [
 ];
 
 const TEMPLATE_PRESETS = [
-  { name: 'Barbearia Moderna', niche: 'Barbearia', style: 'Minimalista', icon: Scissors, color: '#c9a84c', palette: ['#c9a84c', '#f5f5f5', '#0d0d0d'], tone: 'Luxuoso', badge: 'Minimalista' },
-  { name: 'Clínica Odontológica', niche: 'Clínica', style: 'Clean White', icon: Stethoscope, color: '#0077b6', palette: ['#0077b6', '#023e8a', '#f0f7ff'], tone: 'Profissional', badge: 'Elegante' },
-  { name: 'Restaurante Premium', niche: 'Restaurante', style: 'Luxo Profundo', icon: Utensils, color: '#e85d04', palette: ['#e85d04', '#fff8f0', '#1a0a00'], tone: 'Amigável', badge: 'Luxuoso' },
-  { name: 'Academia Fitness', niche: 'Academia', style: 'Bold', icon: Dumbbell, color: '#ff6b00', palette: ['#ff6b00', '#ffffff', '#0a0a0a'], tone: 'Urgente', badge: 'Bold' },
-  { name: 'Loja de Roupas', niche: 'E-commerce', style: 'Moderno & Dark', icon: ShoppingBag, color: '#635bff', palette: ['#635bff', '#0a2540', '#ffffff'], tone: 'Descontraído', badge: 'Moderno' },
-  { name: 'Advocacia de Elite', niche: 'Advocacia', style: 'Corporativo', icon: Scale, color: '#1e3a8a', palette: ['#1e3a8a', '#e2e8f0', '#0a0e1a'], tone: 'Profissional', badge: 'Elegante' },
-  { name: 'Pet Shop VIP', niche: 'Pet Shop', style: 'Playful & Bold', icon: Bone, color: '#f97316', palette: ['#f97316', '#431407', '#fff7ed'], tone: 'Amigável', badge: 'Playful' },
-  { name: 'Estética Glow', niche: 'Estética', style: 'Glassmorphism', icon: Sparkles, color: '#ec4899', palette: ['#ec4899', '#742a2a', '#fff5f5'], tone: 'Luxuoso', badge: 'Elegante' },
-  { name: 'Consultoria Digital', niche: 'Consultoria', style: 'Futurista', icon: TrendingUp, color: '#7c3aed', palette: ['#7c3aed', '#f4f4f5', '#05050f'], tone: 'Profissional', badge: 'Futurista' },
+  { name: 'Barbearia Moderna', niche: 'Barbearia', style: 'Minimalista', icon: Scissors, color: '#c9a84c', palette: ['#c9a84c', '#f5f5f5', '#0d0d0d'], tone: 'Luxuoso', badge: 'Minimalista', previewUrl: 'https://id-preview--48a0d930-0296-4a9f-83f4-6afa2dce8457.lovable.app/' },
+  { name: 'Clínica Odontológica', niche: 'Clínica', style: 'Clean White', icon: Stethoscope, color: '#0077b6', palette: ['#0077b6', '#023e8a', '#f0f7ff'], tone: 'Profissional', badge: 'Elegante', previewUrl: 'https://id-preview--48e9af26-62e7-4ea3-b49c-953edc1b70ff.lovable.app/' },
+  { name: 'Restaurante Premium', niche: 'Restaurante', style: 'Luxo Profundo', icon: Utensils, color: '#e85d04', palette: ['#e85d04', '#fff8f0', '#1a0a00'], tone: 'Amigável', badge: 'Luxuoso', previewUrl: '' },
+  { name: 'Academia Fitness', niche: 'Academia', style: 'Bold', icon: Dumbbell, color: '#ff6b00', palette: ['#ff6b00', '#ffffff', '#0a0a0a'], tone: 'Urgente', badge: 'Bold', previewUrl: 'https://id-preview--c6f3fa37-7270-4f58-91f0-545e796152ba.lovable.app/' },
+  { name: 'Loja de Roupas', niche: 'E-commerce', style: 'Moderno & Dark', icon: ShoppingBag, color: '#635bff', palette: ['#635bff', '#0a2540', '#ffffff'], tone: 'Descontraído', badge: 'Moderno', previewUrl: '' },
+  { name: 'Advocacia de Elite', niche: 'Advocacia', style: 'Corporativo', icon: Scale, color: '#1e3a8a', palette: ['#1e3a8a', '#e2e8f0', '#0a0e1a'], tone: 'Profissional', badge: 'Elegante', previewUrl: '' },
+  { name: 'Pet Shop VIP', niche: 'Pet Shop', style: 'Playful & Bold', icon: Bone, color: '#f97316', palette: ['#f97316', '#431407', '#fff7ed'], tone: 'Amigável', badge: 'Playful', previewUrl: '' },
+  { name: 'Estética Glow', niche: 'Estética', style: 'Glassmorphism', icon: Sparkles, color: '#ec4899', palette: ['#ec4899', '#742a2a', '#fff5f5'], tone: 'Luxuoso', badge: 'Elegante', previewUrl: '' },
+  { name: 'Consultoria Digital', niche: 'Consultoria', style: 'Futurista', icon: TrendingUp, color: '#7c3aed', palette: ['#7c3aed', '#f4f4f5', '#05050f'], tone: 'Profissional', badge: 'Futurista', previewUrl: '' },
 ];
 
 const TEMPLATE_DATA: Record<string, any> = {
@@ -422,34 +422,68 @@ Gere o código completo da página em um único arquivo.`;
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="grid grid-cols-2 lg:grid-cols-3 gap-6"
+                      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20"
                     >
                       {TEMPLATE_PRESETS.map((t, idx) => (
                         <Card 
                           key={idx} 
-                          className="glass-card border-white/10 rounded-[2.5rem] p-8 flex flex-col items-center text-center space-y-6 group hover:border-primary/40 transition-all hover:shadow-[0_0_40px_rgba(124,58,255,0.15)] relative overflow-hidden"
+                          className="glass-card border-white/10 rounded-[2rem] p-6 flex flex-col space-y-6 group hover:border-primary/40 transition-all hover:shadow-[0_0_40px_rgba(124,58,255,0.15)] relative overflow-hidden"
                         >
-                          <div 
-                            className="h-16 w-16 rounded-3xl flex items-center justify-center relative transition-transform duration-500 group-hover:scale-110"
-                            style={{ backgroundColor: `${t.color}15`, border: `1px solid ${t.color}30` }}
-                          >
-                            <div className="absolute inset-0 blur-2xl opacity-20" style={{ backgroundColor: t.color }} />
-                            <t.icon className="h-8 w-8 relative z-10" style={{ color: t.color }} />
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <h3 className="text-sm font-black italic uppercase tracking-tight text-white/90">{t.name}</h3>
-                            <Badge variant="outline" className="bg-white/5 border-white/10 text-[8px] font-black uppercase tracking-widest opacity-60">
-                              {t.badge}
-                            </Badge>
+                          {/* MacBook Preview */}
+                          <div className="relative w-full">
+                            {/* Tela do MacBook */}
+                            <div className="w-full bg-zinc-900 rounded-t-xl border border-zinc-700 overflow-hidden">
+                              {/* Barra superior com dots */}
+                              <div className="h-5 bg-zinc-800 flex items-center px-2 gap-1 border-b border-zinc-700">
+                                <div className="h-2 w-2 rounded-full bg-red-500/70" />
+                                <div className="h-2 w-2 rounded-full bg-yellow-500/70" />
+                                <div className="h-2 w-2 rounded-full bg-green-500/70" />
+                              </div>
+                              {/* iframe do preview */}
+                              <div className="relative h-36 overflow-hidden">
+                                {t.previewUrl ? (
+                                  <iframe
+                                    src={t.previewUrl}
+                                    className="w-full h-full scale-[0.5] origin-top-left pointer-events-none"
+                                    style={{ width: '200%', height: '200%' }}
+                                    loading="lazy"
+                                    title={t.name}
+                                  />
+                                ) : (
+                                  <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/10 flex items-center justify-center">
+                                    <span className="text-[10px] font-black uppercase text-white/30 tracking-widest">Preview em breve</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            {/* Base do MacBook */}
+                            <div className="h-2 bg-zinc-700 rounded-b-xl w-full" />
+                            <div className="h-1 bg-zinc-600 rounded-b-xl w-[80%] mx-auto" />
                           </div>
 
-                          <Button 
-                            onClick={() => handleUseTemplate(t.name)}
-                            className="w-full h-11 bg-white text-black hover:bg-primary hover:text-white rounded-xl font-black uppercase tracking-widest text-[9px] shadow-lg transition-all"
-                          >
-                            USAR TEMPLATE
-                          </Button>
+                          <div className="flex flex-col items-center text-center space-y-4">
+                            <div 
+                              className="h-12 w-12 rounded-2xl flex items-center justify-center relative transition-transform duration-500 group-hover:scale-110"
+                              style={{ backgroundColor: `${t.color}15`, border: `1px solid ${t.color}30` }}
+                            >
+                              <div className="absolute inset-0 blur-xl opacity-20" style={{ backgroundColor: t.color }} />
+                              <t.icon className="h-6 w-6 relative z-10" style={{ color: t.color }} />
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <h3 className="text-sm font-black italic uppercase tracking-tight text-white/90">{t.name}</h3>
+                              <Badge variant="outline" className="bg-white/5 border-white/10 text-[8px] font-black uppercase tracking-widest opacity-60">
+                                {t.badge}
+                              </Badge>
+                            </div>
+
+                            <Button 
+                              onClick={() => handleUseTemplate(t.name)}
+                              className="w-full h-11 bg-white text-black hover:bg-primary hover:text-white rounded-xl font-black uppercase tracking-widest text-[9px] shadow-lg transition-all"
+                            >
+                              USAR TEMPLATE
+                            </Button>
+                          </div>
                         </Card>
                       ))}
                     </motion.div>
