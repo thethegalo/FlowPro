@@ -1,427 +1,521 @@
+
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
-  ArrowRight, 
-  Cpu,
-  Layers,
-  Search,
-  User,
+  MessageSquare, 
+  Target, 
+  Route, 
   Star,
   Zap,
   CheckCircle2,
-  TrendingUp,
-  ShieldCheck,
-  MessageSquare,
-  MapPin,
-  Calendar,
-  Quote
+  CreditCard,
+  Infinity,
+  ArrowRight,
+  AlertCircle,
+  Timer,
+  Sparkles
 } from 'lucide-react';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Globe } from '@/components/ui/cobe-globe';
-import { MacbookShowcase } from '@/components/MacbookShowcase';
-import { DashboardParticles } from '@/components/DashboardParticles';
+
+// Carregamento dinâmico do Globo para performance
+const Globe = dynamic(() => import('@/components/ui/cobe-globe').then(m => ({ default: m.Globe })), { 
+  ssr: false, 
+  loading: () => <div className="w-full h-full bg-primary/5 rounded-full blur-xl animate-pulse" /> 
+});
 
 const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
 
-const TESTIMONIAL_IMAGES = [
-  "https://media.inlead.cloud/uploads/44422/2026-01-05/md-vOR05-design-sem-nome-36.png",
-  "https://media.inlead.cloud/uploads/44422/2026-01-03/md-soixE-design-sem-nome-31.png",
-  "https://media.inlead.cloud/uploads/44422/2026-01-03/md-jztVV-design-sem-nome-30.png",
-  "https://media.inlead.cloud/uploads/44422/2026-01-05/md-flBj3-design-sem-nome-38.png"
-];
-
-const stats = [
-  { label: 'Scripts Gerados', value: 3200, prefix: '', suffix: '+', sub: 'Só esta semana', icon: <MessageSquare className="h-4 w-4" /> },
-  { label: 'Vendas Alunos', value: 4.8, prefix: 'R$ ', suffix: 'M', sub: 'Total acumulado', icon: <TrendingUp className="h-4 w-4" /> },
-  { label: 'Primeira Venda', value: 7, prefix: '', suffix: ' DIAS', sub: 'Tempo médio', icon: <Calendar className="h-4 w-4" /> },
-];
-
-const pillars = [
+const TESTIMONIALS = [
   { 
-    id: '01',
-    title: 'Script IA Pronto', 
-    icon: <Cpu className="h-6 w-6" />, 
-    desc: 'Cole o nome do lead, a IA escreve a mensagem de abordagem personalizada no WhatsApp para você.', 
-    color: 'text-purple-400',
-    glow: 'shadow-purple-500/20'
+    text: "Eu nunca tinha vendido nada online. Usei o script de IA para falar com uma pizzaria e fechei meu primeiro contrato em menos de uma semana.",
+    author: "Ana Oliveira", context: "Especialista em Escala"
   },
   { 
-    id: '02',
-    title: 'Radar de Leads', 
-    icon: <Search className="h-6 w-6" />, 
-    desc: 'Encontre donos de negócio em qualquer cidade e nicho em segundos com nosso motor de busca neural.', 
-    color: 'text-blue-400',
-    glow: 'shadow-blue-500/20'
-  },
-  { 
-    id: '03',
-    title: 'Jornada de 7 Dias', 
-    icon: <Layers className="h-6 w-6" />, 
-    desc: 'Um passo por dia até fechar sua primeira venda, com missões guiadas e mentorias automáticas.', 
-    color: 'text-cyan-400',
-    glow: 'shadow-cyan-500/20'
-  },
-];
-
-const testimonials = [
-  {
-    name: "Ana Oliveira",
-    result: "R$ 1.200",
-    subResult: "no 4º dia",
-    text: "Eu nunca tinha vendido nada online. Usei o script de IA para falar com uma pizzaria local e fechei meu primeiro contrato em menos de uma semana.",
-    avatar: TESTIMONIAL_IMAGES[0]
-  },
-  {
-    name: "Bruno Silva",
-    result: "3 clientes",
-    subResult: "em 10 dias",
     text: "O Radar de Leads é bizarro. Achei 50 dentistas na minha cidade e a IA gerou abordagens que todos responderam. Já faturei R$ 3.500.",
-    avatar: TESTIMONIAL_IMAGES[1]
+    author: "Bruno Silva", context: "Consultor Fase 1"
   },
-  {
-    name: "Juliana Reus",
-    result: "1ª Venda",
-    subResult: "em 48h",
+  { 
     text: "A barreira de não saber o que falar sumiu. Copiei o script da IA, mandei no WhatsApp e o cliente fechou na hora. Simples assim.",
-    avatar: TESTIMONIAL_IMAGES[2]
+    author: "Juliana Reus", context: "Venda em 48h"
   }
 ];
 
-const faqs = [
-  { q: "O sistema funciona para quem não tem experiência?", a: "Totalmente. O FlowPro foi desenhado como uma jornada guiada passo a passo. Você só precisa seguir as missões diárias e copiar os scripts gerados." },
-  { q: "Como a IA ajuda no processo?", a: "Nossa IA analisa o nicho do lead e gera um script de abordagem que não parece spam, aumentando drasticamente suas chances de resposta." },
-  { q: "Em quanto tempo vejo os primeiros resultados?", a: "Nossa jornada foi feita para você realizar sua primeira venda em até 7 dias, desde que execute todas as tarefas propostas." },
-  { q: "Preciso aparecer nas redes sociais?", a: "Não. Ensinamos estratégias de bastidores onde você pode prospectar e vender sem nunca mostrar o rosto." },
-];
+// LINKS EXCLUSIVOS DO FELIPE
+const CHECKOUT_MENSAL = "https://go.flowproia.shop/PPU38CQA295";
+const CHECKOUT_TRIMESTRAL = "https://go.flowproia.shop/PPU38CQA29A";
+const CHECKOUT_VITALICIO = "https://go.flowproia.shop/PPU38CQA294";
 
-function AnimatedNumber({ value, prefix = "", suffix = "" }: { value: number, prefix?: string, suffix?: string }) {
-  const [displayValue, setDisplayValue] = useState(0);
+const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-100px" },
+  transition: { duration: 0.6, ease: [0.4, 0, 0.2, 1] }
+};
 
-  useEffect(() => {
-    let start = 0;
-    const end = value;
-    if (start === end) return;
+const staggerContainer = {
+  initial: {},
+  whileInView: {
+    transition: {
+      staggerChildren: 0.1
+    }
+  },
+  viewport: { once: true }
+};
 
-    let totalDuration = 2000;
-    let increment = end / (totalDuration / 16);
-    
-    let timer = setInterval(() => {
-      start += increment;
-      if (start >= end) {
-        setDisplayValue(end);
-        clearInterval(timer);
-      } else {
-        setDisplayValue(start);
-      }
-    }, 16);
+const cardIn = {
+  initial: { opacity: 0, y: 16 },
+  whileInView: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, ease: "easeOut" }
+};
 
-    return () => clearInterval(timer);
-  }, [value]);
+export default function FelipeLandingPage() {
+  const scrollToPricing = () => {
+    document.getElementById('precos')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
-    <span className="tabular-nums">
-      {prefix}
-      {Number.isInteger(displayValue) ? displayValue.toLocaleString('pt-BR') : displayValue.toFixed(1).replace('.', ',')}
-      {suffix}
-    </span>
-  );
-}
-
-export default function Home() {
-  return (
-    <div className="flex flex-col min-h-screen bg-[#050508] text-white overflow-x-hidden relative">
-      <DashboardParticles />
+    <div className="flex flex-col min-h-screen text-white bg-transparent overflow-x-hidden relative">
       
+      {/* BACKGROUND ORBS OPTIMIZED */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[140px] animate-pulse-glow"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent/10 rounded-full blur-[120px]"></div>
-        <div className="absolute inset-0 grid-background opacity-20"></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[100px] animate-pulse" style={{ willChange: 'transform' }}></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-accent/5 rounded-full blur-[80px]"></div>
       </div>
 
-      <header className="px-4 md:px-6 h-20 flex items-center justify-between sticky top-0 z-50 bg-[#050508]/70 backdrop-blur-xl border-b border-white/5">
-        <Link href="/" className="flex items-center group relative shrink-0">
-          <div className="relative h-8 w-24 md:h-12 md:w-40 transition-all duration-500 group-hover:scale-105 group-hover:drop-shadow-[0_0_15px_rgba(139,92,246,0.6)]">
-            <Image src={LOGO_URL} alt="FlowPro Logo" fill className="object-contain filter-none" priority />
-          </div>
-        </Link>
-        
-        <div className="flex items-center gap-4 md:gap-10">
-          <Link href="/auth" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] hover:text-primary transition-all text-white/70">
-            <span className="hidden md:inline">Área do Aluno</span>
-            <span className="md:hidden">Entrar</span>
+      {/* NAVBAR */}
+      <nav className="fixed top-0 w-full h-[60px] bg-[#05050f]/70 backdrop-blur-[20px] border-b border-white/5 z-50 px-6 md:px-12 flex items-center justify-between">
+        <div className="flex items-center gap-12">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="relative h-5 w-20">
+              <Image src={LOGO_URL} alt="FlowPro" fill className="object-contain" priority />
+            </div>
           </Link>
-          <Button asChild className="bg-white text-black hover:bg-primary hover:text-white font-black rounded-full px-4 md:px-8 h-9 md:h-10 transition-all duration-500 hover:scale-105 active:scale-95 shadow-xl text-[9px] md:text-sm">
-            <Link href="/v/felipe">QUERO ESCALAR</Link>
+          
+          <div className="hidden md:flex items-center gap-8">
+            <Link href="#arsenal" className="text-[13px] text-white/50 hover:text-white transition-colors">Arsenal</Link>
+            <button onClick={scrollToPricing} className="text-[13px] text-white/50 hover:text-white transition-colors">Preços</button>
+            <Link href="#faq" className="text-[13px] text-white/50 hover:text-white transition-colors">Dúvidas</Link>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-6">
+          <Link href="/auth" className="text-[13px] text-white/40 hover:text-white transition-colors font-medium">Fazer login</Link>
+          <Button onClick={scrollToPricing} className="bg-[#6d28d9] hover:bg-[#7c3aed] text-white font-medium text-[13px] h-9 px-5 rounded-lg border-none shadow-none">
+            Acessar agora
           </Button>
         </div>
-      </header>
+      </nav>
 
-      <main className="relative z-10">
-        <section className="relative pt-16 pb-24 md:pt-32 md:pb-48 overflow-visible">
-          <div className="container px-6 mx-auto relative z-20">
-            <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
-              <div className="flex-1 text-center lg:text-left space-y-10 relative z-30 px-2">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] mx-auto lg:mx-0 text-primary">
-                  <Zap className="h-3 w-3 animate-pulse" />
-                  Motor Neural de Vendas Ativado
-                </div>
-                
-                <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[0.95] uppercase px-2 md:px-0">
-                  SEU PRIMEIRO CLIENTE <br />
-                  <span className="bg-gradient-to-r from-purple-500 via-blue-400 to-cyan-400 bg-clip-text text-transparent italic inline-block py-1">
-                    COMEÇA COM UM SCRIPT.
-                  </span>
-                </h1>
-                
-                <p className="text-muted-foreground text-sm md:text-2xl max-w-2xl mx-auto lg:mx-0 font-medium leading-relaxed">
-                  Encontre leads qualificados em qualquer nicho, <span className="text-white">gere mensagens prontas com IA</span> e comece a vender em até 7 dias — mesmo sem experiência.
-                </p>
+      <main className="pt-[60px] relative z-10">
+        
+        {/* HERO SECTION */}
+        <section className="max-w-[1200px] mx-auto px-6 md:px-12 py-12 md:py-32 overflow-visible">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
+            <motion.div 
+              className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-6 md:space-y-8 flex-1 max-w-2xl z-20"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <Badge className="bg-[#6d28d9]/15 border border-[#7c3aed]/30 text-[#c4b5fd] text-[10px] md:text-[12px] font-medium px-3 md:px-4 py-1 md:py-1.5 rounded-full flex items-center gap-2 shadow-none">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+                ✦ 1.800+ consultores ativos
+              </Badge>
 
-                <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start items-center">
-                  <div className="relative group w-full sm:w-auto">
-                    <div className="absolute -inset-1 bg-primary rounded-[2.5rem] blur-xl opacity-40 group-hover:opacity-100 animate-pulse transition duration-1000"></div>
-                    <Button size="lg" className="relative h-16 md:h-20 px-8 md:px-12 text-lg md:text-xl font-black bg-primary hover:scale-105 transition-all rounded-3xl w-full sm:w-auto group overflow-hidden shadow-[0_0_30px_rgba(139,92,246,0.5)]" asChild>
-                      <Link href="/v/felipe">
-                        COMEÇAR JORNADA <ArrowRight className="ml-2 h-6 w-6 md:h-7 md:w-7 group-hover:translate-x-2 transition-transform" />
-                      </Link>
-                    </Button>
-                  </div>
-                  
-                  <div className="flex -space-x-3">
-                    {TESTIMONIAL_IMAGES.map((img, i) => (
-                      <div key={i} className="h-10 w-10 rounded-full border-2 border-[#050508] bg-white/10 overflow-hidden relative shadow-lg">
-                        <Image src={img} alt={`user ${i}`} fill className="object-cover" />
+              <h1 className="text-[34px] sm:text-[44px] md:text-[64px] lg:text-[72px] font-extrabold tracking-[-0.02em] font-headline leading-[1.1] text-white">
+                Seu primeiro cliente<br className="hidden sm:block" />
+                <span className="bg-gradient-to-r from-[#a855f7] to-[#6366f1] bg-clip-text text-transparent italic inline-block pb-4">começa com um script.</span>
+              </h1>
+
+              <p className="text-[14px] md:text-[18px] text-white/45 leading-[1.6] max-w-[480px]">
+                Encontre leads qualificados, gere abordagens com IA e realize sua primeira venda em tempo recorde.
+              </p>
+
+              <div className="flex flex-col sm:flex-row items-center gap-6 md:gap-8 pt-4 w-full sm:w-auto">
+                <Button onClick={scrollToPricing} size="lg" className="w-full sm:w-auto bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-medium text-[14px] h-[48px] px-8 rounded-[10px] transition-all hover:-translate-y-0.5 shadow-[0_8px_24px_rgba(124,58,237,0.4)] border-none">
+                  Acessar agora
+                </Button>
+
+                <div className="flex items-center gap-3">
+                  <div className="flex -space-x-2">
+                    {['A', 'B', 'J', 'L'].map((initial, i) => (
+                      <div key={i} className="h-7 w-7 rounded-full border-2 border-[#05050f] bg-primary/20 flex items-center justify-center text-[10px] font-black text-primary relative">
+                        {initial}
                       </div>
                     ))}
-                    <div className="h-10 w-10 rounded-full border-2 border-[#050508] bg-primary flex items-center justify-center text-[10px] font-black z-10">
-                      +12k
-                    </div>
+                  </div>
+                  <div className="flex flex-col items-start">
+                    <span className="text-[12px] font-semibold text-white">4.9 ★</span>
+                    <span className="text-[11px] text-white/40 font-medium">847 avaliações</span>
                   </div>
                 </div>
               </div>
+            </motion.div>
 
-              <div className="flex-1 w-full relative aspect-square mx-auto max-w-[600px] flex items-center justify-center z-10">
-                <div className="absolute inset-0 bg-primary/50 blur-[180px] rounded-full opacity-40 animate-pulse"></div>
-                
-                <div className="absolute w-[110%] h-[110%] border border-primary/10 rounded-full animate-spin-slow pointer-events-none">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 h-2 w-2 bg-primary rounded-full shadow-[0_0_10px_#8b5cf6]"></div>
-                </div>
-                <div className="absolute w-[90%] h-[90%] border border-blue-500/10 rounded-full animate-reverse-spin-slow pointer-events-none">
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-1.5 w-1.5 bg-blue-400 rounded-full shadow-[0_0_10px_#60a5fa]"></div>
-                </div>
-                
-                <Globe className="w-full h-full relative z-10" speed={0.008} dark={1} />
+            {/* GLOBE SECTION */}
+            <div className="hidden lg:flex flex-1 items-center justify-center relative min-h-[600px] overflow-visible">
+              <div className="absolute inset-0 bg-primary/5 blur-[100px] rounded-full animate-pulse pointer-events-none scale-110" style={{ willChange: 'transform' }} />
+              <div className="relative w-full max-w-[420px] aspect-square mx-auto lg:mx-0 z-10">
+                <Globe 
+                  className="w-full h-full"
+                  speed={0.005}
+                  dark={1}
+                  diffuse={1.2}
+                  mapSamples={6000}
+                  markerSize={0.05}
+                  baseColor={[0.1, 0.1, 0.2]}
+                  markerColor={[124/255, 58/255, 237/255]}
+                  glowColor={[0.1, 0.1, 0.2]}
+                />
               </div>
             </div>
           </div>
         </section>
 
-        <section className="py-16 bg-gradient-to-b from-transparent via-primary/5 to-transparent border-y border-white/5 relative z-20">
-          <div className="container px-6 mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-0 relative max-w-5xl mx-auto">
-              {stats.map((s, i) => (
-                <div key={i} className="flex flex-col items-center text-center space-y-2 group relative md:px-12">
-                  {i < stats.length - 1 && (
-                    <div className="hidden md:block absolute -right-[1px] top-1/2 -translate-y-1/2 h-16 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
-                  )}
-                  <div className="flex items-center gap-3 text-primary mb-2">
-                    <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 group-hover:scale-110 transition-transform">
-                      {s.icon}
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest opacity-70">{s.label}</span>
-                  </div>
-                  <div className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-white">
-                    <AnimatedNumber value={s.value} prefix={s.prefix} suffix={s.suffix} />
-                  </div>
-                  <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{s.sub}</p>
+        {/* METRICS SECTION */}
+        <section className="border-y border-white/5 py-12 md:py-24">
+          <div className="max-w-[1100px] mx-auto px-6 md:px-12">
+            <motion.div 
+              className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-0"
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              {[
+                { val: "1.817+", label: "Ativos no Flow" },
+                { val: "R$ 2,6M", label: "Gerado pela base" },
+                { val: "3,8 dias", label: "Para primeira venda" }
+              ].map((m, i) => (
+                <div key={i} className={`flex flex-col items-center md:items-start md:px-12 ${i !== 0 ? 'md:border-l border-white/5' : ''}`}>
+                  <span className="text-[36px] md:text-[52px] font-extrabold text-white tracking-[-1px] md:tracking-[-1.5px] leading-none">{m.val}</span>
+                  <span className="text-[11px] md:text-[12px] text-white/30 font-medium uppercase tracking-widest mt-2">{m.label}</span>
                 </div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
 
-        <section id="tecnologia" className="py-24 md:py-48 relative overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(124,58,237,0.1),transparent_50%)]"></div>
-          <div className="container px-6 mx-auto relative z-10">
-            <div className="text-center mb-24">
-              <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-6 text-white leading-none">O SEU <span className="text-primary">ARSENAL</span></h2>
-              <p className="text-muted-foreground max-w-xl mx-auto uppercase tracking-[0.2em] text-[10px] font-black">As ferramentas que transformam um "no" em um "fechado"</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {pillars.map((p, i) => (
-                <Card key={i} className={`glass-card p-10 md:p-12 group transition-all duration-500 rounded-[2.5rem] border-white/10 hover:border-t-primary/50 hover:shadow-2xl ${p.glow}`}>
-                  <span className="absolute bottom-6 right-8 text-6xl font-black opacity-5 pointer-events-none select-none">{p.id}</span>
-                  <div className="mb-10 p-5 rounded-2xl bg-primary/10 inline-block transition-transform group-hover:scale-110 group-hover:rotate-6 shadow-2xl border border-primary/20">
-                    {p.icon}
+        {/* ARSENAL SECTION */}
+        <section id="arsenal" className="max-w-[1100px] mx-auto px-6 md:px-12 py-20 md:py-32">
+          <motion.div className="space-y-4 mb-16 text-center md:text-left" {...fadeInUp}>
+            <h2 className="text-[28px] md:text-[36px] font-bold tracking-[-0.5px] text-white">O seu arsenal.</h2>
+            <p className="text-[14px] text-white/35">As ferramentas que transformam um "não" em um fechamento.</p>
+          </motion.div>
+
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="whileInView"
+            viewport={{ once: true }}
+          >
+            {[
+              { 
+                icon: MessageSquare, 
+                title: "Script IA pronto", 
+                desc: "Cole o nome do lead, a IA escreve a mensagem de abordagem personalizada no WhatsApp para você." 
+              },
+              { 
+                icon: Target, 
+                title: "Radar de leads", 
+                desc: "Encontre donos de negócio em qualquer nicho e região do mundo com nosso motor de busca neural." 
+              },
+              { 
+                icon: Route, 
+                title: "Jornada de 7 dias", 
+                desc: "Processo que já fechou mais de 479 vendas. Com missões guiadas e memória automática." 
+              }
+            ].map((f, i) => (
+              <motion.div key={i} variants={cardIn}>
+                <Card className="bg-white/[0.03] border-white/[0.07] rounded-2xl p-8 group transition-all duration-300 hover:border-primary/25 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.3)] min-h-[200px] relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+                  <div className="h-9 w-9 rounded-lg bg-primary/15 border border-primary/20 flex items-center justify-center text-primary mb-8">
+                    <f.icon className="h-[18px] w-[18px] text-[#a78bfa]" />
                   </div>
-                  <h3 className="text-2xl font-black mb-4 italic tracking-tight uppercase text-white">{p.title}</h3>
-                  <p className="text-base text-muted-foreground leading-relaxed font-medium">{p.desc}</p>
+                  <h3 className="text-[15px] font-semibold text-white/90 mb-3">{f.title}</h3>
+                  <p className="text-[13px] text-white/40 leading-[1.7]">{f.desc}</p>
                 </Card>
-              ))}
-            </div>
-          </div>
+              </motion.div>
+            ))}
+          </motion.div>
         </section>
 
-        <section className="py-24 relative overflow-visible bg-gradient-to-b from-transparent via-blue-900/10 to-transparent">
-          <div className="text-center mb-16 px-4">
-             <Badge className="bg-primary/20 text-primary border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5 mb-4">Command Center</Badge>
-             <h2 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter">O SEU PAINEL DE CONTROLE</h2>
-             <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest mt-4">Toda a inteligência do mercado na palma da sua mão</p>
+        {/* PRICING SECTION (FELIPE LINKS) */}
+        <section id="precos" className="max-w-[1200px] mx-auto px-6 md:px-12 py-24 md:py-48">
+          <div className="text-center space-y-6 mb-20">
+            <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5">Escolha sua Rota de Escala</Badge>
+            <h2 className="text-[36px] md:text-[64px] font-black italic uppercase tracking-tighter leading-tight">
+              Domine o mercado <br /><span className="text-primary shimmer-text">com poder IA.</span>
+            </h2>
+            <p className="text-white/40 text-sm md:text-lg max-w-2xl mx-auto font-medium">
+              Libere o arsenal completo e comece a faturar em escala agora mesmo com o método do Felipe.
+            </p>
           </div>
-          <div className="scale-75 sm:scale-100 md:scale-125 lg:scale-150 transition-transform py-20 overflow-hidden">
-            <MacbookShowcase />
-          </div>
-        </section>
 
-        <section className="py-32 relative">
-          <div className="container px-6 mx-auto">
-            <div className="text-center mb-20">
-              <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter mb-6 text-white leading-none">QUEM <span className="text-primary">EXECUTA</span> GANHA</h2>
-              <p className="text-muted-foreground max-w-xl mx-auto uppercase tracking-[0.2em] text-[10px] font-black">Alunos comuns que começaram com o mesmo script que você vai gerar</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {testimonials.map((t, i) => (
-                <Card key={i} className="glass-card p-10 rounded-[2.5rem] space-y-6 border-white/5 flex flex-col justify-between relative overflow-hidden h-full">
-                  <div className="absolute top-6 right-6">
-                    <Badge className="bg-primary/20 text-primary border-primary/30 text-[10px] font-black px-3 py-1">
-                      {t.result}
-                    </Badge>
-                  </div>
-                  <div className="space-y-6">
-                    <div className="flex gap-1">
-                      {[1,2,3,4,5].map(star => <Star key={star} className="h-3 w-3 fill-yellow-500 text-yellow-500" />)}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+            
+            {/* PLANO MENSAL */}
+            <motion.div {...fadeInUp} transition={{ delay: 0.1 }}>
+              <Card className="h-full glass-card p-8 flex flex-col justify-between border-amber-500/40 relative overflow-hidden bg-white/[0.02]">
+                <div className="space-y-8 relative z-10">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 px-3 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full w-fit">
+                      <AlertCircle className="h-3 w-3 text-amber-500" />
+                      <span className="text-[8px] font-black uppercase tracking-widest text-amber-500">Uso Diário Limitado</span>
                     </div>
-                    <Quote className="h-10 w-10 text-primary opacity-20" />
-                    <p className="text-lg font-medium italic text-white/80 leading-relaxed">"{t.text}"</p>
+                    <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-white/70 flex items-center gap-2">
+                      <Zap className="h-4 w-4 text-amber-500 fill-amber-500" /> Flow Mensal
+                    </h3>
+                    <div className="flex items-baseline gap-1">
+                      <p className="text-5xl md:text-6xl font-black italic text-white tracking-tighter">R$ 97</p>
+                      <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/mês</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center gap-3">
+                      <CreditCard className="h-4 w-4 text-amber-500" />
+                      <p className="text-[10px] font-black uppercase text-amber-500 tracking-widest">OU 12x DE R$ 9,74</p>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-4 pt-6 border-t border-white/5">
-                    <div className="h-14 w-14 rounded-2xl bg-white/5 border border-white/10 overflow-hidden shrink-0 relative shadow-inner">
-                      <Image src={t.avatar} alt={t.name} fill className="object-cover" />
+
+                  <ul className="space-y-4">
+                    {[
+                      'Radar: 20 Buscas/Dia', 
+                      'IA Mentor: 10 Perguntas/Dia', 
+                      'IA Prospecção: 10 Mensagens/Dia', 
+                      'Scripts de Elite', 
+                      'Acesso à Fase de Escala'
+                    ].map((f, i) => (
+                      <li key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white/80">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" /> {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <Button asChild className="w-full h-16 mt-10 rounded-2xl bg-amber-500 text-black hover:bg-amber-400 font-black uppercase tracking-widest shadow-lg shadow-amber-500/20">
+                  <a href={CHECKOUT_MENSAL} target="_blank" rel="noopener noreferrer">Acessar agora</a>
+                </Button>
+              </Card>
+            </motion.div>
+
+            {/* PLANO TRIMESTRAL */}
+            <motion.div {...fadeInUp} transition={{ delay: 0.2 }}>
+              <Card className="h-full glass-card p-8 flex flex-col justify-between border-cyan-500/50 relative overflow-hidden bg-white/[0.02]">
+                <div className="absolute top-0 right-0 p-4">
+                  <Badge className="bg-cyan-500 text-black font-black text-[8px] uppercase px-3 py-1">POPULAR</Badge>
+                </div>
+                <div className="space-y-8 relative z-10">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 px-3 py-1 bg-cyan-500/20 border border-cyan-500/30 rounded-full w-fit">
+                      <Timer className="h-3 w-3 text-cyan-500" />
+                      <span className="text-[8px] font-black uppercase tracking-widest text-cyan-500">Melhor Custo-Benefício</span>
+                    </div>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70 flex items-center gap-2">
+                      <Zap className="h-4 w-4 text-cyan-500 fill-cyan-500" /> Flow Trimestral
+                    </h3>
+                    <div className="flex items-baseline gap-1">
+                      <p className="text-5xl md:text-6xl font-black italic text-white tracking-tighter">R$ 197</p>
+                      <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/tri</span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center gap-3">
+                      <CreditCard className="h-4 w-4 text-cyan-500" />
+                      <p className="text-[10px] font-black uppercase text-cyan-500 tracking-widest">OU 12x DE R$ 19,78</p>
+                    </div>
+                  </div>
+
+                  <ul className="space-y-4">
+                    {[
+                      'Radar: 20 Buscas/Dia', 
+                      'IA Mentor: 10 Perguntas/Dia', 
+                      'IA Prospecção: 10 Mensagens/Dia', 
+                      'Scripts de Elite (Volume)', 
+                      'Acesso à Fase de Escala',
+                      '3 Meses de Acesso Pro'
+                    ].map((f, i) => (
+                      <li key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-cyan-500" /> {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <Button asChild className="w-full h-16 mt-10 rounded-2xl bg-cyan-500 text-black hover:bg-cyan-400 font-black uppercase tracking-widest shadow-lg shadow-cyan-500/20">
+                  <a href={CHECKOUT_TRIMESTRAL} target="_blank" rel="noopener noreferrer">Acessar agora</a>
+                </Button>
+              </Card>
+            </motion.div>
+
+            {/* PLANO VITALÍCIO */}
+            <motion.div {...fadeInUp} transition={{ delay: 0.3 }} className="relative p-[2px] rounded-[2rem] overflow-hidden shadow-[0_0_100px_rgba(139,92,246,0.4)]">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-pulse" style={{ willChange: 'transform' }}></div>
+              <Card className="h-full relative bg-[#050508] p-8 flex flex-col justify-between border-none rounded-[calc(2.5rem-2px)]">
+                <div className="absolute top-5 right-5 bg-primary text-white text-[8px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg flex items-center gap-1">
+                  <Star className="h-2.5 w-2.5 fill-white" /> RECOMENDADO
+                </div>
+                
+                <div className="space-y-8 relative z-10">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 px-3 py-1 bg-primary/20 border border-primary/30 rounded-full w-fit">
+                      <Sparkles className="h-3 w-3 text-primary" />
+                      <span className="text-[8px] font-black uppercase tracking-widest text-primary">Acesso Vitalício Ilimitado</span>
+                    </div>
+                    <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-primary flex items-center gap-2">
+                      <Infinity className="h-4 w-4 fill-primary text-black" /> Pagamento Único
+                    </h3>
+                    <div className="flex items-baseline gap-1">
+                      <p className="text-6xl md:text-7xl font-black italic text-white tracking-tighter">R$ 287</p>
+                    </div>
+                    <div className="bg-primary/10 border border-primary/20 rounded-xl px-4 py-4 border-dashed relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors"></div>
+                      <div className="relative flex items-center gap-3">
+                        <CreditCard className="h-5 w-5 text-primary" /> 
+                        <div>
+                          <p className="text-[10px] font-black uppercase text-primary tracking-widest leading-none mb-1">Parcelamento no Cartão</p>
+                          <p className="text-[14px] font-black text-white italic tracking-tight">Até 12x de R$ 28,82</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <ul className="space-y-4">
+                    {[
+                      'Radar de Leads ILIMITADO', 
+                      'IA Mentor 24h ILIMITADO', 
+                      'IA de Prospecção ILIMITADA', 
+                      'Jornada de 7 Dias Vitalícia',
+                      'Sem Mensalidades ou Taxas',
+                      'Garantia Blindada de 7 Dias'
+                    ].map((f, i) => (
+                      <li key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white">
+                        <CheckCircle2 className="h-4 w-4 text-primary fill-primary" /> {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <Button asChild className="w-full h-16 mt-10 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest shadow-[0_15px_40px_rgba(139,92,246,0.5)] transition-all hover:scale-[1.02] group text-sm md:text-base">
+                  <a href={CHECKOUT_VITALICIO} target="_blank" rel="noopener noreferrer">
+                    Acessar agora <ArrowRight className="ml-2 h-5 w-5 md:h-6 md:w-6 group-hover:translate-x-1 transition-transform" />
+                  </a>
+                </Button>
+              </Card>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* DEPOIMENTOS */}
+        <section className="max-w-[1100px] mx-auto px-6 md:px-12 py-20 md:py-32">
+          <motion.h2 className="text-[28px] md:text-[36px] font-bold tracking-[-0.5px] text-white mb-16" {...fadeInUp}>
+            Quem já está na jornada.
+          </motion.h2>
+          
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="whileInView"
+            viewport={{ once: true }}
+          >
+            {TESTIMONIALS.map((t, i) => (
+              <motion.div key={i} variants={cardIn}>
+                <Card className="bg-white/[0.03] border-white/[0.07] rounded-2xl p-8 space-y-6 hover:-translate-y-1.5 transition-all hover:border-primary/30 hover:shadow-[0_16px_48px_rgba(0,0,0,0.3)] h-full flex flex-col">
+                  <div className="text-[48px] text-primary/30 font-serif leading-none h-6">“</div>
+                  <div className="flex gap-1 mb-2">
+                    {[1,2,3,4,5].map(s => <Star key={s} className="h-3.5 w-3.5 fill-[#f59e0b] text-[#f59e0b]" />)}
+                  </div>
+                  <p className="text-[15px] text-white/65 leading-[1.8] italic flex-1">"{t.text}"</p>
+                  <div className="flex items-center gap-3 pt-4 border-t border-white/5">
+                    <div className="h-10 w-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center font-black text-primary text-xs shrink-0 relative overflow-hidden">
+                      {t.author.charAt(0)}
                     </div>
                     <div>
-                      <p className="font-black uppercase italic text-white leading-none mb-1">{t.name}</p>
-                      <p className="text-[10px] font-black text-primary uppercase tracking-widest">{t.subResult}</p>
+                      <p className="text-[13px] font-bold text-white">{t.author}</p>
+                      <p className="text-[11px] text-white/30 font-medium">{t.context}</p>
                     </div>
                   </div>
                 </Card>
-              ))}
-            </div>
-          </div>
+              </motion.div>
+            ))}
+          </motion.div>
         </section>
 
-        <section id="faq" className="py-24 md:py-48 bg-gradient-to-t from-primary/5 to-transparent">
-          <div className="container px-6 mx-auto max-w-4xl">
-            <h2 className="text-4xl md:text-6xl font-black italic mb-16 text-center uppercase tracking-tighter text-white">DÚVIDAS <span className="text-primary">FREQUENTES</span></h2>
-            <Accordion type="single" collapsible className="space-y-6 px-4 md:px-0">
-              {faqs.map((item, i) => (
-                <AccordionItem key={i} value={`item-${i}`} className="glass-card border-none rounded-[2rem] px-8 md:px-12 hover:bg-white/[0.05] transition-colors">
-                  <AccordionTrigger className="font-black hover:no-underline py-8 md:py-10 uppercase tracking-[0.2em] text-xs md:text-sm text-left text-white">
+        {/* FAQ */}
+        <section id="faq" className="max-w-[1100px] mx-auto px-6 md:px-12 py-20 md:py-32">
+          <motion.h2 className="text-[28px] md:text-[36px] font-bold tracking-[-0.5px] text-white mb-12" {...fadeInUp}>
+            Dúvidas frequentes.
+          </motion.h2>
+          
+          <motion.div {...fadeInUp}>
+            <Accordion type="single" collapsible className="w-full">
+              {[
+                { q: "O sistema funciona para quem não tem experiência?", a: "Sim. O FlowPro foi desenhado como uma jornada guiada passo a passo. Você só precisa seguir as missões diárias e copiar os scripts gerados." },
+                { q: "Como a IA ajuda no processo de vendas?", a: "Nossa IA analisa o nicho do lead e gera um script de abordagem que não parece spam, aumentando drasticamente suas chances de resposta." },
+                { q: "Em quanto tempo vejo os primeiros resultados?", a: "Nossa jornada foi feita para você realizar sua primeira venda em até 7 dias, desde que execute todas as tarefas propostas." },
+                { q: "Preciso aparecer nas redes sociais?", a: "Não. Ensinamos estratégias de bastidores onde você pode prospectar e vender sem nunca mostrar o rosto." }
+              ].map((item, i) => (
+                <AccordionItem key={i} value={`item-${i}`} className="border-b border-white/[0.07] py-4">
+                  <AccordionTrigger className="text-[14px] font-medium text-white/80 hover:no-underline hover:text-white transition-colors py-4 text-left">
                     {item.q}
                   </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground text-sm md:text-lg leading-relaxed pb-8 md:pb-10 font-medium italic border-t border-white/5 pt-6">
+                  <AccordionContent className="text-[13px] text-white/45 leading-[1.7] pt-2 pb-4 max-w-2xl">
                     {item.a}
                   </AccordionContent>
                 </AccordionItem>
               ))}
             </Accordion>
-          </div>
+          </motion.div>
         </section>
 
-        <section className="py-32 relative overflow-hidden border-t border-white/5 bg-[#030305]">
-          <div className="absolute inset-0 pointer-events-none">
-            {[...Array(15)].map((_, i) => (
-              <div 
-                key={i}
-                className="absolute h-1 w-1 bg-primary rounded-full animate-float-up opacity-20"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  bottom: `-${Math.random() * 20}%`,
-                  animationDuration: `${5 + Math.random() * 10}s`,
-                  animationDelay: `${Math.random() * 5}s`
-                }}
-              />
-            ))}
-          </div>
-
-          <div className="absolute inset-0 bg-primary/5 blur-3xl rounded-full scale-150 pointer-events-none"></div>
-          <div className="container px-6 mx-auto text-center relative z-10">
-            <h2 className="text-4xl md:text-7xl font-black italic uppercase tracking-tighter mb-10 text-white leading-tight">
-              A ESCALA NÃO <br /><span className="text-primary shimmer-text">ESPERA POR VOCÊ.</span>
+        {/* CTA FINAL */}
+        <section className="max-w-[1100px] mx-auto px-6 md:px-12 py-24 md:py-32 flex flex-col items-center text-center space-y-10">
+          <motion.div 
+            className="space-y-10 flex flex-col items-center"
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-[32px] md:text-[52px] font-extrabold tracking-[-1px] md:tracking-[-1.5px] text-white leading-tight max-w-[600px]">
+              A escala não espera por você.
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto mb-12 font-medium uppercase tracking-[0.2em] text-[10px] px-4 leading-relaxed">
-              O ecossistema neural está operando em alta frequência. Garanta sua posição agora e gere seu primeiro script.
+            <p className="text-[15px] text-white/40 max-w-[400px]">
+              Garanta sua posição no ecossistema e comece a faturar hoje.
             </p>
-            
-            <div className="relative inline-block group w-full sm:w-auto px-4 sm:px-0">
-              <div className="absolute -inset-1 bg-primary rounded-[2.5rem] blur-2xl opacity-30 group-hover:opacity-70 animate-pulse transition duration-1000"></div>
-              <Button asChild size="lg" className="relative h-20 md:h-24 px-8 md:px-16 text-xl md:text-2xl font-black bg-primary hover:scale-105 transition-all rounded-[2.5rem] group w-full sm:w-auto shadow-[0_0_50px_rgba(139,92,246,0.4)]">
-                <Link href="/v/felipe">
-                  ENTRAR NO FLOW AGORA <ArrowRight className="ml-3 h-8 w-8 group-hover:translate-x-2 transition-transform" />
-                </Link>
-              </Button>
-            </div>
-
-            <p className="mt-6 text-[10px] uppercase font-bold tracking-widest opacity-40 px-4">
-              Acesso imediato
-            </p>
-            
-            <div className="mt-20 flex flex-wrap justify-center gap-12 opacity-30 grayscale hover:grayscale-0 transition-all duration-700">
-               <ShieldCheck className="h-10 w-10" />
-               <CheckCircle2 className="h-10 w-10" />
-               <Zap className="h-10 w-10" />
-               <Layers className="h-10 w-10" />
-            </div>
-          </div>
+            <Button onClick={scrollToPricing} size="lg" className="bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-medium text-[14px] h-[48px] px-8 rounded-[10px] shadow-[0_8px_24px_rgba(124,58,237,0.4)] transition-all hover:-translate-y-0.5 border-none">
+              Acessar agora
+            </Button>
+          </motion.div>
         </section>
+
+        {/* FOOTER */}
+        <footer className="max-w-[1100px] mx-auto px-6 md:px-12 py-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="relative h-4 w-16 opacity-50 grayscale contrast-200">
+              <Image src={LOGO_URL} alt="FlowPro" fill className="object-contain" />
+            </div>
+            <span className="text-[12px] text-white/20 font-medium">© 2025 FlowPro. Todos os direitos reservados.</span>
+          </div>
+          
+          <div className="flex items-center gap-8">
+            <Link href="#" className="text-[12px] text-white/25 hover:text-white transition-colors">Termos</Link>
+            <Link href="#" className="text-[12px] text-white/25 hover:text-white transition-colors">Privacidade</Link>
+          </div>
+        </footer>
+
       </main>
-
-      <footer className="py-20 border-t border-white/5 bg-[#030305] text-center relative z-10">
-        <div className="relative h-10 w-32 mx-auto mb-8 opacity-50">
-          <Image src={LOGO_URL} alt="FlowPro Logo" fill className="object-contain" />
-        </div>
-        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.5em] px-4 leading-relaxed">
-          © 2026 FLOWPRO NEURAL SYSTEMS • TODOS OS DIREITOS RESERVADOS
-        </p>
-      </footer>
-
-      <style jsx global>{`
-        @keyframes float-up {
-          from { transform: translateY(0); opacity: 0; }
-          20% { opacity: 0.4; }
-          80% { opacity: 0.4; }
-          to { transform: translateY(-100vh); opacity: 0; }
-        }
-        .animate-float-up {
-          animation: float-up linear infinite;
-        }
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        @keyframes reverse-spin-slow {
-          from { transform: rotate(360deg); }
-          to { transform: rotate(0deg); }
-        }
-        .animate-spin-slow {
-          animation: spin-slow 20s linear infinite;
-        }
-        .animate-reverse-spin-slow {
-          animation: reverse-spin-slow 15s linear infinite;
-        }
-      `}</style>
     </div>
   );
 }
