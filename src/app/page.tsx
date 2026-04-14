@@ -30,8 +30,18 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { MacbookShowcase } from '@/components/MacbookShowcase';
-import { GlobePulse } from '@/components/ui/cobe-globe-pulse';
+import dynamic from 'next/dynamic';
+
+// Dynamic imports for performance optimization
+const GlobePulse = dynamic(() => import('@/components/ui/cobe-globe-pulse').then(m => ({ default: m.GlobePulse })), { 
+  ssr: false, 
+  loading: () => <div className="w-full h-full bg-primary/5 rounded-full blur-xl animate-pulse" /> 
+});
+
+const MacbookShowcase = dynamic(() => import('@/components/MacbookShowcase').then(m => ({ default: m.MacbookShowcase })), { 
+  ssr: false, 
+  loading: () => null 
+});
 
 const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
 
@@ -139,7 +149,7 @@ export default function Home() {
                   <div className="flex -space-x-2">
                     {TESTIMONIAL_IMAGES.map((img, i) => (
                       <div key={i} className="h-7 w-7 rounded-full border-2 border-[#05050f] overflow-hidden relative bg-white/5">
-                        <Image src={img} alt={`User ${i}`} fill className="object-cover" />
+                        <Image src={img} alt={`User ${i}`} fill className="object-cover" loading="lazy" />
                       </div>
                     ))}
                   </div>
@@ -153,7 +163,7 @@ export default function Home() {
 
             {/* GLOBE PULSE CONTAINER */}
             <div className="hidden lg:flex flex-1 items-center justify-center relative min-h-[600px] overflow-visible">
-              <div className="absolute inset-0 bg-primary/10 blur-[140px] rounded-full animate-pulse pointer-events-none scale-110" />
+              <div className="absolute inset-0 bg-primary/10 blur-[100px] rounded-full animate-pulse pointer-events-none scale-110" style={{ willChange: 'transform' }} />
               <div className="relative z-10 w-full max-w-[600px] aspect-square flex items-center justify-center">
                 <GlobePulse className="w-full h-full" speed={0.008} />
               </div>
@@ -265,7 +275,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* PRICING SECTION - REPLACING QUIZ */}
+        {/* PRICING SECTION */}
         <section id="precos" className="max-w-[1200px] mx-auto px-6 md:px-12 py-24 md:py-48">
           <div className="text-center space-y-6 mb-20">
             <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5">Escolha sua Rota de Escala</Badge>
@@ -316,7 +326,7 @@ export default function Home() {
                   </ul>
                 </div>
                 <Button asChild className="w-full h-16 mt-10 rounded-2xl bg-amber-500 text-black hover:bg-amber-400 font-black uppercase tracking-widest shadow-lg shadow-amber-500/20">
-                  <a href={CHECKOUT_MENSAL} target="_blank" rel="noopener noreferrer">ATIVAR MENSAL</a>
+                  <a href={CHECKOUT_MENSAL} target="_blank" rel="noopener noreferrer">Acessar agora</a>
                 </Button>
               </Card>
             </motion.div>
@@ -362,14 +372,14 @@ export default function Home() {
                   </ul>
                 </div>
                 <Button asChild className="w-full h-16 mt-10 rounded-2xl bg-cyan-500 text-black hover:bg-cyan-400 font-black uppercase tracking-widest shadow-lg shadow-cyan-500/20">
-                  <a href={CHECKOUT_TRIMESTRAL} target="_blank" rel="noopener noreferrer">ATIVAR TRIMESTRAL</a>
+                  <a href={CHECKOUT_TRIMESTRAL} target="_blank" rel="noopener noreferrer">Acessar agora</a>
                 </Button>
               </Card>
             </motion.div>
 
             {/* PLANO VITALÍCIO */}
             <motion.div {...fadeInUp} transition={{ delay: 0.3 }} className="relative p-[2px] rounded-[2rem] overflow-hidden shadow-[0_0_100px_rgba(139,92,246,0.4)]">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-pulse"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-pulse" style={{ willChange: 'transform' }}></div>
               <Card className="h-full relative bg-[#050508] p-8 flex flex-col justify-between border-none rounded-[calc(2.5rem-2px)]">
                 <div className="absolute top-5 right-5 bg-primary text-white text-[8px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg flex items-center gap-1">
                   <Star className="h-2.5 w-2.5 fill-white" /> RECOMENDADO
@@ -417,7 +427,7 @@ export default function Home() {
                 
                 <Button asChild className="w-full h-16 mt-10 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest shadow-[0_15px_40px_rgba(139,92,246,0.5)] transition-all hover:scale-[1.02] group text-sm md:text-base">
                   <a href={CHECKOUT_VITALICIO} target="_blank" rel="noopener noreferrer">
-                    GARANTIR ILIMITADO <ArrowRight className="ml-2 h-5 w-5 md:h-6 md:w-6 group-hover:translate-x-1 transition-transform" />
+                    Acessar agora <ArrowRight className="ml-2 h-5 w-5 md:h-6 md:w-6 group-hover:translate-x-1 transition-transform" />
                   </a>
                 </Button>
               </Card>
@@ -461,7 +471,7 @@ export default function Home() {
                   <p className="text-[15px] text-white/65 leading-[1.8] italic flex-1">"{t.text}"</p>
                   <div className="flex items-center gap-3 pt-4 border-t border-white/5">
                     <div className="h-10 w-10 rounded-full border border-white/10 overflow-hidden relative bg-white/5">
-                      <Image src={t.image} alt={t.author} fill className="object-cover" />
+                      <Image src={t.image} alt={t.author} fill className="object-cover" loading="lazy" />
                     </div>
                     <div>
                       <p className="text-[13px] font-bold text-white">{t.author}</p>
