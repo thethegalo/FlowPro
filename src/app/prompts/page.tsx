@@ -392,7 +392,7 @@ Gere o código completo da página em um único arquivo.`;
             )}
 
             <section className="flex-1 overflow-y-auto p-6 md:p-12 relative flex flex-col items-center">
-              <div className="w-full max-w-5xl space-y-10">
+              <div className="w-full max-w-6xl space-y-10">
                 
                 <div className="flex justify-center mb-8">
                   <div className="bg-white/5 p-1.5 rounded-2xl border border-white/10 flex gap-2">
@@ -424,12 +424,12 @@ Gere o código completo da página em um único arquivo.`;
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="flex flex-col gap-12 items-center pb-20"
+                      className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-20 w-full"
                     >
-                      {TEMPLATE_PRESETS.map((t, idx) => (
+                      {TEMPLATE_PRESETS.map((t) => (
                         <Card 
                           key={t.name} 
-                          className="glass-card border-white/10 rounded-[2rem] p-8 flex flex-col space-y-8 group hover:border-primary/40 transition-all hover:shadow-[0_0_40px_rgba(124,58,255,0.15)] relative overflow-hidden w-full max-w-2xl"
+                          className="glass-card border-white/10 rounded-[2rem] p-8 flex flex-col space-y-8 group hover:border-primary/40 transition-all hover:shadow-[0_0_40px_rgba(124,58,255,0.15)] relative overflow-hidden"
                         >
                           <div className="relative w-full">
                             <div className="w-full bg-zinc-900 rounded-t-xl border border-zinc-700 overflow-hidden relative">
