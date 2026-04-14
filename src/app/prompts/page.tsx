@@ -122,6 +122,56 @@ const TEMPLATE_DATA: Record<string, any> = {
     differential: 'Equipamentos modernos, personal trainers, resultados em 30 dias',
     extras: 'Site para academia de musculação. Hero com foto da academia, modalidades oferecidas, planos mensais com preços, transformações de alunos, botão de aula experimental grátis. Design energético com vermelho ou laranja.'
   },
+  'Loja de Roupas': {
+    businessName: 'Loja de Roupas',
+    niche: 'Moda & Beleza',
+    objective: 'Vender Direto',
+    visualStyle: 'Moderno',
+    tone: 'Dinâmico',
+    sections: ['Hero', 'Portfólio', 'Depoimentos', 'CTA Final'],
+    differential: 'Moda exclusiva, tendências atuais, entrega expressa',
+    extras: 'Site para loja de roupas femininas. Hero com lookbook, grade de produtos com fotos, categorias (casual, festa, trabalho), botão comprar via WhatsApp. Design moderno com fundo branco e detalhes coloridos.'
+  },
+  'Advocacia de Elite': {
+    businessName: 'Escritório de Advocacia',
+    niche: 'Jurídico',
+    objective: 'Agendar Consulta',
+    visualStyle: 'Corporativo',
+    tone: 'Profissional',
+    sections: ['Hero', 'Sobre', 'Benefícios', 'FAQ', 'CTA Final'],
+    differential: 'Mais de 10 anos de experiência, 500 casos ganhos, atendimento personalizado',
+    extras: 'Site para escritório de advocacia. Hero sóbrio com foto do advogado, áreas de atuação (trabalhista, civil, criminal), diferenciais, formulário de consulta gratuita. Design sério em preto e dourado.'
+  },
+  'Pet Shop VIP': {
+    businessName: 'Pet Shop',
+    niche: 'Outro',
+    objective: 'Capturar Leads',
+    visualStyle: 'Natural',
+    tone: 'Empático',
+    sections: ['Hero', 'Benefícios', 'Depoimentos', 'CTA Final'],
+    differential: 'Banho e tosa, veterinário, produtos premium para pets',
+    extras: 'Site para pet shop e clínica veterinária. Hero com foto de pets, serviços (banho, tosa, consulta, vacinas), produtos, agendamento online. Design colorido e alegre com verde e amarelo.'
+  },
+  'Estética Glow': {
+    businessName: 'Studio de Estética',
+    niche: 'Moda & Beleza',
+    objective: 'Agendar Consulta',
+    visualStyle: 'Elegante',
+    tone: 'Luxuoso',
+    sections: ['Hero', 'Benefícios', 'Portfólio', 'Depoimentos', 'Preços', 'CTA Final'],
+    differential: 'Procedimentos estéticos avançados, resultados visíveis, ambiente luxuoso',
+    extras: 'Site para studio de estética e beleza. Hero com foto do ambiente, procedimentos (limpeza de pele, design de sobrancelha, micropigmentação), antes e depois, agendamento WhatsApp. Design rosé e dourado.'
+  },
+  'Consultoria Digital': {
+    businessName: 'Consultoria Digital',
+    niche: 'Marketing/Agências',
+    objective: 'Capturar Leads',
+    visualStyle: 'Futurista',
+    tone: 'Profissional',
+    sections: ['Hero', 'Benefícios', 'Sobre', 'Depoimentos', 'Preços', 'CTA Final'],
+    differential: 'Resultados mensuráveis em 60 dias, estratégia personalizada, ROI garantido',
+    extras: 'Site para agência ou consultoria de marketing digital. Hero com métricas de resultado, serviços (tráfego pago, SEO, social media), cases de sucesso, planos de serviço. Design tecnológico em roxo e azul.'
+  },
 };
 
 const PROMPTS_FIXOS: Record<string, string> = Object.keys(TEMPLATE_DATA).reduce((acc, key) => {
@@ -172,6 +222,7 @@ export default function PromptsPage() {
   const [wordCount, setWordCount] = useState(0);
   const [isCopied, setIsCopied] = useState(false);
   const [isGeneratingPalette, setIsGeneratingPalette] = useState(false);
+  const [previewModal, setPreviewModal] = useState<{ open: boolean, url: string, name: string }>({ open: false, url: '', name: '' });
   const { toast } = useToast();
 
   const currentTheme = useMemo(() => {
@@ -400,14 +451,12 @@ Gere o código completo da página em um único arquivo.`;
                                 <div className="h-2 w-2 rounded-full bg-green-500/70" />
                               </div>
                               
-                              <a 
-                                href={t.previewUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="absolute top-2 right-2 z-50 px-2 py-1 bg-black/60 backdrop-blur-sm border border-white/10 rounded-lg text-[8px] font-black uppercase text-white hover:bg-primary/80 transition-all"
+                              <button
+                                onClick={() => setPreviewModal({ open: true, url: t.previewUrl, name: t.name })}
+                                className="absolute top-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-sm border border-white/10 rounded-lg text-[8px] font-black uppercase text-white hover:bg-primary/80 transition-all z-10"
                               >
                                 VER SITE
-                              </a>
+                              </button>
 
                               {/* iframe do preview */}
                               <div className="relative h-52 overflow-hidden">
@@ -895,6 +944,59 @@ Gere o código completo da página em um único arquivo.`;
             )}
           </div>
         </main>
+
+        {previewModal.open && (
+          <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-4">
+            {/* Header do modal */}
+            <div className="w-full max-w-6xl flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="flex gap-1.5">
+                  <div className="h-3 w-3 rounded-full bg-red-500" />
+                  <div className="h-3 w-3 rounded-full bg-yellow-500" />
+                  <div className="h-3 w-3 rounded-full bg-green-500" />
+                </div>
+                <span className="text-sm font-black uppercase italic text-white tracking-widest">{previewModal.name}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <a 
+                  href={previewModal.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 bg-primary/20 border border-primary/30 rounded-xl text-[10px] font-black uppercase text-primary hover:bg-primary hover:text-white transition-all"
+                >
+                  ABRIR EM NOVA ABA
+                </a>
+                <button
+                  onClick={() => setPreviewModal({ open: false, url: '', name: '' })}
+                  className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase text-white hover:bg-white/10 transition-all"
+                >
+                  FECHAR ✕
+                </button>
+              </div>
+            </div>
+            {/* Frame estilo MacBook */}
+            <div className="w-full max-w-6xl bg-zinc-900 rounded-2xl border border-zinc-700 overflow-hidden shadow-2xl shadow-primary/20">
+              <div className="h-8 bg-zinc-800 border-b border-zinc-700 flex items-center px-4 gap-2">
+                <div className="flex gap-1.5">
+                  <div className="h-2.5 w-2.5 rounded-full bg-red-500/70" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/70" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-green-500/70" />
+                </div>
+                <div className="flex-1 mx-4 bg-zinc-700 rounded-md px-3 py-1 text-[10px] text-zinc-400 font-mono">
+                  {previewModal.url}
+                </div>
+              </div>
+              <iframe
+                src={previewModal.url}
+                className="w-full border-0"
+                style={{ height: '75vh' }}
+                loading="lazy"
+                sandbox="allow-scripts allow-same-origin"
+                title={previewModal.name}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <style jsx global>{`
