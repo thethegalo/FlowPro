@@ -84,7 +84,6 @@ export default function LeadsPage() {
   const [particles, setParticles] = useState<Particle[]>([]);
 
   useEffect(() => {
-    // Generate particles only on the client to avoid hydration mismatch
     const newParticles = Array.from({ length: 12 }).map(() => ({
       left: `${15 + Math.random() * 70}%`,
       top: `${15 + Math.random() * 70}%`,
@@ -245,8 +244,6 @@ export default function LeadsPage() {
 
           <div className="flex-1 container max-w-7xl mx-auto px-6 md:px-12 py-8 md:py-12 flex flex-col">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center flex-1">
-              
-              {/* FORMULÁRIO */}
               <div className="space-y-8">
                 <div className="space-y-1.5">
                   <h2 className="text-xl md:text-2xl font-semibold text-white tracking-tight">Console de Busca</h2>
@@ -334,7 +331,6 @@ export default function LeadsPage() {
                 </div>
               </div>
 
-              {/* RADAR VISUAL (DESKTOP ONLY) */}
               <div className="hidden md:flex flex-col items-center justify-center relative h-[500px] w-full">
                 <div className="absolute top-0 text-center space-y-1">
                   <div className="flex items-center justify-center gap-2">
@@ -368,7 +364,6 @@ export default function LeadsPage() {
               </div>
             </div>
 
-            {/* RESULTADOS */}
             <div className="mt-16 space-y-8 pb-32">
               <div className="flex items-center justify-between border-b border-white/5 pb-4">
                 <div className="space-y-1">
@@ -399,34 +394,35 @@ export default function LeadsPage() {
                         <motion.div key={lead.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
                           <Card className={`glass-card transition-all group ${approachedLeads.includes(lead.id) ? 'opacity-50 grayscale' : ''}`}>
                             <CardContent className="p-6">
-                              <div className="flex flex-col xl:flex-row justify-between gap-6">
-                                <div className="flex gap-5 items-start flex-1">
+                              <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                                <div className="flex gap-5 items-start flex-1 min-w-0">
                                   <div className="h-10 w-10 bg-white/5 rounded-lg flex items-center justify-center text-white/40 shrink-0 border border-white/5 group-hover:border-primary/30 transition-all">
                                     <MapPin className="h-5 w-5" />
                                   </div>
-                                  <div className="space-y-1.5 flex-1 min-w-0">
-                                    <div className="flex items-center justify-between gap-4">
-                                      <div className="flex items-center gap-3">
-                                        <h4 className="font-bold text-sm text-white/90 truncate">{lead.name}</h4>
-                                        {lead.rating && lead.rating !== '0' && <Badge variant="outline" className="bg-yellow-500/5 border-yellow-500/20 text-yellow-500 text-[9px] font-bold shrink-0">★ {lead.rating}</Badge>}
-                                      </div>
-                                      <div className="px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-xl shrink-0">
-                                        <p className="text-[9px] font-black uppercase text-green-400">💰 Potencial: R$ {potential}</p>
+                                  <div className="space-y-2.5 flex-1 min-w-0">
+                                    <div className="flex flex-wrap items-center gap-3">
+                                      <h4 className="font-bold text-sm text-white/90 truncate">{lead.name}</h4>
+                                      {lead.rating && lead.rating !== '0' && <Badge variant="outline" className="bg-yellow-500/5 border-yellow-500/20 text-yellow-500 text-[9px] font-bold shrink-0">★ {lead.rating}</Badge>}
+                                      <div className="px-2 py-0.5 bg-green-500/10 border border-green-500/20 rounded-lg shrink-0">
+                                        <p className="text-[9px] font-black uppercase text-green-400">💰 R$ {potential}</p>
                                       </div>
                                     </div>
+                                    
                                     <div className="flex items-center gap-3 text-[10px] text-white/30 uppercase font-black tracking-widest">
                                       <span className="text-primary/60">{lead.type}</span>
                                       <span>•</span>
                                       <span>{lead.city}, {lead.state}</span>
                                     </div>
-                                    <div className="flex flex-col gap-1.5 pt-1">
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 pt-1">
                                       <div className="flex items-center gap-2 text-[12px] font-medium text-white/60">
-                                        <Phone className="h-3.5 w-3.5 opacity-40 text-primary" /> {lead.phone}
+                                        <Phone className="h-3.5 w-3.5 opacity-40 text-primary shrink-0" /> 
+                                        <span className="truncate">{lead.phone}</span>
                                       </div>
                                       
                                       {lead.website && (
-                                        <div className="flex items-center gap-2 text-[11px] text-white/40 hover:text-primary transition-colors group/link">
-                                          <Globe className="h-3.5 w-3.5 opacity-40 text-primary" />
+                                        <div className="flex items-center gap-2 text-[11px] text-white/40 hover:text-primary transition-colors group/link min-w-0">
+                                          <Globe className="h-3.5 w-3.5 opacity-40 text-primary shrink-0" />
                                           <a 
                                             href={lead.website} 
                                             target="_blank" 
@@ -438,14 +434,15 @@ export default function LeadsPage() {
                                         </div>
                                       )}
 
-                                      <div className="flex items-center gap-2 text-[11px] text-white/25">
-                                        <Navigation className="h-3 w-3 opacity-30" /> {lead.address}
+                                      <div className="flex items-center gap-2 text-[11px] text-white/25 sm:col-span-2">
+                                        <Navigation className="h-3 w-3 opacity-30 shrink-0" /> 
+                                        <span className="truncate">{lead.address}</span>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
 
-                                <div className="flex flex-row xl:flex-col gap-2 min-w-[180px]">
+                                <div className="flex flex-row lg:flex-col gap-2 w-full lg:w-auto min-w-[180px] shrink-0">
                                   <Button onClick={() => handleGenMessage(lead)} disabled={generatingMsg === lead.id} className="flex-1 h-10 bg-primary/20 border border-primary/30 text-primary-foreground rounded-xl text-[10px] font-black uppercase tracking-widest gap-2 hover:bg-primary/30">
                                     {generatingMsg === lead.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" style={{ willChange: 'transform' }} /> : <Zap className="h-3.5 w-3.5" />} Gerar script
                                   </Button>
