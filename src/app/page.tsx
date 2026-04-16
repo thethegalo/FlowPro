@@ -19,7 +19,9 @@ import {
   Check,
   MapPin,
   TrendingUp,
-  Timer
+  Timer,
+  CreditCard,
+  Sparkles
 } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -392,33 +394,60 @@ export default function Home() {
                 </Card>
               </motion.div>
 
-              {/* PLANO VITALÍCIO */}
-              <motion.div variants={fadeInUp} initial="initial" whileInView="whileInView">
-                <Card className="h-full bg-white/[0.02] border-white/10 p-10 flex flex-col justify-between relative rounded-[2.5rem] border shadow-sm">
-                  <div className="space-y-8">
-                    <p className="text-[10px] font-black text-primary uppercase tracking-widest italic">Acesso Total</p>
-                    <div className="space-y-4">
-                      <h3 className="text-xs font-black uppercase tracking-widest text-white/80 flex items-center gap-2">
-                        <Infinity className="h-4 w-4 text-primary" /> Flow Vitalício
-                      </h3>
-                      <div className="flex items-baseline gap-1">
-                        <p className="text-6xl font-black italic text-white tracking-tighter">R$ 287</p>
-                        <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/pagamento único</span>
-                      </div>
+              {/* PLANO VITALÍCIO SUPREME */}
+              <motion.div variants={fadeInUp} initial="initial" whileInView="whileInView" className="relative">
+                <div className="relative p-[2px] rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(139,92,246,0.3)] h-full">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-pulse" style={{ willChange: 'transform' }}></div>
+                  <Card className="h-full relative bg-[#050508] p-10 flex flex-col justify-between border-none rounded-[calc(2.5rem-2px)]">
+                    <div className="absolute top-6 right-6 bg-primary text-white text-[9px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg flex items-center gap-1.5">
+                      <Star className="h-3 w-3 fill-white" /> RECOMENDADO
                     </div>
+                    
+                    <div className="space-y-8">
+                      <p className="text-[10px] font-black text-primary uppercase tracking-widest italic">Acesso Vitalício</p>
+                      <div className="space-y-4">
+                        <h3 className="text-xs font-black uppercase tracking-widest text-white/80 flex items-center gap-2">
+                          <Infinity className="h-4 w-4 text-primary" /> Flow Vitalício
+                        </h3>
+                        <div className="flex items-baseline gap-1">
+                          <p className="text-6xl md:text-7xl font-black italic text-white tracking-tighter">R$ 287</p>
+                        </div>
+                        
+                        {/* Box de Parcelamento */}
+                        <div className="bg-primary/10 border border-primary/20 rounded-xl px-4 py-4 border-dashed relative overflow-hidden group">
+                          <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors"></div>
+                          <div className="relative flex items-center gap-3">
+                            <CreditCard className="h-5 w-5 text-primary" /> 
+                            <div>
+                              <p className="text-[10px] font-black uppercase text-primary tracking-widest leading-none mb-1">Parcelamento no Cartão</p>
+                              <p className="text-[14px] font-black text-white italic tracking-tight">Até 12x de R$ 28,82</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
 
-                    <ul className="space-y-4 pt-8 border-t border-white/5">
-                      {['Radar ILIMITADO', 'IA Mentor 24h ILIMITADO', 'IA de Prospecção ILIMITADA', 'Jornada Vitalícia', 'Sem Mensalidades'].map((f) => (
-                        <li key={f} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white">
-                          <CheckCircle2 className="h-4 w-4 text-primary" /> {f}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <Button asChild className="w-full h-14 mt-12 rounded-2xl bg-white text-black hover:bg-primary hover:text-white font-black uppercase tracking-widest text-xs transition-all">
-                    <a href={CHECKOUT_VITALICIO} target="_blank" rel="noopener noreferrer">Acesso Vitalício</a>
-                  </Button>
-                </Card>
+                      <ul className="space-y-4 pt-4 border-t border-white/5">
+                        {[
+                          'Radar ILIMITADO', 
+                          'IA Mentor 24h ILIMITADO', 
+                          'IA de Prospecção ILIMITADA', 
+                          'Jornada Vitalícia', 
+                          'Sem Mensalidades ou Taxas'
+                        ].map((f) => (
+                          <li key={f} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white">
+                            <CheckCircle2 className="h-4 w-4 text-primary" /> {f}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    <Button asChild className="w-full h-16 mt-12 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-sm shadow-[0_15px_30px_rgba(139,92,246,0.4)] transition-all hover:scale-[1.02]">
+                      <a href={CHECKOUT_VITALICIO} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                        GARANTIR VITALÍCIO <Sparkles className="h-4 w-4" />
+                      </a>
+                    </Button>
+                  </Card>
+                </div>
               </motion.div>
             </div>
 
