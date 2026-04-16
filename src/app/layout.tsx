@@ -51,7 +51,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className="font-body antialiased min-h-screen bg-[#05050f] text-foreground selection:bg-primary/30 selection:text-white margin-0 overflow-x-hidden">
+      <body className="font-body antialiased min-h-screen bg-[#05050f] text-white selection:bg-primary/30 selection:text-white margin-0 overflow-x-hidden">
         <FirebaseClientProvider>
           <ClientVisualEffects />
           <div className="relative z-10 flex flex-col min-h-screen bg-transparent">

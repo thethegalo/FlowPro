@@ -43,7 +43,7 @@
   }
 
   body {
-    @apply bg-[#05050f] text-foreground font-body overflow-x-hidden m-0;
+    @apply bg-[#05050f] text-white font-body overflow-x-hidden m-0;
     font-feature-settings: "cv11", "ss01", "ss02";
     letter-spacing: -0.015em;
   }
