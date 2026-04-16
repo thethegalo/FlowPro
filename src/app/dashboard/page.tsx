@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useEffect, useState } from 'react';
@@ -380,7 +381,7 @@ export default function Dashboard() {
                   <p className="text-white/30 text-[11px] uppercase tracking-widest">Arsenal tático para sua operação digital</p>
                 </div>
                 <div className="hidden md:flex bg-green-500/10 border border-green-500/20 text-green-400 text-[10px] font-medium px-3 py-1 rounded-lg items-center gap-2">
-                  <CheckCircle2 className="h-3 w-3" /> Full access ativo
+                  <CheckCircle2 className="h-3.5 w-3.5" /> Full access ativo
                 </div>
               </div>
 
