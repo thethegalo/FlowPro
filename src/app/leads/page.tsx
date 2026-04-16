@@ -358,7 +358,7 @@ export default function LeadsPage() {
                     key={i}
                     className="absolute h-[3px] w-[3px] bg-primary/40 rounded-full"
                     animate={{ y: [0, -30, 0], x: [0, 10, 0], opacity: [0.2, 0.5, 0.2] }}
-                    transition={{ duration: p.duration, repeat: Infinity, delay: p.delay }}
+                    transition={{ duration: p.duration, repeat: 9999, delay: p.delay }}
                     style={{ left: p.left, top: p.top }}
                   />
                 ))}
@@ -377,7 +377,7 @@ export default function LeadsPage() {
                 <AnimatePresence mode="popLayout">
                   {leads.length === 0 && !loading ? (
                     <motion.div 
-                      key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                      key="empty" initial={{ opacity: 1 }} animate={{ opacity: 1 }}
                       className="py-20 text-center glass-card border-dashed border-white/10"
                     >
                       <p className="text-white/20 text-[10px] font-black uppercase tracking-[0.3em]">Aguardando Coordenadas de Varredura</p>
@@ -392,7 +392,7 @@ export default function LeadsPage() {
                       const potential = Math.floor(serviceValue * (1 + ((index * 7 + 13) % 30) / 100));
                       
                       return (
-                        <motion.div key={lead.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
+                        <motion.div key={lead.id} initial={{ opacity: 1, y: 0 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
                           <Card className={`glass-card transition-all group ${approachedLeads.includes(lead.id) ? 'opacity-50 grayscale' : ''}`}>
                             <CardContent className="p-6">
                               <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
@@ -454,7 +454,7 @@ export default function LeadsPage() {
                               </div>
 
                               {activeScript?.id === lead.id && (
-                                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-6 p-6 bg-black/40 border border-primary/20 rounded-2xl">
+                                <motion.div initial={{ opacity: 1, height: 'auto' }} animate={{ opacity: 1, height: 'auto' }} className="mt-6 p-6 bg-black/40 border border-primary/20 rounded-2xl">
                                   <div className="flex items-center justify-between mb-4">
                                     <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/80 italic">Script de Abordagem Sugerido</h5>
                                     <Button variant="ghost" size="sm" onClick={() => setActiveScript(null)} className="h-8 w-8 rounded-full text-white/20 hover:text-white"><X className="h-4 w-4" /></Button>

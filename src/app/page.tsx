@@ -61,9 +61,9 @@ const CHECKOUT_VITALICIO = "https://checkout.flowproia.shop/pay/PPU38CQ9FCP";
 
 // Animação suavizada e mais resiliente
 const fadeInUp = {
-  initial: { opacity: 1, y: 0 }, // Inicia visível para evitar o "pisca"
+  initial: { opacity: 1, y: 0 }, 
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0 },
+  viewport: { once: true, amount: 0.01 },
   transition: { duration: 0.4, ease: "easeOut" }
 };
 
@@ -75,7 +75,7 @@ const staggerContainer = {
       staggerChildren: 0.1
     }
   },
-  viewport: { once: true, amount: 0 }
+  viewport: { once: true, amount: 0.01 }
 };
 
 export default function Home() {
@@ -180,11 +180,7 @@ export default function Home() {
                       </div>
                       <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/5 text-white/90 leading-relaxed italic relative">
                         "Olá <span className="text-primary font-bold">@doutor</span>, notei que sua clínica ainda não usa automação IA para agendamentos. Isso faz vocês perderem pacientes para quem responde em segundos. Posso te mandar como resolvemos isso hoje?"
-                        <motion.span 
-                          animate={{ opacity: [1, 0, 1] }} 
-                          transition={{ duration: 0.8, repeat: Infinity }}
-                          className="inline-block w-2 h-5 bg-primary ml-1 translate-y-1" 
-                        />
+                        <span className="inline-block w-2 h-5 bg-primary ml-1 translate-y-1 animate-blink" />
                       </div>
                     </div>
                   </div>
@@ -217,7 +213,7 @@ export default function Home() {
         </section>
 
         {/* ARSENAL SECTION */}
-        <section id="arsenal" className="py-20 md:py-24">
+        <section id="arsenal" className="py-12 md:py-20">
           <div className="max-w-7xl mx-auto px-6 md:px-12">
             <div className="max-w-3xl mb-16 space-y-4">
               <Badge className="bg-primary/20 text-primary border-none text-xs font-black uppercase px-4 py-1.5 rounded-lg">FERRAMENTAS DE ELITE</Badge>
@@ -320,7 +316,7 @@ export default function Home() {
         </section>
 
         {/* PRICING */}
-        <section id="precos" className="py-20 md:py-24 relative">
+        <section id="precos" className="py-12 md:py-20 relative">
           <div className="max-w-7xl mx-auto px-6 md:px-12">
             <div className="text-center space-y-6 mb-16">
               <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-[0.3em] text-[10px] px-6 py-2 rounded-full">ROTA DE ESCALA</Badge>
@@ -467,7 +463,7 @@ export default function Home() {
         </section>
 
         {/* DEPOIMENTOS */}
-        <section className="py-20 md:py-24 bg-white/[0.01]">
+        <section className="py-12 md:py-20 bg-white/[0.01]">
           <div className="max-w-7xl mx-auto px-6 md:px-12">
             <div className="text-center md:text-left mb-16 space-y-4">
               <Badge className="bg-primary/10 text-primary border-none text-xs font-black uppercase px-4 py-1.5 rounded-lg">RESULTADOS REAIS</Badge>
@@ -515,7 +511,7 @@ export default function Home() {
         </section>
 
         {/* FAQ */}
-        <section id="faq" className="py-20 md:py-24">
+        <section id="faq" className="py-12 md:py-20">
           <div className="max-w-4xl mx-auto px-6 md:px-12">
             <h2 className="text-4xl md:text-5xl font-black text-white uppercase italic mb-16 text-center">Dúvidas frequentes.</h2>
             

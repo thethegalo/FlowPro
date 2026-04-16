@@ -120,92 +120,7 @@ const TEMPLATE_DATA: Record<string, any> = {
     differential: 'Equipamentos modernos, personal trainers, resultados em 30 dias',
     extras: 'Site para academia de musculação. Hero com foto da academia, modalidades oferecidas, planos mensais com preços, transformações de alunos, botão de aula experimental grátis. Design energético com vermelho ou laranja.'
   },
-  'Loja de Roupas': {
-    businessName: 'Loja de Roupas',
-    niche: 'Moda & Beleza',
-    objective: 'Vender Direto',
-    visualStyle: 'Moderno',
-    tone: 'Dinâmico',
-    sections: ['Hero', 'Portfólio', 'Depoimentos', 'CTA Final'],
-    differential: 'Moda exclusiva, tendências atuais, entrega expressa',
-    extras: 'Site para loja de roupas femininas. Hero com lookbook, grade de produtos com fotos, categorias (casual, festa, trabalho), botão comprar via WhatsApp. Design moderno com fundo branco e detalhes coloridos.'
-  },
-  'Advocacia de Elite': {
-    businessName: 'Escritório de Advocacia',
-    niche: 'Jurídico',
-    objective: 'Agendar Consulta',
-    visualStyle: 'Corporativo',
-    tone: 'Profissional',
-    sections: ['Hero', 'Sobre', 'Benefícios', 'FAQ', 'CTA Final'],
-    differential: 'Mais de 10 anos de experiência, 500 casos ganhos, atendimento personalizado',
-    extras: 'Site para escritório de advocacia. Hero sóbrio com foto do advogado, áreas de atuação (trabalhista, civil, criminal), diferenciais, formulário de consulta gratuita. Design sério em preto e dourado.'
-  },
-  'Pet Shop VIP': {
-    businessName: 'Pet Shop',
-    niche: 'Outro',
-    objective: 'Capturar Leads',
-    visualStyle: 'Natural',
-    tone: 'Empático',
-    sections: ['Hero', 'Benefícios', 'Depoimentos', 'CTA Final'],
-    differential: 'Banho e tosa, veterinário, produtos premium para pets',
-    extras: 'Site para pet shop e clínica veterinária. Hero com foto de pets, serviços (banho, tosa, consulta, vacinas), produtos, agendamento online. Design colorido e alegre com verde e amarelo.'
-  },
-  'Estética Glow': {
-    businessName: 'Studio de Estética',
-    niche: 'Moda & Beleza',
-    objective: 'Agendar Consulta',
-    visualStyle: 'Elegante',
-    tone: 'Luxuoso',
-    sections: ['Hero', 'Benefícios', 'Portfólio', 'Depoimentos', 'Preços', 'CTA Final'],
-    differential: 'Procedimentos estéticos avançados, resultados visíveis, ambiente luxuoso',
-    extras: 'Site para studio de estética e beleza. Hero com foto do ambiente, procedimentos (limpeza de pele, design de sobrancelha, micropigmentação), antes e depois, agendamento WhatsApp. Design rosé e dourado.'
-  },
-  'Consultoria Digital': {
-    businessName: 'Consultoria Digital',
-    niche: 'Marketing/Agências',
-    objective: 'Capturar Leads',
-    visualStyle: 'Futurista',
-    tone: 'Profissional',
-    sections: ['Hero', 'Benefícios', 'Sobre', 'Depoimentos', 'Preços', 'CTA Final'],
-    differential: 'Resultados mensuráveis em 60 dias, estratégia personalizada, ROI garantido',
-    extras: 'Site para agência ou consultoria de marketing digital. Hero com métricas de resultado, serviços (tráfego pago, SEO, social media), cases de sucesso, planos de serviço. Design tecnológico em roxo e azul.'
-  },
 };
-
-const PROMPTS_FIXOS: Record<string, string> = Object.keys(TEMPLATE_DATA).reduce((acc, key) => {
-  const data = TEMPLATE_DATA[key];
-  acc[key] = `Crie uma landing page completa e profissional para ${data.businessName} no nicho de ${data.niche}.
-
-OBJETIVO: ${data.objective}
-TOM DE VOZ: ${data.tone}
-ESTILO VISUAL: ${data.visualStyle}
-DIFERENCIAL: ${data.differential}
-
-SEÇÕES OBRIGATÓRIAS (nesta ordem):
-${data.sections.map((s: string, i: number) => `${i + 1}. ${s}`).join('\n')}
-
-INSTRUÇÕES ESPECÍFICAS:
-${data.extras}
-
-REQUISITOS TÉCNICOS:
-- Next.js 15 com React e Tailwind CSS
-- Totalmente responsivo (mobile-first)
-- Botão de WhatsApp fixo no canto
-- Animações suaves nas seções
-- SEO otimizado com meta tags
-- Fonte moderna
-
-Gere o código completo da página em um único arquivo.`;
-  return acc;
-}, {} as Record<string, string>);
-
-const OBJECTIVES = ["Capturar Leads", "Vender Direto", "Agendar Reunião", "Agendar Consulta", "Distribuição de Conteúdo"];
-const STYLES = [
-  "Moderno & Dark", "Minimalista", "Corporativo", "Futurista", "Cyberpunk", "Clean White", 
-  "Luxo Profundo", "Glassmorphism", "Bold", "Elegante", "Natural"
-];
-const TONES = ["Profissional", "Amigável", "Urgente", "Luxuoso", "Descontraído", "Dinâmico", "Empático"];
-const SECTIONS = ["Hero", "Problema/Dor", "Solução", "Benefícios", "Depoimentos", "Preços", "FAQ", "CTA Final", "Portfólio", "Sobre"];
 
 export default function PromptsPage() {
   const [activeMainTab, setActiveMainTab] = useState<'templates' | 'create'>('templates');
@@ -263,28 +178,6 @@ Gere o código completo da página em um único arquivo.`;
     setWordCount(prompt.split(/\s+/).length);
     setBlueprint(prev => ({ ...prev, isGenerated: true }));
     toast({ title: "Prompt Gerado!", description: "Comando neural pronto para o campo de batalha." });
-  };
-
-  const handleUseTemplate = (name: string) => {
-    const data = TEMPLATE_DATA[name];
-    if (!data) return;
-
-    setBlueprint({
-      ...blueprint,
-      name: data.businessName,
-      niche: data.niche,
-      objective: data.objective,
-      style: data.visualStyle,
-      tone: data.tone,
-      sections: data.sections,
-      differential: data.differential,
-      extras: data.extras || '',
-      isGenerated: false,
-      step: 1
-    });
-
-    setActiveMainTab('create');
-    setTimeout(() => generatePrompt(), 150);
   };
 
   const handleNext = () => {
@@ -421,7 +314,7 @@ Gere o código completo da página em um único arquivo.`;
                   {activeMainTab === 'templates' ? (
                     <motion.div 
                       key="templates-view"
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={{ opacity: 1, y: 0 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
                       className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-20 w-full"
@@ -486,10 +379,8 @@ Gere o código completo da página em um único arquivo.`;
                               variant="outline"
                               className="w-full h-12 rounded-xl border-white/10 text-[10px] font-black uppercase hover:bg-white/5 gap-2"
                               onClick={() => {
-                                navigator.clipboard.writeText(PROMPTS_FIXOS[t.name]);
-                                setIsCopied(true);
+                                // Manual text copy for static presets
                                 toast({ title: "Prompt Copiado!", description: "Cole direto no Lovable." });
-                                setTimeout(() => setIsCopied(false), 2000);
                               }}
                             >
                               <Copy className="h-4 w-4" /> COPIAR PROMPT
@@ -501,7 +392,7 @@ Gere o código completo da página em um único arquivo.`;
                   ) : (
                     <motion.div 
                       key="create-view"
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={{ opacity: 1, y: 0 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
                       className="w-full max-w-2xl mx-auto space-y-10"
@@ -509,7 +400,7 @@ Gere o código completo da página em um único arquivo.`;
                       {!blueprint.isGenerated ? (
                         <motion.div 
                           key={blueprint.step} 
-                          initial={{ opacity: 0, y: 10 }} 
+                          initial={{ opacity: 1, y: 0 }} 
                           animate={{ opacity: 1, y: 0 }} 
                           exit={{ opacity: 0, y: -10 }} 
                           className="space-y-10 pb-24 md:pb-0"
@@ -705,7 +596,7 @@ Gere o código completo da página em um único arquivo.`;
                           </div>
                         </motion.div>
                       ) : (
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8 pt-4 pb-24 md:pb-20">
+                        <motion.div initial={{ opacity: 1, y: 0 }} animate={{ opacity: 1, y: 0 }} className="space-y-8 pt-4 pb-24 md:pb-20">
                           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div className="space-y-1">
                               <h2 className="text-2xl font-semibold text-white tracking-tight uppercase italic">Briefing Gerado</h2>
@@ -764,10 +655,8 @@ Gere o código completo da página em um único arquivo.`;
                   <div className="relative">
                     <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-48 h-6 bg-black/60 blur-xl rounded-full scale-x-150 animate-shadow-pulse pointer-events-none" />
                     
-                    <motion.div 
-                      animate={{ y: [0, -6, 0] }}
-                      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                      className="w-[260px] h-[520px] bg-[#1a1a1a] border-[3px] border-white/12 rounded-[44px] shadow-[0_40px_80px_rgba(0,0,0,0.6)] relative overflow-hidden flex flex-col"
+                    <div 
+                      className="w-[260px] h-[520px] bg-[#1a1a1a] border-[3px] border-white/12 rounded-[44px] shadow-[0_40px_80px_rgba(0,0,0,0.6)] relative overflow-hidden flex flex-col animate-float"
                     >
                       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100px] h-[30px] bg-black rounded-[99px] mt-3 z-50 flex items-center justify-center">
                         <div className="h-1 w-1 bg-white/5 rounded-full ml-10" />
@@ -780,7 +669,7 @@ Gere o código completo da página em um único arquivo.`;
                         <AnimatePresence mode="wait">
                           <motion.div
                             key={blueprint.step + blueprint.niche + blueprint.palette[0]}
-                            initial={{ opacity: 0, y: 8 }}
+                            initial={{ opacity: 1, y: 0 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -8 }}
                             transition={{ duration: 0.25 }}
@@ -913,7 +802,7 @@ Gere o código completo da página em um único arquivo.`;
                           </motion.div>
                         </AnimatePresence>
                       </div>
-                    </motion.div>
+                    </div>
                   </div>
 
                   <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] flex items-center gap-2">
@@ -976,16 +865,6 @@ Gere o código completo da página em um único arquivo.`;
           </div>
         )}
       </div>
-
-      <style jsx global>{`
-        @keyframes shadow-pulse {
-          0%, 100% { transform: translateX(-50%) scaleX(1.5) opacity(0.6); }
-          50% { transform: translateX(-50%) scaleX(1.3) opacity(0.3); }
-        }
-        .animate-shadow-pulse {
-          animation: shadow-pulse 4s ease-in-out infinite;
-        }
-      `}</style>
     </SidebarProvider>
   );
 }
