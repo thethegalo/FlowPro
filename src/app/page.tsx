@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -59,7 +60,6 @@ const CHECKOUT_MENSAL = "https://checkout.flowproia.shop/pay/PPU38CQ9FQU";
 const CHECKOUT_TRIMESTRAL = "https://checkout.flowproia.shop/pay/PPU38CQ9N8O";
 const CHECKOUT_VITALICIO = "https://checkout.flowproia.shop/pay/PPU38CQ9FCP";
 
-// Animação suavizada e mais resiliente
 const fadeInUp = {
   initial: { opacity: 1, y: 0 }, 
   whileInView: { opacity: 1, y: 0 },
@@ -79,6 +79,34 @@ const staggerContainer = {
 };
 
 export default function Home() {
+  const [timeLeft, setTimeLeft] = useState({ h: '23', m: '59', s: '42' });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date();
+      const midnight = new Date();
+      midnight.setHours(24, 0, 0, 0);
+      const diff = midnight.getTime() - now.getTime();
+
+      if (diff <= 0) {
+        setTimeLeft({ h: '00', m: '00', s: '00' });
+        return;
+      }
+
+      const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const m = Math.floor((diff / (1000 * 60)) % 60);
+      const s = Math.floor((diff / 1000) % 60);
+
+      setTimeLeft({
+        h: h.toString().padStart(2, '0'),
+        m: m.toString().padStart(2, '0'),
+        s: s.toString().padStart(2, '0')
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   const scrollToPricing = () => {
     const el = document.getElementById('precos');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -86,7 +114,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen text-white bg-[#05050f] overflow-x-hidden relative">
-      {/* HEADER NAV */}
       <nav className="fixed top-0 w-full h-[64px] bg-[#05050f]/80 backdrop-blur-xl border-b border-white/5 z-50 px-6 md:px-12 flex items-center justify-between">
         <div className="flex items-center gap-12">
           <Link href="/" className="flex items-center gap-2" prefetch={false}>
@@ -111,7 +138,6 @@ export default function Home() {
       </nav>
 
       <main className="relative z-10">
-        {/* HERO SECTION */}
         <section className="relative pt-32 pb-16 md:pt-48 md:pb-24 overflow-hidden">
           <div className="max-w-7xl mx-auto px-6 md:px-12">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -156,7 +182,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* AI SIMULATOR PREVIEW */}
               <div className="relative hidden lg:block">
                 <div className="absolute inset-0 bg-primary/20 rounded-full blur-[120px] animate-pulse pointer-events-none" />
                 <Card className="relative bg-[#0a0a14] border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl border">
@@ -190,7 +215,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* METRICS */}
         <section className="py-16 border-y border-white/5 bg-white/[0.01]">
           <div className="max-w-7xl mx-auto px-6 md:px-12">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -212,7 +236,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ARSENAL SECTION */}
         <section id="arsenal" className="py-12 md:py-20">
           <div className="max-w-7xl mx-auto px-6 md:px-12">
             <div className="max-w-3xl mb-16 space-y-4">
@@ -227,7 +250,6 @@ export default function Home() {
               initial="initial"
               whileInView="whileInView"
             >
-              {/* SCRIPT IA */}
               <motion.div variants={fadeInUp}>
                 <Card className="bg-white/[0.02] border-white/10 rounded-[2.5rem] p-8 group transition-all duration-500 hover:border-primary/40 h-full flex flex-col space-y-8 border shadow-sm">
                   <div className="h-14 w-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
@@ -253,7 +275,6 @@ export default function Home() {
                 </Card>
               </motion.div>
 
-              {/* RADAR */}
               <motion.div variants={fadeInUp}>
                 <Card className="bg-white/[0.02] border-white/10 rounded-[2.5rem] p-8 h-full flex flex-col space-y-8 border shadow-sm">
                   <div className="h-14 w-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
@@ -283,7 +304,6 @@ export default function Home() {
                 </Card>
               </motion.div>
 
-              {/* JORNADA */}
               <motion.div variants={fadeInUp}>
                 <Card className="bg-white/[0.02] border-white/10 rounded-[2.5rem] p-8 h-full flex flex-col space-y-8 border shadow-sm">
                   <div className="h-14 w-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
@@ -315,7 +335,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* PRICING */}
         <section id="precos" className="py-12 md:py-20 relative">
           <div className="max-w-7xl mx-auto px-6 md:px-12">
             <div className="text-center space-y-6 mb-16">
@@ -329,7 +348,6 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
-              {/* PLANO MENSAL */}
               <motion.div variants={fadeInUp} initial="initial" whileInView="whileInView">
                 <Card className="h-full bg-white/[0.02] border-white/10 p-10 flex flex-col justify-between relative rounded-[2.5rem] border shadow-sm">
                   <div className="space-y-8">
@@ -358,7 +376,6 @@ export default function Home() {
                 </Card>
               </motion.div>
 
-              {/* PLANO TRIMESTRAL */}
               <motion.div variants={fadeInUp} initial="initial" whileInView="whileInView" className="relative">
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
                   <Badge className="bg-primary text-white font-black text-[10px] uppercase px-6 py-2 rounded-full shadow-xl">MAIS ESCOLHIDO</Badge>
@@ -390,7 +407,6 @@ export default function Home() {
                 </Card>
               </motion.div>
 
-              {/* PLANO VITALÍCIO SUPREME */}
               <motion.div variants={fadeInUp} initial="initial" whileInView="whileInView" className="relative">
                 <div className="relative p-[2px] rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(139,92,246,0.3)] h-full">
                   <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-pulse" style={{ willChange: 'transform' }}></div>
@@ -409,7 +425,6 @@ export default function Home() {
                           <p className="text-6xl md:text-7xl font-black italic text-white tracking-tighter">R$ 287</p>
                         </div>
                         
-                        {/* Box de Parcelamento */}
                         <div className="bg-primary/10 border border-primary/20 rounded-xl px-4 py-4 border-dashed relative overflow-hidden group">
                           <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors"></div>
                           <div className="relative flex items-center gap-3">
@@ -447,7 +462,6 @@ export default function Home() {
               </motion.div>
             </div>
 
-            {/* GARANTIA */}
             <div className="mt-16 flex justify-center">
               <div className="flex flex-col md:flex-row items-center gap-8 px-12 py-8 bg-white/[0.03] border border-white/10 rounded-[3rem] max-w-4xl shadow-sm">
                 <div className="h-20 w-20 rounded-2xl bg-green-500/10 flex items-center justify-center border border-green-500/20 shrink-0">
@@ -462,7 +476,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* DEPOIMENTOS */}
         <section className="py-12 md:py-20 bg-white/[0.01]">
           <div className="max-w-7xl mx-auto px-6 md:px-12">
             <div className="text-center md:text-left mb-16 space-y-4">
@@ -510,7 +523,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FAQ */}
         <section id="faq" className="py-12 md:py-20">
           <div className="max-w-4xl mx-auto px-6 md:px-12">
             <h2 className="text-4xl md:text-5xl font-black text-white uppercase italic mb-16 text-center">Dúvidas frequentes.</h2>
@@ -537,7 +549,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* CTA FINAL */}
         <section className="py-24 md:py-32 flex flex-col items-center text-center px-6">
           <div className="space-y-12 flex flex-col items-center">
             <div className="space-y-6">
@@ -547,12 +558,11 @@ export default function Home() {
               </h2>
             </div>
 
-            {/* COUNTDOWN CLOCK STYLE */}
             <div className="flex gap-4 md:gap-8">
               {[
-                { val: "23", label: "HORAS" },
-                { val: "59", label: "MINUTOS" },
-                { val: "42", label: "SEGUNDOS" }
+                { val: timeLeft.h, label: "HORAS" },
+                { val: timeLeft.m, label: "MINUTOS" },
+                { val: timeLeft.s, label: "SEGUNDOS" }
               ].map((c, i) => (
                 <div key={i} className="flex flex-col items-center gap-3">
                   <div className="h-20 w-20 md:h-32 md:w-32 bg-white/[0.03] border border-white/10 rounded-[2rem] flex items-center justify-center text-3xl md:text-6xl font-black italic font-mono text-primary shadow-2xl">
@@ -603,7 +613,6 @@ export default function Home() {
         </footer>
       </main>
 
-      {/* GLOBAL BACKGROUND ORB */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[160px]"></div>
       </div>
