@@ -243,7 +243,7 @@ export default function LeadsPage() {
           </header>
 
           <div className="flex-1 container max-w-7xl mx-auto px-6 md:px-12 py-8 md:py-12 flex flex-col">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center flex-1">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center flex-1">
               <div className="space-y-8">
                 <div className="space-y-1.5">
                   <h2 className="text-xl md:text-2xl font-semibold text-white tracking-tight">Console de Busca</h2>
@@ -331,7 +331,8 @@ export default function LeadsPage() {
                 </div>
               </div>
 
-              <div className="hidden md:flex flex-col items-center justify-center relative h-[500px] w-full">
+              {/* O Radar aparece apenas em telas grandes (Desktop LG+) */}
+              <div className="hidden lg:flex flex-col items-center justify-center relative h-[500px] w-full">
                 <div className="absolute top-0 text-center space-y-1">
                   <div className="flex items-center justify-center gap-2">
                     <div className="h-1.5 w-1.5 bg-green-500 rounded-full animate-pulse" style={{ willChange: 'transform' }} />
