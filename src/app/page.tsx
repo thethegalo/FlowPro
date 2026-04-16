@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,6 @@ import {
   Star,
   Zap,
   CheckCircle2,
-  CreditCard,
   Infinity,
   ArrowRight,
   AlertCircle,
@@ -22,8 +21,7 @@ import {
   ShieldCheck,
   Check,
   MapPin,
-  TrendingUp,
-  ChevronRight
+  TrendingUp
 } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -62,20 +60,20 @@ const CHECKOUT_TRIMESTRAL = "https://checkout.flowproia.shop/pay/PPU38CQ9N8O";
 const CHECKOUT_VITALICIO = "https://checkout.flowproia.shop/pay/PPU38CQ9FCP";
 
 const fadeInUp = {
-  initial: { opacity: 0, y: 16 },
+  initial: { opacity: 0, y: 10 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0.1 },
-  transition: { duration: 0.4, ease: "easeOut" }
+  viewport: { once: true, amount: 0.05 },
+  transition: { duration: 0.5, ease: "easeOut" }
 };
 
 const staggerContainer = {
   initial: {},
   whileInView: {
     transition: {
-      staggerChildren: 0.05
+      staggerChildren: 0.1
     }
   },
-  viewport: { once: true, amount: 0.1 }
+  viewport: { once: true, amount: 0.05 }
 };
 
 export default function Home() {
@@ -86,484 +84,518 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen text-white bg-[#05050f] overflow-x-hidden relative">
-      {/* BACKGROUND ORB */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[100px]"></div>
-      </div>
-
-      <nav className="fixed top-0 w-full h-[60px] bg-[#05050f]/70 backdrop-blur-[20px] border-b border-white/5 z-50 px-6 md:px-12 flex items-center justify-between">
+      {/* HEADER NAV */}
+      <nav className="fixed top-0 w-full h-[64px] bg-[#05050f]/80 backdrop-blur-xl border-b border-white/5 z-50 px-6 md:px-12 flex items-center justify-between">
         <div className="flex items-center gap-12">
           <Link href="/" className="flex items-center gap-2" prefetch={false}>
-            <div className="relative h-5 w-20">
-              <Image src={LOGO_URL} alt="FlowPro" fill className="object-contain" sizes="80px" priority />
+            <div className="relative h-6 w-24">
+              <Image src={LOGO_URL} alt="FlowPro" fill className="object-contain" sizes="96px" priority />
             </div>
           </Link>
           
           <div className="hidden md:flex items-center gap-8">
-            <Link href="#arsenal" prefetch={false} className="text-[13px] text-white/50 hover:text-white transition-colors">Arsenal</Link>
-            <button onClick={scrollToPricing} className="text-[13px] text-white/50 hover:text-white transition-colors">Preços</button>
-            <Link href="#faq" prefetch={false} className="text-[13px] text-white/50 hover:text-white transition-colors">Dúvidas</Link>
+            <Link href="#arsenal" prefetch={false} className="text-[13px] font-medium text-white/50 hover:text-white transition-colors">Arsenal</Link>
+            <button onClick={scrollToPricing} className="text-[13px] font-medium text-white/50 hover:text-white transition-colors">Preços</button>
+            <Link href="#faq" prefetch={false} className="text-[13px] font-medium text-white/50 hover:text-white transition-colors">Dúvidas</Link>
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          <Link href="/auth" prefetch={false} className="text-[13px] text-white/40 hover:text-white transition-colors font-medium">Fazer login</Link>
-          <Button onClick={scrollToPricing} className="bg-primary hover:bg-primary/90 text-white font-medium text-[13px] h-9 px-5 rounded-lg border-none shadow-none">
-            Acessar agora
+        <div className="flex items-center gap-4">
+          <Link href="/auth" prefetch={false} className="hidden sm:block text-[13px] text-white/50 hover:text-white transition-colors font-medium">Entrar</Link>
+          <Button onClick={scrollToPricing} className="bg-primary hover:bg-primary/90 text-white font-bold text-[12px] h-10 px-6 rounded-xl border-none shadow-lg shadow-primary/20">
+            Começar Agora
           </Button>
         </div>
       </nav>
 
-      <main className="pt-[60px] relative z-10">
+      <main className="relative z-10">
         {/* HERO SECTION */}
-        <section className="max-w-[1200px] mx-auto px-6 md:px-12 py-12 md:py-32 overflow-visible">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-16">
-            <motion.div 
-              className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-6 md:space-y-8 flex-1 max-w-2xl z-20"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <Badge className="bg-primary/15 border border-primary/30 text-[#c4b5fd] text-[10px] md:text-[12px] font-medium px-3 md:px-4 py-1 md:py-1.5 rounded-full flex items-center gap-2 shadow-none">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                </span>
-                ✦ 1.817+ consultores ativos
-              </Badge>
+        <section className="relative pt-32 pb-16 md:pt-48 md:pb-24 overflow-hidden">
+          <div className="max-w-7xl mx-auto px-6 md:px-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              <motion.div 
+                className="space-y-8 text-center lg:text-left"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  </span>
+                  ✦ 1.817+ Operadores Ativos
+                </div>
 
-              <h1 className="text-[34px] sm:text-[44px] md:text-[64px] lg:text-[72px] font-extrabold tracking-[-0.02em] font-headline leading-[1.1] text-white">
-                Seu primeiro cliente<br className="hidden sm:block" />
-                <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent italic inline-block pb-4">começa com um script.</span>
-              </h1>
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1] text-white">
+                  Sua primeira venda <br className="hidden md:block" />
+                  <span className="text-primary italic">começa com um script.</span>
+                </h1>
 
-              <p className="text-[14px] md:text-[18px] text-white/60 leading-[1.6] max-w-[480px]">
-                Encontre leads qualificados, gere abordagens com IA e realize sua primeira venda em tempo recorde.
-              </p>
-
-              <div className="flex flex-col items-center lg:items-start gap-4 pt-4 w-full">
-                <Button onClick={scrollToPricing} size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-[14px] h-[56px] px-10 rounded-xl transition-all hover:-translate-y-0.5 shadow-[0_15px_40px_rgba(139,92,246,0.4)] border-none">
-                  INICIAR MINHA JORNADA <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-                
-                <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] flex items-center gap-4">
-                  <span>Sem cartão de crédito</span>
-                  <span className="h-1 w-1 rounded-full bg-white/10" />
-                  <span>Resultado em até 7 dias</span>
-                  <span className="h-1 w-1 rounded-full bg-white/10" />
-                  <span>Suporte no grupo</span>
+                <p className="text-lg text-white/60 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                  Encontre leads qualificados, gere abordagens com IA e realize sua primeira venda em tempo recorde usando o arsenal FlowPro.
                 </p>
-              </div>
-            </motion.div>
 
-            {/* AI PREVIEW MOCKUP */}
-            <div className="flex-1 w-full max-w-[500px] relative">
-              <div className="absolute inset-0 bg-primary/20 rounded-full blur-[100px] animate-pulse"></div>
-              <Card className="relative bg-[#0a0a14] border-white/10 rounded-[2rem] overflow-hidden shadow-2xl">
-                <div className="h-10 bg-white/5 border-b border-white/5 flex items-center px-6 gap-2">
-                  <div className="h-2.5 w-2.5 rounded-full bg-red-500/50" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-yellow-500/50" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-green-500/50" />
-                </div>
-                <div className="p-8 space-y-6 font-mono text-[12px] md:text-[13px]">
-                  <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center">
-                      <Zap className="h-4 w-4 text-primary" />
-                    </div>
-                    <span className="text-white/40 uppercase tracking-widest text-[10px] font-bold">Gerador de Script IA</span>
-                  </div>
+                <div className="flex flex-col items-center lg:items-start gap-6 pt-4">
+                  <Button 
+                    onClick={scrollToPricing} 
+                    size="lg" 
+                    className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-[14px] h-[64px] px-12 rounded-2xl shadow-[0_20px_50px_rgba(139,92,246,0.4)] transition-all hover:scale-105"
+                  >
+                    INICIAR JORNADA <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
                   
-                  <div className="space-y-4">
-                    <p className="text-primary/60"># Processando contexto do lead...</p>
-                    <div className="p-5 rounded-xl bg-white/[0.03] border border-white/5 text-white/90 leading-relaxed italic relative">
-                      "Olá <span className="text-primary font-bold">[Nome do Alvo]</span>! Notei que a <span className="text-primary font-bold">[Empresa]</span> ainda não usa automação IA no atendimento. Isso faz vocês perderem clientes para quem responde mais rápido. Posso te mandar uma demo de como recuperar 30% das vendas?"
-                      <motion.span 
-                        animate={{ opacity: [1, 0, 1] }} 
-                        transition={{ duration: 0.8, repeat: Infinity }}
-                        className="inline-block w-1.5 h-4 bg-primary ml-1 translate-y-0.5" 
-                      />
+                  <div className="flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-2">
+                    <div className="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                      <ShieldCheck className="h-3 w-3 text-green-500" /> Sem cartão de crédito
+                    </div>
+                    <div className="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                      <Zap className="h-3 w-3 text-primary" /> Resultado em 7 dias
+                    </div>
+                    <div className="flex items-center gap-2 text-[10px] font-bold text-white/40 uppercase tracking-widest">
+                      <CheckCircle2 className="h-3 w-3 text-primary" /> Suporte no grupo
                     </div>
                   </div>
                 </div>
-              </Card>
+              </motion.div>
+
+              {/* AI SIMULATOR PREVIEW */}
+              <motion.div 
+                className="relative hidden lg:block"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                <div className="absolute inset-0 bg-primary/20 rounded-full blur-[120px] animate-pulse pointer-events-none" />
+                <Card className="relative bg-[#0a0a14] border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl border">
+                  <div className="h-12 bg-white/5 border-b border-white/5 flex items-center px-6 gap-2">
+                    <div className="h-3 w-3 rounded-full bg-red-500/50" />
+                    <div className="h-3 w-3 rounded-full bg-yellow-500/50" />
+                    <div className="h-3 w-3 rounded-full bg-green-500/50" />
+                    <div className="ml-auto text-[10px] font-bold text-white/20 tracking-widest">FLOW_NEURAL_V2.exe</div>
+                  </div>
+                  <div className="p-10 space-y-8 font-mono text-[14px]">
+                    <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center">
+                        <Zap className="h-5 w-5 text-primary" />
+                      </div>
+                      <span className="text-white/40 uppercase tracking-widest text-[11px] font-bold">Gerando Script de Conversão...</span>
+                    </div>
+                    
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-2 text-primary/60 text-xs">
+                        <span className="animate-pulse">●</span> Analisando nicho: [ODONTOLOGIA]
+                      </div>
+                      <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/5 text-white/90 leading-relaxed italic relative">
+                        "Olá <span className="text-primary font-bold">@doutor</span>, notei que sua clínica ainda não usa automação IA para agendamentos. Isso faz vocês perderem pacientes para quem responde em segundos. Posso te mandar como resolvemos isso hoje?"
+                        <motion.span 
+                          animate={{ opacity: [1, 0, 1] }} 
+                          transition={{ duration: 0.8, repeat: Infinity }}
+                          className="inline-block w-2 h-5 bg-primary ml-1 translate-y-1" 
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
             </div>
           </div>
         </section>
 
-        {/* METRICS SECTION */}
-        <section className="border-y border-white/5 py-12 md:py-24 bg-white/[0.01]">
-          <div className="max-w-[1100px] mx-auto px-6 md:px-12">
-            <motion.div 
-              className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-0"
-              initial={{ opacity: 0, scale: 0.98 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true, amount: 0.1 }}
-              transition={{ duration: 0.4 }}
-            >
+        {/* METRICS */}
+        <section className="py-16 border-y border-white/5 bg-white/[0.01]">
+          <div className="max-w-7xl mx-auto px-6 md:px-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
               {[
-                { val: "1.817+", label: "Operadores Ativos" },
-                { val: "R$ 2,6M", label: "Gerado pela Base" },
-                { val: "3,8 dias", label: "Média para 1ª Venda" }
+                { val: "1.817+", label: "Operadores Ativos", sub: "Comunidade em escala" },
+                { val: "R$ 2,6M", label: "Gerado pela Base", sub: "Faturamento acumulado" },
+                { val: "3,8 dias", label: "Média para 1ª Venda", sub: "Velocidade de execução" }
               ].map((m, i) => (
-                <div key={m.label} className={`flex flex-col items-center md:items-start md:px-12 ${i !== 0 ? 'md:border-l border-white/5' : ''}`}>
-                  <span className="text-[36px] md:text-[52px] font-extrabold text-white tracking-[-1px] md:tracking-[-1.5px] leading-none">{m.val}</span>
-                  <span className="text-[11px] md:text-[12px] text-white/30 font-black uppercase tracking-widest mt-2">{m.label}</span>
-                </div>
+                <motion.div 
+                  key={m.label} 
+                  className={cn("flex flex-col items-center md:items-start text-center md:text-left", i !== 0 && "md:pl-12 md:border-l border-white/5")}
+                  {...fadeInUp}
+                >
+                  <span className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter leading-none">{m.val}</span>
+                  <span className="text-sm font-bold text-primary uppercase tracking-widest mt-3">{m.label}</span>
+                  <span className="text-xs text-white/30 uppercase mt-1">{m.sub}</span>
+                </motion.div>
               ))}
-            </motion.div>
+            </div>
           </div>
         </section>
 
         {/* ARSENAL SECTION */}
-        <section id="arsenal" className="max-w-[1100px] mx-auto px-6 md:px-12 py-20 md:py-32">
-          <motion.div className="space-y-4 mb-16 text-center md:text-left" {...fadeInUp}>
-            <Badge className="bg-primary/10 text-primary border-none text-[10px] font-black uppercase px-3 py-1">FERRAMENTAS DE ELITE</Badge>
-            <h2 className="text-[32px] md:text-[48px] font-extrabold text-white uppercase italic">O seu arsenal tático.</h2>
-            <p className="text-[14px] md:text-[16px] text-white/40 max-w-xl leading-relaxed">As ferramentas que transformam um lead frio em um fechamento no PIX em poucos minutos.</p>
-          </motion.div>
+        <section id="arsenal" className="py-24 md:py-32">
+          <div className="max-w-7xl mx-auto px-6 md:px-12">
+            <div className="max-w-3xl mb-20 space-y-4">
+              <Badge className="bg-primary/20 text-primary border-none text-xs font-black uppercase px-4 py-1.5 rounded-lg">FERRAMENTAS DE ELITE</Badge>
+              <h2 className="text-4xl md:text-6xl font-black text-white uppercase italic leading-none">O seu arsenal tático.</h2>
+              <p className="text-lg text-white/40 leading-relaxed">As ferramentas que transformam um lead frio em um fechamento no PIX em poucos minutos.</p>
+            </div>
 
-          <motion.div 
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="whileInView"
-          >
-            {/* FEATURE 1: SCRIPT IA */}
-            <motion.div variants={fadeInUp}>
-              <Card className="bg-white/[0.03] border-white/[0.07] rounded-3xl p-8 group transition-all duration-500 hover:border-primary/40 h-full flex flex-col space-y-6 relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4">
-                  <Badge className="bg-primary text-white text-[8px] font-black px-2 py-0.5 rounded-md">MAIS USADO</Badge>
-                </div>
-                <div className="h-12 w-12 rounded-2xl bg-primary/15 border border-primary/20 flex items-center justify-center text-primary">
-                  <MessageSquare className="h-6 w-6 text-primary" />
-                </div>
-                <div className="space-y-3">
-                  <h3 className="text-lg font-bold text-white uppercase italic">Script IA Pronto</h3>
-                  <p className="text-[13px] text-white/40 leading-relaxed">A IA escreve a abordagem personalizada no WhatsApp para você com base no nicho do lead.</p>
-                </div>
-                
-                <div className="mt-auto pt-6 border-t border-white/5 space-y-3">
-                  <div className="flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Output Simulado</span>
+            <motion.div 
+              className="grid grid-cols-1 md:grid-cols-3 gap-8"
+              variants={staggerContainer}
+              initial="initial"
+              whileInView="whileInView"
+            >
+              {/* SCRIPT IA */}
+              <motion.div variants={fadeInUp}>
+                <Card className="bg-white/[0.02] border-white/10 rounded-[2.5rem] p-8 group transition-all duration-500 hover:border-primary/40 h-full flex flex-col space-y-8 border shadow-sm">
+                  <div className="h-14 w-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                    <MessageSquare className="h-7 w-7" />
                   </div>
-                  <div className="bg-black/40 rounded-xl p-4 border border-white/5 text-[10px] text-white/70 font-mono leading-relaxed italic">
-                    "Olá <span className="text-primary font-bold">@cliente</span>, vi que sua <span className="text-primary font-bold">@loja</span> está sem..."
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-xl font-bold text-white uppercase italic">Script IA Pronto</h3>
+                      <Badge className="bg-primary text-white text-[8px] font-black uppercase">Mais Usado</Badge>
+                    </div>
+                    <p className="text-sm text-white/40 leading-relaxed">A IA escreve a abordagem personalizada no WhatsApp para você com base no nicho do lead.</p>
                   </div>
-                </div>
-              </Card>
-            </motion.div>
+                  
+                  <div className="mt-auto pt-8 border-t border-white/5 space-y-4">
+                    <div className="flex items-center gap-2">
+                      <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                      <span className="text-[10px] font-black text-white/20 uppercase tracking-widest">Output Simulado</span>
+                    </div>
+                    <div className="bg-black/40 rounded-2xl p-5 border border-white/5 text-[11px] text-white/70 font-mono leading-relaxed italic">
+                      "Olá <span className="text-primary font-bold">@cliente</span>, vi que sua <span className="text-primary font-bold">@empresa</span> está sem presença digital estratégica..."
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
 
-            {/* FEATURE 2: RADAR DE LEADS */}
-            <motion.div variants={fadeInUp}>
-              <Card className="bg-white/[0.03] border-white/[0.07] rounded-3xl p-8 h-full flex flex-col space-y-6">
-                <div className="h-12 w-12 rounded-2xl bg-accent/15 border border-accent/20 flex items-center justify-center text-accent">
-                  <Target className="h-6 w-6" />
-                </div>
-                <div className="space-y-3">
-                  <h3 className="text-lg font-bold text-white uppercase italic">Radar de Leads</h3>
-                  <p className="text-[13px] text-white/40 leading-relaxed">Encontre donos de negócio em qualquer nicho e região com nosso motor de busca neural.</p>
-                </div>
+              {/* RADAR */}
+              <motion.div variants={fadeInUp}>
+                <Card className="bg-white/[0.02] border-white/10 rounded-[2.5rem] p-8 h-full flex flex-col space-y-8 border shadow-sm">
+                  <div className="h-14 w-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                    <Target className="h-7 w-7" />
+                  </div>
+                  <div className="space-y-3">
+                    <h3 className="text-xl font-bold text-white uppercase italic">Radar de Leads</h3>
+                    <p className="text-sm text-white/40 leading-relaxed">Encontre donos de negócio em qualquer nicho e região com nosso motor de busca neural integrado.</p>
+                  </div>
 
-                <div className="mt-auto pt-6 border-t border-white/5 space-y-3">
-                  <div className="space-y-2">
-                    {[
-                      { name: "Padaria Silva", city: "São Paulo", status: "Novo" },
-                      { name: "Clínica Sorriso", city: "Curitiba", status: "Novo" }
-                    ].map((l, i) => (
-                      <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-white/5 border border-white/5">
-                        <div className="flex items-center gap-2">
-                          <MapPin className="h-3 w-3 text-accent opacity-40" />
-                          <span className="text-[9px] font-bold text-white/70 uppercase">{l.name}</span>
+                  <div className="mt-auto pt-8 border-t border-white/5 space-y-3">
+                    <div className="space-y-2">
+                      {[
+                        { name: "Padaria do João", city: "São Paulo", color: "text-green-500" },
+                        { name: "Dentista Silva", city: "Curitiba", color: "text-primary" }
+                      ].map((l, i) => (
+                        <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+                          <div className="flex items-center gap-3">
+                            <MapPin className="h-3 w-3 text-primary opacity-50" />
+                            <span className="text-[10px] font-bold text-white uppercase">{l.name}</span>
+                          </div>
+                          <Badge className="bg-green-500/20 text-green-500 text-[8px] font-black px-2 py-0.5">NOVO</Badge>
                         </div>
-                        <Badge className="bg-accent/20 text-accent text-[7px] font-black px-1.5 py-0">NOVO</Badge>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </Card>
-            </motion.div>
+                </Card>
+              </motion.div>
 
-            {/* FEATURE 3: JORNADA 7 DIAS */}
-            <motion.div variants={fadeInUp}>
-              <Card className="bg-white/[0.03] border-white/[0.07] rounded-3xl p-8 h-full flex flex-col space-y-6">
-                <div className="h-12 w-12 rounded-2xl bg-primary/15 border border-primary/20 flex items-center justify-center text-primary">
-                  <Route className="h-6 w-6" />
-                </div>
-                <div className="space-y-3">
-                  <h3 className="text-lg font-bold text-white uppercase italic">Jornada de 7 Dias</h3>
-                  <p className="text-[13px] text-white/40 leading-relaxed">Processo guiado que já fechou mais de 479 vendas. Com missões diárias obrigatórias.</p>
-                </div>
+              {/* JORNADA */}
+              <motion.div variants={fadeInUp}>
+                <Card className="bg-white/[0.02] border-white/10 rounded-[2.5rem] p-8 h-full flex flex-col space-y-8 border shadow-sm">
+                  <div className="h-14 w-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
+                    <Route className="h-7 w-7" />
+                  </div>
+                  <div className="space-y-3">
+                    <h3 className="text-xl font-bold text-white uppercase italic">Jornada de 7 Dias</h3>
+                    <p className="text-sm text-white/40 leading-relaxed">Processo guiado passo a passo que já fechou mais de 479 vendas reais para iniciantes.</p>
+                  </div>
 
-                <div className="mt-auto pt-6 border-t border-white/5 space-y-4">
-                  <div className="flex items-center justify-between px-2">
-                    {[1, 2, 3, 4, 5].map((d) => (
-                      <div key={d} className="flex flex-col items-center gap-1.5">
-                        <div className={cn(
-                          "h-5 w-5 rounded-full flex items-center justify-center text-[8px] font-black border",
-                          d <= 3 ? "bg-green-500 border-green-500 text-white" : "bg-white/5 border-white/10 text-white/20"
-                        )}>
-                          {d <= 3 ? <Check className="h-2.5 w-2.5" /> : d}
+                  <div className="mt-auto pt-8 border-t border-white/5">
+                    <div className="flex items-center justify-between px-2">
+                      {[1, 2, 3, 4, 5].map((d) => (
+                        <div key={d} className="flex flex-col items-center gap-2">
+                          <div className={cn(
+                            "h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-black border",
+                            d <= 3 ? "bg-green-500 border-green-500 text-white" : "bg-white/5 border-white/10 text-white/20"
+                          )}>
+                            {d <= 3 ? <Check className="h-3 w-3" /> : d}
+                          </div>
+                          <span className="text-[8px] font-bold text-white/20 uppercase">Dia {d}</span>
                         </div>
-                        <span className="text-[7px] font-bold text-white/30 uppercase tracking-widest">Dia {d}</span>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
+              </motion.div>
             </motion.div>
-          </motion.div>
+          </div>
         </section>
 
-        {/* PRICING SECTION */}
-        <section id="precos" className="max-w-[1200px] mx-auto px-6 md:px-12 py-24 md:py-48 relative">
-          <div className="text-center space-y-6 mb-20">
-            <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5">Sua Rota de Escala</Badge>
-            <h2 className="text-[36px] md:text-[64px] font-black italic uppercase tracking-tighter leading-tight text-white">
-              Domine o mercado <br /><span className="text-primary shimmer-text">com poder IA.</span>
-            </h2>
-            <p className="text-white/50 text-sm md:text-lg max-w-2xl mx-auto font-medium leading-relaxed">
-              Libere o arsenal completo e comece a faturar em escala agora mesmo.
-            </p>
-          </div>
+        {/* PRICING */}
+        <section id="precos" className="py-24 md:py-32 relative">
+          <div className="max-w-7xl mx-auto px-6 md:px-12">
+            <div className="text-center space-y-6 mb-20">
+              <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-[0.3em] text-[10px] px-6 py-2 rounded-full">ROTA DE ESCALA</Badge>
+              <h2 className="text-4xl md:text-7xl font-black italic uppercase tracking-tighter leading-tight text-white">
+                Domine o mercado <br /><span className="text-primary">com poder IA.</span>
+              </h2>
+              <p className="text-white/50 text-lg max-w-2xl mx-auto">
+                Libere o arsenal completo e comece a faturar em escala agora mesmo com o método validado.
+              </p>
+            </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch max-w-6xl mx-auto">
-            {/* PLANO MENSAL */}
-            <motion.div {...fadeInUp}>
-              <Card className="h-full bg-white/[0.02] border-white/10 p-8 flex flex-col justify-between relative rounded-3xl">
-                <div className="space-y-8">
-                  <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] italic">Ideal para: quem quer testar sem compromisso</p>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 px-3 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full w-fit">
-                      <AlertCircle className="h-3 w-3 text-amber-500" />
-                      <span className="text-[8px] font-black uppercase tracking-widest text-amber-500">Uso Diário Limitado</span>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+              {/* PLANO MENSAL */}
+              <motion.div {...fadeInUp}>
+                <Card className="h-full bg-white/[0.02] border-white/10 p-10 flex flex-col justify-between relative rounded-[2.5rem] border shadow-sm">
+                  <div className="space-y-8">
+                    <p className="text-[10px] font-black text-primary uppercase tracking-widest italic">Iniciante</p>
+                    <div className="space-y-4">
+                      <h3 className="text-xs font-black uppercase tracking-widest text-white/80 flex items-center gap-2">
+                        <Zap className="h-4 w-4 text-amber-500" /> Flow Mensal
+                      </h3>
+                      <div className="flex items-baseline gap-1">
+                        <p className="text-6xl font-black italic text-white tracking-tighter">R$ 97</p>
+                        <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/mês</span>
+                      </div>
                     </div>
-                    <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-white/80 flex items-center gap-2">
-                      <Zap className="h-4 w-4 text-amber-500 fill-amber-500" /> Flow Mensal
-                    </h3>
-                    <div className="flex items-baseline gap-1">
-                      <p className="text-5xl md:text-6xl font-black italic text-white tracking-tighter">R$ 97</p>
-                      <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/mês</span>
-                    </div>
+
+                    <ul className="space-y-4 pt-8 border-t border-white/5">
+                      {['Radar: 20 Buscas/Dia', 'IA Mentor: 10 Perguntas/Dia', 'IA Prospecção: 10 Mensagens/Dia', 'Scripts de Elite'].map((f) => (
+                        <li key={f} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white/90">
+                          <CheckCircle2 className="h-4 w-4 text-primary" /> {f}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
+                  <Button asChild className="w-full h-14 mt-12 rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-white/10 font-black uppercase tracking-widest text-xs">
+                    <a href={CHECKOUT_MENSAL} target="_blank" rel="noopener noreferrer">Assinar Agora</a>
+                  </Button>
+                </Card>
+              </motion.div>
 
-                  <ul className="space-y-4 pt-6 border-t border-white/5">
-                    {['Radar: 20 Buscas/Dia', 'IA Mentor: 10 Perguntas/Dia', 'IA Prospecção: 10 Mensagens/Dia', 'Scripts de Elite'].map((f) => (
-                      <li key={f} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white/90">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" /> {f}
-                      </li>
-                    ))}
-                  </ul>
+              {/* PLANO TRIMESTRAL */}
+              <motion.div {...fadeInUp} className="relative">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
+                  <Badge className="bg-primary text-white font-black text-[10px] uppercase px-6 py-2 rounded-full shadow-xl">MAIS ESCOLHIDO</Badge>
                 </div>
-                <Button asChild className="w-full h-14 mt-10 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 font-black uppercase tracking-widest text-[11px]">
-                  <a href={CHECKOUT_MENSAL} target="_blank" rel="noopener noreferrer">Acessar agora</a>
-                </Button>
-              </Card>
-            </motion.div>
+                <Card className="h-full bg-white/[0.03] border-primary/50 p-10 flex flex-col justify-between relative rounded-[2.5rem] border shadow-2xl ring-2 ring-primary/20">
+                  <div className="space-y-8">
+                    <p className="text-[10px] font-black text-primary uppercase tracking-widest italic">Custo Benefício</p>
+                    <div className="space-y-4">
+                      <h3 className="text-xs font-black uppercase tracking-widest text-white/80 flex items-center gap-2">
+                        <Timer className="h-4 w-4 text-primary" /> Flow Trimestral
+                      </h3>
+                      <div className="flex items-baseline gap-1">
+                        <p className="text-6xl font-black italic text-white tracking-tighter">R$ 197</p>
+                        <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/tri</span>
+                      </div>
+                    </div>
 
-            {/* PLANO TRIMESTRAL */}
-            <motion.div {...fadeInUp}>
-              <Card className="h-full bg-white/[0.03] border-primary/50 p-8 flex flex-col justify-between relative rounded-3xl shadow-[0_0_50px_rgba(139,92,246,0.15)] ring-2 ring-primary/20">
-                <div className="absolute top-0 right-0 p-4">
-                  <Badge className="bg-primary text-white font-black text-[8px] uppercase px-3 py-1">MAIS ESCOLHIDO</Badge>
-                </div>
-                <div className="space-y-8">
-                  <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] italic">Ideal para: quem já validou e quer economia</p>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 px-3 py-1 bg-primary/20 border border-primary/30 rounded-full w-fit">
-                      <Timer className="h-3 w-3 text-primary" />
-                      <span className="text-[8px] font-black uppercase tracking-widest text-primary">Melhor Custo-Benefício</span>
-                    </div>
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80 flex items-center gap-2">
-                      <Zap className="h-4 w-4 text-primary fill-primary" /> Flow Trimestral
-                    </h3>
-                    <div className="flex items-baseline gap-1">
-                      <p className="text-5xl md:text-6xl font-black italic text-white tracking-tighter">R$ 197</p>
-                      <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/tri</span>
-                    </div>
+                    <ul className="space-y-4 pt-8 border-t border-white/5">
+                      {['Radar de Leads PRO', 'IA Mentor Treinado', 'Scripts de Volume', 'Acesso à Fase de Escala', '3 Meses de Full Access'].map((f) => (
+                        <li key={f} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white">
+                          <CheckCircle2 className="h-4 w-4 text-primary" /> {f}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
+                  <Button asChild className="w-full h-14 mt-12 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20">
+                    <a href={CHECKOUT_TRIMESTRAL} target="_blank" rel="noopener noreferrer">Garantir Desconto</a>
+                  </Button>
+                </Card>
+              </motion.div>
 
-                  <ul className="space-y-4 pt-6 border-t border-white/5">
-                    {['Radar de Leads PRO', 'IA Mentor Treinado', 'Scripts de Volume', 'Acesso à Fase de Escala', '3 Meses de Acesso'].map((f) => (
-                      <li key={f} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-primary" /> {f}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <Button asChild className="w-full h-14 mt-10 rounded-xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-[11px] shadow-xl">
-                  <a href={CHECKOUT_TRIMESTRAL} target="_blank" rel="noopener noreferrer">Acessar agora</a>
-                </Button>
-              </Card>
-            </motion.div>
+              {/* PLANO VITALÍCIO */}
+              <motion.div {...fadeInUp}>
+                <Card className="h-full bg-white/[0.02] border-white/10 p-10 flex flex-col justify-between relative rounded-[2.5rem] border shadow-sm">
+                  <div className="space-y-8">
+                    <p className="text-[10px] font-black text-primary uppercase tracking-widest italic">Acesso Total</p>
+                    <div className="space-y-4">
+                      <h3 className="text-xs font-black uppercase tracking-widest text-white/80 flex items-center gap-2">
+                        <Infinity className="h-4 w-4 text-primary" /> Flow Vitalício
+                      </h3>
+                      <div className="flex items-baseline gap-1">
+                        <p className="text-6xl font-black italic text-white tracking-tighter">R$ 287</p>
+                        <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/pagamento único</span>
+                      </div>
+                    </div>
 
-            {/* PLANO VITALÍCIO */}
-            <motion.div {...fadeInUp}>
-              <Card className="h-full bg-white/[0.02] border-accent/40 p-8 flex flex-col justify-between relative rounded-3xl">
-                <div className="space-y-8">
-                  <p className="text-[10px] font-black text-accent uppercase tracking-[0.2em] italic">Ideal para: quem veio pra ficar e escalar</p>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 px-3 py-1 bg-accent/20 border border-accent/30 rounded-full w-fit">
-                      <Infinity className="h-3 w-3 text-accent" />
-                      <span className="text-[8px] font-black uppercase tracking-widest text-accent">Pagamento Único</span>
-                    </div>
-                    <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-white/80 flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-accent fill-accent" /> Flow Vitalício
-                    </h3>
-                    <div className="flex items-baseline gap-1">
-                      <p className="text-5xl md:text-6xl font-black italic text-white tracking-tighter">R$ 287</p>
-                    </div>
+                    <ul className="space-y-4 pt-8 border-t border-white/5">
+                      {['Radar ILIMITADO', 'IA Mentor 24h ILIMITADO', 'IA de Prospecção ILIMITADA', 'Jornada Vitalícia', 'Sem Mensalidades'].map((f) => (
+                        <li key={f} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white">
+                          <CheckCircle2 className="h-4 w-4 text-primary" /> {f}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
+                  <Button asChild className="w-full h-14 mt-12 rounded-2xl bg-white text-black hover:bg-primary hover:text-white font-black uppercase tracking-widest text-xs transition-all">
+                    <a href={CHECKOUT_VITALICIO} target="_blank" rel="noopener noreferrer">Acesso Vitalício</a>
+                  </Button>
+                </Card>
+              </motion.div>
+            </div>
 
-                  <ul className="space-y-4 pt-6 border-t border-white/5">
-                    {['Radar ILIMITADO', 'IA Mentor 24h ILIMITADO', 'IA de Prospecção ILIMITADA', 'Jornada Vitalícia', 'Sem Mensalidades'].map((f) => (
-                      <li key={f} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-accent" /> {f}
-                      </li>
-                    ))}
-                  </ul>
+            {/* GARANTIA */}
+            <div className="mt-16 flex justify-center">
+              <div className="flex flex-col md:flex-row items-center gap-8 px-12 py-8 bg-white/[0.03] border border-white/10 rounded-[3rem] max-w-4xl shadow-sm">
+                <div className="h-20 w-20 rounded-2xl bg-green-500/10 flex items-center justify-center border border-green-500/20 shrink-0">
+                  <ShieldCheck className="h-12 w-12 text-green-500" />
                 </div>
-                <Button asChild className="w-full h-14 mt-10 rounded-xl bg-accent hover:bg-accent/90 text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-accent/20">
-                  <a href={CHECKOUT_VITALICIO} target="_blank" rel="noopener noreferrer">Acessar agora</a>
-                </Button>
-              </Card>
-            </motion.div>
-          </div>
-
-          <div className="mt-12 flex justify-center">
-            <div className="flex flex-col md:flex-row items-center gap-6 px-10 py-6 bg-white/[0.03] border border-white/5 rounded-3xl max-w-3xl">
-              <div className="h-16 w-16 rounded-2xl bg-green-500/10 flex items-center justify-center border border-green-500/20 shrink-0">
-                <ShieldCheck className="h-10 w-10 text-green-500" />
-              </div>
-              <div className="space-y-1 text-center md:text-left">
-                <h4 className="text-sm font-black uppercase tracking-widest text-white italic">Garantia Incondicional de 7 Dias</h4>
-                <p className="text-[11px] text-white/50 leading-relaxed uppercase font-medium">Você tem 7 dias inteiros para testar o arsenal. Se não ver o Flow acontecer, devolvemos 100% do seu dinheiro. Sem perguntas.</p>
+                <div className="space-y-2 text-center md:text-left">
+                  <h4 className="text-lg font-black uppercase tracking-widest text-white italic">Garantia Incondicional de 7 Dias</h4>
+                  <p className="text-sm text-white/50 leading-relaxed font-medium">Você tem 7 dias inteiros para testar o arsenal. Se não ver o Flow acontecer, devolvemos 100% do seu dinheiro. Sem burocracia.</p>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
         {/* DEPOIMENTOS */}
-        <section className="max-w-[1100px] mx-auto px-6 md:px-12 py-20 md:py-32">
-          <motion.div className="text-center md:text-left mb-16" {...fadeInUp}>
-            <Badge className="bg-primary/10 text-primary border-none text-[10px] font-black uppercase px-3 py-1 mb-4">RESULTADOS REAIS</Badge>
-            <h2 className="text-[28px] md:text-[48px] font-extrabold text-white uppercase italic">Quem já está na jornada.</h2>
-          </motion.div>
-          
-          <motion.div 
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="whileInView"
-          >
-            {TESTIMONIALS.map((t) => (
-              <motion.div key={t.author} variants={fadeInUp}>
-                <Card className="bg-white/[0.03] border-white/[0.07] rounded-3xl p-10 space-y-6 h-full flex flex-col">
-                  <div className="text-[48px] text-primary/30 font-serif leading-none h-6">“</div>
-                  <div className="flex gap-1 mb-2">
-                    {[1,2,3,4,5].map(s => <Star key={s} className="h-3.5 w-3.5 fill-[#f59e0b] text-[#f59e0b]" />)}
-                  </div>
-                  <p className="text-[15px] md:text-[16px] text-white/80 leading-[1.8] italic flex-1">
-                    {t.text} <span className="text-primary font-black not-italic text-lg">{t.highlight}</span> {t.textEnd}
-                  </p>
-                  <div className="flex items-center gap-4 pt-6 border-t border-white/5">
-                    <div className="h-12 w-12 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center font-black text-primary text-sm shrink-0">
-                      {t.initial}
+        <section className="py-24 md:py-32 bg-white/[0.01]">
+          <div className="max-w-7xl mx-auto px-6 md:px-12">
+            <div className="text-center md:text-left mb-20 space-y-4">
+              <Badge className="bg-primary/10 text-primary border-none text-xs font-black uppercase px-4 py-1.5 rounded-lg">RESULTADOS REAIS</Badge>
+              <h2 className="text-4xl md:text-6xl font-black text-white uppercase italic leading-none">Quem já está na jornada.</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {TESTIMONIALS.map((t) => (
+                <motion.div key={t.author} {...fadeInUp}>
+                  <Card className="bg-white/[0.02] border-white/10 rounded-[2.5rem] p-10 space-y-8 h-full flex flex-col border shadow-sm">
+                    <div className="flex gap-1">
+                      {[1,2,3,4,5].map(s => <Star key={s} className="h-4 w-4 fill-amber-500 text-amber-500" />)}
                     </div>
-                    <div>
-                      <p className="text-[14px] font-bold text-white">{t.author}</p>
-                      <p className="text-[11px] text-white/30 font-black uppercase tracking-widest">{t.context}</p>
+                    <p className="text-lg text-white/80 leading-relaxed italic flex-1">
+                      {t.text} <span className="text-primary font-black not-italic text-2xl">{t.highlight}</span> {t.textEnd}
+                    </p>
+                    <div className="flex items-center gap-4 pt-8 border-t border-white/5">
+                      <div className="h-12 w-12 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center font-black text-primary text-sm shrink-0">
+                        {t.initial}
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-white uppercase">{t.author}</p>
+                        <p className="text-[10px] font-black text-white/30 uppercase tracking-widest">{t.context}</p>
+                      </div>
                     </div>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+            
+            <div className="mt-16 flex flex-col items-center gap-6">
+              <p className="text-xs font-bold text-white/20 uppercase tracking-[0.4em]">Mais de 1.817 profissionais já começaram</p>
+              <div className="flex -space-x-3">
+                {[1,2,3,4,5,6].map(i => (
+                  <div key={i} className="h-10 w-10 rounded-full border-2 border-[#05050f] bg-zinc-800 flex items-center justify-center text-[10px] font-black text-white/40">
+                    {String.fromCharCode(64 + i)}
                   </div>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
+                ))}
+                <div className="h-10 w-10 rounded-full border-2 border-[#05050f] bg-primary flex items-center justify-center text-[10px] font-black text-white">
+                  +1k
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* FAQ */}
-        <section id="faq" className="max-w-[1100px] mx-auto px-6 md:px-12 py-20 md:py-32">
-          <motion.h2 className="text-[28px] md:text-[36px] font-extrabold text-white uppercase italic mb-12" {...fadeInUp}>
-            Dúvidas frequentes.
-          </motion.h2>
-          
-          <motion.div {...fadeInUp}>
-            <Accordion type="single" collapsible className="w-full">
-              {[
-                { q: "O sistema funciona para quem não tem experiência?", a: "Sim. O FlowPro foi desenhado como uma jornada guiada passo a passo. Você só precisa seguir as missões diárias e copiar os scripts gerados." },
-                { q: "Como a IA ajuda no processo de vendas?", a: "Nossa IA analisa o nicho do lead e gera um script de abordagem que não parece spam, aumentando drasticamente suas chances de resposta." },
-                { q: "Em quanto tempo vejo os primeiros resultados?", a: "Nossa jornada foi feita para você realizar sua primeira venda em até 7 dias, desde que execute todas as tarefas propostas." },
-                { q: "Preciso aparecer nas redes sociais?", a: "Não. Ensinamos estratégias de bastidores onde você pode prospectar e vender sem nunca mostrar o rosto." }
-              ].map((item, i) => (
-                <AccordionItem key={item.q} value={`item-${i}`} className="border-b border-white/[0.07] py-4">
-                  <AccordionTrigger className="text-[14px] font-medium text-white/80 hover:no-underline hover:text-white transition-colors py-4 text-left">
-                    {item.q}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-[13px] text-white/50 leading-[1.7] pt-2 pb-4 max-w-2xl">
-                    {item.a}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </motion.div>
+        <section id="faq" className="py-24 md:py-32">
+          <div className="max-w-4xl mx-auto px-6 md:px-12">
+            <h2 className="text-4xl md:text-5xl font-black text-white uppercase italic mb-16 text-center">Dúvidas frequentes.</h2>
+            
+            <div className="space-y-4">
+              <Accordion type="single" collapsible className="w-full">
+                {[
+                  { q: "O sistema funciona para quem não tem experiência?", a: "Sim. O FlowPro foi desenhado como uma jornada guiada passo a passo. Você só precisa seguir as missões diárias e usar os scripts gerados pela nossa IA." },
+                  { q: "Como a IA ajuda no processo de vendas?", a: "Nossa IA analisa o nicho do lead e gera uma abordagem personalizada que não parece spam, aumentando as chances de resposta no WhatsApp em até 300%." },
+                  { q: "Em quanto tempo vejo os primeiros resultados?", a: "Nossa jornada foi feita para você realizar sua primeira venda em até 7 dias, desde que execute todas as tarefas propostas diariamente." },
+                  { q: "Preciso aparecer nas redes sociais?", a: "Não. Ensinamos estratégias de bastidores onde você pode prospectar e fechar contratos sem nunca precisar mostrar o rosto." }
+                ].map((item, i) => (
+                  <AccordionItem key={item.q} value={`item-${i}`} className="border-b border-white/5 py-4">
+                    <AccordionTrigger className="text-base font-bold text-white/90 hover:no-underline transition-colors py-4 text-left">
+                      {item.q}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-sm text-white/50 leading-relaxed pt-2 pb-4 italic">
+                      {item.a}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
+          </div>
         </section>
 
-        {/* CTA FINAL SECTION */}
-        <section className="max-w-[1100px] mx-auto px-6 md:px-12 py-24 md:py-48 flex flex-col items-center text-center space-y-12">
+        {/* CTA FINAL */}
+        <section className="py-32 md:py-48 flex flex-col items-center text-center px-6">
           <motion.div 
             className="space-y-12 flex flex-col items-center"
-            initial={{ opacity: 0, scale: 0.98 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, amount: 0.1 }}
-            transition={{ duration: 0.4 }}
+            {...fadeInUp}
           >
-            <div className="space-y-4">
-              <Badge className="bg-accent/20 text-accent border border-accent/30 uppercase tracking-[0.3em] text-[10px] px-4 py-1.5 animate-pulse">Oferta de Tempo Limitado</Badge>
-              <h2 className="text-[36px] md:text-[64px] font-extrabold text-white leading-tight max-w-[800px] uppercase italic">
+            <div className="space-y-6">
+              <Badge className="bg-amber-500/20 text-amber-500 border border-amber-500/30 uppercase tracking-[0.3em] text-[10px] px-6 py-2 rounded-full animate-pulse">Oferta de Tempo Limitado</Badge>
+              <h2 className="text-5xl md:text-8xl font-black text-white leading-tight max-w-4xl uppercase italic tracking-tighter">
                 Últimas vagas com o preço atual.
               </h2>
             </div>
 
+            {/* COUNTDOWN CLOCK STYLE */}
             <div className="flex gap-4 md:gap-8">
               {[
                 { val: "23", label: "HORAS" },
-                { val: "59", label: "MIN" },
-                { val: "42", label: "SEG" }
+                { val: "59", label: "MINUTOS" },
+                { val: "42", label: "SEGUNDOS" }
               ].map((c, i) => (
-                <div key={i} className="flex flex-col items-center gap-2">
-                  <div className="h-16 w-16 md:h-24 md:w-24 bg-white/[0.03] border border-white/5 rounded-2xl flex items-center justify-center text-2xl md:text-4xl font-black italic font-mono text-primary shadow-2xl">
+                <div key={i} className="flex flex-col items-center gap-3">
+                  <div className="h-20 w-20 md:h-32 md:w-32 bg-white/[0.03] border border-white/10 rounded-[2rem] flex items-center justify-center text-3xl md:text-6xl font-black italic font-mono text-primary shadow-2xl">
                     {c.val}
                   </div>
-                  <span className="text-[8px] md:text-[10px] font-black text-white/20 tracking-widest">{c.label}</span>
+                  <span className="text-[10px] font-black text-white/30 tracking-widest">{c.label}</span>
                 </div>
               ))}
             </div>
 
-            <div className="flex flex-col items-center gap-4 w-full">
-              <Button onClick={scrollToPricing} size="lg" className="group bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-[16px] h-[72px] px-12 rounded-2xl shadow-[0_20px_60px_rgba(139,92,246,0.5)] transition-all hover:scale-105 active:scale-95 border-none w-full sm:w-auto">
-                QUERO MEU ACESSO AGORA <ArrowRight className="ml-3 h-6 w-6" />
+            <div className="flex flex-col items-center gap-6 w-full max-w-lg">
+              <Button 
+                onClick={scrollToPricing} 
+                size="lg" 
+                className="group bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-lg h-20 px-16 rounded-[2rem] shadow-[0_20px_60px_rgba(139,92,246,0.6)] transition-all hover:scale-105 active:scale-95 border-none w-full"
+              >
+                QUERO MEU ACESSO AGORA <ArrowRight className="ml-3 h-7 w-7 group-hover:translate-x-2 transition-transform" />
               </Button>
-              <div className="space-y-2">
-                <p className="text-[11px] font-bold text-white/40 uppercase tracking-widest">Acesso imediato após o pagamento</p>
+              <div className="space-y-1">
+                <p className="text-[12px] font-bold text-white/40 uppercase tracking-widest">Acesso imediato após o pagamento</p>
+                <div className="flex items-center justify-center gap-4 text-[10px] font-black text-green-500 uppercase tracking-widest">
+                  <Check className="h-4 w-4" /> Pagamento 100% Seguro
+                </div>
               </div>
             </div>
           </motion.div>
         </section>
 
-        <footer className="max-w-[1100px] mx-auto px-6 md:px-12 py-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="relative h-4 w-16 opacity-50 grayscale contrast-200">
-              <Image src={LOGO_URL} alt="FlowPro" fill className="object-contain" loading="lazy" sizes="64px" />
+        <footer className="py-16 border-t border-white/5 bg-[#030305]">
+          <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-12">
+            <div className="flex flex-col items-center md:items-start gap-4">
+              <div className="relative h-6 w-24 opacity-40 grayscale contrast-200">
+                <Image src={LOGO_URL} alt="FlowPro" fill className="object-contain" loading="lazy" sizes="96px" />
+              </div>
+              <p className="text-[11px] text-white/20 font-medium tracking-tight">© 2025 FlowPro Systems • Todos os direitos reservados.</p>
             </div>
-            <span className="text-[12px] text-white/30 font-medium tracking-tight">© 2025 FlowPro Systems. Todos os direitos reservados.</span>
-          </div>
-          
-          <div className="flex items-center gap-8">
-            <Link href="#" prefetch={false} className="text-[12px] text-white/40 hover:text-white transition-colors uppercase font-bold tracking-widest">Termos</Link>
-            <Link href="#" prefetch={false} className="text-[12px] text-white/40 hover:text-white transition-colors uppercase font-bold tracking-widest">Privacidade</Link>
+            
+            <div className="flex items-center gap-12">
+              <Link href="#" prefetch={false} className="text-[11px] text-white/40 hover:text-white transition-colors uppercase font-black tracking-widest">Termos de Uso</Link>
+              <Link href="#" prefetch={false} className="text-[11px] text-white/40 hover:text-white transition-colors uppercase font-black tracking-widest">Privacidade</Link>
+              <div className="h-10 w-px bg-white/5 hidden md:block" />
+              <div className="flex items-center gap-3">
+                <ShieldCheck className="h-5 w-5 text-white/20" />
+                <TrendingUp className="h-5 w-5 text-white/20" />
+              </div>
+            </div>
           </div>
         </footer>
       </main>
+
+      {/* GLOBAL BACKGROUND ORB (REDUCED FOR PERFORMANCE) */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[160px]"></div>
+      </div>
     </div>
   );
 }
