@@ -15,13 +15,11 @@ import {
   CheckCircle2,
   Infinity,
   ArrowRight,
-  AlertCircle,
-  Timer,
-  Sparkles,
   ShieldCheck,
   Check,
   MapPin,
-  TrendingUp
+  TrendingUp,
+  Timer
 } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -59,21 +57,23 @@ const CHECKOUT_MENSAL = "https://checkout.flowproia.shop/pay/PPU38CQ9FQU";
 const CHECKOUT_TRIMESTRAL = "https://checkout.flowproia.shop/pay/PPU38CQ9N8O";
 const CHECKOUT_VITALICIO = "https://checkout.flowproia.shop/pay/PPU38CQ9FCP";
 
+// Animação suavizada e mais resiliente
 const fadeInUp = {
-  initial: { opacity: 0, y: 10 },
+  initial: { opacity: 1, y: 0 }, // Inicia visível para evitar o "pisca"
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0.05 },
-  transition: { duration: 0.5, ease: "easeOut" }
+  viewport: { once: true, amount: 0 },
+  transition: { duration: 0.4, ease: "easeOut" }
 };
 
 const staggerContainer = {
-  initial: {},
+  initial: { opacity: 1 },
   whileInView: {
+    opacity: 1,
     transition: {
       staggerChildren: 0.1
     }
   },
-  viewport: { once: true, amount: 0.05 }
+  viewport: { once: true, amount: 0 }
 };
 
 export default function Home() {
@@ -113,12 +113,7 @@ export default function Home() {
         <section className="relative pt-32 pb-16 md:pt-48 md:pb-24 overflow-hidden">
           <div className="max-w-7xl mx-auto px-6 md:px-12">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-              <motion.div 
-                className="space-y-8 text-center lg:text-left"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-              >
+              <div className="space-y-8 text-center lg:text-left">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -157,15 +152,10 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
               {/* AI SIMULATOR PREVIEW */}
-              <motion.div 
-                className="relative hidden lg:block"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              >
+              <div className="relative hidden lg:block">
                 <div className="absolute inset-0 bg-primary/20 rounded-full blur-[120px] animate-pulse pointer-events-none" />
                 <Card className="relative bg-[#0a0a14] border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl border">
                   <div className="h-12 bg-white/5 border-b border-white/5 flex items-center px-6 gap-2">
@@ -197,7 +187,7 @@ export default function Home() {
                     </div>
                   </div>
                 </Card>
-              </motion.div>
+              </div>
             </div>
           </div>
         </section>
@@ -211,24 +201,23 @@ export default function Home() {
                 { val: "R$ 2,6M", label: "Gerado pela Base", sub: "Faturamento acumulado" },
                 { val: "3,8 dias", label: "Média para 1ª Venda", sub: "Velocidade de execução" }
               ].map((m, i) => (
-                <motion.div 
+                <div 
                   key={m.label} 
                   className={cn("flex flex-col items-center md:items-start text-center md:text-left", i !== 0 && "md:pl-12 md:border-l border-white/5")}
-                  {...fadeInUp}
                 >
                   <span className="text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter leading-none">{m.val}</span>
                   <span className="text-sm font-bold text-primary uppercase tracking-widest mt-3">{m.label}</span>
                   <span className="text-xs text-white/30 uppercase mt-1">{m.sub}</span>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
         {/* ARSENAL SECTION */}
-        <section id="arsenal" className="py-24 md:py-32">
+        <section id="arsenal" className="py-20 md:py-24">
           <div className="max-w-7xl mx-auto px-6 md:px-12">
-            <div className="max-w-3xl mb-20 space-y-4">
+            <div className="max-w-3xl mb-16 space-y-4">
               <Badge className="bg-primary/20 text-primary border-none text-xs font-black uppercase px-4 py-1.5 rounded-lg">FERRAMENTAS DE ELITE</Badge>
               <h2 className="text-4xl md:text-6xl font-black text-white uppercase italic leading-none">O seu arsenal tático.</h2>
               <p className="text-lg text-white/40 leading-relaxed">As ferramentas que transformam um lead frio em um fechamento no PIX em poucos minutos.</p>
@@ -329,9 +318,9 @@ export default function Home() {
         </section>
 
         {/* PRICING */}
-        <section id="precos" className="py-24 md:py-32 relative">
+        <section id="precos" className="py-20 md:py-24 relative">
           <div className="max-w-7xl mx-auto px-6 md:px-12">
-            <div className="text-center space-y-6 mb-20">
+            <div className="text-center space-y-6 mb-16">
               <Badge className="bg-primary/20 text-primary border border-primary/30 uppercase tracking-[0.3em] text-[10px] px-6 py-2 rounded-full">ROTA DE ESCALA</Badge>
               <h2 className="text-4xl md:text-7xl font-black italic uppercase tracking-tighter leading-tight text-white">
                 Domine o mercado <br /><span className="text-primary">com poder IA.</span>
@@ -343,7 +332,7 @@ export default function Home() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
               {/* PLANO MENSAL */}
-              <motion.div {...fadeInUp}>
+              <motion.div variants={fadeInUp} initial="initial" whileInView="whileInView">
                 <Card className="h-full bg-white/[0.02] border-white/10 p-10 flex flex-col justify-between relative rounded-[2.5rem] border shadow-sm">
                   <div className="space-y-8">
                     <p className="text-[10px] font-black text-primary uppercase tracking-widest italic">Iniciante</p>
@@ -372,7 +361,7 @@ export default function Home() {
               </motion.div>
 
               {/* PLANO TRIMESTRAL */}
-              <motion.div {...fadeInUp} className="relative">
+              <motion.div variants={fadeInUp} initial="initial" whileInView="whileInView" className="relative">
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
                   <Badge className="bg-primary text-white font-black text-[10px] uppercase px-6 py-2 rounded-full shadow-xl">MAIS ESCOLHIDO</Badge>
                 </div>
@@ -404,7 +393,7 @@ export default function Home() {
               </motion.div>
 
               {/* PLANO VITALÍCIO */}
-              <motion.div {...fadeInUp}>
+              <motion.div variants={fadeInUp} initial="initial" whileInView="whileInView">
                 <Card className="h-full bg-white/[0.02] border-white/10 p-10 flex flex-col justify-between relative rounded-[2.5rem] border shadow-sm">
                   <div className="space-y-8">
                     <p className="text-[10px] font-black text-primary uppercase tracking-widest italic">Acesso Total</p>
@@ -449,16 +438,16 @@ export default function Home() {
         </section>
 
         {/* DEPOIMENTOS */}
-        <section className="py-24 md:py-32 bg-white/[0.01]">
+        <section className="py-20 md:py-24 bg-white/[0.01]">
           <div className="max-w-7xl mx-auto px-6 md:px-12">
-            <div className="text-center md:text-left mb-20 space-y-4">
+            <div className="text-center md:text-left mb-16 space-y-4">
               <Badge className="bg-primary/10 text-primary border-none text-xs font-black uppercase px-4 py-1.5 rounded-lg">RESULTADOS REAIS</Badge>
               <h2 className="text-4xl md:text-6xl font-black text-white uppercase italic leading-none">Quem já está na jornada.</h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {TESTIMONIALS.map((t) => (
-                <motion.div key={t.author} {...fadeInUp}>
+                <div key={t.author}>
                   <Card className="bg-white/[0.02] border-white/10 rounded-[2.5rem] p-10 space-y-8 h-full flex flex-col border shadow-sm">
                     <div className="flex gap-1">
                       {[1,2,3,4,5].map(s => <Star key={s} className="h-4 w-4 fill-amber-500 text-amber-500" />)}
@@ -476,7 +465,7 @@ export default function Home() {
                       </div>
                     </div>
                   </Card>
-                </motion.div>
+                </div>
               ))}
             </div>
             
@@ -497,7 +486,7 @@ export default function Home() {
         </section>
 
         {/* FAQ */}
-        <section id="faq" className="py-24 md:py-32">
+        <section id="faq" className="py-20 md:py-24">
           <div className="max-w-4xl mx-auto px-6 md:px-12">
             <h2 className="text-4xl md:text-5xl font-black text-white uppercase italic mb-16 text-center">Dúvidas frequentes.</h2>
             
@@ -524,11 +513,8 @@ export default function Home() {
         </section>
 
         {/* CTA FINAL */}
-        <section className="py-32 md:py-48 flex flex-col items-center text-center px-6">
-          <motion.div 
-            className="space-y-12 flex flex-col items-center"
-            {...fadeInUp}
-          >
+        <section className="py-24 md:py-32 flex flex-col items-center text-center px-6">
+          <div className="space-y-12 flex flex-col items-center">
             <div className="space-y-6">
               <Badge className="bg-amber-500/20 text-amber-500 border border-amber-500/30 uppercase tracking-[0.3em] text-[10px] px-6 py-2 rounded-full animate-pulse">Oferta de Tempo Limitado</Badge>
               <h2 className="text-5xl md:text-8xl font-black text-white leading-tight max-w-4xl uppercase italic tracking-tighter">
@@ -567,7 +553,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </section>
 
         <footer className="py-16 border-t border-white/5 bg-[#030305]">
@@ -592,7 +578,7 @@ export default function Home() {
         </footer>
       </main>
 
-      {/* GLOBAL BACKGROUND ORB (REDUCED FOR PERFORMANCE) */}
+      {/* GLOBAL BACKGROUND ORB */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[160px]"></div>
       </div>
