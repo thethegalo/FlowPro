@@ -11,14 +11,15 @@ import {
   Target, 
   GitBranch, 
   Zap, 
-  CheckCircle2,
-  Clock,
-  Menu
+  CheckCircle2, 
+  Clock, 
+  Menu 
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const VIDEOS = [
