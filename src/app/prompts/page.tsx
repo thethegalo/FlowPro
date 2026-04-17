@@ -398,13 +398,23 @@ Gere o código completo da página em um único arquivo.`;
                               </Badge>
                             </div>
 
-                            <Button
-                              variant="outline"
-                              className="w-full h-12 rounded-xl border-white/10 text-[10px] font-black uppercase hover:bg-white/5 gap-2"
-                              onClick={() => handleCopyTemplate(t.name)}
-                            >
-                              <Copy className="h-4 w-4" /> COPIAR PROMPT
-                            </Button>
+                            <div className="w-full space-y-2">
+                              <Button
+                                variant="outline"
+                                className="w-full h-12 rounded-xl border-white/10 text-[10px] font-black uppercase hover:bg-white/5 gap-2"
+                                onClick={() => handleCopyTemplate(t.name)}
+                              >
+                                <Copy className="h-4 w-4" /> COPIAR PROMPT
+                              </Button>
+                              <Button
+                                asChild
+                                className="w-full h-12 rounded-xl bg-white text-black hover:bg-primary hover:text-white font-black uppercase tracking-widest text-[10px] gap-2 shadow-xl transition-all"
+                              >
+                                <a href="https://lovable.dev" target="_blank" rel="noopener noreferrer">
+                                  <ExternalLink className="h-4 w-4" /> ABRIR LOVABLE
+                                </a>
+                              </Button>
+                            </div>
                           </div>
                         </Card>
                       ))}
