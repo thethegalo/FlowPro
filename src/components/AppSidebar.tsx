@@ -82,7 +82,6 @@ export function AppSidebar() {
 
   const menuItems = [
     { title: "Dashboard", icon: LayoutDashboard, url: "/dashboard" },
-    { title: "Masterclass VIP", icon: GraduationCap, url: "/masterclass" },
     { title: "Funil de Vendas", icon: GitBranch, url: "/funil" },
     { title: "Ranking Vendedores", icon: Trophy, url: "/vendedores" },
     { title: "Captar Leads", icon: Search, url: "/leads" },

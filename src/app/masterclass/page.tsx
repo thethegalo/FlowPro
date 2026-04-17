@@ -6,13 +6,11 @@ import { motion } from 'framer-motion';
 import { 
   Play, 
   ArrowLeft, 
-  LayoutDashboard, 
   GraduationCap, 
   Target, 
   GitBranch, 
   Zap, 
   CheckCircle2, 
-  Clock, 
   Menu 
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -27,15 +25,13 @@ const VIDEOS = [
     id: "lE19AjHqX1s",
     title: "Módulo 1: Captar Leads em Escala",
     desc: "Aprenda como utilizar o Radar Neural para encontrar os alvos mais lucrativos do seu nicho.",
-    icon: <Target className="h-5 w-5" />,
-    duration: "12:45"
+    icon: <Target className="h-5 w-5" />
   },
   {
     id: "NBbxaiPi07c",
     title: "Módulo 2: Funil de Vendas de Alta Conversão",
     desc: "A estrutura exata para transformar abordagens frias em fechamentos no PIX.",
-    icon: <GitBranch className="h-5 w-5" />,
-    duration: "15:20"
+    icon: <GitBranch className="h-5 w-5" />
   }
 ];
 
@@ -96,9 +92,6 @@ export default function MasterclassPage() {
                 <div className="p-8 bg-white/[0.02] border border-white/5 rounded-[2rem] space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xl font-black italic uppercase text-white">{activeVideo.title}</h3>
-                    <Badge variant="outline" className="border-white/10 text-[10px] text-white/40 gap-1">
-                      <Clock className="h-3 w-3" /> {activeVideo.duration}
-                    </Badge>
                   </div>
                   <p className="text-sm text-white/60 leading-relaxed font-medium">
                     {activeVideo.desc}
@@ -138,7 +131,6 @@ export default function MasterclassPage() {
                         </div>
                         <div className="space-y-1">
                           <p className="text-[11px] font-black uppercase leading-tight">{video.title}</p>
-                          <p className="text-[9px] font-bold opacity-50 uppercase tracking-widest">{video.duration} de aula</p>
                         </div>
                       </button>
                     ))}
