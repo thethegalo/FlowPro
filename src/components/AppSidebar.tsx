@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -14,7 +13,8 @@ import {
   GitBranch,
   CreditCard,
   Lock,
-  Clock
+  Clock,
+  GraduationCap
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -82,6 +82,7 @@ export function AppSidebar() {
 
   const menuItems = [
     { title: "Dashboard", icon: LayoutDashboard, url: "/dashboard" },
+    { title: "Masterclass VIP", icon: GraduationCap, url: "/masterclass" },
     { title: "Funil de Vendas", icon: GitBranch, url: "/funil" },
     { title: "Ranking Vendedores", icon: Trophy, url: "/vendedores" },
     { title: "Captar Leads", icon: Search, url: "/leads" },

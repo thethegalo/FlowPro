@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useEffect, useState } from 'react';
@@ -91,7 +90,6 @@ export default function Dashboard() {
   const db = useFirestore();
   const router = useRouter();
   const { success, error } = useToast();
-  const [isVipModalOpen, setIsVipModalOpen] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState('');
   
@@ -361,10 +359,10 @@ export default function Dashboard() {
                     </div>
                     <Button 
                       variant="outline" 
-                      onClick={() => setIsVipModalOpen(true)}
+                      asChild
                       className="w-full mt-4 bg-white/10 border-white/10 text-white hover:bg-white/20 transition-all rounded-xl text-[11px] font-bold uppercase"
                     >
-                      Acessar Agora <ArrowRight className="ml-2 h-3 w-3" />
+                      <Link href="/masterclass">Acessar Agora <ArrowRight className="ml-2 h-3 w-3" /></Link>
                     </Button>
                   </div>
                   <div className="absolute -bottom-4 -right-4 opacity-5 group-hover:scale-110 transition-transform">
@@ -466,7 +464,7 @@ export default function Dashboard() {
                         <div className="pt-4">
                           <div className={cn(
                             "w-full h-8 rounded-lg text-[9px] font-black uppercase tracking-widest flex items-center justify-center transition-all",
-                            isCompleted ? "border border-white/5 text-white/30 hover:bg-white/5" : 
+                            isCompleted ? 'border border-white/5 text-white/30 hover:bg-white/5' : 
                             isCurrent ? "bg-primary text-white" : "bg-white/5 text-white/20"
                           )}>
                             {isCompleted ? 'revisar' : isLocked ? 'bloqueado' : 'iniciar'}
@@ -480,32 +478,6 @@ export default function Dashboard() {
             </div>
           </div>
         </main>
-
-        <Dialog open={isVipModalOpen} onOpenChange={setIsVipModalOpen}>
-          <DialogContent className="bg-[#0e0e1a] border-white/10 text-white rounded-[2rem] max-w-sm sm:max-w-md p-12 text-center">
-            <DialogHeader className="space-y-6 flex flex-col items-center">
-              <div className="relative h-16 w-48 mb-4">
-                <Image src={LOGO_URL} alt="FlowPro Logo" fill className="object-contain" loading="lazy" />
-              </div>
-              <DialogTitle className="text-2xl font-black italic uppercase tracking-tighter">
-                EM BREVE
-              </DialogTitle>
-              <div className="space-y-2">
-                <p className="text-white/60 text-sm font-medium leading-relaxed">
-                  Estamos finalizando o motor neural desta Masterclass. Você será notificado assim que o conteúdo for liberado no seu painel.
-                </p>
-              </div>
-            </DialogHeader>
-            <div className="mt-8">
-              <Button 
-                onClick={() => setIsVipModalOpen(false)}
-                className="w-full h-12 bg-primary hover:bg-primary/90 font-black uppercase tracking-widest rounded-xl"
-              >
-                ENTENDIDO
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
     </SidebarProvider>
   );
