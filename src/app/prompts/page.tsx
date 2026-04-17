@@ -81,46 +81,51 @@ const TEMPLATE_PRESETS = [
 
 const TEMPLATE_DATA: Record<string, any> = {
   'Barbearia Moderna': {
-    businessName: 'Barbearia',
-    niche: 'Saúde & Bem-estar',
-    objective: 'Agendar Consulta',
-    visualStyle: 'Bold',
-    tone: 'Dinâmico',
-    sections: ['Hero', 'Benefícios', 'Depoimentos', 'Preços', 'CTA Final'],
-    differential: 'Cortes modernos, ambiente masculino premium, agendamento online',
-    extras: 'Site para barbearia masculina. Hero com foto de ambiente, seção de serviços com preços (corte, barba, combo), galeria de cortes, botão de agendamento via WhatsApp. Cores escuras, tipografia forte.'
+    businessName: 'Barbearia Premium',
+    niche: 'Beleza & Estética Masculina',
+    objective: 'Agendamento Online',
+    visualStyle: 'Dark Minimalist',
+    tone: 'Sofisticado e Autoritário',
+    sections: ['Hero com vídeo', 'Serviços & Preços', 'Galeria de Cortes', 'Depoimentos', 'Mapa & Horários', 'CTA WhatsApp'],
+    differential: 'Tradição aliada a cortes modernos e agendamento sem filas.',
+    extras: 'Crie uma landing page de alta conversão. Cores: Preto, Dourado e Cinza. Tipografia sans-serif robusta.'
   },
   'Clínica Odontológica': {
-    businessName: 'Clínica Odontológica',
-    niche: 'Saúde & Bem-estar',
-    objective: 'Agendar Consulta',
-    visualStyle: 'Corporativo',
-    tone: 'Profissional',
-    sections: ['Hero', 'Benefícios', 'Sobre', 'Depoimentos', 'FAQ', 'CTA Final'],
-    differential: 'Tecnologia de ponta, equipe especializada, ambiente acolhedor',
-    extras: 'Site para clínica odontológica. Hero com foto da clínica, seção de especialidades (implante, clareamento, ortodontia), equipe de dentistas, formulário de agendamento. Design clean branco e azul.'
+    businessName: 'Clínica Sorriso',
+    niche: 'Saúde e Odontologia',
+    objective: 'Capturar Leads Qualificados',
+    visualStyle: 'Clean White & Trust',
+    tone: 'Acolhedor e Profissional',
+    sections: ['Hero com promessa', 'Especialidades', 'Equipe Médica', 'Infraestrutura', 'Garantia de Satisfação', 'FAQ', 'Formulário'],
+    differential: 'Atendimento humanizado e tecnologias de ponta em implantes e estética.',
+    extras: 'Foco total em passar confiança e higiene. Cores azul celeste e branco neve.'
   },
   'Restaurante Premium': {
-    businessName: 'Restaurante',
-    niche: 'Gastronomia',
-    objective: 'Agendar Consulta',
-    visualStyle: 'Elegante',
-    tone: 'Luxuoso',
-    sections: ['Hero', 'Benefícios', 'Portfólio', 'Depoimentos', 'CTA Final'],
-    differential: 'Gastronomia autoral, ingredientes selecionados, experiência única',
-    extras: 'Site para restaurante premium. Hero com foto dos pratos, cardápio com fotos e preços, seção de ambiente, reservas online via WhatsApp. Design escuro e sofisticado com dourado.'
+    businessName: 'Gastrô Brasa',
+    niche: 'Gastronomia Gourmet',
+    objective: 'Reserva de Mesa',
+    visualStyle: 'Elegant Dark',
+    tone: 'Inspirador e Apetitoso',
+    sections: ['Hero Imersivo', 'Menu Signature', 'Chef da Casa', 'Ambiente Vibe', 'Reservas Direct', 'Rodapé Institucional'],
+    differential: 'Ingredientes orgânicos e experiência sensorial completa.',
+    extras: 'Use imagens de pratos com alta definição. Cores marrom terra, terracota e preto.'
   },
   'Academia Fitness': {
-    businessName: 'Academia',
-    niche: 'Esporte/Fitness',
-    objective: 'Capturar Leads',
-    visualStyle: 'Bold',
-    tone: 'Urgente',
-    sections: ['Hero', 'Benefícios', 'Preços', 'Depoimentos', 'CTA Final'],
-    differential: 'Equipamentos modernos, personal trainers, resultados em 30 dias',
-    extras: 'Site para academia de musculação. Hero com foto da academia, modalidades oferecidas, planos mensais com preços, transformações de alunos, botão de aula experimental grátis. Design energético com vermelho ou laranja.'
+    businessName: 'Apex Fitness',
+    niche: 'Bem-estar e Musculação',
+    objective: 'Matrícula Direta',
+    visualStyle: 'High Energy Bold',
+    tone: 'Motivador e Urgente',
+    sections: ['Hero Energético', 'Planos de Acesso', 'Professores', 'Estrutura 24h', 'Depoimentos Alunos', 'Trial Grátis CTA'],
+    differential: 'Equipamentos de última geração e foco em resultados reais em 3 meses.',
+    extras: 'Design agressivo com fontes largas. Cores laranja vibrante, preto e branco.'
   },
 };
+
+const OBJECTIVES = ['Capturar Leads', 'Agendar Consulta', 'Venda Direta', 'Matrícula'];
+const STYLES = ['Minimalista', 'Bold', 'Clean White', 'Luxo Profundo', 'Corporativo'];
+const TONES = ['Profissional', 'Amigável', 'Urgente', 'Luxuoso', 'Dinâmico'];
+const SECTIONS = ['Hero', 'Benefícios', 'Depoimentos', 'Preços', 'FAQ', 'CTA Final', 'Portfólio', 'Sobre'];
 
 export default function PromptsPage() {
   const [activeMainTab, setActiveMainTab] = useState<'templates' | 'create'>('templates');
@@ -147,37 +152,55 @@ export default function PromptsPage() {
     };
   }, [blueprint.niche, blueprint.palette]);
 
-  const generatePrompt = () => {
-    const prompt = `Crie uma landing page completa e profissional para ${blueprint.name || 'o negócio'} no nicho de ${blueprint.niche}.
+  const generatePromptString = (data: any) => {
+    return `Crie uma landing page completa e profissional para ${data.businessName} no nicho de ${data.niche}.
 
-OBJETIVO: ${blueprint.objective}
-PÚBLICO-ALVO: ${blueprint.audience || 'Clientes locais'}
-TOM DE VOZ: ${blueprint.tone}
-ESTILO VISUAL: ${blueprint.style}
-CORES: ${blueprint.palette?.join(', ') || blueprint.palette[0]}
-DIFERENCIAL: ${blueprint.differential || 'Qualidade e atendimento'}
+OBJETIVO: ${data.objective}
+TOM DE VOZ: ${data.tone}
+ESTILO VISUAL: ${data.visualStyle}
 
 SEÇÕES OBRIGATÓRIAS (nesta ordem):
-${blueprint.sections.map((s: string, i: number) => `${i + 1}. ${s}`).join('\n')}
+${data.sections.map((s: string, i: number) => `${i + 1}. ${s}`).join('\n')}
 
 INSTRUÇÕES ESPECÍFICAS:
-${blueprint.extras || `Site para ${blueprint.name} com design ${blueprint.style.toLowerCase()}.`}
+${data.extras}
+${data.differential ? `DIFERENCIAL: ${data.differential}` : ''}
 
 REQUISITOS TÉCNICOS:
 - Next.js 15 com React e Tailwind CSS
 - Totalmente responsivo (mobile-first)
 - Botão de WhatsApp fixo no canto
-- Animações suaves nas seções
-- SEO otimizado com meta tags
-- Fonte moderna (Inter ou Poppins)
-- Design ${blueprint.style.toLowerCase()} com cor primária ${blueprint.palette?.[0] || blueprint.palette[0]}
+- Animações suaves nas seções (Framer Motion)
+- SEO otimizado e carregamento instantâneo
 
 Gere o código completo da página em um único arquivo.`;
+  };
+
+  const handleCopyTemplate = (templateName: string) => {
+    const t = TEMPLATE_DATA[templateName];
+    if (!t) return;
+
+    const fullPrompt = generatePromptString(t);
+    navigator.clipboard.writeText(fullPrompt);
+    toast.success("Prompt Copiado!", "Cole direto no Lovable.dev");
+  };
+
+  const generatePrompt = () => {
+    const prompt = generatePromptString({
+      businessName: blueprint.name || 'o negócio',
+      niche: blueprint.niche,
+      objective: blueprint.objective,
+      tone: blueprint.tone,
+      visualStyle: blueprint.style,
+      sections: blueprint.sections,
+      extras: `${blueprint.extras || `Site para ${blueprint.name} com design ${blueprint.style.toLowerCase()}.`}\nCores: ${blueprint.palette.join(', ')}`,
+      differential: blueprint.differential
+    });
 
     setGeneratedPrompt(prompt);
     setWordCount(prompt.split(/\s+/).length);
     setBlueprint(prev => ({ ...prev, isGenerated: true }));
-    toast({ title: "Prompt Gerado!", description: "Comando neural pronto para o campo de batalha." });
+    toast.success("Prompt Gerado!", "Comando neural pronto para o campo de batalha.");
   };
 
   const handleNext = () => {
@@ -378,10 +401,7 @@ Gere o código completo da página em um único arquivo.`;
                             <Button
                               variant="outline"
                               className="w-full h-12 rounded-xl border-white/10 text-[10px] font-black uppercase hover:bg-white/5 gap-2"
-                              onClick={() => {
-                                // Manual text copy for static presets
-                                toast({ title: "Prompt Copiado!", description: "Cole direto no Lovable." });
-                              }}
+                              onClick={() => handleCopyTemplate(t.name)}
                             >
                               <Copy className="h-4 w-4" /> COPIAR PROMPT
                             </Button>
