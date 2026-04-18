@@ -153,12 +153,17 @@ export default function AuthPage() {
             </div>
           )}
 
-          <div className="text-center">
+          <div className="text-center pt-4 border-t border-white/5">
             <button 
               onClick={() => setIsLogin(!isLogin)}
-              className="text-[11px] font-black uppercase tracking-widest text-white/40 hover:text-primary transition-all underline underline-offset-4 decoration-white/5"
+              className="group text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:scale-105 active:scale-95"
             >
-              {isLogin ? 'NÃO TEM CONTA? PEÇA ACESSO' : 'JÁ TEM CONTA? FAÇA LOGIN'}
+              <span className="text-white/40 group-hover:text-white/60 transition-colors">
+                {isLogin ? 'NÃO TEM CONTA? ' : 'JÁ TEM CONTA? '}
+              </span>
+              <span className="text-primary group-hover:text-primary/80 transition-colors underline underline-offset-8 decoration-primary/30">
+                {isLogin ? 'PEÇA ACESSO' : 'FAÇA LOGIN'}
+              </span>
             </button>
           </div>
         </CardContent>
