@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import Link from 'link';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -21,7 +21,8 @@ import {
   Timer,
   Sparkles,
   ShieldCheck,
-  Check
+  Check,
+  TrendingUp
 } from 'lucide-react';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
