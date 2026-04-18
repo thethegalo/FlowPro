@@ -130,7 +130,7 @@ export default function Home() {
         </div>
 
         <div className="flex items-center gap-4">
-          <Link href="/auth" prefetch={false} className="hidden sm:block text-[13px] text-white/50 hover:text-white transition-colors font-medium">Entrar</Link>
+          <Link href="/auth" prefetch={false} className="text-[13px] text-white/50 hover:text-white transition-colors font-medium px-2">Entrar</Link>
           <Button onClick={scrollToPricing} className="bg-primary hover:bg-primary/90 text-white font-bold text-[12px] h-10 px-6 rounded-xl border-none shadow-lg shadow-primary/20">
             Começar Agora
           </Button>

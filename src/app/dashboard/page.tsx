@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useEffect, useState } from 'react';
@@ -34,7 +35,9 @@ import {
   Menu,
   Pencil,
   Check,
-  X
+  X,
+  ShieldAlert,
+  Clock
 } from 'lucide-react';
 import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
 import { collection, query, orderBy, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
@@ -43,12 +46,6 @@ import { AppSidebar } from '@/components/AppSidebar';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
 
@@ -100,6 +97,9 @@ export default function Dashboard() {
   const { data: userData, isLoading: isUserDocLoading } = useDoc(userDocRef);
 
   const isAdmin = useMemo(() => user?.email === "thethegalo@gmail.com", [user]);
+
+  // Bloqueio de acesso para usuários pendentes
+  const isPending = useMemo(() => userData?.status === 'pending' && !isAdmin, [userData, isAdmin]);
 
   const displayName = useMemo(() => {
     if (isAdmin) return 'Lucas';
@@ -192,6 +192,47 @@ export default function Dashboard() {
   }, [user, isUserLoading, router]);
 
   if (isUserLoading || isUserDocLoading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" style={{ willChange: 'transform' }} /></div>;
+
+  // Renderização da tela de bloqueio para usuários pendentes
+  if (isPending) {
+    return (
+      <SidebarProvider>
+        <div className="flex min-h-screen w-full relative bg-[#05050f]">
+          <AppSidebar />
+          <main className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+            <div className="max-w-md w-full space-y-8 animate-in fade-in zoom-in duration-500">
+              <div className="h-24 w-24 bg-amber-500/10 border border-amber-500/30 rounded-full flex items-center justify-center mx-auto shadow-[0_0_40px_rgba(245,158,11,0.15)]">
+                <ShieldAlert className="h-10 w-10 text-amber-500" />
+              </div>
+              <div className="space-y-3">
+                <h1 className="text-3xl font-black italic uppercase tracking-tighter text-white">ACESSO EM AUDITORIA</h1>
+                <p className="text-muted-foreground text-sm font-medium leading-relaxed">
+                  Sua conta foi criada com sucesso, mas o acesso às ferramentas de elite do FlowPro requer liberação manual do administrador.
+                </p>
+              </div>
+              <Card className="glass-card p-6 border-amber-500/20 bg-amber-500/5">
+                <div className="flex items-center gap-4 text-left">
+                  <div className="h-10 w-10 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0">
+                    <Clock className="h-5 w-5 text-amber-500" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase text-amber-500 tracking-widest">Protocolo de Segurança</p>
+                    <p className="text-[12px] text-white/70 font-medium">Análise em andamento. Geralmente liberado em até 24h úteis.</p>
+                  </div>
+                </div>
+              </Card>
+              <div className="pt-4">
+                <p className="text-[9px] font-black uppercase tracking-[0.4em] text-white/20">Aguardando liberação mestre</p>
+              </div>
+              <Button onClick={() => router.push('/')} variant="outline" className="h-12 rounded-xl border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/5">
+                Voltar para Home
+              </Button>
+            </div>
+          </main>
+        </div>
+      </SidebarProvider>
+    );
+  }
 
   return (
     <SidebarProvider>
