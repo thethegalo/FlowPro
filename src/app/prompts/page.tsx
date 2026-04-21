@@ -123,7 +123,18 @@ const TEMPLATE_DATA: Record<string, any> = {
 };
 
 const OBJECTIVES = ['Capturar Leads', 'Agendar Consulta', 'Venda Direta', 'Matrícula'];
-const STYLES = ['Minimalista', 'Bold', 'Clean White', 'Luxo Profundo', 'Corporativo'];
+const STYLES = [
+  'Minimalista', 
+  'Bold', 
+  'Clean White', 
+  'Luxo Profundo', 
+  'Corporativo', 
+  'Futurista', 
+  'Cyberpunk', 
+  'Vintage/Retro', 
+  'High Tech', 
+  'Pastel Soft'
+];
 const TONES = ['Profissional', 'Amigável', 'Urgente', 'Luxuoso', 'Dinâmico'];
 const SECTIONS = ['Hero', 'Benefícios', 'Depoimentos', 'Preços', 'FAQ', 'CTA Final', 'Portfólio', 'Sobre'];
 
@@ -131,7 +142,7 @@ export default function PromptsPage() {
   const [activeMainTab, setActiveMainTab] = useState<'templates' | 'create'>('templates');
   const [blueprint, setBlueprint] = useState({
     step: 1, language: 'Português (BR)', name: '', niche: 'SaaS/Tech', objective: 'Capturar Leads',
-    style: 'Moderno & Dark', palette: ['#7C3AED', '#ffffff', '#05050f'], audience: '',
+    style: 'Futurista', palette: ['#7C3AED', '#ffffff', '#05050f'], audience: '',
     tone: 'Profissional', sections: ['Hero', 'Solução', 'CTA Final'], differential: '',
     extras: '', isGenerated: false,
   });
@@ -229,9 +240,9 @@ Gere o código completo da página em um único arquivo.`;
         ...prev,
         palette: [palette.primary, palette.text, palette.background]
       }));
-      toast.success("Paleta IA Criada", "Cores sugeridas aplicadas ao projeto.");
+      toast.success("Nova Paleta Criada", "A IA gerou uma combinação exclusiva de cores.");
     } catch (e) {
-      toast.error("Paleta Offline", "Falha ao consultar designer neural.");
+      toast.error("Falha na IA", "Não foi possível consultar o motor de design.");
     } finally {
       setIsGeneratingPalette(false);
     }
@@ -497,9 +508,9 @@ Gere o código completo da página em um único arquivo.`;
                                         Gerar Paleta com IA
                                       </button>
                                     </div>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
                                       {STYLES.map(s => (
-                                        <button key={s} onClick={() => setBlueprint({...blueprint, style: s})} className={cn("px-4 py-3 rounded-xl text-[10px] font-black uppercase transition-all border", blueprint.style === s ? "bg-primary/25 border-primary/40 text-[#c4b5fd]" : "bg-white/[0.04] border-white/5 text-white/40")}>
+                                        <button key={s} onClick={() => setBlueprint({...blueprint, style: s})} className={cn("px-2 py-3 rounded-xl text-[8px] font-black uppercase transition-all border break-words text-center leading-tight", blueprint.style === s ? "bg-primary/25 border-primary/40 text-[#c4b5fd]" : "bg-white/[0.04] border-white/5 text-white/40")}>
                                           {s}
                                         </button>
                                       ))}
@@ -750,7 +761,7 @@ Gere o código completo da página em um único arquivo.`;
                                   </div>
                                   <div className="grid grid-cols-2 gap-3">
                                     <div className="h-20 rounded-2xl bg-white/5 border border-white/5" />
-                                    <div className="h-20 rounded-2xl bg-white/5 border border-white/5" />
+                                    <div className="h-20 rounded-2xl bg-white/5 border border-white/10" />
                                   </div>
                                   <div className="h-12 w-full rounded-xl shadow-lg flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-white" style={{ backgroundColor: currentTheme.primary }}>
                                     Botão Primário

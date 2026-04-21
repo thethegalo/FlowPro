@@ -35,6 +35,7 @@ const GeneratePaletteInputSchema = z.object({
   name: z.string(),
   niche: z.string(),
   style: z.string(),
+  randomSeed: z.number().optional().describe('Semente para garantir variedade na geração.'),
 });
 
 const GeneratePaletteOutputSchema = z.object({
@@ -46,14 +47,24 @@ const GeneratePaletteOutputSchema = z.object({
 export async function generateAIPalette(input: z.infer<typeof GeneratePaletteInputSchema>) {
   const { output } = await ai.generate({
     model: 'googleai/gemini-2.5-flash',
-    input: input,
+    input: {
+      ...input,
+      randomSeed: Math.random() // Injetando aleatoriedade no input
+    },
     output: { schema: GeneratePaletteOutputSchema },
-    prompt: `Você é um Designer UI/UX Sênior. Gere uma paleta de 3 cores (Primária, Texto e Fundo) em formato HEX que combine perfeitamente com:
-    Projeto: {{name}}
-    Nicho: {{niche}}
-    Estilo: {{style}}
+    prompt: `Você é um Designer UI/UX Sênior especializado em Branding. Gere uma paleta de 3 cores ÚNICA e SOFISTICADA em formato HEX.
     
-    A cor primária deve ser vibrante mas profissional. O fundo deve ser coerente com o estilo (ex: Dark para estilos modernos, Light para clean).`,
+    PROJETO: {{name}}
+    NICHO: {{niche}}
+    ESTILO: {{style}}
+    ALEATORIEDADE: {{randomSeed}}
+    
+    REGRAS:
+    1. Nunca repita a mesma paleta. Seja criativo com tons e contrastes.
+    2. A cor PRIMÁRIA deve ser o destaque principal.
+    3. O TEXTO deve ter alto contraste com o FUNDO.
+    4. O FUNDO deve respeitar o estilo (Ex: Dark/Deep para estilos modernos, Light/Off-white para clean).
+    5. Se o estilo for Cyberpunk ou Futurista, use tons neon. Se for Vintage, use tons pastéis ou sépia.`,
   });
   
   if (!output) throw new Error('Falha ao gerar paleta');
