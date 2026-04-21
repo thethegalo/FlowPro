@@ -73,9 +73,11 @@ export default function AdminPage() {
   }, [user, isUserLoading, router]);
 
   const usersQuery = useMemoFirebase(() => {
-    if (!db) return null;
+    // CRITICAL: Only attempt to create the query if user is logged in and is admin
+    if (!db || !user || user.email !== ADMIN_EMAIL) return null;
     return query(collection(db, 'users'));
-  }, [db]);
+  }, [db, user, ADMIN_EMAIL]);
+  
   const { data: usersData, isLoading: isUsersLoading } = useCollection(usersQuery);
 
   const handleTestPix = () => {
@@ -193,7 +195,7 @@ export default function AdminPage() {
     }
   };
 
-  if (isUserLoading || isUsersLoading) {
+  if (isUserLoading || (user?.email === ADMIN_EMAIL && isUsersLoading)) {
     return (
       <div className="min-h-screen bg-transparent flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />

@@ -1,3 +1,4 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -6,14 +7,22 @@ service cloud.firestore {
     function isOwner(userId) { return request.auth.uid == userId; }
 
     match /users/{userId} {
-      allow read, create: if isSignedIn();
+      // Only owner or admin can read/update a profile
+      // Anyone signed in can create their own initial profile
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isSignedIn();
       allow update: if isOwner(userId) || isAdmin();
       allow delete: if isAdmin();
 
-      // Permissão recursiva total para todas as subcoleções (leads, progress, earnings, etc)
+      // Recursive permissions for subcollections (leads, progress, earnings, etc)
       match /{allSubcollections=**} {
         allow read, write: if isOwner(userId) || isAdmin();
       }
+    }
+    
+    // Explicit permission for admin to list the users collection
+    match /users {
+      allow list: if isAdmin();
     }
     
     match /missions/{missionId} { 
