@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "User": {
@@ -12,6 +13,7 @@
         "createdAt": { "type": "string", "format": "date-time" },
         "status": { "type": "string", "enum": ["pending", "approved", "blocked"] },
         "isOnboarded": { "type": "boolean" },
+        "isAffiliate": { "type": "boolean", "default": false, "description": "Ativa notificações de Pix simuladas para o usuário." },
         "plan": { "type": "string", "enum": ["nenhum", "mensal", "trimestral", "vitalicio"], "default": "nenhum" },
         "totalEarnings": { "type": "number", "default": 0 },
         "dailyActions": { "type": "number", "default": 0 },

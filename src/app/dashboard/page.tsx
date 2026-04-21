@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo, useEffect, useState, useRef } from 'react';
@@ -100,10 +101,11 @@ export default function Dashboard() {
   const { data: userData, isLoading: isUserDocLoading } = useDoc(userDocRef);
 
   const isAdmin = useMemo(() => user?.email === "thethegalo@gmail.com", [user]);
+  const isAffiliate = useMemo(() => userData?.isAffiliate === true, [userData]);
 
-  // Efeito Venda Live (Apenas Admin) - Intervalos de 5 a 6 minutos
+  // Efeito Venda Live (Admin ou Afiliado) - Intervalos de 5 a 6 minutos
   useEffect(() => {
-    if (!isAdmin) return;
+    if (!isAdmin && !isAffiliate) return;
     
     const values = [27, 47, 57, 97, 127, 197, 287];
     const types = ['Pix Recorrência', 'Pix Avulso', 'Cartão Recorrência', 'Pix'];
@@ -130,7 +132,7 @@ export default function Dashboard() {
     
     const timer = scheduleNext();
     return () => clearTimeout(timer);
-  }, [isAdmin]);
+  }, [isAdmin, isAffiliate]);
 
   const isPending = useMemo(() => userData?.status === 'pending' && !isAdmin, [userData, isAdmin]);
 

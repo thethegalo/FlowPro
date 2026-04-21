@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { 
   Loader2, 
   CheckCircle2, 
@@ -23,11 +24,11 @@ import {
   RefreshCcw,
   DollarSign,
   Zap,
-  Bell
+  Users
 } from 'lucide-react';
 import { collection, query, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
 import {
   Select,
@@ -55,14 +56,12 @@ export default function AdminPage() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [plansToUpdate, setPlansToUpdate] = useState<Record<string, string>>({});
   
-  // Estados para Simulação
   const [simulationUser, setSimulationUser] = useState<any>(null);
   const [minDayVal, setMinDayVal] = useState("100");
   const [maxDayVal, setMaxDayVal] = useState("1200");
   const [manualTotal, setTotalOverwrite] = useState("");
   const [simulatedData, setSimulatedData] = useState<any[]>([]);
 
-  // Estado de Teste de Notificação
   const [testNotification, setTestNotification] = useState<boolean>(false);
 
   const ADMIN_EMAIL = "thethegalo@gmail.com";
@@ -96,6 +95,22 @@ export default function AdminPage() {
         updatedAt: serverTimestamp()
       });
       toast.success("Status Atualizado", `Usuário agora está como ${newStatus}.`);
+    } catch (error: any) {
+      toast.error("Erro", error.message);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const toggleAffiliate = async (userId: string, currentStatus: boolean) => {
+    if (!db) return;
+    setUpdatingId(userId);
+    try {
+      await updateDoc(doc(db, 'users', userId), { 
+        isAffiliate: !currentStatus,
+        updatedAt: serverTimestamp()
+      });
+      toast.success("Modo Afiliado", !currentStatus ? "Notificações de Pix ativadas." : "Notificações desativadas.");
     } catch (error: any) {
       toast.error("Erro", error.message);
     } finally {
@@ -244,6 +259,7 @@ export default function AdminPage() {
                         <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Usuário</TableHead>
                         <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Email</TableHead>
                         <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Status</TableHead>
+                        <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Afiliado</TableHead>
                         <TableHead className="text-muted-foreground text-[10px] uppercase font-black">Plano</TableHead>
                         <TableHead className="text-muted-foreground text-[10px] uppercase font-black text-right">Comandos</TableHead>
                       </TableRow>
@@ -261,6 +277,17 @@ export default function AdminPage() {
                             }`}>
                               {u.status?.toUpperCase() || 'PENDING'}
                             </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                               <Switch 
+                                checked={u.isAffiliate || false} 
+                                onCheckedChange={() => toggleAffiliate(u.id, u.isAffiliate)}
+                                disabled={updatingId === u.id}
+                                className="data-[state=checked]:bg-primary"
+                               />
+                               <span className="text-[10px] font-black uppercase text-white/40">{u.isAffiliate ? 'SIM' : 'NÃO'}</span>
+                            </div>
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
