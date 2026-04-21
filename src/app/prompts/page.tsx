@@ -40,7 +40,10 @@ import {
   Scissors,
   Stethoscope,
   UtensilsCrossed,
-  Dumbbell
+  Dumbbell,
+  Instagram,
+  MapPin,
+  MessageSquare
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -55,7 +58,7 @@ const STEPS = [
   { id: 4, title: 'Público', sub: 'Audiência Alvo', icon: Users },
   { id: 5, title: 'Voz', sub: 'Tom de Mensagem', icon: Type },
   { id: 6, title: 'Estrutura', sub: 'Seções da LP', icon: Layers },
-  { id: 7, title: 'Diferencial', sub: 'Proposta Única', icon: Zap },
+  { id: 7, title: 'Recursos', sub: 'Funções Técnicas', icon: Wrench },
   { id: 8, title: 'Launch', sub: 'Gerar Briefing', icon: Rocket },
 ];
 
@@ -70,6 +73,17 @@ const NICHES = [
   { label: "Clínica", value: "Clínica", theme: { bg: '#f0f7ff', primary: '#0077b6', text: '#023e8a' } },
   { label: "Academia", value: "Academia", theme: { bg: '#0a0a0a', primary: '#ff6b00', text: '#ffffff' } },
   { label: "SaaS/Tech", value: "SaaS/Tech", theme: { bg: '#05050f', primary: '#7c3aed', text: '#f4f4f5' } },
+];
+
+const TECH_RESOURCES = [
+  { id: 'whatsapp', label: 'Botão WhatsApp', icon: <MessageSquare className="h-3.5 w-3.5" />, desc: 'Botão flutuante para contato direto.' },
+  { id: 'instagram', label: 'Feed Instagram', icon: <Instagram className="h-3.5 w-3.5" />, desc: 'Exibir postagens recentes do perfil.' },
+  { id: 'google_maps', label: 'Google Maps', icon: <MapPin className="h-3.5 w-3.5" />, desc: 'Mapa interativo com a localização.' },
+  { id: 'reviews', label: 'Avaliações Google', icon: <Star className="h-3.5 w-3.5" />, desc: 'Widget de depoimentos do GMN.' },
+  { id: 'seo', label: 'SEO Otimizado', icon: <Search className="h-3.5 w-3.5" />, desc: 'Tags para aparecer no topo do Google.' },
+  { id: 'mobile', label: 'Mobile-First', icon: <Smartphone className="h-3.5 w-3.5" />, desc: 'Design focado 100% no celular.' },
+  { id: 'form', label: 'Formulário Lead', icon: <Users className="h-3.5 w-3.5" />, desc: 'Captura de nome/email do cliente.' },
+  { id: 'gallery', label: 'Galeria Fotos', icon: <ShoppingBag className="h-3.5 w-3.5" />, desc: 'Exibição de produtos/serviços.' },
 ];
 
 const TEMPLATE_PRESETS = [
@@ -145,6 +159,7 @@ export default function PromptsPage() {
     style: 'Futurista', palette: ['#7C3AED', '#ffffff', '#05050f'], audience: '',
     tone: 'Profissional', sections: ['Hero', 'Solução', 'CTA Final'], differential: '',
     extras: '', isGenerated: false,
+    selectedTech: [] as string[]
   });
 
   const [generatedPrompt, setGeneratedPrompt] = useState('');
@@ -164,6 +179,10 @@ export default function PromptsPage() {
   }, [blueprint.niche, blueprint.palette]);
 
   const generatePromptString = (data: any) => {
+    const techReqs = data.selectedTech?.length > 0 
+      ? `\nRECURSOS TÉCNICOS SELECIONADOS:\n${data.selectedTech.map((id: string) => `- ${TECH_RESOURCES.find(r => r.id === id)?.label}: ${TECH_RESOURCES.find(r => r.id === id)?.desc}`).join('\n')}`
+      : '';
+
     return `Crie uma landing page completa e profissional para ${data.businessName} no nicho de ${data.niche}.
 
 OBJETIVO: ${data.objective}
@@ -172,15 +191,15 @@ ESTILO VISUAL: ${data.visualStyle}
 
 SEÇÕES OBRIGATÓRIAS (nesta ordem):
 ${data.sections.map((s: string, i: number) => `${i + 1}. ${s}`).join('\n')}
+${techReqs}
 
 INSTRUÇÕES ESPECÍFICAS:
 ${data.extras}
 ${data.differential ? `DIFERENCIAL: ${data.differential}` : ''}
 
-REQUISITOS TÉCNICOS:
+REQUISITOS TÉCNICOS GERAIS:
 - Next.js 15 com React e Tailwind CSS
 - Totalmente responsivo (mobile-first)
-- Botão de WhatsApp fixo no canto
 - Animações suaves nas seções (Framer Motion)
 - SEO otimizado e carregamento instantâneo
 
@@ -204,6 +223,7 @@ Gere o código completo da página em um único arquivo.`;
       tone: blueprint.tone,
       visualStyle: blueprint.style,
       sections: blueprint.sections,
+      selectedTech: blueprint.selectedTech,
       extras: `${blueprint.extras || `Site para ${blueprint.name} com design ${blueprint.style.toLowerCase()}.`}\nCores: ${blueprint.palette.join(', ')}`,
       differential: blueprint.differential
     });
@@ -264,6 +284,15 @@ Gere o código completo da página em um único arquivo.`;
       sections: prev.sections.includes(section) 
         ? prev.sections.filter(s => s !== section)
         : [...prev.sections, section]
+    }));
+  };
+
+  const toggleTech = (id: string) => {
+    setBlueprint(prev => ({
+      ...prev,
+      selectedTech: prev.selectedTech.includes(id)
+        ? prev.selectedTech.filter(t => t !== id)
+        : [...prev.selectedTech, id]
     }));
   };
 
@@ -589,23 +618,41 @@ Gere o código completo da página em um único arquivo.`;
                               )}
 
                               {blueprint.step === 7 && (
-                                <div className="space-y-6">
+                                <div className="space-y-10">
                                   <div className="space-y-4">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Diferencial Único (Proposta Única)</Label>
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Funcionalidades Técnicas</Label>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                      {TECH_RESOURCES.map(res => (
+                                        <button 
+                                          key={res.id} 
+                                          onClick={() => toggleTech(res.id)} 
+                                          className={cn(
+                                            "p-4 rounded-2xl border transition-all text-left group flex items-start gap-3",
+                                            blueprint.selectedTech.includes(res.id) ? "bg-primary/25 border-primary/40" : "bg-white/[0.04] border-white/5 hover:bg-white/[0.06]"
+                                          )}
+                                        >
+                                          <div className={cn(
+                                            "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 border transition-all",
+                                            blueprint.selectedTech.includes(res.id) ? "bg-primary text-white border-primary" : "bg-white/5 text-white/20 border-white/10 group-hover:text-white/40"
+                                          )}>
+                                            {res.icon}
+                                          </div>
+                                          <div className="space-y-0.5">
+                                            <p className="text-[11px] font-black uppercase text-white/90">{res.label}</p>
+                                            <p className="text-[9px] text-white/20 font-medium leading-tight">{res.desc}</p>
+                                          </div>
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
+
+                                  <div className="space-y-4 pt-4 border-t border-white/5">
+                                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Diferencial Único (Destaque do Projeto)</Label>
                                     <Textarea 
-                                      placeholder="O que torna este projeto diferente dos concorrentes? (USP)" 
-                                      className="min-h-[120px] bg-white/[0.04] border-white/5 rounded-2xl p-6 text-base font-medium"
+                                      placeholder="O que torna este projeto irresistível para o cliente? (Ex: Atendimento em 10min, Design Exclusivo, etc)" 
+                                      className="min-h-[120px] bg-white/[0.04] border-white/5 rounded-2xl p-6 text-sm font-medium"
                                       value={blueprint.differential}
                                       onChange={e => setBlueprint({...blueprint, differential: e.target.value})}
-                                    />
-                                  </div>
-                                  <div className="space-y-4">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-white/30">Requisitos Técnicos Extras (Mais IA)</Label>
-                                    <Textarea 
-                                      placeholder="Ex: Integração com Google Maps, Chatbot inteligente, Área de Membros, Pagamento recorrente..." 
-                                      className="min-h-[100px] bg-white/[0.04] border-white/5 rounded-2xl p-6 text-sm"
-                                      value={blueprint.extras}
-                                      onChange={e => setBlueprint({...blueprint, extras: e.target.value})}
                                     />
                                   </div>
                                 </div>
@@ -810,15 +857,18 @@ Gere o código completo da página em um único arquivo.`;
 
                               {blueprint.step === 7 && (
                                 <div className="pt-4 space-y-6">
-                                  <div className="p-6 rounded-3xl border border-white/10 flex flex-col items-center text-center space-y-4" style={{ backgroundColor: currentTheme.primary + '10' }}>
-                                    <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                                      <Zap className="h-6 w-6" style={{ color: currentTheme.primary }} />
-                                    </div>
-                                    <h3 className="text-sm font-black uppercase italic" style={{ color: currentTheme.text }}>Diferencial Estratégico</h3>
-                                    <div className="space-y-2 w-full">
-                                      <div className="h-1 w-full bg-white/10 rounded-full" />
-                                      <div className="h-1 w-3/4 bg-white/10 rounded-full mx-auto" />
-                                    </div>
+                                  <h3 className="text-sm font-black uppercase tracking-widest text-center" style={{ color: currentTheme.text }}>Recursos Ativos</h3>
+                                  <div className="grid grid-cols-2 gap-2">
+                                    {blueprint.selectedTech.map(id => (
+                                      <div key={id} className="p-2 rounded-lg bg-white/5 border border-white/5 flex items-center gap-2">
+                                        <div className="h-1 w-1 rounded-full bg-primary" />
+                                        <span className="text-[8px] font-bold uppercase" style={{ color: currentTheme.text }}>{TECH_RESOURCES.find(r => r.id === id)?.label}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                  <div className="p-4 rounded-xl border border-white/10" style={{ backgroundColor: currentTheme.primary + '10' }}>
+                                    <p className="text-[8px] font-black uppercase tracking-widest opacity-40 mb-1" style={{ color: currentTheme.text }}>Diferencial</p>
+                                    <div className="h-1 w-full bg-white/10 rounded-full" />
                                   </div>
                                 </div>
                               )}
