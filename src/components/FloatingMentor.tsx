@@ -1,11 +1,11 @@
+
 "use client";
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
 import { 
   Send, 
   Bot, 
@@ -15,9 +15,8 @@ import {
   Sparkles
 } from 'lucide-react';
 import { salesMentorChat } from '@/ai/flows/sales-mentor-chatbot';
-import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import { doc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
-import { useToast } from '@/hooks/use-toast';
 import { usePathname } from 'next/navigation';
 
 type Message = {
@@ -25,12 +24,9 @@ type Message = {
   content: string;
 };
 
-const ADMIN_EMAIL = "thethegalo@gmail.com";
-
 export function FloatingMentor() {
   const { user } = useUser();
   const db = useFirestore();
-  const { toast } = useToast();
   const pathname = usePathname();
   
   const [isOpen, setIsOpen] = useState(false);
@@ -40,68 +36,22 @@ export function FloatingMentor() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const userDocRef = useMemoFirebase(() => {
-    if (!db || !user) return null;
-    return doc(db, 'users', user.uid);
-  }, [db, user]);
-  const { data: userData } = useDoc(userDocRef);
-
-  const isUnlimited = useMemo(() => {
-    return user?.email === ADMIN_EMAIL || userData?.plan === 'vitalicio';
-  }, [user, userData]);
-
-  const messagesRemaining = useMemo(() => {
-    if (isUnlimited) return null;
-    if (!userData) return 0;
-    const lastAction = userData.lastActionAt;
-    const today = new Date().toDateString();
-    const lastDate = lastAction ? (lastAction.toDate ? lastAction.toDate().toDateString() : new Date(lastAction).toDateString()) : '';
-    const used = today === lastDate ? (userData.dailyUsage?.messagesUsed || 0) : 0;
-    return Math.max(0, 10 - used);
-  }, [userData, isUnlimited]);
-
-  const checkLimitAndTrack = async () => {
-    if (!db || !user || !userData) return false;
-    if (isUnlimited) return true;
-
-    if (userData.plan === 'nenhum' || !userData.plan) {
-      toast({ variant: "destructive", title: "Acesso Restrito", description: "Assine um plano para liberar o Mentor." });
-      return false;
-    }
-
-    const lastAction = userData.lastActionAt;
-    const today = new Date().toDateString();
-    const lastDate = lastAction ? (lastAction.toDate ? lastAction.toDate().toDateString() : new Date(lastAction).toDateString()) : '';
-    const isNewDay = today !== lastDate;
-    const currentUsage = isNewDay ? 0 : (userData.dailyUsage?.messagesUsed || 0);
-
-    if (currentUsage >= 10) {
-      toast({ variant: "destructive", title: "Limite Atingido", description: "Atingiu o limite diário de mensagens." });
-      return false;
-    }
-
-    try {
-      await updateDoc(doc(db, 'users', user.uid), {
-        lastActionAt: serverTimestamp(),
-        'dailyUsage.messagesUsed': isNewDay ? 1 : increment(1),
-      });
-      return true;
-    } catch (e) {
-      return true;
-    }
-  };
-
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
     
     const userMessage = input.trim();
-    const canProceed = await checkLimitAndTrack();
-    if (!canProceed) return;
-
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setIsLoading(true);
     
+    // Rastreamento de uso sem limites
+    if (db && user) {
+      updateDoc(doc(db, 'users', user.uid), {
+        lastActionAt: serverTimestamp(),
+        'dailyUsage.messagesUsed': increment(1),
+      }).catch(() => {});
+    }
+
     try {
       const response = await salesMentorChat({ question: userMessage });
       if (response && response.advice) {
@@ -129,11 +79,7 @@ export function FloatingMentor() {
               </div>
               <div>
                 <h4 className="text-[10px] font-black uppercase tracking-widest text-white italic">Sales Mentor IA</h4>
-                {messagesRemaining !== null ? (
-                  <p className="text-[8px] font-bold text-muted-foreground uppercase">{messagesRemaining} envios restantes</p>
-                ) : (
-                  <p className="text-[8px] font-bold text-purple-400 uppercase">Acesso Vitalício Ativo</p>
-                )}
+                <p className="text-[8px] font-bold text-purple-400 uppercase">Acesso Ilimitado Ativo</p>
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="h-8 w-8 rounded-full hover:bg-white/5">
@@ -175,7 +121,7 @@ export function FloatingMentor() {
                 disabled={isLoading}
                 className="flex-1 bg-white/5 border-white/10 h-10 rounded-xl text-xs focus-visible:ring-primary"
               />
-              <Button onClick={handleSend} disabled={isLoading || (messagesRemaining === 0 && !isUnlimited)} size="icon" className="h-10 w-10 rounded-xl bg-primary">
+              <Button onClick={handleSend} disabled={isLoading} size="icon" className="h-10 w-10 rounded-xl bg-primary">
                 <Send className="h-4 w-4" />
               </Button>
             </div>

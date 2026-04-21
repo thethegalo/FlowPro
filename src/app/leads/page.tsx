@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
@@ -93,17 +94,6 @@ export default function LeadsPage() {
     setParticles(newParticles);
   }, []);
 
-  const userDocRef = useMemoFirebase(() => {
-    if (!db || !user) return null;
-    return doc(db, 'users', user.uid);
-  }, [db, user]);
-  const { data: userData } = useDoc(userDocRef);
-
-  const isProMember = useMemo(() => {
-    const p = userData?.plan;
-    return p === 'vitalicio' || p === 'mensal' || p === 'trimestral' || user?.email === ADMIN_EMAIL;
-  }, [userData, user]);
-
   const handleSearch = async () => {
     if (!niche || !state) {
       warning("Campos Obrigatórios", "Nicho e Estado são necessários para a varredura.");
@@ -123,11 +113,11 @@ export default function LeadsPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Falha na varredura neural');
 
-      const finalLeads = isProMember ? data : data.slice(0, 5);
-      setLeads(finalLeads);
+      // Sem limites de busca
+      setLeads(data);
 
-      if (finalLeads.length > 0) {
-        success("Varredura Concluída", `Identificamos ${finalLeads.length} novos alvos estratégicos.`);
+      if (data.length > 0) {
+        success("Varredura Concluída", `Identificamos ${data.length} novos alvos estratégicos.`);
       } else {
         toast.show("Sem Resultados", "Nenhum alvo encontrado nestas coordenadas.");
       }
@@ -331,7 +321,6 @@ export default function LeadsPage() {
                 </div>
               </div>
 
-              {/* O Radar aparece apenas em telas grandes (Desktop LG+) */}
               <div className="hidden lg:flex flex-col items-center justify-center relative h-[500px] w-full">
                 <div className="absolute top-0 text-center space-y-1">
                   <div className="flex items-center justify-center gap-2">
@@ -448,7 +437,7 @@ export default function LeadsPage() {
                                     {generatingMsg === lead.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" style={{ willChange: 'transform' }} /> : <Zap className="h-3.5 w-3.5" />} Gerar script
                                   </Button>
                                   <Button variant="ghost" onClick={() => setApproachedLeads(prev => prev.includes(lead.id) ? prev.filter(id => id !== lead.id) : [...prev, lead.id])} className={`flex-1 h-10 rounded-xl text-[10px] font-black uppercase tracking-widest ${approachedLeads.includes(lead.id) ? 'text-green-500 bg-green-500/5' : 'text-white/20'}`}>
-                                    {approachedLeads.includes(lead.id) ? <><Check className="h-4 w-4 mr-2" /> Abordado</> : <><Target className="h-4 w-4 mr-2" /> Marcar alvo</>}
+                                    {approachedLeads.includes(lead.id) ? <><Circle className="h-4 w-4 mr-2" /> Abordado</> : <><Target className="h-4 w-4 mr-2" /> Marcar alvo</>}
                                   </Button>
                                 </div>
                               </div>

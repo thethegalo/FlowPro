@@ -1,12 +1,12 @@
 
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, User, Bot, Loader2, AlertCircle } from 'lucide-react';
+import { Send, User, Bot, Loader2 } from 'lucide-react';
 import { salesMentorChat } from '@/ai/flows/sales-mentor-chatbot';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -20,8 +20,6 @@ type Message = {
   role: 'user' | 'assistant';
   content: string;
 };
-
-const ADMIN_EMAIL = "thethegalo@gmail.com";
 
 export default function MentorPage() {
   const { user } = useUser();
@@ -41,73 +39,22 @@ export default function MentorPage() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const isUnlimited = useMemo(() => {
-    return user?.email === ADMIN_EMAIL || userData?.plan === 'vitalicio';
-  }, [user, userData]);
-
-  const checkLimitAndTrack = async () => {
-    if (!db || !user || !userData) return false;
-    
-    if (isUnlimited) return true;
-
-    if (userData.plan === 'nenhum') {
-      toast({ 
-        variant: "destructive", 
-        title: "Acesso Restrito", 
-        description: "Assine um plano para liberar o IA Mentor." 
-      });
-      router.push('/paywall');
-      return false;
-    }
-
-    if (userData.plan === 'mensal' || userData.plan === 'trimestral') {
-      const lastAction = userData.lastActionAt;
-      const today = new Date().toDateString();
-      const lastDate = lastAction ? (lastAction.toDate ? lastAction.toDate().toDateString() : new Date(lastAction).toDateString()) : '';
-      
-      const isNewDay = today !== lastDate;
-      const currentUsage = isNewDay ? 0 : (userData.dailyUsage?.messagesUsed || 0);
-
-      if (currentUsage >= 10) {
-        toast({ 
-          variant: "destructive", 
-          title: "Limite Atingido", 
-          description: "Você atingiu o limite diário de mensagens do seu plano." 
-        });
-        return false;
-      }
-
-      try {
-        const userRef = doc(db, 'users', user.uid);
-        const updates: any = {
-          lastActionAt: serverTimestamp(),
-          'dailyUsage.messagesUsed': isNewDay ? 1 : increment(1),
-        };
-        
-        if (isNewDay) {
-          updates['dailyUsage.leadsUsed'] = 0;
-        }
-
-        await updateDoc(userRef, updates);
-        return true;
-      } catch (e) {
-        return true;
-      }
-    }
-
-    return true;
-  };
-
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
-
-    const canProceed = await checkLimitAndTrack();
-    if (!canProceed) return;
 
     const userMessage = input.trim();
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setIsLoading(true);
+    
+    // Rastreamento sutil sem limites
+    if (db && user) {
+      updateDoc(doc(db, 'users', user.uid), {
+        lastActionAt: serverTimestamp(),
+        'dailyUsage.messagesUsed': increment(1)
+      }).catch(() => {});
+    }
+
     try {
       const response = await salesMentorChat({ question: userMessage });
       setMessages(prev => [...prev, { role: 'assistant', content: response.advice }]);
@@ -117,16 +64,6 @@ export default function MentorPage() {
       setIsLoading(false);
     }
   };
-
-  const messagesRemaining = useMemo(() => {
-    if (isUnlimited) return null;
-    if (userData?.plan !== 'mensal' && userData?.plan !== 'trimestral') return 0;
-    const lastAction = userData.lastActionAt;
-    const today = new Date().toDateString();
-    const lastDate = lastAction ? (lastAction.toDate ? lastAction.toDate().toDateString() : new Date(lastAction).toDateString()) : '';
-    const used = today === lastDate ? (userData.dailyUsage?.messagesUsed || 0) : 0;
-    return Math.max(0, 10 - used);
-  }, [userData, isUnlimited]);
 
   return (
     <SidebarProvider>
@@ -142,16 +79,9 @@ export default function MentorPage() {
                 <Bot className="h-4 w-4 text-primary" /> IA Sales Mentor
               </h1>
             </div>
-            {messagesRemaining !== null && (
-              <Badge variant="outline" className={`text-[8px] font-black uppercase border-white/10 ${messagesRemaining === 0 ? 'text-destructive' : ''}`}>
-                {messagesRemaining} Mensagens hoje
-              </Badge>
-            )}
-            {isUnlimited && (
-              <Badge variant="outline" className="text-[8px] font-black uppercase border-purple-500/30 text-purple-400 bg-purple-500/10">
-                USO ILIMITADO
-              </Badge>
-            )}
+            <Badge variant="outline" className="text-[8px] font-black uppercase border-purple-500/30 text-purple-400 bg-purple-500/10">
+              USO ILIMITADO
+            </Badge>
           </header>
 
           <div className="flex-1 flex flex-col container max-w-4xl mx-auto p-4 md:p-6 overflow-hidden">
@@ -187,21 +117,16 @@ export default function MentorPage() {
               </ScrollArea>
               
               <div className="p-6 border-t border-white/5 bg-white/[0.02]">
-                {messagesRemaining === 0 && !isUnlimited && (
-                  <div className="mb-4 p-3 rounded-xl bg-destructive/10 border border-destructive/20 flex items-center gap-3 text-destructive text-[10px] font-black uppercase tracking-widest">
-                    <AlertCircle className="h-4 w-4" /> Limite diário atingido. Faça upgrade para o Vitalício.
-                  </div>
-                )}
                 <div className="flex gap-3">
                   <Input 
                     placeholder="Pergunte sobre abordagens, fechamento ou scripts..." 
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                    disabled={messagesRemaining === 0 && !isUnlimited}
+                    disabled={isLoading}
                     className="flex-1 bg-white/5 border-white/10 h-14 rounded-2xl focus-visible:ring-primary font-medium"
                   />
-                  <Button onClick={handleSend} disabled={isLoading || (messagesRemaining === 0 && !isUnlimited)} className="h-14 w-14 rounded-2xl bg-primary shadow-xl shadow-primary/30">
+                  <Button onClick={handleSend} disabled={isLoading} className="h-14 w-14 rounded-2xl bg-primary shadow-xl shadow-primary/30">
                     <Send className="h-5 w-5" />
                   </Button>
                 </div>

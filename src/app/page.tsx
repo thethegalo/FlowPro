@@ -363,7 +363,7 @@ export default function Home() {
                     </div>
 
                     <ul className="space-y-4 pt-8 border-t border-white/5">
-                      {['Radar: 20 Buscas/Dia', 'IA Mentor: 10 Perguntas/Dia', 'IA Prospecção: 10 Mensagens/Dia', 'Scripts de Elite'].map((f) => (
+                      {['Radar de Leads ILIMITADO', 'IA Mentor ILIMITADO', 'IA Prospecção ILIMITADA', 'Scripts de Elite'].map((f) => (
                         <li key={f} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white/90">
                           <CheckCircle2 className="h-4 w-4 text-primary" /> {f}
                         </li>
@@ -394,7 +394,7 @@ export default function Home() {
                     </div>
 
                     <ul className="space-y-4 pt-8 border-t border-white/5">
-                      {['Radar de Leads PRO', 'IA Mentor Treinado', 'Scripts de Volume', 'Acesso à Fase de Escala', '3 Meses de Full Access'].map((f) => (
+                      {['Radar de Leads ILIMITADO', 'IA Mentor ILIMITADO', 'Scripts de Volume', 'Acesso à Fase de Escala', '3 Meses de Acesso Total'].map((f) => (
                         <li key={f} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white">
                           <CheckCircle2 className="h-4 w-4 text-primary" /> {f}
                         </li>
@@ -424,22 +424,11 @@ export default function Home() {
                         <div className="flex items-baseline gap-1">
                           <p className="text-6xl md:text-7xl font-black italic text-white tracking-tighter">R$ 287</p>
                         </div>
-                        
-                        <div className="bg-primary/10 border border-primary/20 rounded-xl px-4 py-4 border-dashed relative overflow-hidden group">
-                          <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors"></div>
-                          <div className="relative flex items-center gap-3">
-                            <CreditCard className="h-5 w-5 text-primary" /> 
-                            <div>
-                              <p className="text-[10px] font-black uppercase text-primary tracking-widest leading-none mb-1">Parcelamento no Cartão</p>
-                              <p className="text-[14px] font-black text-white italic tracking-tight">Até 12x de R$ 28,82</p>
-                            </div>
-                          </div>
-                        </div>
                       </div>
 
                       <ul className="space-y-4 pt-4 border-t border-white/5">
                         {[
-                          'Radar ILIMITADO', 
+                          'Radar de Leads ILIMITADO', 
                           'IA Mentor 24h ILIMITADO', 
                           'IA de Prospecção ILIMITADA', 
                           'Jornada Vitalícia', 
@@ -505,20 +494,6 @@ export default function Home() {
                   </Card>
                 </div>
               ))}
-            </div>
-            
-            <div className="mt-16 flex flex-col items-center gap-6">
-              <p className="text-xs font-bold text-white/20 uppercase tracking-[0.4em]">Mais de 1.817 profissionais já começaram</p>
-              <div className="flex -space-x-3">
-                {[1,2,3,4,5,6].map(i => (
-                  <div key={i} className="h-10 w-10 rounded-full border-2 border-[#05050f] bg-zinc-800 flex items-center justify-center text-[10px] font-black text-white/40">
-                    {String.fromCharCode(64 + i)}
-                  </div>
-                ))}
-                <div className="h-10 w-10 rounded-full border-2 border-[#05050f] bg-primary flex items-center justify-center text-[10px] font-black text-white">
-                  +1k
-                </div>
-              </div>
             </div>
           </div>
         </section>

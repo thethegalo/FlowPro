@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -93,8 +94,8 @@ export default function PaywallPage() {
               <div className="space-y-8 relative z-10 bg-transparent">
                 <div className="space-y-3 bg-transparent">
                   <div className="flex items-center gap-2 px-3 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full w-fit">
-                    <AlertCircle className="h-3 w-3 text-amber-500" />
-                    <span className="text-[8px] font-black uppercase tracking-widest text-amber-500">Uso Diário Limitado</span>
+                    <Zap className="h-3 w-3 text-amber-500" />
+                    <span className="text-[8px] font-black uppercase tracking-widest text-amber-500">Uso Ilimitado</span>
                   </div>
                   <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70 flex items-center gap-2">
                     <Zap className="h-4 w-4 text-amber-500 fill-amber-500" /> Flow Mensal
@@ -103,19 +104,13 @@ export default function PaywallPage() {
                     <p className="text-5xl md:text-6xl font-black italic text-white tracking-tighter">R$ 97</p>
                     <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/mês</span>
                   </div>
-                  <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center gap-3">
-                    <CreditCard className="h-4 w-4 text-amber-500" />
-                    <p className="text-[10px] font-black uppercase text-amber-500 tracking-widest">
-                      OU 12x DE R$ 9,74
-                    </p>
-                  </div>
                 </div>
 
                 <ul className="space-y-4 bg-transparent">
                   {[
-                    'Radar: 20 Buscas/Dia', 
-                    'IA Mentor: 10 Perguntas/Dia', 
-                    'IA Prospecção: 10 Mensagens/Dia', 
+                    'Radar: Buscas ILIMITADAS', 
+                    'IA Mentor: Perguntas ILIMITADAS', 
+                    'IA Prospecção: Mensagens ILIMITADAS', 
                     'Scripts de Elite', 
                     'Acesso à Fase de Escala'
                   ].map((f, i) => (
@@ -144,7 +139,7 @@ export default function PaywallPage() {
                 <div className="space-y-3 bg-transparent">
                   <div className="flex items-center gap-2 px-3 py-1 bg-cyan-500/20 border border-cyan-500/30 rounded-full w-fit">
                     <Timer className="h-3 w-3 text-cyan-500" />
-                    <span className="text-[8px] font-black uppercase tracking-widest text-cyan-500">Melhor Custo-Benefício</span>
+                    <span className="text-[8px] font-black uppercase tracking-widest text-cyan-500">Acesso Ilimitado</span>
                   </div>
                   <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70 flex items-center gap-2">
                     <Zap className="h-4 w-4 text-cyan-500 fill-cyan-500" /> Flow Trimestral
@@ -153,22 +148,16 @@ export default function PaywallPage() {
                     <p className="text-5xl md:text-6xl font-black italic text-white tracking-tighter">R$ 197</p>
                     <span className="text-sm font-bold opacity-50 uppercase tracking-widest">/tri</span>
                   </div>
-                  <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex items-center gap-3">
-                    <CreditCard className="h-4 w-4 text-cyan-500" />
-                    <p className="text-[10px] font-black uppercase text-cyan-500 tracking-widest">
-                      OU 12x DE R$ 19,78
-                    </p>
-                  </div>
                 </div>
 
                 <ul className="space-y-4 bg-transparent">
                   {[
-                    'Radar: 20 Buscas/Dia', 
-                    'IA Mentor: 10 Perguntas/Dia', 
-                    'IA Prospecção: 10 Mensagens/Dia', 
+                    'Radar de Leads ILIMITADO', 
+                    'IA Mentor ILIMITADO', 
+                    'IA Prospecção ILIMITADA', 
                     'Scripts de Elite (Volume)', 
                     'Acesso à Fase de Escala',
-                    '3 Meses de Acesso Pro'
+                    '3 Meses de Acesso Total'
                   ].map((f, i) => (
                     <li key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-white">
                       <CheckCircle2 className="h-3.5 w-3.5 text-cyan-500" /> {f}
@@ -206,21 +195,6 @@ export default function PaywallPage() {
                     
                     <div className="flex items-baseline gap-1 bg-transparent">
                       <p className="text-6xl md:text-7xl font-black italic text-white tracking-tighter">R$ 287</p>
-                    </div>
-                    
-                    <div className="bg-primary/10 border border-primary/20 rounded-xl px-4 py-4 border-dashed relative overflow-hidden group">
-                      <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors"></div>
-                      <div className="relative flex items-center gap-3">
-                        <CreditCard className="h-5 w-5 text-primary" /> 
-                        <div>
-                          <p className="text-[10px] font-black uppercase text-primary tracking-widest leading-none mb-1">
-                            Parcelamento no Cartão
-                          </p>
-                          <p className="text-[14px] font-black text-white italic tracking-tight">
-                            Até 12x de R$ 28,82
-                          </p>
-                        </div>
-                      </div>
                     </div>
                   </div>
 
@@ -266,49 +240,6 @@ export default function PaywallPage() {
                 <CreditCard className="h-5 w-5 text-accent" /> Até 12x no Cartão
               </div>
             </div>
-          </div>
-
-          <div className="space-y-12 pt-20 bg-transparent">
-            <div className="text-center space-y-2 bg-transparent">
-              <h2 className="text-3xl font-black italic uppercase tracking-tighter">Resultados de Quem Executa</h2>
-              <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest">Alunos que já estão operando no Flow.</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-transparent">
-              {TESTIMONIALS.map((t, i) => (
-                <Card key={i} className="glass-card p-8 space-y-6 bg-transparent flex flex-col h-full">
-                  <Quote className="h-8 w-8 text-primary opacity-30" />
-                  <p className="text-sm font-medium leading-relaxed italic text-white/80 flex-1">"{t.text}"</p>
-                  <div className="flex items-center gap-4 bg-transparent pt-4 border-t border-white/5">
-                    <div className="h-10 w-10 rounded-full bg-white/10 border border-white/10 overflow-hidden relative">
-                      <Image src={t.avatar} alt={t.name} fill className="object-cover" loading="lazy" sizes="40px" />
-                    </div>
-                    <div className="bg-transparent">
-                      <p className="text-xs font-black uppercase text-white leading-none mb-1">{t.name}</p>
-                      <p className="text-[10px] font-bold text-primary uppercase tracking-widest">{t.role}</p>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-
-          <div className="max-w-3xl mx-auto space-y-12 pt-20 pb-32 bg-transparent">
-            <div className="text-center space-y-2 bg-transparent">
-              <h2 className="text-3xl font-black italic uppercase tracking-tighter">Dúvidas Frequentes</h2>
-              <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest">Tudo o que você precisa saber antes de entrar.</p>
-            </div>
-            <Accordion type="single" collapsible className="w-full space-y-4 bg-transparent">
-              {PAYWALL_FAQ.map((item, i) => (
-                <AccordionItem key={i} value={`item-${i}`} className="glass-card px-8 bg-transparent">
-                  <AccordionTrigger className="font-black hover:no-underline py-6 uppercase tracking-widest text-[10px] text-left text-white">
-                    {item.q}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground text-sm leading-relaxed pb-6 font-medium italic">
-                    {item.a}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
           </div>
         </div>
       </section>
