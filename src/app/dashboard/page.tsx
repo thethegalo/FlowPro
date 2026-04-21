@@ -90,6 +90,9 @@ export default function Dashboard() {
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState('');
   
+  // Estado de Notificações de Venda
+  const [notification, setNotification] = useState<{ visible: boolean, value: number, type: string } | null>(null);
+  
   const userDocRef = useMemoFirebase(() => {
     if (!db || !user) return null;
     return doc(db, 'users', user.uid);
@@ -97,6 +100,39 @@ export default function Dashboard() {
   const { data: userData, isLoading: isUserDocLoading } = useDoc(userDocRef);
 
   const isAdmin = useMemo(() => user?.email === "thethegalo@gmail.com", [user]);
+
+  // Sincronização de Notificações Aleatórias (Efeito Venda Live)
+  useEffect(() => {
+    if (!isAdmin) return;
+    
+    const values = [27, 47, 57, 97, 127, 197, 287];
+    const types = ['Pix Recorrência', 'Pix Avulso', 'Cartão Recorrência', 'Pix'];
+    
+    const scheduleNext = () => {
+      // intervalo aleatório entre 4 e 12 minutos
+      const delay = (Math.floor(Math.random() * 8) + 4) * 60 * 1000;
+      
+      return setTimeout(() => {
+        const value = values[Math.floor(Math.random() * values.length)];
+        const type = types[Math.floor(Math.random() * types.length)];
+        
+        // Tenta tocar o som (requer interação prévia do usuário na página)
+        const audio = new Audio('/sounds/pix.mp3');
+        audio.play().catch(() => {});
+        
+        setNotification({ visible: true, value, type });
+        
+        // Esconde após 5 segundos
+        setTimeout(() => setNotification(null), 5000);
+        
+        // Agenda o próximo disparo
+        scheduleNext();
+      }, delay);
+    };
+    
+    const timer = scheduleNext();
+    return () => clearTimeout(timer);
+  }, [isAdmin]);
 
   // Bloqueio de acesso para usuários pendentes
   const isPending = useMemo(() => userData?.status === 'pending' && !isAdmin, [userData, isAdmin]);
@@ -519,6 +555,38 @@ export default function Dashboard() {
             </div>
           </div>
         </main>
+        
+        {/* NOTIFICAÇÃO DE VENDA SIMULADA */}
+        {notification?.visible && (
+          <div className="fixed top-6 right-6 z-[200] animate-in slide-in-from-right-4 duration-500">
+            <div className="bg-[#0a0a0f] border border-green-500/40 rounded-2xl p-4 shadow-[0_0_40px_rgba(34,197,94,0.2)] flex items-center gap-4 min-w-[280px]">
+              <div className="h-12 w-12 bg-green-500/20 rounded-xl flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(34,197,94,0.3)]">
+                <span className="text-2xl">💸</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-[10px] font-black uppercase tracking-widest text-green-400">{notification.type}</p>
+                <p className="text-2xl font-black italic text-white tracking-tighter">R$ {notification.value}</p>
+                <p className="text-[9px] text-white/40 uppercase font-bold">Recebido agora</p>
+              </div>
+              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]"></div>
+            </div>
+          </div>
+        )}
+
+        {/* BOTÃO DE TESTE (SOMENTE ADMIN) */}
+        {isAdmin && (
+          <button
+            onClick={() => {
+              const values = [27, 47, 57, 97, 127, 197, 287];
+              const value = values[Math.floor(Math.random() * values.length)];
+              setNotification({ visible: true, value, type: 'Pix Recorrência' });
+              setTimeout(() => setNotification(null), 5000);
+            }}
+            className="fixed bottom-24 right-6 z-50 px-3 py-2 bg-green-500/20 border border-green-500/30 rounded-xl text-[9px] font-black uppercase text-green-400"
+          >
+            TESTAR PIX
+          </button>
+        )}
       </div>
     </SidebarProvider>
   );
