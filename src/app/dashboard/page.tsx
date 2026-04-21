@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useEffect, useState, useRef } from 'react';
@@ -102,7 +101,7 @@ export default function Dashboard() {
 
   const isAdmin = useMemo(() => user?.email === "thethegalo@gmail.com", [user]);
 
-  // Efeito Venda Live (Apenas Admin)
+  // Efeito Venda Live (Apenas Admin) - Intervalos curtos (15s a 75s)
   useEffect(() => {
     if (!isAdmin) return;
     
@@ -110,7 +109,8 @@ export default function Dashboard() {
     const types = ['Pix Recorrência', 'Pix Avulso', 'Cartão Recorrência', 'Pix'];
     
     const scheduleNext = () => {
-      const delay = (Math.floor(Math.random() * 8) + 4) * 60 * 1000;
+      // Intervalo aleatório entre 15 e 75 segundos
+      const delay = (Math.floor(Math.random() * 60) + 15) * 1000;
       
       return setTimeout(() => {
         const value = values[Math.floor(Math.random() * values.length)];
