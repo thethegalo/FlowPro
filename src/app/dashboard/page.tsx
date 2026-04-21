@@ -101,7 +101,7 @@ export default function Dashboard() {
 
   const isAdmin = useMemo(() => user?.email === "thethegalo@gmail.com", [user]);
 
-  // Efeito Venda Live (Apenas Admin) - Intervalos curtos (15s a 75s)
+  // Efeito Venda Live (Apenas Admin) - Intervalos de 5 a 6 minutos
   useEffect(() => {
     if (!isAdmin) return;
     
@@ -109,8 +109,8 @@ export default function Dashboard() {
     const types = ['Pix Recorrência', 'Pix Avulso', 'Cartão Recorrência', 'Pix'];
     
     const scheduleNext = () => {
-      // Intervalo aleatório entre 15 e 75 segundos
-      const delay = (Math.floor(Math.random() * 60) + 15) * 1000;
+      // Intervalo aleatório entre 5 e 6 minutos (300 a 360 segundos)
+      const delay = (Math.floor(Math.random() * 60) + 300) * 1000;
       
       return setTimeout(() => {
         const value = values[Math.floor(Math.random() * values.length)];
