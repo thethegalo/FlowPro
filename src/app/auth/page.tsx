@@ -1,16 +1,23 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Zap, Loader2, ShieldCheck, Lock, ShieldAlert, AlertTriangle } from 'lucide-react';
-import { useAuth, useFirestore } from '@/firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { Zap, Loader2, ShieldCheck, Lock, ShieldAlert } from 'lucide-react';
+import { useAuth, useFirestore, useUser } from '@/firebase';
+import { 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  updateProfile,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence
+} from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
@@ -20,16 +27,30 @@ export default function AuthPage() {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   
   const auth = useAuth();
   const db = useFirestore();
+  const { user, isUserLoading } = useUser();
   const router = useRouter();
   const { toast } = useToast();
+
+  // Redireciona automaticamente se já estiver logado
+  useEffect(() => {
+    if (!isUserLoading && user) {
+      router.push('/dashboard');
+    }
+  }, [user, isUserLoading, router]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
+      // Configura a persistência antes do login
+      // browserLocalPersistence = Mantém logado mesmo fechando o navegador
+      // browserSessionPersistence = Desloga ao fechar a aba
+      await setPersistence(auth, rememberMe ? browserLocalPersistence : browserSessionPersistence);
+
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
         router.push('/dashboard');
@@ -63,6 +84,14 @@ export default function AuthPage() {
       setIsLoading(false);
     }
   };
+
+  if (isUserLoading) {
+    return (
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-transparent flex flex-col items-center justify-center p-4 relative z-10">
@@ -131,7 +160,12 @@ export default function AuthPage() {
             {isLogin && (
               <div className="flex items-center justify-between pb-2">
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="remember" className="border-white/20" />
+                  <Checkbox 
+                    id="remember" 
+                    className="border-white/20" 
+                    checked={rememberMe}
+                    onCheckedChange={(checked) => setRememberMe(!!checked)}
+                  />
                   <label htmlFor="remember" className="text-[9px] font-black uppercase tracking-widest opacity-50 cursor-pointer">Lembrar acesso</label>
                 </div>
                 <button type="button" className="text-[9px] font-black uppercase tracking-widest text-primary/60 hover:text-primary transition-colors">Esqueci a senha</button>
@@ -161,7 +195,7 @@ export default function AuthPage() {
               <span className="text-white/40 group-hover:text-white/60 transition-colors">
                 {isLogin ? 'NÃO TEM CONTA? ' : 'JÁ TEM CONTA? '}
               </span>
-              <span className="text-primary group-hover:text-primary/80 transition-colors underline underline-offset-8 decoration-primary/30">
+              <span className="text-primary group-hover:text-primary/80 transition-colors underline underline-offset-8 decoration-primary/30 font-black">
                 {isLogin ? 'PEÇA ACESSO' : 'FAÇA LOGIN'}
               </span>
             </button>
