@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import dynamic from 'next/dynamic';
+import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,7 +23,11 @@ import {
   RotateCcw,
   Sparkles,
   Menu,
-  Info
+  Info,
+  Smartphone,
+  Send,
+  Smile,
+  MoreVertical
 } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from '@/components/AppSidebar';
@@ -88,17 +93,25 @@ const FUNNEL_STEPS = [
   }
 ];
 
-export default function FunnelPage() {
+function FunnelContent() {
+  const searchParams = useSearchParams();
   const [leadName, setLeadName] = useState('');
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedMessage, setSelectedMessage] = useState('');
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
 
+  useEffect(() => {
+    const company = searchParams.get('company');
+    if (company) {
+      setLeadName(company);
+    }
+  }, [searchParams]);
+
   const activeStepData = FUNNEL_STEPS.find(s => s.id === currentStep);
 
   const handleSelectTemplate = (template: string) => {
-    let final = template.replace(/\[Empresa\]/g, leadName || '[NOME DA EMPRESA]');
+    let final = template.replace(/\[Empresa\]/g, leadName || '[EMPRESA]');
     setSelectedMessage(final);
   };
 
@@ -119,6 +132,221 @@ export default function FunnelPage() {
     }
   };
 
+  return (
+    <div className="flex-1 container max-w-7xl mx-auto p-4 md:p-8 space-y-8">
+      <div className="space-y-2 text-center md:text-left">
+        <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white leading-none">
+          ESTAÇÃO DE <span className="text-primary">CONVERSÃO</span>
+        </h2>
+        <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest">Transforme leads frios em clientes de criação de sites.</p>
+      </div>
+
+      <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        
+        {/* COLUNA ESQUERDA: CADASTRO E PREVIEW */}
+        <div className="w-full lg:col-span-4 space-y-8">
+          <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden">
+            <CardHeader className="bg-white/5 border-b border-white/5 p-6">
+              <CardTitle className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                <User className="h-3 w-3" /> Ficha do Alvo
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 space-y-4">
+              <div className="space-y-2">
+                <Label className="text-[9px] font-black uppercase text-white/30 tracking-widest">Nome da Empresa</Label>
+                <Input 
+                  placeholder="Ex: Padaria do João" 
+                  value={leadName}
+                  onChange={e => setLeadName(e.target.value)}
+                  className="bg-white/5 border-white/10 h-12 rounded-xl focus-visible:ring-primary"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* WHATSAPP PREVIEW */}
+          <div className="relative flex flex-col items-center">
+            <div className="absolute inset-0 bg-primary/10 blur-[60px] rounded-full pointer-events-none" />
+            
+            <div className="w-[280px] h-[540px] bg-[#0a0a0a] rounded-[2.5rem] border-[6px] border-[#1a1a1a] shadow-2xl relative overflow-hidden flex flex-col z-10 scale-95 origin-top">
+              <div className="h-16 bg-[#141418] border-b border-white/5 pt-6 px-4 flex items-center gap-2 shrink-0">
+                <div className="h-7 w-7 rounded-full bg-white/5 flex items-center justify-center">
+                  <User className="h-4 w-4 text-white/20" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[9px] font-bold text-white/90 truncate uppercase">{leadName || 'Empresa Alvo'}</p>
+                  <p className="text-[7px] text-green-500 font-bold uppercase tracking-widest">Online</p>
+                </div>
+                <MoreVertical className="h-3 w-3 text-white/20" />
+              </div>
+
+              <div className="flex-1 p-3 bg-[#050508] space-y-3 overflow-y-auto no-scrollbar relative">
+                <div className="flex justify-start">
+                  <AnimatePresence mode="wait">
+                    {selectedMessage ? (
+                      <motion.div 
+                        key={selectedMessage}
+                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        className="max-w-[90%] p-3 rounded-xl rounded-tl-none bg-[#1a1a1e] border border-white/5 shadow-lg relative"
+                      >
+                        <p className="text-[10px] leading-relaxed text-white/80 whitespace-pre-wrap italic">
+                          {selectedMessage}
+                        </p>
+                        <div className="flex items-center justify-end gap-1 mt-1">
+                          <span className="text-[6px] text-white/20">14:32</span>
+                          <Check className="h-2 w-2 text-primary" />
+                        </div>
+                      </motion.div>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center opacity-10">
+                        <MessageSquare className="h-12 w-12" />
+                      </div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+
+              <div className="h-12 bg-[#141418] border-t border-white/5 px-3 flex items-center gap-2 shrink-0">
+                <Smile className="h-4 w-4 text-white/20" />
+                <div className="flex-1 bg-white/[0.03] h-7 rounded-full border border-white/5 flex items-center px-3">
+                  <span className="text-[8px] text-white/20 font-bold">Mensagem...</span>
+                </div>
+                <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center">
+                  <Send className="h-3 w-3 text-white" />
+                </div>
+              </div>
+            </div>
+            <p className="mt-4 text-[9px] font-black uppercase tracking-[0.3em] text-white/20">Preview em Tempo Real</p>
+          </div>
+        </div>
+
+        {/* COLUNA DIREITA: FUNIL GUIADO */}
+        <div className="w-full lg:col-span-8 space-y-6">
+          <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden">
+            {/* Stepper */}
+            <div className="p-6 bg-white/5 border-b border-white/5 overflow-x-auto no-scrollbar">
+              <div className="flex items-center justify-between min-w-[600px] px-4">
+                {FUNNEL_STEPS.map((step, i) => (
+                  <div key={step.id} className="flex items-center flex-1 last:flex-none">
+                    <button
+                      onClick={() => {
+                        setCurrentStep(step.id);
+                        setSelectedMessage('');
+                      }}
+                      className={cn(
+                        "relative flex flex-col items-center gap-2 group transition-all",
+                        currentStep === step.id ? "opacity-100" : "opacity-30 hover:opacity-50"
+                      )}
+                    >
+                      <div className={cn(
+                        "h-10 w-10 rounded-full flex items-center justify-center border-2 transition-all",
+                        currentStep === step.id 
+                          ? "bg-primary border-primary text-white shadow-[0_0_20px_rgba(124,58,255,0.4)]" 
+                          : "bg-white/5 border-white/10 text-white/40"
+                      )}>
+                        {step.icon}
+                      </div>
+                      <span className="text-[8px] font-black uppercase tracking-widest whitespace-nowrap">{step.title}</span>
+                    </button>
+                    {i < FUNNEL_STEPS.length - 1 && (
+                      <div className={cn(
+                        "h-[1px] flex-1 mx-4 transition-all",
+                        currentStep > step.id ? "bg-primary" : "bg-white/10"
+                      )} />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <CardContent className="p-8 space-y-8">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-black italic uppercase tracking-tighter text-white">
+                    {activeStepData?.title}
+                  </h3>
+                  <Badge variant="outline" className="border-primary/30 text-primary text-[8px] font-black uppercase px-3 py-1">
+                    Passo {currentStep} de 5
+                  </Badge>
+                </div>
+                <div className="p-3 bg-white/5 border border-white/10 rounded-xl">
+                  <p className="text-[10px] text-white/60 font-bold uppercase tracking-wider flex items-center gap-2">
+                    <Zap className="h-3 w-3 text-primary fill-primary" /> {activeStepData?.hint}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {activeStepData?.templates.map((t, i) => {
+                  const preview = t.replace(/\[Empresa\]/g, leadName || '[EMPRESA]');
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => handleSelectTemplate(t)}
+                      className="text-left p-5 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-primary/20 transition-all group relative overflow-hidden min-h-[140px]"
+                    >
+                      <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Sparkles className="h-3 w-3 text-primary" />
+                      </div>
+                      <p className="text-[11px] text-white/60 leading-relaxed italic font-medium line-clamp-4">
+                        "{preview}"
+                      </p>
+                      <div className="mt-4 flex items-center gap-2 text-[8px] font-black uppercase text-primary tracking-widest">
+                        <MessageSquare className="h-2.5 w-2.5" /> Usar Modelo {i + 1}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <AnimatePresence mode="wait">
+                {selectedMessage && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="space-y-4 pt-4 border-t border-white/5"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between ml-1">
+                        <Label className="text-[9px] font-black uppercase text-white/30 tracking-widest">Script Editável</Label>
+                        <p className="text-[8px] font-bold text-primary/40 uppercase">Sincronizado com Preview</p>
+                      </div>
+                      <Textarea 
+                        value={selectedMessage}
+                        onChange={e => setSelectedMessage(e.target.value)}
+                        className="min-h-[160px] bg-black/40 border-white/10 rounded-2xl p-6 text-sm font-medium text-white/80 leading-relaxed resize-none focus-visible:ring-primary"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <Button 
+                        onClick={handleCopy}
+                        className="h-14 rounded-xl bg-green-600 hover:bg-green-500 text-white font-black uppercase tracking-widest text-[10px] gap-2 shadow-xl"
+                      >
+                        {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                        {copied ? 'COPIADO' : 'COPIAR MENSAGEM'}
+                      </Button>
+                      <Button 
+                        onClick={handleNext}
+                        className="h-14 rounded-xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-[10px] gap-2 shadow-lg"
+                      >
+                        PRÓXIMA ETAPA <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function FunnelPage() {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-transparent relative overflow-x-hidden">
@@ -146,165 +374,9 @@ export default function FunnelPage() {
             </div>
           </header>
 
-          <div className="flex-1 container max-w-5xl mx-auto p-4 md:p-8 space-y-8">
-            <div className="space-y-2 text-center md:text-left">
-              <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white leading-none">
-                ESTAÇÃO DE <span className="text-primary">CONVERSÃO</span>
-              </h2>
-              <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest">Transforme leads frios em clientes de criação de sites.</p>
-            </div>
-
-            <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-              
-              {/* CADASTRO LEAD */}
-              <div className="w-full lg:col-span-4 space-y-6">
-                <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden">
-                  <CardHeader className="bg-white/5 border-b border-white/5 p-6">
-                    <CardTitle className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                      <User className="h-3 w-3" /> Ficha do Alvo
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-6 space-y-4">
-                    <div className="space-y-2">
-                      <Label className="text-[9px] font-black uppercase text-white/30 tracking-widest">Nome da Empresa</Label>
-                      <Input 
-                        placeholder="Ex: Padaria do João" 
-                        value={leadName}
-                        onChange={e => setLeadName(e.target.value)}
-                        className="bg-white/5 border-white/10 h-12 rounded-xl focus-visible:ring-primary"
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <div className="p-6 rounded-[2rem] bg-primary/5 border border-primary/20 text-center space-y-3">
-                  <Info className="h-6 w-6 text-primary mx-auto" />
-                  <p className="text-[10px] font-bold text-white/60 uppercase leading-relaxed italic">
-                    "O site é a vitrine que nunca fecha. Venda autoridade, não apenas código."
-                  </p>
-                </div>
-              </div>
-
-              {/* FUNIL GUIADO */}
-              <div className="w-full lg:col-span-8 space-y-6">
-                <Card className="glass-card border-white/10 rounded-[2rem] overflow-hidden">
-                  {/* Stepper */}
-                  <div className="p-6 bg-white/5 border-b border-white/5 overflow-x-auto no-scrollbar">
-                    <div className="flex items-center justify-between min-w-[600px] px-4">
-                      {FUNNEL_STEPS.map((step, i) => (
-                        <div key={step.id} className="flex items-center flex-1 last:flex-none">
-                          <button
-                            onClick={() => {
-                              setCurrentStep(step.id);
-                              setSelectedMessage('');
-                            }}
-                            className={cn(
-                              "relative flex flex-col items-center gap-2 group transition-all",
-                              currentStep === step.id ? "opacity-100" : "opacity-30 hover:opacity-50"
-                            )}
-                          >
-                            <div className={cn(
-                              "h-10 w-10 rounded-full flex items-center justify-center border-2 transition-all",
-                              currentStep === step.id 
-                                ? "bg-primary border-primary text-white shadow-[0_0_20px_rgba(124,58,255,0.4)]" 
-                                : "bg-white/5 border-white/10 text-white/40"
-                            )} style={{ willChange: 'transform' }}>
-                              {step.icon}
-                            </div>
-                            <span className="text-[8px] font-black uppercase tracking-widest whitespace-nowrap">{step.title}</span>
-                          </button>
-                          {i < FUNNEL_STEPS.length - 1 && (
-                            <div className={cn(
-                              "h-[1px] flex-1 mx-4 transition-all",
-                              currentStep > step.id ? "bg-primary" : "bg-white/10"
-                            )} />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <CardContent className="p-8 space-y-8">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-xl font-black italic uppercase tracking-tighter text-white">
-                          {activeStepData?.title}
-                        </h3>
-                        <Badge variant="outline" className="border-primary/30 text-primary text-[8px] font-black uppercase px-3 py-1">
-                          Passo {currentStep} de 5
-                        </Badge>
-                      </div>
-                      <div className="p-3 bg-white/5 border border-white/10 rounded-xl">
-                        <p className="text-[10px] text-white/60 font-bold uppercase tracking-wider flex items-center gap-2">
-                          <Zap className="h-3 w-3 text-primary fill-primary" /> {activeStepData?.hint}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {activeStepData?.templates.map((t, i) => {
-                        const preview = t.replace(/\[Empresa\]/g, leadName || '[EMPRESA]');
-                        return (
-                          <button
-                            key={i}
-                            onClick={() => handleSelectTemplate(t)}
-                            className="text-left p-5 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-primary/20 transition-all group relative overflow-hidden min-h-[140px]"
-                          >
-                            <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Sparkles className="h-3 w-3 text-primary" />
-                            </div>
-                            <p className="text-[11px] text-white/60 leading-relaxed italic font-medium line-clamp-4">
-                              "{preview}"
-                            </p>
-                            <div className="mt-4 flex items-center gap-2 text-[8px] font-black uppercase text-primary tracking-widest">
-                              <MessageSquare className="h-2.5 w-2.5" /> Usar Modelo {i + 1}
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <AnimatePresence mode="wait">
-                      {selectedMessage && (
-                        <motion.div 
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          className="space-y-4 pt-4 border-t border-white/5"
-                        >
-                          <div className="space-y-2">
-                            <Label className="text-[9px] font-black uppercase text-white/30 tracking-widest ml-1">Script Editável</Label>
-                            <Textarea 
-                              value={selectedMessage}
-                              onChange={e => setSelectedMessage(e.target.value)}
-                              className="min-h-[180px] bg-black/40 border-white/10 rounded-2xl p-6 text-sm font-medium text-white/80 leading-relaxed resize-none focus-visible:ring-primary"
-                            />
-                          </div>
-
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <Button 
-                              onClick={handleCopy}
-                              className="h-14 rounded-xl bg-green-600 hover:bg-green-500 text-white font-black uppercase tracking-widest text-[10px] gap-2 shadow-xl group overflow-hidden relative"
-                            >
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
-                              {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                              {copied ? 'COPIADO' : 'COPIAR MENSAGEM'}
-                            </Button>
-                            <Button 
-                              onClick={handleNext}
-                              className="h-14 rounded-xl bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-[10px] gap-2 shadow-lg shadow-primary/20"
-                            >
-                              PRÓXIMA ETAPA <ChevronRight className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </div>
+          <Suspense fallback={<div className="p-20 text-center"><Zap className="h-8 w-8 animate-spin mx-auto text-primary" /></div>}>
+            <FunnelContent />
+          </Suspense>
         </main>
       </div>
     </SidebarProvider>

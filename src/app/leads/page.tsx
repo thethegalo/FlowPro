@@ -1,8 +1,8 @@
-
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,7 +26,9 @@ import {
   Stethoscope,
   ShoppingBag,
   Menu,
-  Globe
+  Globe,
+  GitBranch,
+  Circle
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { generateLeadMessage } from '@/ai/flows/generate-lead-message';
@@ -68,6 +70,7 @@ export default function LeadsPage() {
   const { user } = useUser();
   const db = useFirestore();
   const { toast, success, error, warning } = useToast();
+  const router = useRouter();
   
   const [loading, setLoading] = useState(false);
   const [leads, setLeads] = useState<any[]>([]);
@@ -113,7 +116,6 @@ export default function LeadsPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Falha na varredura neural');
 
-      // Sem limites de busca
       setLeads(data);
 
       if (data.length > 0) {
@@ -178,6 +180,10 @@ export default function LeadsPage() {
     } finally { setGeneratingMsg(null); }
   };
 
+  const sendToFunnel = (lead: any) => {
+    router.push(`/funil?company=${encodeURIComponent(lead.name)}`);
+  };
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-transparent relative overflow-x-hidden">
@@ -221,7 +227,7 @@ export default function LeadsPage() {
                       </div>
                     </div>
                     <Button type="submit" disabled={isSavingManual} className="w-full h-12 bg-primary hover:bg-primary/90 font-bold uppercase tracking-widest text-xs rounded-xl">
-                      {isSavingManual ? <Loader2 className="h-4 w-4 animate-spin" style={{ willChange: 'transform' }} /> : "Registrar Alvo"}
+                      {isSavingManual ? <Loader2 className="h-4 w-4 animate-spin" /> : "Registrar Alvo"}
                     </Button>
                   </form>
                 </DialogContent>
@@ -313,7 +319,7 @@ export default function LeadsPage() {
                   >
                     {loading ? (
                       <div className="flex items-center gap-3">
-                        <Loader2 className="h-4 w-4 animate-spin" style={{ willChange: 'transform' }} /> 
+                        <Loader2 className="h-4 w-4 animate-spin" /> 
                         <span>Varredura Ativa...</span>
                       </div>
                     ) : "Iniciar prospecção"}
@@ -324,7 +330,7 @@ export default function LeadsPage() {
               <div className="hidden lg:flex flex-col items-center justify-center relative h-[500px] w-full">
                 <div className="absolute top-0 text-center space-y-1">
                   <div className="flex items-center justify-center gap-2">
-                    <div className="h-1.5 w-1.5 bg-green-500 rounded-full animate-pulse" style={{ willChange: 'transform' }} />
+                    <div className="h-1.5 w-1.5 bg-green-500 rounded-full animate-pulse" />
                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/60">Radar Neural Ativo</p>
                   </div>
                   <p className="text-[9px] text-white/20 uppercase font-bold tracking-widest">Varredura em escala 1:1</p>
@@ -373,8 +379,8 @@ export default function LeadsPage() {
                     </motion.div>
                   ) : loading ? (
                     <div key="loading" className="py-20 text-center space-y-4">
-                      <div className="h-12 w-12 border-2 border-primary/20 border-t-primary rounded-full animate-spin mx-auto" style={{ willChange: 'transform' }} />
-                      <p className="text-primary/60 text-[10px] font-black uppercase tracking-widest animate-pulse" style={{ willChange: 'transform' }}>Escaneando Mercado...</p>
+                      <div className="h-12 w-12 border-2 border-primary/20 border-t-primary rounded-full animate-spin mx-auto" />
+                      <p className="text-primary/60 text-[10px] font-black uppercase tracking-widest animate-pulse">Escaneando Mercado...</p>
                     </div>
                   ) : (
                     leads.map((lead, index) => {
@@ -432,9 +438,16 @@ export default function LeadsPage() {
                                   </div>
                                 </div>
 
-                                <div className="flex flex-row lg:flex-col gap-2 w-full lg:w-auto min-w-[180px] shrink-0">
+                                <div className="flex flex-row lg:flex-col gap-2 w-full lg:w-auto min-w-[200px] shrink-0">
+                                  <Button 
+                                    onClick={() => sendToFunnel(lead)}
+                                    variant="outline"
+                                    className="flex-1 h-10 border-primary/30 bg-primary/5 text-primary rounded-xl text-[10px] font-black uppercase tracking-widest gap-2 hover:bg-primary/10"
+                                  >
+                                    <GitBranch className="h-3.5 w-3.5" /> Enviar para Funil
+                                  </Button>
                                   <Button onClick={() => handleGenMessage(lead)} disabled={generatingMsg === lead.id} className="flex-1 h-10 bg-primary/20 border border-primary/30 text-primary-foreground rounded-xl text-[10px] font-black uppercase tracking-widest gap-2 hover:bg-primary/30">
-                                    {generatingMsg === lead.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" style={{ willChange: 'transform' }} /> : <Zap className="h-3.5 w-3.5" />} Gerar script
+                                    {generatingMsg === lead.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Zap className="h-3.5 w-3.5" />} Gerar script
                                   </Button>
                                   <Button variant="ghost" onClick={() => setApproachedLeads(prev => prev.includes(lead.id) ? prev.filter(id => id !== lead.id) : [...prev, lead.id])} className={`flex-1 h-10 rounded-xl text-[10px] font-black uppercase tracking-widest ${approachedLeads.includes(lead.id) ? 'text-green-500 bg-green-500/5' : 'text-white/20'}`}>
                                     {approachedLeads.includes(lead.id) ? <><Circle className="h-4 w-4 mr-2" /> Abordado</> : <><Target className="h-4 w-4 mr-2" /> Marcar alvo</>}
