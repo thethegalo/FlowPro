@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
@@ -90,8 +90,9 @@ export default function Dashboard() {
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState('');
   
-  // Estado de Notificações de Venda
+  // Estado de Notificações e Ganhos da Sessão
   const [notification, setNotification] = useState<{ visible: boolean, value: number, type: string } | null>(null);
+  const [sessionEarnings, setSessionEarnings] = useState(0);
   
   const userDocRef = useMemoFirebase(() => {
     if (!db || !user) return null;
@@ -101,7 +102,7 @@ export default function Dashboard() {
 
   const isAdmin = useMemo(() => user?.email === "thethegalo@gmail.com", [user]);
 
-  // Sincronização de Notificações Aleatórias (Efeito Venda Live)
+  // Efeito Venda Live (Apenas Admin)
   useEffect(() => {
     if (!isAdmin) return;
     
@@ -109,23 +110,20 @@ export default function Dashboard() {
     const types = ['Pix Recorrência', 'Pix Avulso', 'Cartão Recorrência', 'Pix'];
     
     const scheduleNext = () => {
-      // intervalo aleatório entre 4 e 12 minutos
       const delay = (Math.floor(Math.random() * 8) + 4) * 60 * 1000;
       
       return setTimeout(() => {
         const value = values[Math.floor(Math.random() * values.length)];
         const type = types[Math.floor(Math.random() * types.length)];
         
-        // Tenta tocar o som (requer interação prévia do usuário na página)
+        // Toca o som de caixa registradora
         const audio = new Audio('/sounds/pix.mp3');
         audio.play().catch(() => {});
         
         setNotification({ visible: true, value, type });
+        setSessionEarnings(prev => prev + value);
         
-        // Esconde após 5 segundos
         setTimeout(() => setNotification(null), 5000);
-        
-        // Agenda o próximo disparo
         scheduleNext();
       }, delay);
     };
@@ -134,7 +132,6 @@ export default function Dashboard() {
     return () => clearTimeout(timer);
   }, [isAdmin]);
 
-  // Bloqueio de acesso para usuários pendentes
   const isPending = useMemo(() => userData?.status === 'pending' && !isAdmin, [userData, isAdmin]);
 
   const displayName = useMemo(() => {
@@ -146,24 +143,41 @@ export default function Dashboard() {
   }, [userData?.name, user?.displayName, user?.email, isAdmin]);
 
   const totalEarnings = useMemo(() => {
-    if (userData?.simulatedStats?.total !== undefined) return userData.simulatedStats.total;
-    const raw = userData?.totalEarnings || 0;
-    if (isAdmin) return 21564 + raw;
-    return raw;
-  }, [userData?.totalEarnings, userData?.simulatedStats, isAdmin]);
+    let base = 0;
+    if (userData?.simulatedStats?.total !== undefined) {
+      base = userData.simulatedStats.total;
+    } else {
+      base = userData?.totalEarnings || 0;
+      if (isAdmin) base += 21564;
+    }
+    return base + sessionEarnings;
+  }, [userData, isAdmin, sessionEarnings]);
 
   const chartData = useMemo(() => {
+    let baseData = [];
     if (userData?.simulatedStats?.chart) {
-      return userData.simulatedStats.chart.map((p: any) => ({
+      baseData = userData.simulatedStats.chart.map((p: any) => ({
         date: new Date(p.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
         ganhos: p.amount
       }));
+    } else {
+      baseData = Array.from({ length: 30 }).map((_, i) => ({
+        date: `${i + 1}/03`,
+        ganhos: Math.floor(Math.random() * 1000)
+      }));
     }
-    return Array.from({ length: 30 }).map((_, i) => ({
-      date: `${i + 1}/03`,
-      ganhos: Math.floor(Math.random() * 1000)
-    }));
-  }, [userData?.simulatedStats]);
+
+    // Adiciona ganhos da sessão ao último ponto do gráfico para visualização live
+    if (baseData.length > 0 && sessionEarnings > 0) {
+      const lastIdx = baseData.length - 1;
+      baseData[lastIdx] = {
+        ...baseData[lastIdx],
+        ganhos: baseData[lastIdx].ganhos + sessionEarnings
+      };
+    }
+    
+    return baseData;
+  }, [userData?.simulatedStats, sessionEarnings]);
 
   const currentJourneyDay = useMemo(() => {
     if (!userData?.createdAt) return 1;
@@ -229,7 +243,6 @@ export default function Dashboard() {
 
   if (isUserLoading || isUserDocLoading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" style={{ willChange: 'transform' }} /></div>;
 
-  // Renderização da tela de bloqueio para usuários pendentes
   if (isPending) {
     return (
       <SidebarProvider>
@@ -571,21 +584,6 @@ export default function Dashboard() {
               <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]"></div>
             </div>
           </div>
-        )}
-
-        {/* BOTÃO DE TESTE (SOMENTE ADMIN) */}
-        {isAdmin && (
-          <button
-            onClick={() => {
-              const values = [27, 47, 57, 97, 127, 197, 287];
-              const value = values[Math.floor(Math.random() * values.length)];
-              setNotification({ visible: true, value, type: 'Pix Recorrência' });
-              setTimeout(() => setNotification(null), 5000);
-            }}
-            className="fixed bottom-24 right-6 z-50 px-3 py-2 bg-green-500/20 border border-green-500/30 rounded-xl text-[9px] font-black uppercase text-green-400"
-          >
-            TESTAR PIX
-          </button>
         )}
       </div>
     </SidebarProvider>

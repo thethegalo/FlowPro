@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -21,7 +22,8 @@ import {
   Trash2,
   RefreshCcw,
   DollarSign,
-  Zap
+  Zap,
+  Bell
 } from 'lucide-react';
 import { collection, query, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
@@ -60,6 +62,9 @@ export default function AdminPage() {
   const [manualTotal, setTotalOverwrite] = useState("");
   const [simulatedData, setSimulatedData] = useState<any[]>([]);
 
+  // Estado de Teste de Notificação
+  const [testNotification, setTestNotification] = useState<boolean>(false);
+
   const ADMIN_EMAIL = "thethegalo@gmail.com";
 
   useEffect(() => {
@@ -73,6 +78,14 @@ export default function AdminPage() {
     return query(collection(db, 'users'));
   }, [db]);
   const { data: usersData, isLoading: isUsersLoading } = useCollection(usersQuery);
+
+  const handleTestPix = () => {
+    const audio = new Audio('/sounds/pix.mp3');
+    audio.play().catch(() => {});
+    setTestNotification(true);
+    toast.success("Teste Iniciado", "O alerta visual e sonoro foi disparado.");
+    setTimeout(() => setTestNotification(false), 5000);
+  };
 
   const updateStatus = async (userId: string, newStatus: string) => {
     if (!db) return;
@@ -109,7 +122,6 @@ export default function AdminPage() {
     }
   };
 
-  // Funções de Simulação
   const handleGenerateRandom = () => {
     const min = Number(minDayVal) || 0;
     const max = Number(maxDayVal) || 1000;
@@ -188,8 +200,18 @@ export default function AdminPage() {
                 <Shield className="h-3.5 w-3.5 text-primary" /> Flow Command
               </h1>
             </div>
-            <div className="bg-[#581c87]/40 border border-[#7c3aed]/30 text-[#c4b5fd] text-[11px] font-medium rounded-[6px] px-[10px] py-[4px] uppercase tracking-[0.5px]">
-              ADMIN MASTER
+            <div className="flex items-center gap-4">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleTestPix}
+                className="h-8 border-green-500/20 bg-green-500/5 text-green-500 text-[9px] font-black uppercase tracking-widest gap-2"
+              >
+                <Zap className="h-3 w-3" /> Testar Som e Alerta
+              </Button>
+              <div className="bg-[#581c87]/40 border border-[#7c3aed]/30 text-[#c4b5fd] text-[11px] font-medium rounded-[6px] px-[10px] py-[4px] uppercase tracking-[0.5px]">
+                ADMIN MASTER
+              </div>
             </div>
           </header>
 
@@ -397,6 +419,23 @@ export default function AdminPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Notificação de Teste (Admin Only) */}
+        {testNotification && (
+          <div className="fixed top-6 right-6 z-[200] animate-in slide-in-from-right-4 duration-500">
+            <div className="bg-[#0a0a0f] border border-green-500/40 rounded-2xl p-4 shadow-[0_0_40px_rgba(34,197,94,0.2)] flex items-center gap-4 min-w-[280px]">
+              <div className="h-12 w-12 bg-green-500/20 rounded-xl flex items-center justify-center shrink-0">
+                <span className="text-2xl">💸</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-[10px] font-black uppercase tracking-widest text-green-400">Pix Recorrência</p>
+                <p className="text-2xl font-black italic text-white tracking-tighter">R$ 197</p>
+                <p className="text-[9px] text-white/40 uppercase font-bold">Teste de Sistema OK</p>
+              </div>
+              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]"></div>
+            </div>
+          </div>
+        )}
       </div>
     </SidebarProvider>
   );
