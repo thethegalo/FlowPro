@@ -90,8 +90,7 @@ export default function Dashboard() {
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState('');
   
-  // Estado de Notificações e Ganhos da Sessão
-  const [notification, setNotification] = useState<{ visible: boolean, value: number, type: string } | null>(null);
+  // Ganhos acumulados na sessão (atualizados via evento global)
   const [sessionEarnings, setSessionEarnings] = useState(0);
   
   const userDocRef = useMemoFirebase(() => {
@@ -101,38 +100,17 @@ export default function Dashboard() {
   const { data: userData, isLoading: isUserDocLoading } = useDoc(userDocRef);
 
   const isAdmin = useMemo(() => user?.email === "thethegalo@gmail.com", [user]);
-  const isAffiliate = useMemo(() => userData?.isAffiliate === true, [userData]);
 
-  // Efeito Venda Live (Admin ou Afiliado) - Intervalos de 5 a 6 minutos
+  // Escuta o evento global de nova venda para atualizar o dashboard localmente
   useEffect(() => {
-    if (!isAdmin && !isAffiliate) return;
-    
-    const values = [27, 47, 57, 97, 127, 197, 287];
-    const types = ['Pix Recorrência', 'Pix Avulso', 'Cartão Recorrência', 'Pix'];
-    
-    const scheduleNext = () => {
-      // Intervalo aleatório entre 5 e 6 minutos (300 a 360 segundos)
-      const delay = (Math.floor(Math.random() * 60) + 300) * 1000;
-      
-      return setTimeout(() => {
-        const value = values[Math.floor(Math.random() * values.length)];
-        const type = types[Math.floor(Math.random() * types.length)];
-        
-        // Toca o som de caixa registradora
-        const audio = new Audio('/sounds/pix.mp3');
-        audio.play().catch(() => {});
-        
-        setNotification({ visible: true, value, type });
-        setSessionEarnings(prev => prev + value);
-        
-        setTimeout(() => setNotification(null), 5000);
-        scheduleNext();
-      }, delay);
+    const handleNewSale = (e: any) => {
+      if (e.detail?.value) {
+        setSessionEarnings(prev => prev + e.detail.value);
+      }
     };
-    
-    const timer = scheduleNext();
-    return () => clearTimeout(timer);
-  }, [isAdmin, isAffiliate]);
+    window.addEventListener('flow-new-sale', handleNewSale);
+    return () => window.removeEventListener('flow-new-sale', handleNewSale);
+  }, []);
 
   const isPending = useMemo(() => userData?.status === 'pending' && !isAdmin, [userData, isAdmin]);
 
@@ -169,7 +147,6 @@ export default function Dashboard() {
       }));
     }
 
-    // Adiciona ganhos da sessão ao último ponto do gráfico para visualização live
     if (baseData.length > 0 && sessionEarnings > 0) {
       const lastIdx = baseData.length - 1;
       baseData[lastIdx] = {
@@ -570,23 +547,6 @@ export default function Dashboard() {
             </div>
           </div>
         </main>
-        
-        {/* NOTIFICAÇÃO DE VENDA SIMULADA */}
-        {notification?.visible && (
-          <div className="fixed top-6 right-6 z-[200] animate-in slide-in-from-right-4 duration-500">
-            <div className="bg-[#0a0a0f] border border-green-500/40 rounded-2xl p-4 shadow-[0_0_40px_rgba(34,197,94,0.2)] flex items-center gap-4 min-w-[280px]">
-              <div className="h-12 w-12 bg-green-500/20 rounded-xl flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(34,197,94,0.3)]">
-                <span className="text-2xl">💸</span>
-              </div>
-              <div className="flex-1">
-                <p className="text-[10px] font-black uppercase tracking-widest text-green-400">{notification.type}</p>
-                <p className="text-2xl font-black italic text-white tracking-tighter">R$ {notification.value}</p>
-                <p className="text-[9px] text-white/40 uppercase font-bold">Recebido agora</p>
-              </div>
-              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]"></div>
-            </div>
-          </div>
-        )}
       </div>
     </SidebarProvider>
   );

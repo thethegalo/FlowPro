@@ -62,8 +62,6 @@ export default function AdminPage() {
   const [manualTotal, setTotalOverwrite] = useState("");
   const [simulatedData, setSimulatedData] = useState<any[]>([]);
 
-  const [testNotification, setTestNotification] = useState<boolean>(false);
-
   const ADMIN_EMAIL = "thethegalo@gmail.com";
 
   useEffect(() => {
@@ -73,7 +71,6 @@ export default function AdminPage() {
   }, [user, isUserLoading, router]);
 
   const usersQuery = useMemoFirebase(() => {
-    // CRITICAL: Only attempt to create the query if user is logged in and is admin
     if (!db || !user || user.email !== ADMIN_EMAIL) return null;
     return query(collection(db, 'users'));
   }, [db, user, ADMIN_EMAIL]);
@@ -81,11 +78,9 @@ export default function AdminPage() {
   const { data: usersData, isLoading: isUsersLoading } = useCollection(usersQuery);
 
   const handleTestPix = () => {
-    const audio = new Audio('/sounds/pix.mp3');
-    audio.play().catch(() => {});
-    setTestNotification(true);
-    toast.success("Teste Iniciado", "O alerta visual e sonoro foi disparado.");
-    setTimeout(() => setTestNotification(false), 5000);
+    // Dispara o evento que o ClientVisualEffects está ouvindo
+    window.dispatchEvent(new CustomEvent('flow-test-pix'));
+    toast.success("Teste Iniciado", "O alerta visual e sonoro foi disparado globalmente.");
   };
 
   const updateStatus = async (userId: string, newStatus: string) => {
@@ -448,23 +443,6 @@ export default function AdminPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-
-        {/* Notificação de Teste (Admin Only) */}
-        {testNotification && (
-          <div className="fixed top-6 right-6 z-[200] animate-in slide-in-from-right-4 duration-500">
-            <div className="bg-[#0a0a0f] border border-green-500/40 rounded-2xl p-4 shadow-[0_0_40px_rgba(34,197,94,0.2)] flex items-center gap-4 min-w-[280px]">
-              <div className="h-12 w-12 bg-green-500/20 rounded-xl flex items-center justify-center shrink-0">
-                <span className="text-2xl">💸</span>
-              </div>
-              <div className="flex-1">
-                <p className="text-[10px] font-black uppercase tracking-widest text-green-400">Pix Recorrência</p>
-                <p className="text-2xl font-black italic text-white tracking-tighter">R$ 197</p>
-                <p className="text-[9px] text-white/40 uppercase font-bold">Teste de Sistema OK</p>
-              </div>
-              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]"></div>
-            </div>
-          </div>
-        )}
       </div>
     </SidebarProvider>
   );
