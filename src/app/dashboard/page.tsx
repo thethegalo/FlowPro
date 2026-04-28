@@ -127,7 +127,7 @@ export default function Dashboard() {
       base = userData.simulatedStats.total;
     } else {
       base = userData?.totalEarnings || 0;
-      if (isAdmin) base += 21564;
+      if (isAdmin) base += 216430; // Valor solicitado de ~216k para Admin
     }
     return base + sessionEarnings;
   }, [userData, isAdmin, sessionEarnings]);
@@ -140,9 +140,10 @@ export default function Dashboard() {
         ganhos: p.amount
       }));
     } else {
+      // Gera dados que somam aproximadamente 27k (900 * 30)
       baseData = Array.from({ length: 30 }).map((_, i) => ({
         date: `${i + 1}/03`,
-        ganhos: Math.floor(Math.random() * 1000)
+        ganhos: Math.floor(Math.random() * 1800)
       }));
     }
 
@@ -339,7 +340,7 @@ export default function Dashboard() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               {[
-                { label: "Placar de Caixa", val: totalEarnings, prefix: "R$ ", icon: DollarSign, badge: "+12% hoje", sub: `Alvo R$ ${isAdmin ? '50.000' : '5.000'}` },
+                { label: "Placar de Caixa", val: totalEarnings, prefix: "R$ ", icon: DollarSign, badge: "+12% hoje", sub: `Alvo R$ ${isAdmin ? '500.000' : '5.000'}` },
                 { label: "Execução Diária", val: userData?.dailyActions || 0, suffix: " / 10", icon: Activity, badge: "Alta Performance", sub: "Ritmo constante" },
                 { label: "Status Jornada", val: currentJourneyDay, prefix: "Dia ", icon: TrendingUp, badge: "Ativo", sub: `${completedMissionIds.length} concluídas` },
               ].map((m, i) => (
