@@ -17,53 +17,56 @@ export function ClientVisualEffects() {
   const { user } = useUser();
   const db = useFirestore();
   const [notification, setNotification] = useState<{ value: number, type: string } | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  
+  // Gerenciamento de Áudio por Referência (Blindado contra re-renders)
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const hasInteracted = useRef(false);
 
-  // 1. Inicialização do Áudio e Sistema de Unlock
   useEffect(() => {
     setMounted(true);
     
-    if (typeof window !== 'undefined') {
-      // Criar a instância uma única vez
-      const audio = new Audio(PIX_SOUND_URL);
-      audio.preload = 'auto';
-      audioRef.current = audio;
+    // Inicializa a instância de áudio uma única vez
+    const audio = new Audio(PIX_SOUND_URL);
+    audio.preload = 'auto';
+    audioRef.current = audio;
 
-      // Função para desbloquear o áudio no primeiro gesto do usuário (Regra do Navegador)
-      const unlock = () => {
-        if (audioRef.current && !isUnlocked) {
-          audioRef.current.play()
-            .then(() => {
-              audioRef.current?.pause();
-              audioRef.current!.currentTime = 0;
-              setIsUnlocked(true);
-              console.log("Audio Engine: Unlocked and Ready");
-            })
-            .catch(() => {
-              // Silencioso: tenta novamente na próxima interação
-            });
-        }
-        // Remover ouvintes após o primeiro sucesso
-        if (isUnlocked) {
-          window.removeEventListener('mousedown', unlock);
-          window.removeEventListener('keydown', unlock);
-          window.removeEventListener('touchstart', unlock);
-        }
-      };
-
-      window.addEventListener('mousedown', unlock);
-      window.addEventListener('keydown', unlock);
-      window.addEventListener('touchstart', unlock);
+    // Função para "acordar" o motor de áudio no primeiro gesto do usuário
+    const unlockAudio = () => {
+      if (hasInteracted.current || !audioRef.current) return;
       
-      return () => {
-        window.removeEventListener('mousedown', unlock);
-        window.removeEventListener('keydown', unlock);
-        window.removeEventListener('touchstart', unlock);
-      };
-    }
-  }, [isUnlocked]);
+      // Tenta um play/pause rápido para desbloquear o canal de áudio no navegador
+      audioRef.current.play()
+        .then(() => {
+          audioRef.current?.pause();
+          audioRef.current!.currentTime = 0;
+          hasInteracted.current = true;
+          console.log("FlowPro Audio: Engine Unlocked & Ready.");
+          
+          // Remove os ouvintes assim que o áudio for liberado
+          window.removeEventListener('mousedown', unlockAudio);
+          window.removeEventListener('keydown', unlockAudio);
+          window.removeEventListener('touchstart', unlockAudio);
+        })
+        .catch(() => {
+          // Navegador ainda bloqueando, tenta no próximo clique
+        });
+    };
+
+    window.addEventListener('mousedown', unlockAudio);
+    window.addEventListener('keydown', unlockAudio);
+    window.addEventListener('touchstart', unlockAudio);
+    
+    return () => {
+      window.removeEventListener('mousedown', unlockAudio);
+      window.removeEventListener('keydown', unlockAudio);
+      window.removeEventListener('touchstart', unlockAudio);
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   const userDocRef = useMemoFirebase(() => {
     if (!db || !user) return null;
@@ -74,34 +77,32 @@ export function ClientVisualEffects() {
   const isAdmin = useMemo(() => user?.email === "thethegalo@gmail.com", [user]);
   const isAffiliate = useMemo(() => userData?.isAffiliate === true, [userData]);
 
-  // Rotas proibidas (onde a notificação não deve atrapalhar)
+  // Rotas onde a notificação não deve aparecer (Landing Pages)
   const isExcluded = useMemo(() => {
     const excludedPaths = ['/', '/adriel', '/dx', '/felipe', '/v/felipe', '/auth', '/quiz', '/masterclass', '/paywall'];
     return excludedPaths.some(path => pathname === path || pathname.startsWith(path + '/'));
   }, [pathname]);
 
-  // Função central de disparo (Som + Visual)
   const triggerNotification = (forcedValue?: number) => {
     const values = [27, 47, 57, 97, 127, 197, 287];
     const types = ['Pix Recorrência', 'Pix Avulso', 'Cartão Recorrência', 'Pix Aprovado'];
     const value = forcedValue || values[Math.floor(Math.random() * values.length)];
     const type = types[Math.floor(Math.random() * types.length)];
 
-    // 1. Tocar o Som (Prioridade Máxima)
+    // 1. Dispara o Som (Prioridade Absoluta)
     if (audioRef.current) {
-      audioRef.current.currentTime = 0; // Reiniciar do zero
+      audioRef.current.currentTime = 0; // Reinicia para permitir disparos rápidos
       audioRef.current.play().catch(e => {
-        console.warn("Audio Engine: Play blocked. Interaction required.");
+        console.warn("FlowPro Audio: Play bloqueado. Clique na página para habilitar sons.");
       });
     }
 
-    // 2. Sincronizar com o Dashboard (Saldo)
+    // 2. Sincroniza com o Dashboard (Saldo)
     window.dispatchEvent(new CustomEvent('flow-new-sale', { detail: { value } }));
 
-    // 3. Exibir o Visual
+    // 3. Exibe o Alerta Visual
     setNotification({ value, type });
     
-    // Auto-close após 5 segundos
     setTimeout(() => {
       setNotification(null);
     }, 5000);
@@ -111,14 +112,14 @@ export function ClientVisualEffects() {
     if (!mounted || isExcluded) return;
     if (!isAdmin && !isAffiliate) return;
 
-    // Escutar eventos de teste do Admin
+    // Escuta eventos de teste do Admin
     const handleTest = () => triggerNotification(197.00);
     window.addEventListener('flow-test-pix', handleTest);
 
-    // Ciclo de notificações aleatórias (Loop infinito)
+    // Ciclo de notificações automáticas (Loop Infinito)
     let timeoutId: NodeJS.Timeout;
     const scheduleNext = () => {
-      const delay = (Math.floor(Math.random() * 40) + 40) * 1000; // 40 a 80 segundos
+      const delay = (Math.floor(Math.random() * 40) + 30) * 1000; // 30 a 70 segundos
       timeoutId = setTimeout(() => {
         triggerNotification();
         scheduleNext();
@@ -163,8 +164,8 @@ export function ClientVisualEffects() {
             <div className="bg-[#0a0a14] border border-green-500/40 rounded-[1.5rem] p-5 shadow-[0_30px_70px_rgba(0,0,0,0.8),0_0_40px_rgba(34,197,94,0.1)] flex items-center gap-5 min-w-[320px] backdrop-blur-2xl relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-tr from-green-500/5 to-transparent pointer-events-none" />
               
-              <div className="h-14 w-14 bg-green-500/10 rounded-2xl flex items-center justify-center shrink-0 border border-green-500/20 shadow-[inset_0_0_15px_rgba(34,197,94,0.1)]">
-                <span className="text-3xl drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">💰</span>
+              <div className="h-14 w-14 bg-green-500/10 rounded-2xl flex items-center justify-center shrink-0 border border-green-500/20">
+                <span className="text-3xl drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">💰</span>
               </div>
               
               <div className="flex-1 space-y-0.5">
@@ -178,7 +179,7 @@ export function ClientVisualEffects() {
                 <p className="text-[9px] text-white/30 uppercase font-black tracking-widest pt-1.5">Ecossistema FlowPro Ativo</p>
               </div>
 
-              {/* Progress Bar Visual */}
+              {/* Barra de Progresso Visual */}
               <motion.div 
                 initial={{ width: "100%" }}
                 animate={{ width: 0 }}
