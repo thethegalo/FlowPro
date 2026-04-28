@@ -121,13 +121,14 @@ export default function Dashboard() {
     return 'Usuário';
   }, [userData?.name, user?.displayName, user?.email, isAdmin]);
 
+  // Placar de Caixa Total
   const totalEarnings = useMemo(() => {
     let base = 0;
     if (userData?.simulatedStats?.total !== undefined) {
       base = userData.simulatedStats.total;
     } else {
       base = userData?.totalEarnings || 0;
-      if (isAdmin) base += 216430; // Valor de faturamento mestre
+      if (isAdmin) base = 216430; // Valor fixo de faturamento histórico para o Admin
     }
     return base + sessionEarnings;
   }, [userData, isAdmin, sessionEarnings]);
@@ -140,10 +141,10 @@ export default function Dashboard() {
         ganhos: p.amount
       }));
     } else {
-      // Gera dados que somam aproximadamente 27k (média de 900/dia)
+      // Gera dados que somam aproximadamente 27k nos últimos 30 dias (média de 900/dia)
       baseData = Array.from({ length: 30 }).map((_, i) => ({
         date: `${i + 1}/03`,
-        ganhos: Math.floor(Math.random() * 1800)
+        ganhos: Math.floor(Math.random() * 600) + 600 // Valores entre 600 e 1200 para média ~900
       }));
     }
 
@@ -331,7 +332,7 @@ export default function Dashboard() {
                     className="opacity-0 group-hover:opacity-100 transition-all p-1.5 text-white/20 hover:text-primary hover:bg-primary/10 rounded-md"
                     title="Editar nome"
                   >
-                    <Pencil className="h-3.5 w-3.5" />
+                    < Pencil className="h-3.5 w-3.5" />
                   </button>
                 </div>
               )}
