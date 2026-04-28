@@ -199,7 +199,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* COMO FUNCIONA */}
+        {/* COMO FUNCIONA - 4 PASSOS */}
         <section id="como-funciona" className="py-24 bg-white/[0.02] border-y border-white/5">
           <div className="max-w-7xl mx-auto px-6 md:px-12 space-y-16">
             <div className="text-center space-y-4">
@@ -226,6 +226,37 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* PÚBLICO ALVO */}
+        <section className="py-24">
+          <div className="max-w-7xl mx-auto px-6 md:px-12 space-y-16">
+            <div className="text-center space-y-4">
+              <Badge className="bg-primary/10 text-primary uppercase font-black text-[10px] px-4 py-1">Operadores</Badge>
+              <h2 className="text-4xl md:text-5xl font-black text-white italic uppercase tracking-tighter">Para quem é o FlowPro</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                { title: "Iniciante sem experiência", desc: "Nunca vendeu online, não sabe o que falar para o cliente, quer sua primeira renda digital.", icon: Circle, highlighted: false },
+                { title: "Freelancer ou prestador", desc: "Já tem habilidade mas não sabe prospectar. Quer mais clientes sem depender de indicação.", icon: Sparkles, highlighted: true },
+                { title: "Consultor em escala", desc: "Quer automatizar a prospecção e fechar contratos maiores com consistência.", icon: TrendingUp, highlighted: false }
+              ].map((item, i) => (
+                <Card key={i} className={cn(
+                  "p-10 rounded-[2.5rem] bg-white/[0.02] border transition-all space-y-6",
+                  item.highlighted ? "border-primary shadow-[0_0_40px_rgba(124,58,237,0.1)] scale-105" : "border-white/5"
+                )}>
+                  <div className={cn("h-12 w-12 rounded-xl flex items-center justify-center", item.highlighted ? "bg-primary text-white" : "bg-white/5 text-primary")}>
+                    <item.icon className="h-6 w-6" />
+                  </div>
+                  <div className="space-y-3">
+                    <h3 className="text-xl font-bold uppercase italic text-white">{item.title}</h3>
+                    <p className="text-sm text-white/40 leading-relaxed font-medium">{item.desc}</p>
+                  </div>
+                </Card>
               ))}
             </div>
           </div>
