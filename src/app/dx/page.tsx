@@ -39,9 +39,8 @@ const Globe = dynamic(() => import('@/components/ui/cobe-globe').then(m => ({ de
 
 const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
 
-const CHECKOUT_MENSAL = "https://go.flowproia.shop/PPU38CQAR73";
-const CHECKOUT_TRIMESTRAL = "https://go.flowproia.shop/PPU38CQAR78";
-const CHECKOUT_VITALICIO = "https://go.flowproia.shop/PPU38CQAR72";
+const CHECKOUT_MENSAL = "https://checkout.flowproia.shop/pay/PPU38CQ9FQU";
+const CHECKOUT_VITALICIO = "https://checkout.flowproia.shop/pay/PPU38CQ9FCP";
 
 export default function DxLandingPage() {
   const [timeLeft, setTimeLeft] = useState({ h: '23', m: '59', s: '59' });
@@ -104,11 +103,11 @@ export default function DxLandingPage() {
           <div className="flex-1 space-y-8 max-w-2xl">
             <Badge className="bg-primary/20 border-primary/30 text-primary px-4 py-1.5 rounded-full">✦ 1.800+ OPERADORES</Badge>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1] text-white">
-              Seu primeiro cliente<br className="hidden sm:block" />
-              <span className="text-primary italic">começa com um script.</span>
+              Venda sites em minutos<br className="hidden sm:block" />
+              <span className="text-primary italic">com poder DX IA.</span>
             </h1>
             <p className="text-lg text-white/60 leading-relaxed">
-              Encontre leads qualificados, gere abordagens com IA e realize sua primeira venda em tempo recorde com o arsenal DX.
+              Encontre leads qualificados, deixe a IA criar tudo e realize sua primeira venda em tempo recorde com o arsenal DX.
             </p>
             <Button onClick={scrollToPricing} size="lg" className="w-full sm:w-auto h-16 px-12 bg-primary rounded-2xl shadow-xl font-black uppercase text-xs">Acessar agora</Button>
           </div>
@@ -120,63 +119,51 @@ export default function DxLandingPage() {
         <section id="precos" className="max-w-7xl mx-auto px-6 md:px-12 py-24 md:py-32">
           <div className="text-center mb-16 space-y-4">
             <Badge className="bg-primary/20 text-primary px-6 py-2 rounded-full uppercase font-black text-[10px]">Acesso Total DX</Badge>
-            <h2 className="text-4xl md:text-7xl font-black text-white italic uppercase tracking-tighter">Domine com IA.</h2>
+            <h2 className="text-4xl md:text-7xl font-black text-white italic uppercase tracking-tighter">Oferta DX x IA.</h2>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* MENSAL */}
-            <Card className="p-10 flex flex-col justify-between rounded-[2.5rem] bg-white/[0.02] border-amber-500/30 border">
+            <Card className="p-10 flex flex-col justify-between rounded-[2.5rem] bg-white/[0.02] border-white/10 border">
               <div className="space-y-8">
-                <h3 className="text-xs font-black uppercase tracking-widest text-white/70">Flow Mensal</h3>
-                <p className="text-6xl font-black italic text-white tracking-tighter">R$ 97</p>
+                <h3 className="text-xs font-black uppercase tracking-widest text-white/70 italic">Flow Mensal</h3>
+                <p className="text-7xl font-black italic text-white tracking-tighter">R$ 147</p>
                 <ul className="space-y-4 pt-8 border-t border-white/5">
-                  {['Radar ILIMITADO', 'IA Mentor ILIMITADO', 'IA Prospecção ILIMITADA', 'Scripts de Elite'].map((f) => (
+                  {['Radar ILIMITADO', 'IA cria sites em minutos', 'IA Prospecção ILIMITADA', 'Scripts de Elite'].map((f) => (
                     <li key={f} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white/80">
-                      <CheckCircle2 className="h-4 w-4 text-amber-500" /> {f}
+                      <CheckCircle2 className="h-4 w-4 text-primary" /> {f}
                     </li>
                   ))}
                 </ul>
               </div>
-              <Button asChild className="w-full h-16 mt-12 bg-amber-500 rounded-2xl text-black font-black uppercase">
+              <Button asChild className="w-full h-16 mt-12 bg-white/5 border border-white/10 text-white rounded-2xl font-black uppercase">
                 <a href={CHECKOUT_MENSAL} target="_blank">Acessar agora</a>
               </Button>
             </Card>
 
-            {/* TRIMESTRAL */}
-            <Card className="p-10 flex flex-col justify-between rounded-[2.5rem] bg-white/[0.04] border-cyan-500/40 border shadow-2xl">
-              <div className="space-y-8">
-                <h3 className="text-xs font-black uppercase tracking-widest text-white/70">Flow Trimestral</h3>
-                <p className="text-6xl font-black italic text-white tracking-tighter">R$ 197</p>
-                <ul className="space-y-4 pt-8 border-t border-white/5">
-                  {['Radar ILIMITADO', 'IA Mentor ILIMITADO', 'IA Prospecção ILIMITADA', '3 Meses Acesso Total'].map((f) => (
-                    <li key={f} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white">
-                      <CheckCircle2 className="h-4 w-4 text-cyan-500" /> {f}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <Button asChild className="w-full h-16 mt-12 bg-cyan-500 rounded-2xl text-black font-black uppercase">
-                <a href={CHECKOUT_TRIMESTRAL} target="_blank">Acessar agora</a>
-              </Button>
-            </Card>
-
             {/* VITALÍCIO */}
-            <Card className="p-10 flex flex-col justify-between rounded-[2.5rem] bg-[#050508] border-primary border-2 shadow-[0_0_80px_rgba(124,58,237,0.3)]">
-              <div className="space-y-8">
-                <h3 className="text-xs font-black uppercase tracking-widest text-primary">Flow Vitalício</h3>
-                <p className="text-6xl font-black italic text-white tracking-tighter">R$ 287</p>
-                <ul className="space-y-4 pt-8 border-t border-white/5">
-                  {['Radar ILIMITADO', 'IA Mentor ILIMITADO', 'IA Prospecção ILIMITADA', 'Sem Mensalidades'].map((f) => (
-                    <li key={f} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white">
-                      <CheckCircle2 className="h-4 w-4 text-primary fill-primary" /> {f}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <Button asChild className="w-full h-16 mt-12 bg-primary rounded-2xl text-white font-black uppercase shadow-xl">
-                <a href={CHECKOUT_VITALICIO} target="_blank">GARANTIR VITALÍCIO</a>
-              </Button>
-            </Card>
+            <motion.div whileHover={{ y: -5 }} className="relative p-[2px] rounded-[2.5rem] overflow-hidden group shadow-[0_0_80px_rgba(124,58,237,0.3)]">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary animate-pulse" />
+              <Card className="p-10 flex flex-col justify-between rounded-[2.5rem] bg-[#050508] border-none h-full relative overflow-hidden">
+                <div className="space-y-8 relative z-10">
+                  <h3 className="text-xs font-black uppercase tracking-widest text-primary italic">Flow Vitalício</h3>
+                  <div className="space-y-1">
+                    <p className="text-sm font-bold text-white/30 line-through">R$ 697</p>
+                    <p className="text-8xl font-black italic text-white tracking-tighter">R$ 247</p>
+                  </div>
+                  <ul className="space-y-4 pt-8 border-t border-white/5">
+                    {['Radar ILIMITADO', 'IA cria tudo por você', 'Jornada Vitalícia', 'Sem Mensalidades'].map((f) => (
+                      <li key={f} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-white">
+                        <CheckCircle2 className="h-4 w-4 text-primary fill-primary" /> {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <Button asChild className="w-full h-20 mt-12 bg-primary rounded-2xl text-white font-black uppercase shadow-xl">
+                  <a href={CHECKOUT_VITALICIO} target="_blank">GARANTIR VITALÍCIO</a>
+                </Button>
+              </Card>
+            </motion.div>
           </div>
         </section>
       </main>
