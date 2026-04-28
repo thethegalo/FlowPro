@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -38,8 +37,8 @@ const Globe = dynamic(() => import('@/components/ui/cobe-globe').then(m => ({ de
 
 const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/ywpf1hja4q4bxg9gzqobiz93?v=1774307470623";
 
-const CHECKOUT_MENSAL = "https://go.flowproiasystems.shop/PPU38CQB6QN";
-const CHECKOUT_VITALICIO = "https://go.flowproiasystems.shop/PPU38CQB6R3";
+const CHECKOUT_VITALICIO = "https://go.flowproiasystems.shop/PPU38CQB5ET";
+const CHECKOUT_MENSAL = "https://go.flowproiasystems.shop/PPU38CQB5EU";
 
 export default function DxLandingPage() {
   const [timeLeft, setTimeLeft] = useState({ h: '23', m: '59', s: '59' });

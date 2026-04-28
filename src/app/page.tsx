@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -69,8 +68,8 @@ const TESTIMONIALS = [
   }
 ];
 
-const CHECKOUT_VITALICIO = "https://go.flowproiasystems.shop/PPU38CQB6R3";
-const CHECKOUT_MENSAL = "https://go.flowproiasystems.shop/PPU38CQB6QN";
+const CHECKOUT_VITALICIO = "https://go.flowproiasystems.shop/PPU38CQB5ET";
+const CHECKOUT_MENSAL = "https://go.flowproiasystems.shop/PPU38CQB5EU";
 
 export default function Home() {
   const [timeLeft, setTimeLeft] = useState({ h: '23', m: '59', s: '59' });

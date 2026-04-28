@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -64,8 +63,8 @@ const PAYWALL_FAQ = [
 ];
 
 export default function PaywallPage() {
-  const CHECKOUT_MENSAL = "https://go.flowproiasystems.shop/PPU38CQB6QN";
-  const CHECKOUT_VITALICIO = "https://go.flowproiasystems.shop/PPU38CQB6R3";
+  const CHECKOUT_VITALICIO = "https://go.flowproiasystems.shop/PPU38CQB5ET";
+  const CHECKOUT_MENSAL = "https://go.flowproiasystems.shop/PPU38CQB5EU";
 
   return (
     <div className="min-h-screen bg-[#05050f] text-white overflow-x-hidden relative">

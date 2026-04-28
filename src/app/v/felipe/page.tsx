@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -27,8 +26,8 @@ const TESTIMONIAL_IMAGES = [
 ];
 
 export default function FelipePaywallPage() {
-  const CHECKOUT_MENSAL = "https://go.flowproiasystems.shop/PPU38CQB6QN";
-  const CHECKOUT_VITALICIO = "https://go.flowproiasystems.shop/PPU38CQB6R3";
+  const CHECKOUT_VITALICIO = "https://go.flowproiasystems.shop/PPU38CQB5ET";
+  const CHECKOUT_MENSAL = "https://go.flowproiasystems.shop/PPU38CQB5EU";
 
   return (
     <div className="min-h-screen bg-[#050508] text-white overflow-x-hidden">
