@@ -21,7 +21,8 @@ import {
   Cpu,
   CreditCard,
   Sparkles,
-  TrendingUp
+  TrendingUp,
+  Search
 } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -350,10 +351,6 @@ export default function Home() {
             </div>
 
             <div className="max-w-xl mx-auto text-center pt-12 space-y-4">
-               <div className="flex justify-center gap-8 text-white/20">
-                 <Image src="https://media.inlead.cloud/uploads/44422/2026-01-05/md-flBj3-design-sem-nome-38.png" alt="Seguro" width={80} height={40} className="grayscale opacity-50" />
-                 <Image src="https://media.inlead.cloud/uploads/44422/2026-01-03/md-soixE-design-sem-nome-31.png" alt="Seguro" width={80} height={40} className="grayscale opacity-50" />
-               </div>
                <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">PAGAMENTO SEGURO</p>
             </div>
           </div>
