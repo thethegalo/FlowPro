@@ -89,8 +89,8 @@ export default function Dashboard() {
   const { success, error } = useToast();
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState('');
+  const [timeRange, setTimeRange] = useState<'today' | '7days' | 'max'>('max');
   
-  // Ganhos acumulados na sessão (atualizados via evento global)
   const [sessionEarnings, setSessionEarnings] = useState(0);
   
   const userDocRef = useMemoFirebase(() => {
@@ -101,7 +101,6 @@ export default function Dashboard() {
 
   const isAdmin = useMemo(() => user?.email === "thethegalo@gmail.com", [user]);
 
-  // Escuta o evento global de nova venda para atualizar o dashboard localmente
   useEffect(() => {
     const handleNewSale = (e: any) => {
       if (e.detail?.value) {
@@ -133,7 +132,7 @@ export default function Dashboard() {
     return base + sessionEarnings;
   }, [userData, isAdmin, sessionEarnings]);
 
-  const chartData = useMemo(() => {
+  const fullChartData = useMemo(() => {
     let baseData = [];
     if (userData?.simulatedStats?.chart) {
       baseData = userData.simulatedStats.chart.map((p: any) => ({
@@ -157,6 +156,16 @@ export default function Dashboard() {
     
     return baseData;
   }, [userData?.simulatedStats, sessionEarnings]);
+
+  const filteredChartData = useMemo(() => {
+    if (timeRange === 'today') return fullChartData.slice(-1);
+    if (timeRange === '7days') return fullChartData.slice(-7);
+    return fullChartData;
+  }, [fullChartData, timeRange]);
+
+  const periodTotal = useMemo(() => {
+    return filteredChartData.reduce((acc, curr) => acc + curr.ganhos, 0);
+  }, [filteredChartData]);
 
   const currentJourneyDay = useMemo(() => {
     if (!userData?.createdAt) return 1;
@@ -356,22 +365,41 @@ export default function Dashboard() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               <Card className="lg:col-span-8 glass-card p-6 min-h-[300px] flex flex-col">
-                <div className="flex justify-between items-center mb-8">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                   <div>
                     <h3 className="text-[11px] font-black uppercase tracking-widest text-white/30">Ganhos Temporais</h3>
-                    <p className="text-[10px] text-white/20 uppercase">Performance tática (30 dias)</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <button 
+                        onClick={() => setTimeRange('today')}
+                        className={cn("px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-all", timeRange === 'today' ? "bg-primary border-primary text-white" : "border-white/5 bg-white/5 text-white/30 hover:text-white/60")}
+                      >
+                        Hoje
+                      </button>
+                      <button 
+                        onClick={() => setTimeRange('7days')}
+                        className={cn("px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-all", timeRange === '7days' ? "bg-primary border-primary text-white" : "border-white/5 bg-white/5 text-white/30 hover:text-white/60")}
+                      >
+                        7 Dias
+                      </button>
+                      <button 
+                        onClick={() => setTimeRange('max')}
+                        className={cn("px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-all", timeRange === 'max' ? "bg-primary border-primary text-white" : "border-white/5 bg-white/5 text-white/30 hover:text-white/60")}
+                      >
+                        Máximo
+                      </button>
+                    </div>
                   </div>
                   <div className="text-right">
                     <p className="text-[10px] font-bold text-primary uppercase">Total Período</p>
                     <div className="text-lg md:text-xl font-black text-white italic">
-                      R$ {totalEarnings.toLocaleString('pt-BR')}
+                      R$ {periodTotal.toLocaleString('pt-BR')}
                     </div>
                   </div>
                 </div>
 
                 <div className="flex-1 w-full min-h-[180px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                    <AreaChart data={filteredChartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorGanhos" x1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#8b5cf6" stopOpacity="0.15"/>
@@ -388,7 +416,8 @@ export default function Dashboard() {
                         stroke="#8b5cf6" 
                         strokeWidth={2} 
                         fill="url(#colorGanhos)" 
-                        isAnimationActive={false}
+                        isAnimationActive={true}
+                        animationDuration={1000}
                       />
                     </AreaChart>
                   </ResponsiveContainer>
