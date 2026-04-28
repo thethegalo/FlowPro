@@ -218,7 +218,7 @@ export default function PaywallPage() {
               </div>
               <div className="hidden md:block w-px h-6 bg-white/10"></div>
               <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-white/60">
-                <Sparkles className="h-5 w-5 text-primary" /> Pagamento Seguro
+                <Sparkles className="h-5 w-5 text-primary" /> PAGAMENTO SEGURO
               </div>
               <div className="hidden md:block w-px h-6 bg-white/10"></div>
               <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-white/60">

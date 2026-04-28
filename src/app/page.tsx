@@ -10,7 +10,6 @@ import { Badge } from '@/components/ui/badge';
 import { 
   MessageSquare, 
   Target, 
-  Route, 
   Star,
   Zap,
   CheckCircle2,
@@ -18,27 +17,11 @@ import {
   ArrowRight,
   ShieldCheck,
   Check,
-  MapPin,
-  TrendingUp,
-  Timer,
+  DollarSign,
+  Cpu,
   CreditCard,
   Sparkles,
-  Users,
-  Layout,
-  Terminal,
-  MousePointerClick,
-  Smartphone,
-  Search,
-  Building2,
-  Scissors,
-  Stethoscope,
-  Utensils,
-  Dumbbell,
-  ShoppingBag,
-  Circle,
-  DollarSign,
-  Globe,
-  Cpu
+  TrendingUp
 } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -129,7 +112,6 @@ export default function Home() {
       </nav>
 
       <main className="relative z-10">
-        {/* HERO SECTION */}
         <section className="relative pt-32 pb-16 md:pt-48 md:pb-24 overflow-hidden">
           <div className="max-w-7xl mx-auto px-6 md:px-12">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -150,7 +132,7 @@ export default function Home() {
                 </h1>
 
                 <p className="text-lg md:text-xl text-white/60 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
-                  Radar de Leads + IA que cria sites e scripts em questões de minutos. Feche seu primeiro cliente no WhatsApp em tempo recorde — mesmo sem experiência.
+                  Radar de Leads + IA que cria sites e scripts em questões de minutos. Feche seu primeiro cliente no WhatsApp em tempo recorde.
                 </p>
 
                 <div className="flex flex-col items-center lg:items-start gap-6 pt-4">
@@ -209,7 +191,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* COMO FUNCIONA - 4 PASSOS */}
         <section id="como-funciona" className="py-24 bg-white/[0.02] border-y border-white/5">
           <div className="max-w-7xl mx-auto px-6 md:px-12 space-y-16">
             <div className="text-center space-y-4">
@@ -219,9 +200,9 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               {[
-                { id: "01", title: "Acesse o Painel", desc: "Crie sua conta e entre no centro de comando em segundos.", icon: Layout },
-                { id: "02", title: "Radar de Alvos", desc: "IA escaneia o mercado e encontra donos de negócios locais.", icon: Search },
-                { id: "03", title: "Criação Express", desc: "A IA cria o site e o script de vendas em questões de minutos.", icon: Zap },
+                { id: "01", title: "Acesse o Painel", desc: "Crie sua conta e entre no centro de comando em segundos.", icon: Zap },
+                { id: "02", title: "Radar de Alvos", desc: "IA escaneia o mercado e encontra donos de negócios locais.", icon: Target },
+                { id: "03", title: "Criação Express", desc: "A IA cria o site e o script de vendas em questões de minutos.", icon: Cpu },
                 { id: "04", title: "Lucro no PIX", desc: "Envie a oferta pronta, feche o contrato e receba seu pagamento.", icon: DollarSign }
               ].map((step, i) => (
                 <motion.div 
@@ -247,7 +228,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* PRICING CALL TO ACTION - NOVO DESIGN */}
         <section id="precos" className="py-24 relative overflow-hidden bg-[#030308]">
           <div className="absolute inset-0 bg-primary/5 blur-[150px] rounded-full pointer-events-none" />
           <div className="container max-w-6xl mx-auto px-6 space-y-16 relative z-10">
@@ -259,7 +239,6 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
-              {/* PLANO MENSAL */}
               <motion.div 
                 whileHover={{ y: -10 }}
                 className="glass-card p-10 flex flex-col justify-between border-white/10 bg-white/[0.02] rounded-[2.5rem] relative overflow-hidden group transition-all duration-500"
@@ -297,7 +276,6 @@ export default function Home() {
                 </div>
               </motion.div>
 
-              {/* PLANO VITALÍCIO - DESTAQUE */}
               <motion.div 
                 whileHover={{ y: -10 }}
                 className="relative p-[2px] rounded-[2.5rem] overflow-hidden group shadow-[0_0_80px_rgba(124,58,237,0.3)]"
@@ -376,12 +354,11 @@ export default function Home() {
                  <Image src="https://media.inlead.cloud/uploads/44422/2026-01-05/md-flBj3-design-sem-nome-38.png" alt="Seguro" width={80} height={40} className="grayscale opacity-50" />
                  <Image src="https://media.inlead.cloud/uploads/44422/2026-01-03/md-soixE-design-sem-nome-31.png" alt="Seguro" width={80} height={40} className="grayscale opacity-50" />
                </div>
-               <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">Pagamento processado por plataformas seguras</p>
+               <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">PAGAMENTO SEGURO</p>
             </div>
           </div>
         </section>
 
-        {/* FAQ FIXADO */}
         <section id="faq" className="py-24">
           <div className="max-w-4xl mx-auto px-6 md:px-12 space-y-16">
             <h2 className="text-4xl md:text-5xl font-black text-white uppercase italic text-center tracking-tighter">Dúvidas Frequentes</h2>

@@ -14,53 +14,16 @@ import {
   CreditCard,
   Infinity,
   ArrowRight,
-  Quote,
   Sparkles,
-  AlertCircle,
-  Timer,
   Check
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 
 const TESTIMONIAL_IMAGES = [
   "https://media.inlead.cloud/uploads/44422/2026-01-05/md-vOR05-design-sem-nome-36.png",
   "https://media.inlead.cloud/uploads/44422/2026-01-03/md-soixE-design-sem-nome-31.png",
   "https://media.inlead.cloud/uploads/44422/2026-01-03/md-jztVV-design-sem-nome-30.png",
   "https://media.inlead.cloud/uploads/44422/2026-01-05/md-flBj3-design-sem-nome-38.png"
-];
-
-const TESTIMONIALS = [
-  {
-    name: "Ana Oliveira",
-    role: "Especialista em Escala",
-    text: "O Radar de Leads mudou meu jogo. Consegui fechar 3 contratos de R$ 1.500 logo na primeira semana seguindo a jornada.",
-    avatar: TESTIMONIAL_IMAGES[0]
-  },
-  {
-    name: "Bruno Silva",
-    role: "Consultor Fase 1",
-    text: "As IAs do FlowPro geram abordagens que não parecem robóticas. Minha taxa de resposta no Direct subiu de 5% para 22%.",
-    avatar: TESTIMONIAL_IMAGES[1]
-  },
-  {
-    name: "Juliana Reus",
-    role: "Venda em 48h",
-    text: "O Plano Vitalício foi o melhor investimento que fiz. Ter o Mentor IA 24h para tirar dúvidas de scripts é bizarro!",
-    avatar: TESTIMONIAL_IMAGES[2]
-  }
-];
-
-const PAYWALL_FAQ = [
-  { q: "O acesso ao Vitalício é para sempre?", a: "Sim! Você paga uma única vez e tem acesso vitalício à Fase 1, Jornada de 7 Dias e todas as ferramentas base do ecossistema." },
-  { q: "Como funciona a garantia?", a: "Oferecemos 7 dias de garantia incondicional. Se você não gostar do método ou das ferramentas, devolvemos 100% do seu dinheiro." },
-  { q: "Quais as formas de pagamento?", a: "Aceitamos Cartão de Crédito (com parcelamento em até 12x), PIX e Boleto Bancário." },
-  { q: "A IA cria o site para mim?", a: "Exatamente. O Gerador de Blueprint cria a estrutura completa de texto, design e funcionalidades para você apresentar ao seu cliente em minutos." }
 ];
 
 export default function FelipePaywallPage() {
@@ -95,7 +58,6 @@ export default function FelipePaywallPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
             
-            {/* PLANO MENSAL */}
             <motion.div 
               whileHover={{ y: -5 }}
               className="glass-card p-10 flex flex-col justify-between border-white/10 relative overflow-hidden rounded-[2.5rem] bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-500 group shadow-[0_0_30px_rgba(245,158,11,0.1)]"
@@ -141,7 +103,6 @@ export default function FelipePaywallPage() {
               </Button>
             </motion.div>
 
-            {/* PLANO VITALÍCIO */}
             <motion.div 
               whileHover={{ y: -5 }}
               className="relative p-[2px] rounded-[2.5rem] overflow-hidden shadow-[0_0_100px_rgba(139,92,246,0.4)] z-20"
@@ -216,7 +177,7 @@ export default function FelipePaywallPage() {
               </div>
               <div className="hidden md:block w-px h-6 bg-white/10"></div>
               <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-white/60">
-                <Sparkles className="h-5 w-5 text-primary" /> Pagamento Seguro
+                <Sparkles className="h-5 w-5 text-primary" /> PAGAMENTO SEGURO
               </div>
               <div className="hidden md:block w-px h-6 bg-white/10"></div>
               <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-white/60">
