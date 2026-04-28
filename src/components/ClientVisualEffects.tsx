@@ -19,48 +19,51 @@ export function ClientVisualEffects() {
   const [notification, setNotification] = useState<{ value: number, type: string } | null>(null);
   const [mounted, setMounted] = useState(false);
   
-  // Gerenciamento de Áudio por Referência (Blindado contra re-renders)
+  // Referência persistente para o objeto de áudio
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const hasInteracted = useRef(false);
 
   useEffect(() => {
     setMounted(true);
     
-    // Inicializa a instância de áudio uma única vez
+    // Inicializa o áudio e prepara o carregamento
     const audio = new Audio(PIX_SOUND_URL);
     audio.preload = 'auto';
     audioRef.current = audio;
 
-    // Função para "acordar" o motor de áudio no primeiro gesto do usuário
+    // Função de desbloqueio definitivo (Gatekeeper Bypass)
     const unlockAudio = () => {
       if (hasInteracted.current || !audioRef.current) return;
       
-      // Tenta um play/pause rápido para desbloquear o canal de áudio no navegador
+      // Tentativa de execução silenciosa para liberar o canal
       audioRef.current.play()
         .then(() => {
           audioRef.current?.pause();
           audioRef.current!.currentTime = 0;
           hasInteracted.current = true;
-          console.log("FlowPro Audio: Engine Unlocked & Ready.");
+          console.log("FlowPro Audio Engine: UNLOCKED");
           
-          // Remove os ouvintes assim que o áudio for liberado
+          // Limpeza de listeners
           window.removeEventListener('mousedown', unlockAudio);
           window.removeEventListener('keydown', unlockAudio);
           window.removeEventListener('touchstart', unlockAudio);
+          window.removeEventListener('click', unlockAudio);
         })
         .catch(() => {
-          // Navegador ainda bloqueando, tenta no próximo clique
+          // Bloqueado pelo navegador, aguardando próxima interação
         });
     };
 
     window.addEventListener('mousedown', unlockAudio);
     window.addEventListener('keydown', unlockAudio);
     window.addEventListener('touchstart', unlockAudio);
+    window.addEventListener('click', unlockAudio);
     
     return () => {
       window.removeEventListener('mousedown', unlockAudio);
       window.removeEventListener('keydown', unlockAudio);
       window.removeEventListener('touchstart', unlockAudio);
+      window.removeEventListener('click', unlockAudio);
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
@@ -77,30 +80,34 @@ export function ClientVisualEffects() {
   const isAdmin = useMemo(() => user?.email === "thethegalo@gmail.com", [user]);
   const isAffiliate = useMemo(() => userData?.isAffiliate === true, [userData]);
 
-  // Rotas onde a notificação não deve aparecer (Landing Pages)
   const isExcluded = useMemo(() => {
     const excludedPaths = ['/', '/adriel', '/dx', '/felipe', '/v/felipe', '/auth', '/quiz', '/masterclass', '/paywall'];
     return excludedPaths.some(path => pathname === path || pathname.startsWith(path + '/'));
   }, [pathname]);
 
   const triggerNotification = (forcedValue?: number) => {
-    const values = [27, 47, 57, 97, 127, 197, 287];
-    const types = ['Pix Recorrência', 'Pix Avulso', 'Cartão Recorrência', 'Pix Aprovado'];
+    const values = [27.00, 47.00, 97.00, 197.00, 287.00, 497.00];
+    const types = ['Pix Recorrência', 'Pix Aprovado', 'Venda Confirmada', 'Comissão Ativa'];
     const value = forcedValue || values[Math.floor(Math.random() * values.length)];
     const type = types[Math.floor(Math.random() * types.length)];
 
-    // 1. Dispara o Som (Prioridade Absoluta)
+    // 1. DISPARO DO SOM (EXECUTADO VIA REF PARA BYPASS DE RE-RENDER)
     if (audioRef.current) {
-      audioRef.current.currentTime = 0; // Reinicia para permitir disparos rápidos
-      audioRef.current.play().catch(e => {
-        console.warn("FlowPro Audio: Play bloqueado. Clique na página para habilitar sons.");
-      });
+      try {
+        audioRef.current.currentTime = 0;
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(e => console.warn("Audio play blocked by browser policy. Interacting with page required."));
+        }
+      } catch (e) {
+        console.error("Audio engine failure:", e);
+      }
     }
 
-    // 2. Sincroniza com o Dashboard (Saldo)
+    // 2. SINCRONIZAÇÃO COM DASHBOARD
     window.dispatchEvent(new CustomEvent('flow-new-sale', { detail: { value } }));
 
-    // 3. Exibe o Alerta Visual
+    // 3. EXIBIÇÃO VISUAL (Z-INDEX MÁXIMO)
     setNotification({ value, type });
     
     setTimeout(() => {
@@ -112,14 +119,13 @@ export function ClientVisualEffects() {
     if (!mounted || isExcluded) return;
     if (!isAdmin && !isAffiliate) return;
 
-    // Escuta eventos de teste do Admin
     const handleTest = () => triggerNotification(197.00);
     window.addEventListener('flow-test-pix', handleTest);
 
-    // Ciclo de notificações automáticas (Loop Infinito)
     let timeoutId: NodeJS.Timeout;
     const scheduleNext = () => {
-      const delay = (Math.floor(Math.random() * 40) + 30) * 1000; // 30 a 70 segundos
+      // Notificações a cada 30-60 segundos para feedback constante
+      const delay = (Math.floor(Math.random() * 30) + 30) * 1000;
       timeoutId = setTimeout(() => {
         triggerNotification();
         scheduleNext();
@@ -138,7 +144,7 @@ export function ClientVisualEffects() {
 
   return (
     <>
-      {/* Background Atmosférico */}
+      {/* Camada Atmosférica */}
       <div className="fixed inset-0 z-0 pointer-events-none bg-[#05050f]">
         <div 
           className="absolute top-[-10%] left-[-10%] w-[70%] h-[60%] rounded-full opacity-[0.12] blur-[120px]"
@@ -155,36 +161,39 @@ export function ClientVisualEffects() {
       <AnimatePresence>
         {notification && (
           <motion.div 
-            initial={{ x: 400, opacity: 0, scale: 0.9 }}
+            initial={{ x: 450, opacity: 0, scale: 0.8 }}
             animate={{ x: 0, opacity: 1, scale: 1 }}
-            exit={{ x: 400, opacity: 0, scale: 0.8 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            className="fixed top-6 right-6 z-[999999] pointer-events-auto"
+            exit={{ x: 450, opacity: 0, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 350, damping: 25 }}
+            className="fixed top-8 right-8 z-[2000000] pointer-events-auto"
           >
-            <div className="bg-[#0a0a14] border border-green-500/40 rounded-[1.5rem] p-5 shadow-[0_30px_70px_rgba(0,0,0,0.8),0_0_40px_rgba(34,197,94,0.1)] flex items-center gap-5 min-w-[320px] backdrop-blur-2xl relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-tr from-green-500/5 to-transparent pointer-events-none" />
+            <div className="bg-[#0a0a14] border border-green-500/40 rounded-[2rem] p-6 shadow-[0_40px_100px_rgba(0,0,0,0.9),0_0_50px_rgba(34,197,94,0.15)] flex items-center gap-6 min-w-[340px] backdrop-blur-[32px] relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-tr from-green-500/[0.03] to-transparent pointer-events-none" />
               
-              <div className="h-14 w-14 bg-green-500/10 rounded-2xl flex items-center justify-center shrink-0 border border-green-500/20">
-                <span className="text-3xl drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">💰</span>
+              <div className="h-16 w-16 bg-green-500/10 rounded-[1.25rem] flex items-center justify-center shrink-0 border border-green-500/20 shadow-inner">
+                <span className="text-4xl drop-shadow-[0_0_12px_rgba(34,197,94,0.6)]">💰</span>
               </div>
               
-              <div className="flex-1 space-y-0.5">
+              <div className="flex-1 space-y-1">
                 <div className="flex items-center gap-2">
-                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-green-400/80">{notification.type}</p>
-                  <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_10px_#22c55e]" />
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-green-400">{notification.type}</p>
+                  <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_12px_#22c55e]" />
                 </div>
-                <p className="text-3xl font-black italic text-white tracking-tighter leading-none">
+                <p className="text-4xl font-black italic text-white tracking-tighter leading-none">
                   R$ {notification.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                 </p>
-                <p className="text-[9px] text-white/30 uppercase font-black tracking-widest pt-1.5">Ecossistema FlowPro Ativo</p>
+                <div className="flex items-center gap-2 pt-2 opacity-30">
+                  <div className="h-[1px] flex-1 bg-white/20" />
+                  <p className="text-[8px] font-black uppercase tracking-widest">FlowPro Live</p>
+                  <div className="h-[1px] flex-1 bg-white/20" />
+                </div>
               </div>
 
-              {/* Barra de Progresso Visual */}
               <motion.div 
                 initial={{ width: "100%" }}
                 animate={{ width: 0 }}
                 transition={{ duration: 5, ease: "linear" }}
-                className="absolute bottom-0 left-0 h-[3px] bg-green-500/60"
+                className="absolute bottom-0 left-0 h-[4px] bg-green-500/80"
               />
             </div>
           </motion.div>
