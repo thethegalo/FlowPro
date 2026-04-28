@@ -39,6 +39,12 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 's3.typebotstorage.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'media.inlead.cloud',
         port: '',
         pathname: '/**',

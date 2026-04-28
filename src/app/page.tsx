@@ -48,7 +48,7 @@ const TESTIMONIALS = [
     city: "São Paulo, SP",
     text: "Eu nunca tinha vendido nada online. Usei o script de IA para falar com uma pizzaria e fechei meu primeiro contrato de R$ 1.500 em menos de uma semana.",
     result: "Fechei meu primeiro cliente em 2 dias e recebi R$800 no PIX",
-    avatar: "https://picsum.photos/seed/ana/100/100",
+    avatar: "https://s3.typebotstorage.com/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmo4oi7m7000007jdcvim1wfy/blocks/wf9fbnchy6h3kexe5qm71buv?v=1776539476894",
     proof: "Pix recebido R$ 1.500,00 — 14:32"
   },
   { 
@@ -56,7 +56,7 @@ const TESTIMONIALS = [
     city: "Curitiba, PR",
     text: "O Radar de Leads é bizarro. Achei 50 dentistas na minha cidade e a IA gerou abordagens que todos responderam. Já faturei mais de R$ 3.500 este mês.",
     result: "Faturamento de R$3.500 no primeiro mês",
-    avatar: "https://picsum.photos/seed/bruno/100/100",
+    avatar: "https://media.inlead.cloud/uploads/44422/2026-01-03/md-soixE-design-sem-nome-31.png",
     proof: "Pix recebido R$ 3.500,00 — 09:15"
   },
   { 
@@ -64,7 +64,7 @@ const TESTIMONIALS = [
     city: "Florianópolis, SC",
     text: "A barreira de não saber o que falar sumiu. Copiei o script da IA, mandei no WhatsApp e o cliente fechou um contrato de R$ 2.000 na hora. Simples assim.",
     result: "Contrato de R$2.000 fechado em 48h",
-    avatar: "https://picsum.photos/seed/juliana/100/100",
+    avatar: "https://s3.typebotstorage.com/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmo4oi7m7000007jdcvim1wfy/blocks/hp9fabgxnk3dtwuakjk2auip?v=1776537663693",
     proof: "Pix recebido R$ 2.000,00 — 16:40"
   }
 ];
@@ -83,7 +83,6 @@ export default function Home() {
       let diff = midnight.getTime() - now.getTime();
       
       if (diff <= 0) {
-        // Reinicia o timer ao expirar
         midnight.setDate(midnight.getDate() + 1);
         diff = midnight.getTime() - now.getTime();
       }
@@ -209,7 +208,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Barra de Credibilidade */}
         <section className="py-8 bg-white/5 border-y border-white/5">
           <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24">
             <div className="flex items-center gap-3">
@@ -279,7 +277,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Seção de Depoimentos */}
         <section id="depoimentos" className="py-24 relative overflow-hidden">
           <div className="max-w-7xl mx-auto px-6 md:px-12 space-y-16">
             <div className="text-center space-y-4">
@@ -300,7 +297,7 @@ export default function Home() {
                   
                   <div className="flex items-center gap-4">
                     <div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-primary/30">
-                      <Image src={t.avatar} alt={t.name} fill className="object-cover" data-ai-hint="portrait" />
+                      <Image src={t.avatar} alt={t.name} fill className="object-cover" />
                     </div>
                     <div>
                       <h4 className="text-sm font-bold uppercase italic">{t.name}</h4>
@@ -308,7 +305,6 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Mockup de Notificação */}
                   <div className="bg-black/60 border border-white/10 rounded-xl p-3 flex items-center gap-3 animate-in fade-in zoom-in duration-1000 delay-500">
                     <div className="h-8 w-8 bg-green-500/20 rounded-lg flex items-center justify-center">
                       <Check className="h-4 w-4 text-green-500" />
@@ -450,7 +446,6 @@ export default function Home() {
               </motion.div>
             </div>
 
-            {/* Pagamento Seguro Section */}
             <div className="max-w-xl mx-auto text-center pt-12 space-y-6">
               <div className="flex flex-col items-center gap-4">
                 <div className="flex items-center gap-2 text-white/30 uppercase font-black tracking-[0.3em] text-[10px]">
@@ -515,7 +510,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* CTA Final */}
         <section className="py-24 bg-primary/5 border-y border-primary/20">
           <div className="max-w-4xl mx-auto px-6 text-center space-y-10">
             <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter leading-none">
