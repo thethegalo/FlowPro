@@ -17,44 +17,53 @@ export function ClientVisualEffects() {
   const { user } = useUser();
   const db = useFirestore();
   const [notification, setNotification] = useState<{ value: number, type: string } | null>(null);
-  const notificationTimerRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [isAudioUnlocked, setIsAudioUnlocked] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(false);
 
-  // 1. Inicialização segura e Audio Unlock
+  // 1. Inicialização do Áudio e Sistema de Unlock
   useEffect(() => {
     setMounted(true);
     
     if (typeof window !== 'undefined') {
+      // Criar a instância uma única vez
       const audio = new Audio(PIX_SOUND_URL);
       audio.preload = 'auto';
-      audio.volume = 1.0;
       audioRef.current = audio;
 
+      // Função para desbloquear o áudio no primeiro gesto do usuário (Regra do Navegador)
       const unlock = () => {
-        if (audioRef.current) {
-          audioRef.current.play().then(() => {
-            audioRef.current?.pause();
-            audioRef.current!.currentTime = 0;
-            setIsAudioUnlocked(true);
-          }).catch(() => {
-            console.warn("Audio unlock failed, waiting for next interaction");
-          });
+        if (audioRef.current && !isUnlocked) {
+          audioRef.current.play()
+            .then(() => {
+              audioRef.current?.pause();
+              audioRef.current!.currentTime = 0;
+              setIsUnlocked(true);
+              console.log("Audio Engine: Unlocked and Ready");
+            })
+            .catch(() => {
+              // Silencioso: tenta novamente na próxima interação
+            });
         }
-        window.removeEventListener('click', unlock);
-        window.removeEventListener('touchstart', unlock);
+        // Remover ouvintes após o primeiro sucesso
+        if (isUnlocked) {
+          window.removeEventListener('mousedown', unlock);
+          window.removeEventListener('keydown', unlock);
+          window.removeEventListener('touchstart', unlock);
+        }
       };
 
-      window.addEventListener('click', unlock);
+      window.addEventListener('mousedown', unlock);
+      window.addEventListener('keydown', unlock);
       window.addEventListener('touchstart', unlock);
       
       return () => {
-        window.removeEventListener('click', unlock);
+        window.removeEventListener('mousedown', unlock);
+        window.removeEventListener('keydown', unlock);
         window.removeEventListener('touchstart', unlock);
       };
     }
-  }, []);
+  }, [isUnlocked]);
 
   const userDocRef = useMemoFirebase(() => {
     if (!db || !user) return null;
@@ -65,58 +74,61 @@ export function ClientVisualEffects() {
   const isAdmin = useMemo(() => user?.email === "thethegalo@gmail.com", [user]);
   const isAffiliate = useMemo(() => userData?.isAffiliate === true, [userData]);
 
-  // Rotas onde a notificação NÃO deve aparecer
-  const excludedPaths = ['/', '/adriel', '/dx', '/felipe', '/v/felipe', '/auth', '/quiz', '/masterclass', '/paywall'];
+  // Rotas proibidas (onde a notificação não deve atrapalhar)
   const isExcluded = useMemo(() => {
+    const excludedPaths = ['/', '/adriel', '/dx', '/felipe', '/v/felipe', '/auth', '/quiz', '/masterclass', '/paywall'];
     return excludedPaths.some(path => pathname === path || pathname.startsWith(path + '/'));
   }, [pathname]);
+
+  // Função central de disparo (Som + Visual)
+  const triggerNotification = (forcedValue?: number) => {
+    const values = [27, 47, 57, 97, 127, 197, 287];
+    const types = ['Pix Recorrência', 'Pix Avulso', 'Cartão Recorrência', 'Pix Aprovado'];
+    const value = forcedValue || values[Math.floor(Math.random() * values.length)];
+    const type = types[Math.floor(Math.random() * types.length)];
+
+    // 1. Tocar o Som (Prioridade Máxima)
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0; // Reiniciar do zero
+      audioRef.current.play().catch(e => {
+        console.warn("Audio Engine: Play blocked. Interaction required.");
+      });
+    }
+
+    // 2. Sincronizar com o Dashboard (Saldo)
+    window.dispatchEvent(new CustomEvent('flow-new-sale', { detail: { value } }));
+
+    // 3. Exibir o Visual
+    setNotification({ value, type });
+    
+    // Auto-close após 5 segundos
+    setTimeout(() => {
+      setNotification(null);
+    }, 5000);
+  };
 
   useEffect(() => {
     if (!mounted || isExcluded) return;
     if (!isAdmin && !isAffiliate) return;
 
-    const values = [27, 47, 57, 97, 127, 197, 287];
-    const types = ['Pix Recorrência', 'Pix Avulso', 'Cartão Recorrência', 'Pix Aprovado'];
-
-    const triggerNotification = (forcedValue?: number) => {
-      const value = forcedValue || values[Math.floor(Math.random() * values.length)];
-      const type = types[Math.floor(Math.random() * types.length)];
-
-      // Disparar evento de som
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(e => console.log("Sound play blocked by browser policies."));
-      }
-
-      // Sincronizar saldo no Dashboard
-      window.dispatchEvent(new CustomEvent('flow-new-sale', { detail: { value } }));
-
-      if (notificationTimerRef.current) clearTimeout(notificationTimerRef.current);
-      setNotification({ value, type });
-      
-      notificationTimerRef.current = setTimeout(() => {
-        setNotification(null);
-      }, 5500);
-    };
-
-    // Escuta teste do painel admin
+    // Escutar eventos de teste do Admin
     const handleTest = () => triggerNotification(197.00);
     window.addEventListener('flow-test-pix', handleTest);
 
-    // Loop de notificações simuladas (45 a 90 segundos)
+    // Ciclo de notificações aleatórias (Loop infinito)
+    let timeoutId: NodeJS.Timeout;
     const scheduleNext = () => {
-      const delay = (Math.floor(Math.random() * 45) + 45) * 1000;
-      return setTimeout(() => {
+      const delay = (Math.floor(Math.random() * 40) + 40) * 1000; // 40 a 80 segundos
+      timeoutId = setTimeout(() => {
         triggerNotification();
-        timer = scheduleNext();
+        scheduleNext();
       }, delay);
     };
 
-    let timer = scheduleNext();
+    scheduleNext();
 
     return () => {
-      clearTimeout(timer);
-      if (notificationTimerRef.current) clearTimeout(notificationTimerRef.current);
+      clearTimeout(timeoutId);
       window.removeEventListener('flow-test-pix', handleTest);
     };
   }, [isAdmin, isAffiliate, isExcluded, mounted]);
@@ -125,6 +137,7 @@ export function ClientVisualEffects() {
 
   return (
     <>
+      {/* Background Atmosférico */}
       <div className="fixed inset-0 z-0 pointer-events-none bg-[#05050f]">
         <div 
           className="absolute top-[-10%] left-[-10%] w-[70%] h-[60%] rounded-full opacity-[0.12] blur-[120px]"
@@ -144,7 +157,7 @@ export function ClientVisualEffects() {
             initial={{ x: 400, opacity: 0, scale: 0.9 }}
             animate={{ x: 0, opacity: 1, scale: 1 }}
             exit={{ x: 400, opacity: 0, scale: 0.8 }}
-            transition={{ type: "spring", stiffness: 350, damping: 20 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
             className="fixed top-6 right-6 z-[999999] pointer-events-auto"
           >
             <div className="bg-[#0a0a14] border border-green-500/40 rounded-[1.5rem] p-5 shadow-[0_30px_70px_rgba(0,0,0,0.8),0_0_40px_rgba(34,197,94,0.1)] flex items-center gap-5 min-w-[320px] backdrop-blur-2xl relative overflow-hidden">
@@ -165,10 +178,11 @@ export function ClientVisualEffects() {
                 <p className="text-[9px] text-white/30 uppercase font-black tracking-widest pt-1.5">Ecossistema FlowPro Ativo</p>
               </div>
 
+              {/* Progress Bar Visual */}
               <motion.div 
                 initial={{ width: "100%" }}
                 animate={{ width: 0 }}
-                transition={{ duration: 5.5, ease: "linear" }}
+                transition={{ duration: 5, ease: "linear" }}
                 className="absolute bottom-0 left-0 h-[3px] bg-green-500/60"
               />
             </div>
