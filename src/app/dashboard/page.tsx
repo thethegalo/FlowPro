@@ -128,8 +128,11 @@ export default function Dashboard() {
     return 'Usuário';
   }, [userData?.name, user?.displayName, user?.email, isAdmin]);
 
+  // VALOR BASE FIXO PARA ADMIN CONFORME SOLICITADO
+  const BASE_ADMIN_EARNINGS = 216430;
+
   const totalEarnings = useMemo(() => {
-    if (isAdmin) return 216430 + sessionEarnings;
+    if (isAdmin) return BASE_ADMIN_EARNINGS + sessionEarnings;
     if (userData?.simulatedStats?.total !== undefined) {
       return userData.simulatedStats.total + sessionEarnings;
     }
@@ -144,10 +147,18 @@ export default function Dashboard() {
         ganhos: p.amount
       }));
     } else {
-      baseData = Array.from({ length: 30 }).map((_, i) => ({
-        date: `${i + 1}/03`,
-        ganhos: Math.floor(Math.random() * 400) + 700 
-      }));
+      // Se admin, gerar 30 dias que somam aproximadamente 27k (meta mensal)
+      if (isAdmin) {
+        baseData = Array.from({ length: 30 }).map((_, i) => ({
+          date: `${(i + 1).toString().padStart(2, '0')}/03`,
+          ganhos: Math.floor(800 + Math.random() * 200) // Média de 900/dia = 27k mês
+        }));
+      } else {
+        baseData = Array.from({ length: 30 }).map((_, i) => ({
+          date: `${(i + 1).toString().padStart(2, '0')}/03`,
+          ganhos: Math.floor(Math.random() * 400) + 300 
+        }));
+      }
     }
 
     if (baseData.length > 0 && sessionEarnings > 0) {
@@ -159,10 +170,37 @@ export default function Dashboard() {
     }
     
     return baseData;
-  }, [userData?.simulatedStats, sessionEarnings]);
+  }, [userData?.simulatedStats, sessionEarnings, isAdmin]);
 
   const filteredChartData = useMemo(() => {
-    if (timeRange === 'today') return fullChartData.slice(-1);
+    if (timeRange === 'today') {
+      // Melhoria: Gerar dados horários para o dia de hoje para o gráfico não ficar vazio
+      const lastDayData = fullChartData[fullChartData.length - 1];
+      const todayTotal = lastDayData?.ganhos || 0;
+      const data = [];
+      const currentHour = new Date().getHours();
+      
+      // Inicia em 00:00 com valor base 0 para criar a curva
+      data.push({ date: '00:00', ganhos: 0 });
+
+      for (let i = 1; i <= currentHour; i++) {
+        const hour = i.toString().padStart(2, '0') + ':00';
+        // Curva de acúmulo progressiva
+        const progress = i / 23;
+        const hourlyAccumulated = Math.floor(todayTotal * Math.pow(progress, 1.2));
+        data.push({
+          date: hour,
+          ganhos: hourlyAccumulated
+        });
+      }
+
+      // Garante que o último ponto seja o total exato
+      if (data.length > 0) {
+        data[data.length - 1].ganhos = todayTotal;
+      }
+      
+      return data;
+    }
     if (timeRange === '7days') return fullChartData.slice(-7);
     if (timeRange === 'month') return fullChartData.slice(-30);
     return fullChartData;
@@ -170,8 +208,9 @@ export default function Dashboard() {
 
   const periodTotal = useMemo(() => {
     if (timeRange === 'max') return totalEarnings;
+    if (timeRange === 'today') return fullChartData[fullChartData.length - 1]?.ganhos || 0;
     return filteredChartData.reduce((acc, curr) => acc + curr.ganhos, 0);
-  }, [filteredChartData, timeRange, totalEarnings]);
+  }, [filteredChartData, timeRange, totalEarnings, fullChartData]);
 
   const currentJourneyDay = useMemo(() => {
     if (!userData?.createdAt) return 1;
@@ -197,36 +236,40 @@ export default function Dashboard() {
       desc: 'Escaneie o mercado e encontre alvos lucrativos em segundos.', 
       icon: Search, 
       url: '/leads',
-      color: 'from-blue-600/20 to-blue-400/10',
-      iconColor: 'text-blue-400',
-      badge: 'Scanner Live'
+      color: 'from-emerald-500/20 to-emerald-500/5',
+      iconColor: 'text-emerald-400',
+      badge: 'Scanner Live',
+      border: 'border-emerald-500/20'
     },
     { 
       title: 'Abordagem', 
       desc: 'Scripts de WhatsApp otimizados pelo motor neural v2.', 
       icon: MessageSquare, 
       url: '/abordagens',
-      color: 'from-purple-600/20 to-purple-400/10',
+      color: 'from-purple-500/20 to-purple-500/5',
       iconColor: 'text-purple-400',
-      badge: 'Neural'
+      badge: 'Neural Engine',
+      border: 'border-purple-500/20'
     },
     { 
       title: 'Gerador de Prompts', 
       desc: 'Comandos mestres para criar sites e apps em minutos.', 
       icon: Terminal, 
       url: '/prompts',
-      color: 'from-amber-600/20 to-amber-400/10',
+      color: 'from-amber-500/20 to-amber-500/5',
       iconColor: 'text-amber-400',
-      badge: 'App Builder'
+      badge: 'App Builder',
+      border: 'border-amber-500/20'
     },
     { 
       title: 'Ferramentas', 
       desc: 'Arsenal tático completo para acelerar seu faturamento.', 
       icon: Wrench, 
       url: '/tools',
-      color: 'from-emerald-600/20 to-emerald-400/10',
-      iconColor: 'text-emerald-400',
-      badge: 'VIP Tools'
+      color: 'from-blue-500/20 to-blue-500/5',
+      iconColor: 'text-blue-400',
+      badge: 'VIP Arsenal',
+      border: 'border-blue-500/20'
     },
   ];
 
@@ -403,7 +446,7 @@ export default function Dashboard() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              <Card className="lg:col-span-8 glass-card p-8 min-h-[300px] flex flex-col relative overflow-hidden">
+              <Card className="lg:col-span-8 glass-card p-8 min-h-[350px] flex flex-col relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full -mr-32 -mt-32 pointer-events-none" />
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 relative z-10">
                   <div>
@@ -455,7 +498,7 @@ export default function Dashboard() {
                         </linearGradient>
                       </defs>
                       <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.03)" strokeDasharray="3 3" />
-                      <XAxis dataKey="date" hide />
+                      <XAxis dataKey="date" hide={timeRange !== 'today'} axisLine={false} tickLine={false} tick={{fontSize: 9, fill: 'rgba(255,255,255,0.3)'}} />
                       <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.2)', fontWeight: 'bold' }} tickFormatter={(v) => `R$${v}`} />
                       <Tooltip content={<CustomTooltip />} />
                       <Area 
@@ -533,38 +576,42 @@ export default function Dashboard() {
                 {ecosystemModules.map((module, i) => (
                   <Link key={module.title} href={module.url} prefetch={false} className="group">
                     <motion.div
-                      whileHover={{ y: -5 }}
-                      transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+                      whileHover={{ y: -8, scale: 1.02 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                     >
-                      <Card className="glass-card p-6 border-white/5 bg-white/[0.02] hover:border-primary/40 transition-all duration-500 relative overflow-hidden flex flex-col h-[220px] justify-between shadow-xl">
-                        <div className={`absolute inset-0 bg-gradient-to-br ${module.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                        <div className="absolute top-0 right-0 p-4 opacity-[0.02] group-hover:opacity-[0.08] transition-opacity duration-500">
-                           <module.icon className="h-20 w-20 text-white" />
+                      <Card className={cn(
+                        "glass-card p-6 border bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-500 relative overflow-hidden flex flex-col h-[230px] justify-between shadow-2xl",
+                        module.border
+                      )}>
+                        <div className={cn("absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-10 transition-opacity duration-500", module.color)} />
+                        
+                        <div className="absolute -top-4 -right-4 opacity-[0.03] group-hover:opacity-[0.1] transition-all duration-700 group-hover:rotate-12 group-hover:scale-125">
+                           <module.icon className="h-32 w-32 text-white" />
                         </div>
                         
                         <div className="space-y-6 relative z-10">
                           <div className="flex justify-between items-start">
-                            <div className={cn("h-11 w-11 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 shadow-inner group-hover:border-white/20 transition-all", module.iconColor)}>
-                              <module.icon className="h-5 w-5" />
+                            <div className={cn("h-12 w-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 shadow-2xl group-hover:scale-110 transition-all", module.iconColor)}>
+                              <module.icon className="h-6 w-6" />
                             </div>
-                            <Badge variant="outline" className="text-[8px] font-black uppercase border-white/10 text-white/40 group-hover:text-white/90 group-hover:border-white/20 transition-colors">
+                            <Badge variant="outline" className="text-[8px] font-black uppercase border-white/10 bg-white/5 text-white/50 group-hover:text-white group-hover:border-white/20 transition-all">
                               {module.badge}
                             </Badge>
                           </div>
                           
-                          <div className="space-y-1.5">
-                            <h4 className="text-sm font-black uppercase italic text-white/90 tracking-tight flex items-center gap-2 group-hover:text-white">
+                          <div className="space-y-2">
+                            <h4 className="text-[13px] font-black uppercase italic text-white tracking-tight flex items-center gap-2 group-hover:translate-x-1 transition-transform">
                               {module.title}
                             </h4>
-                            <p className="text-[11px] text-white/40 leading-relaxed font-medium group-hover:text-white/70 transition-colors">
+                            <p className="text-[11px] text-white/40 leading-relaxed font-medium group-hover:text-white/70 transition-colors line-clamp-3">
                               {module.desc}
                             </p>
                           </div>
                         </div>
 
                         <div className="flex items-center justify-between pt-4 border-t border-white/5 relative z-10 group-hover:border-white/10 transition-colors">
-                          <span className="text-[9px] font-black uppercase text-white/20 tracking-widest group-hover:text-white/60">Acessar</span>
-                          <ChevronRight className="h-3.5 w-3.5 text-white/10 group-hover:text-primary transition-all group-hover:translate-x-1" />
+                          <span className="text-[9px] font-black uppercase text-white/30 tracking-[0.2em] group-hover:text-white transition-colors">Iniciar Operação</span>
+                          <ChevronRight className="h-4 w-4 text-white/10 group-hover:text-primary transition-all group-hover:translate-x-2" />
                         </div>
                       </Card>
                     </motion.div>
@@ -650,4 +697,3 @@ export default function Dashboard() {
     </SidebarProvider>
   );
 }
-
