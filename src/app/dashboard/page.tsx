@@ -89,7 +89,7 @@ export default function Dashboard() {
   const { success, error } = useToast();
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState('');
-  const [timeRange, setTimeRange] = useState<'today' | '7days' | 'max'>('max');
+  const [timeRange, setTimeRange] = useState<'today' | '7days' | 'month' | 'max'>('month');
   
   const [sessionEarnings, setSessionEarnings] = useState(0);
   
@@ -127,7 +127,7 @@ export default function Dashboard() {
       base = userData.simulatedStats.total;
     } else {
       base = userData?.totalEarnings || 0;
-      if (isAdmin) base += 216430; // Valor solicitado de ~216k para Admin
+      if (isAdmin) base += 216430; // Valor de faturamento mestre
     }
     return base + sessionEarnings;
   }, [userData, isAdmin, sessionEarnings]);
@@ -140,7 +140,7 @@ export default function Dashboard() {
         ganhos: p.amount
       }));
     } else {
-      // Gera dados que somam aproximadamente 27k (900 * 30)
+      // Gera dados que somam aproximadamente 27k (média de 900/dia)
       baseData = Array.from({ length: 30 }).map((_, i) => ({
         date: `${i + 1}/03`,
         ganhos: Math.floor(Math.random() * 1800)
@@ -161,12 +161,14 @@ export default function Dashboard() {
   const filteredChartData = useMemo(() => {
     if (timeRange === 'today') return fullChartData.slice(-1);
     if (timeRange === '7days') return fullChartData.slice(-7);
+    if (timeRange === 'month') return fullChartData.slice(-30);
     return fullChartData;
   }, [fullChartData, timeRange]);
 
   const periodTotal = useMemo(() => {
+    if (timeRange === 'max') return totalEarnings;
     return filteredChartData.reduce((acc, curr) => acc + curr.ganhos, 0);
-  }, [filteredChartData]);
+  }, [filteredChartData, timeRange, totalEarnings]);
 
   const currentJourneyDay = useMemo(() => {
     if (!userData?.createdAt) return 1;
@@ -369,7 +371,7 @@ export default function Dashboard() {
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                   <div>
                     <h3 className="text-[11px] font-black uppercase tracking-widest text-white/30">Ganhos Temporais</h3>
-                    <div className="flex items-center gap-2 mt-2">
+                    <div className="flex flex-wrap items-center gap-2 mt-2">
                       <button 
                         onClick={() => setTimeRange('today')}
                         className={cn("px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-all", timeRange === 'today' ? "bg-primary border-primary text-white" : "border-white/5 bg-white/5 text-white/30 hover:text-white/60")}
@@ -381,6 +383,12 @@ export default function Dashboard() {
                         className={cn("px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-all", timeRange === '7days' ? "bg-primary border-primary text-white" : "border-white/5 bg-white/5 text-white/30 hover:text-white/60")}
                       >
                         7 Dias
+                      </button>
+                      <button 
+                        onClick={() => setTimeRange('month')}
+                        className={cn("px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-all", timeRange === 'month' ? "bg-primary border-primary text-white" : "border-white/5 bg-white/5 text-white/30 hover:text-white/60")}
+                      >
+                        Este Mês
                       </button>
                       <button 
                         onClick={() => setTimeRange('max')}
