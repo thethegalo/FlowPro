@@ -27,8 +27,8 @@ const TESTIMONIAL_IMAGES = [
 ];
 
 export default function FelipePaywallPage() {
-  const CHECKOUT_MENSAL = "https://checkout.flowproia.shop/pay/PPU38CQ9FQU";
-  const CHECKOUT_VITALICIO = "https://checkout.flowproia.shop/pay/PPU38CQ9FCP";
+  const CHECKOUT_MENSAL = "https://go.flowproiasystems.shop/PPU38CQB6QN";
+  const CHECKOUT_VITALICIO = "https://go.flowproiasystems.shop/PPU38CQB6R3";
 
   return (
     <div className="min-h-screen bg-[#050508] text-white overflow-x-hidden">

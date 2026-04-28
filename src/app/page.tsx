@@ -69,8 +69,8 @@ const TESTIMONIALS = [
   }
 ];
 
-const CHECKOUT_VITALICIO = "https://checkout.flowproia.shop/pay/PPU38CQ9FCP";
-const CHECKOUT_MENSAL = "https://checkout.flowproia.shop/pay/PPU38CQ9FQU";
+const CHECKOUT_VITALICIO = "https://go.flowproiasystems.shop/PPU38CQB6R3";
+const CHECKOUT_MENSAL = "https://go.flowproiasystems.shop/PPU38CQB6QN";
 
 export default function Home() {
   const [timeLeft, setTimeLeft] = useState({ h: '23', m: '59', s: '59' });
