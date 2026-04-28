@@ -10,17 +10,37 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const FloatingMentor = dynamic(() => import('@/components/FloatingMentor').then(mod => ({ default: mod.FloatingMentor })), { ssr: false });
 
+const PIX_SOUND_URL = 'https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/osid4179qrv1mrt7943r2618?v=1774318273085';
+
 export function ClientVisualEffects() {
   const pathname = usePathname();
   const { user } = useUser();
   const db = useFirestore();
   const [notification, setNotification] = useState<{ value: number, type: string } | null>(null);
   const notificationTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [mounted, setMounted] = useState(false);
 
-  // Garante que o componente só renderize conteúdo visual no cliente
+  // Inicialização segura no cliente
   useEffect(() => {
     setMounted(true);
+    if (typeof window !== 'undefined') {
+      audioRef.current = new Audio(PIX_SOUND_URL);
+      audioRef.current.load();
+
+      // Estratégia de Audio Unlock: Toca e pausa no primeiro clique para ganhar permissão do browser
+      const unlockAudio = () => {
+        if (audioRef.current) {
+          audioRef.current.play().then(() => {
+            audioRef.current?.pause();
+            if (audioRef.current) audioRef.current.currentTime = 0;
+          }).catch(() => {});
+        }
+        window.removeEventListener('click', unlockAudio);
+      };
+      window.addEventListener('click', unlockAudio);
+      return () => window.removeEventListener('click', unlockAudio);
+    }
   }, []);
 
   const userDocRef = useMemoFirebase(() => {
@@ -32,7 +52,7 @@ export function ClientVisualEffects() {
   const isAdmin = useMemo(() => user?.email === "thethegalo@gmail.com", [user]);
   const isAffiliate = useMemo(() => userData?.isAffiliate === true, [userData]);
 
-  // Rotas onde a notificação NÃO deve aparecer
+  // Rotas onde a notificação NÃO deve aparecer (Vendas e Onboarding)
   const excludedPaths = ['/', '/adriel', '/dx', '/felipe', '/v/felipe', '/auth', '/quiz', '/masterclass'];
   const isExcluded = useMemo(() => {
     return excludedPaths.some(path => pathname === path || pathname.startsWith(path + '/'));
@@ -41,6 +61,7 @@ export function ClientVisualEffects() {
   useEffect(() => {
     if (!mounted) return;
 
+    // Só processa se for admin/afiliado e não estiver em rota excluída
     if ((!isAdmin && !isAffiliate) || isExcluded) {
       setNotification(null);
       return;
@@ -53,12 +74,16 @@ export function ClientVisualEffects() {
       const value = forcedValue || values[Math.floor(Math.random() * values.length)];
       const type = types[Math.floor(Math.random() * types.length)];
 
-      // Dispara evento para o dashboard
+      // Dispara evento global para sincronizar saldo no Dashboard
       window.dispatchEvent(new CustomEvent('flow-new-sale', { detail: { value } }));
 
-      // Toca o som (Pix)
-      const audio = new Audio('https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqelu1/typebots/cmn1vyjog000104la10d6sdzu/blocks/osid4179qrv1mrt7943r2618?v=1774318273085');
-      audio.play().catch(() => {});
+      // Execução do Som com fallback
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch((e) => {
+          console.warn("Autoplay blocked by browser. User interaction required.", e);
+        });
+      }
 
       if (notificationTimerRef.current) clearTimeout(notificationTimerRef.current);
 
@@ -69,11 +94,13 @@ export function ClientVisualEffects() {
       }, 6000);
     };
 
+    // Escuta teste do painel admin
     const handleTest = () => triggerNotification(197);
     window.addEventListener('flow-test-pix', handleTest);
 
+    // Loop de notificações aleatórias (reduzido para 45-90s para melhor percepção)
     const scheduleNext = () => {
-      const delay = (Math.floor(Math.random() * 180) + 240) * 1000;
+      const delay = (Math.floor(Math.random() * 45) + 45) * 1000;
       return setTimeout(() => {
         triggerNotification();
         scheduleNext();
@@ -89,7 +116,7 @@ export function ClientVisualEffects() {
     };
   }, [isAdmin, isAffiliate, isExcluded, pathname, mounted]);
 
-  // Previne Hydration Mismatch retornando nulo até que o cliente esteja pronto
+  // Previne Hydration Mismatch
   if (!mounted) return null;
 
   return (
