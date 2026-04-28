@@ -22,7 +22,14 @@ import {
   CreditCard,
   Sparkles,
   TrendingUp,
-  Search
+  Search,
+  Timer,
+  Lock,
+  Quote,
+  Headset,
+  Clock,
+  HelpCircle,
+  Rocket
 } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -37,24 +44,27 @@ const LOGO_URL = "https://s3.typebot.io/public/workspaces/cmml2oniw000g04l7gwmqe
 
 const TESTIMONIALS = [
   { 
-    text: "Eu nunca tinha vendido nada online. Usei o script de IA para falar com uma pizzaria e fechei meu primeiro contrato de ",
-    highlight: "R$ 1.500",
-    textEnd: " em menos de uma semana.",
-    author: "Ana Oliveira", context: "Especialista em Escala", initial: "A",
+    name: "Ana Oliveira",
+    city: "São Paulo, SP",
+    text: "Eu nunca tinha vendido nada online. Usei o script de IA para falar com uma pizzaria e fechei meu primeiro contrato de R$ 1.500 em menos de uma semana.",
+    result: "Fechei meu primeiro cliente em 2 dias e recebi R$800 no PIX",
+    avatar: "https://picsum.photos/seed/ana/100/100",
     proof: "Pix recebido R$ 1.500,00 — 14:32"
   },
   { 
-    text: "O Radar de Leads é bizarro. Achei 50 dentistas na minha cidade e a IA gerou abordagens que todos responderam. Já faturei ",
-    highlight: "R$ 3.500",
-    textEnd: ".",
-    author: "Bruno Silva", context: "Consultor Fase 1", initial: "B",
+    name: "Bruno Silva",
+    city: "Curitiba, PR",
+    text: "O Radar de Leads é bizarro. Achei 50 dentistas na minha cidade e a IA gerou abordagens que todos responderam. Já faturei mais de R$ 3.500 este mês.",
+    result: "Faturamento de R$3.500 no primeiro mês",
+    avatar: "https://picsum.photos/seed/bruno/100/100",
     proof: "Pix recebido R$ 3.500,00 — 09:15"
   },
   { 
-    text: "A barreira de não saber o que falar sumiu. Copiei o script da IA, mandei no WhatsApp e o cliente fechou um contrato de ",
-    highlight: "R$ 2.000",
-    textEnd: " na hora. Simples assim.",
-    author: "Juliana Reus", context: "Venda em 48h", initial: "J",
+    name: "Juliana Reus",
+    city: "Florianópolis, SC",
+    text: "A barreira de não saber o que falar sumiu. Copiei o script da IA, mandei no WhatsApp e o cliente fechou um contrato de R$ 2.000 na hora. Simples assim.",
+    result: "Contrato de R$2.000 fechado em 48h",
+    avatar: "https://picsum.photos/seed/juliana/100/100",
     proof: "Pix recebido R$ 2.000,00 — 16:40"
   }
 ];
@@ -63,18 +73,25 @@ const CHECKOUT_VITALICIO = "https://checkout.flowproia.shop/pay/PPU38CQ9FCP";
 const CHECKOUT_MENSAL = "https://checkout.flowproia.shop/pay/PPU38CQ9FQU";
 
 export default function Home() {
-  const [timeLeft, setTimeLeft] = useState({ h: '23', m: '59', s: '42' });
+  const [timeLeft, setTimeLeft] = useState({ h: '23', m: '59', s: '59' });
 
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date();
       const midnight = new Date();
       midnight.setHours(24, 0, 0, 0);
-      const diff = midnight.getTime() - now.getTime();
-      if (diff <= 0) return;
+      let diff = midnight.getTime() - now.getTime();
+      
+      if (diff <= 0) {
+        // Reinicia o timer ao expirar
+        midnight.setDate(midnight.getDate() + 1);
+        diff = midnight.getTime() - now.getTime();
+      }
+
       const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
       const m = Math.floor((diff / (1000 * 60)) % 60);
       const s = Math.floor((diff / 1000) % 60);
+      
       setTimeLeft({
         h: h.toString().padStart(2, '0'),
         m: m.toString().padStart(2, '0'),
@@ -100,7 +117,7 @@ export default function Home() {
           </Link>
           <div className="hidden md:flex items-center gap-8">
             <Link href="#como-funciona" className="text-[13px] font-medium text-white/50 hover:text-white transition-colors">Como funciona</Link>
-            <Link href="#arsenal" className="text-[13px] font-medium text-white/50 hover:text-white transition-colors">Arsenal</Link>
+            <Link href="#depoimentos" className="text-[13px] font-medium text-white/50 hover:text-white transition-colors">Resultados</Link>
             <button onClick={scrollToPricing} className="text-[13px] font-medium text-white/50 hover:text-white transition-colors">Preços</button>
           </div>
         </div>
@@ -133,7 +150,7 @@ export default function Home() {
                 </h1>
 
                 <p className="text-lg md:text-xl text-white/60 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
-                  Radar de Leads + IA que cria sites e scripts em questões de minutos. Feche seu primeiro cliente no WhatsApp em tempo recorde.
+                  A plataforma ideal para freelancers e agências que querem prospectar clientes locais, criar sites com IA e fechar vendas pelo WhatsApp — sem precisar de experiência técnica.
                 </p>
 
                 <div className="flex flex-col items-center lg:items-start gap-6 pt-4">
@@ -145,7 +162,7 @@ export default function Home() {
                     INICIAR JORNADA AGORA <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                   <p className="text-[11px] font-bold text-white/40 uppercase tracking-[0.2em]">
-                    Criação de sites e prospecção automatizada em um só lugar.
+                    Usado por iniciantes e consultores que vendem serviços digitais via WhatsApp.
                   </p>
                 </div>
               </motion.div>
@@ -192,6 +209,39 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Barra de Credibilidade */}
+        <section className="py-8 bg-white/5 border-y border-white/5">
+          <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                <Rocket className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-lg font-black italic">+1.200</p>
+                <p className="text-[10px] uppercase font-bold text-white/40">Usuários ativos</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                <Zap className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-lg font-black italic">{"< 60s"}</p>
+                <p className="text-[10px] uppercase font-bold text-white/40">Sites criados</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                <DollarSign className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-lg font-black italic">R$ 500</p>
+                <p className="text-[10px] uppercase font-bold text-white/40">Média 1º contrato</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section id="como-funciona" className="py-24 bg-white/[0.02] border-y border-white/5">
           <div className="max-w-7xl mx-auto px-6 md:px-12 space-y-16">
             <div className="text-center space-y-4">
@@ -201,10 +251,10 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               {[
-                { id: "01", title: "Acesse o Painel", desc: "Crie sua conta e entre no centro de comando em segundos.", icon: Zap },
-                { id: "02", title: "Radar de Alvos", desc: "IA escaneia o mercado e encontra donos de negócios locais.", icon: Target },
-                { id: "03", title: "Criação Express", desc: "A IA cria o site e o script de vendas em questões de minutos.", icon: Cpu },
-                { id: "04", title: "Lucro no PIX", desc: "Envie a oferta pronta, feche o contrato e receba seu pagamento.", icon: DollarSign }
+                { id: "01", title: "Acesse a plataforma", desc: "Crie sua conta e entre no painel FlowPro em segundos.", icon: Zap },
+                { id: "02", title: "Encontre leads com o Radar", desc: "Busque donos de negócio por nicho e cidade usando nosso motor neural.", icon: Search },
+                { id: "03", title: "A IA escreve sua abordagem", desc: "Selecione o lead e receba um script personalizado para WhatsApp.", icon: Cpu },
+                { id: "04", title: "Mande e feche", desc: "Envie a mensagem, responda com confiança e receba seu primeiro PIX.", icon: DollarSign }
               ].map((step, i) => (
                 <motion.div 
                   key={i} 
@@ -229,14 +279,64 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Seção de Depoimentos */}
+        <section id="depoimentos" className="py-24 relative overflow-hidden">
+          <div className="max-w-7xl mx-auto px-6 md:px-12 space-y-16">
+            <div className="text-center space-y-4">
+              <Badge className="bg-primary/20 text-primary uppercase font-black tracking-widest text-[10px] px-4 py-1">Resultados Reais</Badge>
+              <h2 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter">O que dizem os operadores Flow</h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {TESTIMONIALS.map((t, i) => (
+                <Card key={i} className="glass-card p-8 flex flex-col justify-between space-y-6 hover:border-primary/40 transition-all bg-[#0a0a14]/60">
+                  <div className="space-y-4">
+                    <Quote className="h-8 w-8 text-primary opacity-20" />
+                    <p className="text-sm text-white/80 leading-relaxed italic font-medium">"{t.text}"</p>
+                    <div className="pt-4 border-t border-white/5">
+                      <p className="text-xs font-black uppercase text-primary tracking-widest">{t.result}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-4">
+                    <div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-primary/30">
+                      <Image src={t.avatar} alt={t.name} fill className="object-cover" data-ai-hint="portrait" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold uppercase italic">{t.name}</h4>
+                      <p className="text-[10px] text-white/40 uppercase font-bold">{t.city}</p>
+                    </div>
+                  </div>
+
+                  {/* Mockup de Notificação */}
+                  <div className="bg-black/60 border border-white/10 rounded-xl p-3 flex items-center gap-3 animate-in fade-in zoom-in duration-1000 delay-500">
+                    <div className="h-8 w-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                      <Check className="h-4 w-4 text-green-500" />
+                    </div>
+                    <p className="text-[10px] font-mono text-white/60">{t.proof}</p>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section id="precos" className="py-24 relative overflow-hidden bg-[#030308]">
           <div className="absolute inset-0 bg-primary/5 blur-[150px] rounded-full pointer-events-none" />
           <div className="container max-w-6xl mx-auto px-6 space-y-16 relative z-10">
-            <div className="text-center space-y-6">
-              <Badge className="bg-amber-500/20 text-amber-500 border border-amber-500/30 uppercase tracking-[0.3em] text-[10px] px-6 py-2 rounded-full animate-pulse">Oferta de Lançamento — Encerrando em Breve</Badge>
-              <h2 className="text-4xl md:text-7xl font-black text-white italic uppercase tracking-tighter leading-tight">
-                Domine o mercado <br /><span className="text-primary shimmer-text">com poder IA.</span>
-              </h2>
+            <div className="text-center space-y-8">
+              <div className="inline-flex flex-col items-center gap-4">
+                <div className="flex items-center gap-3 bg-red-600/10 border border-red-600/30 text-red-500 px-6 py-2 rounded-full">
+                  <Timer className="h-4 w-4 animate-pulse" />
+                  <span className="text-xs font-black uppercase tracking-widest">Oferta expira em:</span>
+                  <span className="text-lg font-black font-mono">
+                    {timeLeft.h}:{timeLeft.m}:{timeLeft.s}
+                  </span>
+                </div>
+                <h2 className="text-4xl md:text-7xl font-black text-white italic uppercase tracking-tighter leading-tight">
+                  Domine o mercado <br /><span className="text-primary shimmer-text">com poder IA.</span>
+                </h2>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
@@ -270,7 +370,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="mt-10 space-y-4">
-                   <Button asChild className="w-full h-16 rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-white/10 font-black uppercase tracking-widest">
+                   <Button asChild className="w-full h-16 rounded-2xl bg-white/5 border border-primary text-white hover:bg-white/10 font-black uppercase tracking-widest">
                      <a href={CHECKOUT_MENSAL}>COMEÇAR AGORA</a>
                    </Button>
                    <p className="text-[9px] text-center text-white/20 uppercase font-bold tracking-widest">Cancelamento a qualquer momento</p>
@@ -350,33 +450,56 @@ export default function Home() {
               </motion.div>
             </div>
 
-            <div className="max-w-xl mx-auto text-center pt-12 space-y-4">
-               <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em]">PAGAMENTO SEGURO</p>
+            {/* Pagamento Seguro Section */}
+            <div className="max-w-xl mx-auto text-center pt-12 space-y-6">
+              <div className="flex flex-col items-center gap-4">
+                <div className="flex items-center gap-2 text-white/30 uppercase font-black tracking-[0.3em] text-[10px]">
+                  <Lock className="h-3 w-3" /> Pagamento Seguro
+                </div>
+                <div className="flex items-center gap-6 grayscale opacity-40">
+                  <div className="flex items-center gap-1">
+                    <ShieldCheck className="h-5 w-5" />
+                    <span className="text-[10px] font-bold">SSL SECURE</span>
+                  </div>
+                  <div className="h-4 w-px bg-white/10" />
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="h-5 w-5" />
+                    <span className="text-[8px] font-black">VISA / MASTER / PIX</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
         <section id="faq" className="py-24">
           <div className="max-w-4xl mx-auto px-6 md:px-12 space-y-16">
-            <h2 className="text-4xl md:text-5xl font-black text-white uppercase italic text-center tracking-tighter">Dúvidas Frequentes</h2>
+            <div className="text-center space-y-4">
+              <HelpCircle className="h-10 w-10 text-primary mx-auto opacity-20" />
+              <h2 className="text-4xl md:text-5xl font-black text-white uppercase italic tracking-tighter">Dúvidas Frequentes</h2>
+            </div>
             
-            <Accordion type="single" collapsible className="w-full space-y-4">
+            <Accordion type="single" collapsible defaultValue="item-0" className="w-full space-y-4">
               {[
                 { 
                   q: "O sistema funciona para quem não tem experiência?", 
-                  a: "Sim. A Jornada de 7 Dias foi construída do zero para iniciantes. Além disso, a IA cria os sites e scripts para você, eliminando a necessidade de saber programar ou vender." 
+                  a: "Sim. A Jornada de 7 Dias foi construída do zero para iniciantes. Além disso, a IA cria os sites e scripts para você, eliminando a necessidade de saber programar ou vender. Você só precisa copiar, adaptar e enviar." 
                 },
                 { 
-                  q: "Como a IA cria os sites tão rápido?", 
-                  a: "Nossa IA utiliza blocos pré-configurados de alta conversão e os personaliza de acordo com o nicho do seu lead em menos de 2 minutos. Você só precisa revisar e enviar." 
+                  q: "Preciso saber programar ou ter experiência técnica?", 
+                  a: "Não. A FlowPro foi desenhada para quem não entende nada de código. A IA cuida de toda a estrutura, design e funcionalidades técnicas dos sites e automações." 
                 },
                 { 
                   q: "Em quanto tempo vejo os primeiros resultados?", 
-                  a: "Nossa média de base é de 3,8 dias para a primeira venda. Com o sistema de criação automática, você pode prospectar e entregar o serviço no mesmo dia." 
+                  a: "Nossa média de base é de 3,8 dias para a primeira venda. Com o sistema de criação automática e o radar neural, você pode prospectar e entregar o serviço no mesmo dia." 
+                },
+                { 
+                  q: "Qual é o suporte disponível após a compra?", 
+                  a: "Você terá acesso ao nosso centro de ajuda 24h, suporte via WhatsApp para dúvidas técnicas e acesso à nossa comunidade VIP de operadores para troca de experiências." 
                 },
                 { 
                   q: "O pagamento é único mesmo?", 
-                  a: "No Plano Vitalício, sim. Você paga uma única vez R$ 247 e nunca mais precisa pagar mensalidades para utilizar as ferramentas base da FlowPro." 
+                  a: "No Plano Vitalício, sim. Você paga uma única vez e nunca mais precisa pagar mensalidades para utilizar as ferramentas base da FlowPro. Sem taxas ocultas." 
                 }
               ].map((item, i) => (
                 <AccordionItem key={i} value={`item-${i}`} className="border border-white/5 bg-white/[0.01] rounded-2xl px-6">
@@ -392,13 +515,41 @@ export default function Home() {
           </div>
         </section>
 
+        {/* CTA Final */}
+        <section className="py-24 bg-primary/5 border-y border-primary/20">
+          <div className="max-w-4xl mx-auto px-6 text-center space-y-10">
+            <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter leading-none">
+              Pronto para fechar seu <br />
+              <span className="text-primary">primeiro cliente hoje?</span>
+            </h2>
+            <p className="text-lg text-white/60 font-medium max-w-2xl mx-auto">
+              Lembre-se: você tem 7 dias de garantia incondicional. Se não gostar do método ou das ferramentas, devolvemos seu dinheiro. O risco é todo nosso.
+            </p>
+            <Button 
+              onClick={scrollToPricing} 
+              size="lg" 
+              className="w-full sm:w-auto h-20 px-16 bg-primary hover:bg-primary/90 text-white font-black uppercase tracking-widest text-lg rounded-2xl shadow-[0_20px_50px_rgba(139,92,246,0.4)] transition-all"
+            >
+              QUERO ESCALAR AGORA <ArrowRight className="ml-3 h-6 w-6" />
+            </Button>
+          </div>
+        </section>
+
         <footer className="py-16 border-t border-white/5 bg-[#030305]">
           <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-12">
             <div className="flex flex-col items-center md:items-start gap-4">
-              <div className="relative h-6 w-24 opacity-40 grayscale contrast-200">
+              <Link href="/" className="relative h-6 w-24 opacity-80">
                 <Image src={LOGO_URL} alt="FlowPro" fill className="object-contain" loading="lazy" sizes="96px" />
+              </Link>
+              <p className="text-[11px] text-white/20 font-medium tracking-tight">© 2025 FlowPro Neural Systems • CNPJ: 12.345.678/0001-99</p>
+              <div className="flex items-center gap-4 pt-2">
+                <a href="#" className="flex items-center gap-2 text-[10px] font-black uppercase text-white/30 hover:text-primary transition-colors">
+                  <Headset className="h-3.5 w-3.5" /> Suporte / Contato
+                </a>
+                <a href="https://wa.me/5511999999999" target="_blank" className="flex items-center gap-2 text-[10px] font-black uppercase text-white/30 hover:text-green-500 transition-colors">
+                  <MessageSquare className="h-3.5 w-3.5" /> WhatsApp
+                </a>
               </div>
-              <p className="text-[11px] text-white/20 font-medium tracking-tight">© 2025 FlowPro Systems • Todos os direitos reservados.</p>
             </div>
             
             <div className="flex items-center gap-12">
